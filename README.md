@@ -43,4 +43,4 @@ git diff
 git log --oneline
 ```
 
-远程仓库可在确定托管位置后配置。
+远程仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。主分支为 `main`，后续开发使用 `codex/` 功能分支。
