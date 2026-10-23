@@ -15,6 +15,7 @@
 - [测试安排](docs/TESTING.md)
 - [环境验证记录](docs/ENVIRONMENT_VERIFICATION.md)
 - [受众、竞品与避坑研究（2026-10-23）](docs/research/MARKET_VALIDATION_2026-10-23.md)
+- [成人市场机会与持续使用设计（2026-10-23）](docs/research/ADULT_MARKET_RETENTION_2026-10-23.md)：成人受众证据、复玩动机、三天内的体验重点与验证方法。
 - [美术方向 v0.1 与成人审美概念图](docs/design/ART_DIRECTION_v0.1.md)：两套 P0 主题的视觉演进、角色、界面、资产预算和验证方法。
 
 ## 开始开发
