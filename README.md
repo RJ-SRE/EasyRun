@@ -11,6 +11,7 @@
 - [开发环境与工具清单](docs/ENVIRONMENT.md)
 - [测试安排](docs/TESTING.md)
 - [环境验证记录](docs/ENVIRONMENT_VERIFICATION.md)
+- [受众、竞品与避坑研究（2026-10-23）](docs/research/MARKET_VALIDATION_2026-10-23.md)
 
 ## 开始开发
 
