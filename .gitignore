@@ -15,3 +15,17 @@ dist/
 build/
 coverage/
 *.log
+
+# Project-local runtimes, downloads, and third-party reference source
+.tools/
+.cache/
+.pnpm-store/
+
+# Local test outputs
+playwright-report/
+test-results/
+.vitest/
+.vite/
+
+# Microphone recordings are local diagnostic data
+recordings/

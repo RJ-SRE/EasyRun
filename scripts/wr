@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+WORDRUNNER_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$WORDRUNNER_ROOT/scripts/with-env.sh" pnpm "$@"
