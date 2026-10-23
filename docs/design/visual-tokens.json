@@ -1,0 +1,62 @@
+{
+  "version": "0.1.0",
+  "status": "design-only; not connected to runtime",
+  "reference_canvas": { "width": 1280, "height": 720 },
+  "layout": {
+    "player_x_ratio": 0.28,
+    "hud_margin_px": 24,
+    "task_card_max_width_px": 560,
+    "english_task_font_px": 30,
+    "translation_font_px": 20,
+    "status_font_px": 18
+  },
+  "shared_ui": {
+    "surface": "#111D2B",
+    "text": "#F4F1E8",
+    "secondary_text": "#B8C6CF",
+    "focus": "#A3E3D6",
+    "minimum_body_text_contrast_target": 4.5,
+    "instruction": "Use opaque text surfaces. Pair color with text and shape. Reflow narrow layouts; do not only scale down."
+  },
+  "themes": {
+    "rain_city": {
+      "name": "雨夜都市",
+      "scope": "proposed evolution of existing P0 neon city theme",
+      "background": "#101D2B",
+      "midground": "#304A5B",
+      "ground": "#162C38",
+      "interaction": "#86D1C2",
+      "atmosphere": "#E8B078"
+    },
+    "cloud_ruins": {
+      "name": "云海遗迹",
+      "scope": "proposed evolution of existing P0 cloud island theme",
+      "background": "#E9E5D8",
+      "midground": "#A5B9AE",
+      "ground": "#405C59",
+      "interaction": "#286E68",
+      "atmosphere": "#C49652"
+    },
+    "sunset_coast": {
+      "name": "落日海岸",
+      "scope": "future concept only; not a third P0 theme",
+      "background": "#EBC4AD",
+      "midground": "#C88773",
+      "ground": "#253F50",
+      "interaction": "#325E73",
+      "atmosphere": "#F3DBAA"
+    }
+  },
+  "character": {
+    "identity": "gender-neutral adult-proportioned traveling courier",
+    "head_to_height_range": [6, 6.5],
+    "shared_animation_pose_budget": 14,
+    "instruction": "Same character and collision geometry across themes. Jog and sprint may reuse the run cycle with visual adjustments."
+  },
+  "motion": {
+    "reduce_motion_supported_in_design": true,
+    "camera_stable_during_voice_wait": true,
+    "full_screen_flashes": false,
+    "instruction": "Decorative motion never changes collision timing or hides task text."
+  }
+}
