@@ -1,5 +1,7 @@
 # 概念图生成记录
 
+历史稿说明：本文件保留最初的三主题生成记录，提示词中的人形信使已停用。当前主角为非人类精灵，人类已经灭绝；当前画面与生成记录见 [精灵与科技世界概念图](SPIRIT_TECH_IMAGE_PROMPT.md)。
+
 - 日期：2026-10-23
 - 技能：imagegen
 - 模式：内置 `image_gen.imagegen`；未使用 CLI/API fallback。
