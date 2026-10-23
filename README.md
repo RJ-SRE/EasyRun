@@ -2,12 +2,14 @@
 
 结合英语听力、口语表达与动作挑战的跑酷游戏。玩家可以通过按键或英语语音控制角色，并独立选择画面主题、英语水平和操作难度。
 
-当前阶段：本地开发环境准备。已有环境检查页和自动化测试，尚未创建跑酷游戏；真人英语识别与 XBuilder 的动作接入需要验证。
+当前阶段：开发环境、市场研究、美术方案与产品路线已准备；首批定位为成人英语初学者，暂不规划付费功能。已有环境检查页和自动化测试，尚未创建跑酷游戏；真人英语识别与 XBuilder 的动作接入需要验证。
 
 ## 产品文档
 
+- [产品路线 v0.1](docs/PRODUCT_ROADMAP_v0.1.md)：三天原型、成人体验验证、内容扩充与免费测试的阶段条件。
+- [三天开发 Backlog](docs/DEVELOPMENT_BACKLOG_v0.1.md)：按依赖排序的开发任务与验收结果要求。
 - [PRD v0.1](WordRunner_PRD_v0.1.md)：总体需求、动作与语音控制、教学设计、场景、三天开发排期和验收标准。
-- [在线 PRD](https://chatgpt.com/space/page_421ab9c4133c8191963d6ed3a4fb88a6)
+- [在线 PRD（初版快照，本轮受众与路线更新以本地文档为准）](https://chatgpt.com/space/page_421ab9c4133c8191963d6ed3a4fb88a6)
 - [开发环境与工具清单](docs/ENVIRONMENT.md)
 - [测试安排](docs/TESTING.md)
 - [环境验证记录](docs/ENVIRONMENT_VERIFICATION.md)
