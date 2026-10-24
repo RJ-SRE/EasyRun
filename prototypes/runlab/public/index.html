@@ -1,87 +1,157 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>裂隙 RUPTURE — 盗速者</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>倒悬钟城 · 裂隙</title>
+    <meta
+      name="description"
+      content="向深处坠落，借钩索归来。钟城中的纵向动作冒险。"
+    />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23c5ae8c' d='M33 0L9 35h20L23 64l32-41H35z'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4L11 40l21 20 21-20z' fill='%23cbb78c'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="/rupture.css" />
+    <link rel="stylesheet" href="/belfry.css" />
   </head>
-  <body data-game="rupture">
+  <body>
+    <header class="topbar">
+      <a href="/" class="wordmark">裂 隙 <small>R U P T U R E</small></a
+      ><span class="edition">倒悬钟城 <i>／</i> THE HOLLOW BELFRY</span>
+      <nav>
+        <button id="sound" aria-pressed="true">声音 开</button
+        ><button id="help">操作指南</button
+        ><button id="pause" disabled>暂停 Esc</button
+        ><button id="fullscreen" aria-label="全屏游戏">全屏 ↗</button>
+      </nav>
+    </header>
     <main>
-      <header>
-        <a class="brand" href="/">裂 隙 <span>R U P T U R E</span></a>
-        <p>盗速者 <i>/</i> 风暴前的最后一座城</p>
-        <div class="header-actions">
-          <button id="sound" aria-pressed="false">音效 关</button
-          ><button id="pause" disabled>暂停 Esc</button
-          ><button id="fullscreen">全屏 ↗</button>
-        </div>
-      </header>
-      <section class="play-panel">
-        <div class="viewport" id="viewport">
+      <section class="play-panel" id="play-panel" aria-label="倒悬钟城游戏">
+        <div id="viewport" class="viewport">
           <div class="poster"></div>
           <div id="stage"></div>
-          <div class="vignette"></div>
-          <div id="impact"></div>
-          <div class="hud">
-            <div>
-              <p class="eyebrow">THE ENGINE GRAVEYARD</p>
-              <strong id="scene-name">01 / 风机墓场</strong
-              ><small id="attempt">一段失衡的旅程</small>
-            </div>
-            <div class="stats">
-              <span>TIME <b id="time">00.00</b></span
-              ><span>RELIC <b id="score">0000</b></span>
-            </div>
-          </div>
-          <div id="overlay" class="overlay">
-            <div class="overlay-card">
-              <p class="eyebrow" id="overlay-kicker">ENTER THE RUPTURE</p>
-              <h1 id="overlay-title">正在唤醒遗迹</h1>
-              <p id="overlay-body">加载本地游戏引擎。</p>
-              <button class="primary" id="play" hidden>
-                进入遗迹 <span>↗</span>
-              </button>
-              <div id="feedback" hidden>
-                <p>这一段让你想继续吗？</p>
-                <div class="feedback-buttons">
-                  <button data-feedback="again">再走一次</button
-                  ><button data-feedback="other">还缺点什么</button
-                  ><button data-feedback="no">没有感觉</button>
-                </div>
+          <div class="vignette" aria-hidden="true"></div>
+          <div id="damage" aria-hidden="true"></div>
+          <div class="hud" id="hud">
+            <div class="vitals">
+              <div class="micro">THE THREADBEARER</div>
+              <div id="health" aria-label="生命值"></div>
+              <div class="energy-row">
+                <span>弦能</span>
+                <div class="energy-track"><i id="energy"></i></div>
+                <kbd>Q</kbd>
               </div>
             </div>
+            <div class="mission">
+              <span class="micro" id="direction">DESCEND / 01</span
+              ><strong id="objective">寻找钟心</strong
+              ><span id="depth">0000 m</span>
+            </div>
+            <div class="run-stats">
+              <span id="score">000000</span><small id="time">00:00</small>
+            </div>
           </div>
-          <div id="toast" aria-live="polite"></div>
-          <div id="world-hint" class="in-world-hint"></div>
-          <div class="progress-track"><div id="progress"></div></div>
+          <div id="boss" hidden>
+            <div>
+              <span>末代钟卫</span
+              ><small id="boss-state">守护一颗早已无人需要的心</small>
+            </div>
+            <div class="boss-track"><i id="boss-health"></i></div>
+          </div>
+          <aside class="depth-rail" aria-label="关卡进度">
+            <span>Ⅰ</span>
+            <div class="rail">
+              <i id="depth-marker"></i><b style="top: 30%"></b
+              ><b style="top: 60%"></b><b style="top: 89%"></b>
+            </div>
+            <span>Ⅴ</span>
+          </aside>
+          <div id="combo" class="combo"></div>
+          <div id="toast" role="status"></div>
+          <div id="chapter" class="chapter">
+            <span id="chapter-num"></span><strong id="chapter-title"></strong>
+            <p id="chapter-copy"></p>
+          </div>
+          <div class="bottom-hud">
+            <div id="hint">向深处坠落，借钩索归来。</div>
+            <div id="relics">◈ 0 / 3</div>
+          </div>
+          <div id="overlay" class="overlay">
+            <div class="overlay-content">
+              <div class="eyebrow" id="overlay-kicker">THE HOLLOW BELFRY</div>
+              <h1 id="overlay-title">倒悬钟城</h1>
+              <p id="overlay-body">正在点亮钟城……</p>
+              <div id="difficulty" class="difficulty" hidden>
+                <button data-mode="0" class="selected" aria-pressed="true">
+                  <b>旅人</b><span>8 格生命 · 从容探索</span></button
+                ><button data-mode="1" aria-pressed="false">
+                  <b>无畏</b><span>5 格生命 · 更快的追击</span>
+                </button>
+              </div>
+              <div id="results" hidden></div>
+              <button id="play" class="primary" hidden>
+                进入钟城 <span>↓</span>
+              </button>
+              <p id="overlay-foot" class="overlay-foot"></p>
+            </div>
+            <div class="title-sigil" aria-hidden="true">
+              <div></div>
+              <span>↓</span>
+            </div>
+          </div>
+          <div id="guide" class="guide" hidden>
+            <div>
+              <span class="eyebrow">THE ART OF FALLING</span>
+              <h2>让每次坠落，成为下一次起飞。</h2>
+              <dl>
+                <dt>A / D 或 ← / →</dt>
+                <dd>移动；空中调整方向，贴墙减速</dd>
+                <dt>空格</dt>
+                <dd>跳跃 / 二段跳；贴墙可蹬墙跳</dd>
+                <dt>按住 E → 松开</dt>
+                <dd>牵引高亮目标 → 甩出；接近敌人自动回钩斩</dd>
+                <dt>方向 + E</dt>
+                <dd>偏向该方向选目标；S + E 可钩向下方</dd>
+                <dt>J / S + J</dt>
+                <dd>斩击、斩断飞弹 / 空中坠星，击穿重甲</dd>
+                <dt>K 或 Shift</dt>
+                <dd>冲刺；W + K 向上，S + K 向下</dd>
+                <dt>Q</dt>
+                <dd>断弦爆发，消耗 60 弦能；击杀与回声补充弦能</dd>
+                <dt>S + 空格</dt>
+                <dd>穿过脚下的平台</dd>
+                <dt>Enter / R / Esc</dt>
+                <dd>检查点继续 / 从头开始 / 暂停</dd>
+              </dl>
+              <p>
+                金铜环是永久锚点。击杀敌人会恢复二段跳和冲刺；橙色预警后，钟卫露出破绽。
+              </p>
+              <button id="close-guide" class="primary">
+                明白了 <span>↗</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="run-status">
-          <span id="mechanic-state">动能为空</span><span id="beats"></span
-          ><span id="best">本机最佳 —</span>
+        <div class="statusbar">
+          <span id="status">一座没有主人的城，还在等待最后一次钟声。</span
+          ><span id="best">本机纪录 —</span>
         </div>
       </section>
-      <section class="under-stage">
-        <div id="controls" class="controls"></div>
-        <div class="challenge">
-          <span class="eyebrow">EVERY THEFT HAS A CONSEQUENCE</span>
-          <p id="challenge">你获得的速度，来自这座城的某一次停转。</p>
-        </div>
-      </section>
+      <div class="controls">
+        <span><kbd>A D</kbd> 移动</span><span><kbd>SPACE</kbd> 跳跃</span
+        ><span><kbd>E</kbd> 按住钩索 · 松开甩出</span
+        ><span><kbd>J</kbd> 斩击</span><span><kbd>S J</kbd> 坠星</span
+        ><span><kbd>K</kbd> 冲刺</span><span><kbd>Q</kbd> 断弦</span>
+      </div>
       <footer>
-        <span>可玩场景研究 · 风机停转 / 桥梁失压 / 升降冻结</span>
+        <span>向深处坠落，借钩索归来。</span>
         <div>
-          <span id="save-status">记录保存在本机</span
-          ><button id="export">导出记录</button
-          ><a href="/legacy.html">查看旧原型</a>
+          <button id="export">导出本机战绩</button
+          ><a href="/rupture.html">风机墓场 ↗</a>
         </div>
       </footer>
-      <p class="mobile-note">请使用电脑和实体键盘进入遗迹。</p>
+      <p class="mobile-note">此版本为电脑键盘设计。请在电脑上进入钟城。</p>
     </main>
-    <script type="module" src="/rupture.js"></script>
+    <script type="module" src="/belfry.js"></script>
   </body>
 </html>

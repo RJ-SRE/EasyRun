@@ -15,7 +15,10 @@ const tap = async (key) => {
   await page.waitForTimeout(50);
 };
 try {
-  await page.goto(process.env.RUNLAB_URL || "http://127.0.0.1:4177/");
+  await page.goto(
+    new URL("/rupture.html", process.env.RUNLAB_URL || "http://127.0.0.1:4177/")
+      .href,
+  );
   await page.waitForFunction(
     () => latestState?.phase === 0,
     {},

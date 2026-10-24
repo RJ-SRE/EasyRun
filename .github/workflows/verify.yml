@@ -28,6 +28,8 @@ jobs:
         run: pnpm exec playwright install --with-deps --no-shell chromium
       - name: Build from source atlases
         run: pnpm game:build
+      - name: Check current game source
+        run: pnpm game:lint
       - name: Run keyboard routes and effect lifecycle checks
         run: pnpm game:test
       - name: Package XBuilder projects

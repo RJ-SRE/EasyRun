@@ -21,7 +21,10 @@ p.on("pageerror", (e) => errors.push(e.message));
 p.on("console", (m) => {
   if (m.type() === "error") errors.push(m.text());
 });
-await p.goto(process.env.RUNLAB_URL || "http://127.0.0.1:4177/");
+await p.goto(
+  new URL("/rupture.html", process.env.RUNLAB_URL || "http://127.0.0.1:4177/")
+    .href,
+);
 await p.waitForFunction(
   () => latestState?.phase === 0 || runtimeErrors.length,
   {},

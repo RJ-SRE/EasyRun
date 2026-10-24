@@ -1,9 +1,9 @@
 {
   "name": "easyrun-rupture",
-  "version": "0.0.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
-  "description": "EasyRun / 裂隙：spx 二维动能跑酷原型、技术研究与可复现开发流程",
+  "description": "EasyRun / 裂隙 · 倒悬钟城：spx 纵向钩索动作冒险与可复现开发流程",
   "packageManager": "pnpm@11.9.0",
   "engines": {
     "node": ">=24.22.1 <25",
@@ -23,7 +23,8 @@
     "game:dev": "node prototypes/runlab/server.mjs",
     "game:test": "node scripts/test-game.mjs",
     "game:test:legacy": "node scripts/test-game.mjs --legacy",
-    "game:package": "python3 prototypes/runlab/package.py"
+    "game:package": "python3 prototypes/runlab/package.py",
+    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry.js --max-warnings 0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

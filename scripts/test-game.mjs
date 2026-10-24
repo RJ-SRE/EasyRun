@@ -46,15 +46,27 @@ for (const signal of ["SIGINT", "SIGTERM"])
   });
 try {
   const url = await ready;
-  const files = process.argv.includes("--legacy")
-    ? ["playtest.mjs"]
-    : ["test-rupture.mjs", "test-motion-lifecycle.mjs"];
-  for (const file of files) {
+  const checks = process.argv.includes("--legacy")
+    ? [{ file: "playtest.mjs" }]
+    : [
+        { file: "test-belfry.mjs" },
+        {
+          file: "test-belfry-route.mjs",
+          env: { MODE: "0", RETURN_FAILURE: "1" },
+        },
+        {
+          file: "test-belfry-route.mjs",
+          env: { MODE: "1", RETURN_FAILURE: "0" },
+        },
+        { file: "test-rupture.mjs" },
+        { file: "test-motion-lifecycle.mjs" },
+      ];
+  for (const { file, env = {} } of checks) {
     console.log(`Checking ${file} at isolated server ${url}`);
     const code = await new Promise((resolve, reject) => {
       child = spawn(process.execPath, [`prototypes/runlab/${file}`], {
         cwd: root,
-        env: { ...process.env, RUNLAB_URL: url },
+        env: { ...process.env, RUNLAB_URL: url, ...env },
         stdio: "inherit",
       });
       child.once("error", reject);

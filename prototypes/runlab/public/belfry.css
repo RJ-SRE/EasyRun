@@ -1,0 +1,849 @@
+:root {
+  color-scheme: dark;
+  --paper: #e7dfc9;
+  --gold: #c6ad7a;
+  --mint: #b1d4c6;
+  --dim: #7e898a;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  background: #090d11;
+  color: var(--paper);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at 45% -20%, #343e3d55, transparent 65%);
+  min-height: 100vh;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #a5ac9c33;
+  padding: 9px 14px;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+button:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: #c6ad7a12;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 4px;
+}
+button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+[hidden] {
+  display: none !important;
+}
+.topbar {
+  height: 66px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 0 4vw;
+  max-width: 1600px;
+  margin: auto;
+}
+.wordmark {
+  font:
+    23px "Songti SC",
+    serif;
+  letter-spacing: 4px;
+  white-space: nowrap;
+}
+.wordmark small {
+  font:
+    8px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  color: #85938f;
+  margin-left: 12px;
+}
+.edition {
+  font-size: 10px;
+  color: #8f9890;
+  letter-spacing: 2px;
+}
+.edition i {
+  font-style: normal;
+  color: var(--gold);
+  margin: 0 8px;
+}
+nav {
+  display: flex;
+  gap: 7px;
+  margin-left: auto;
+}
+nav button {
+  font-size: 10px;
+  border-color: transparent;
+  padding: 8px 10px;
+  color: #acb5af;
+}
+main {
+  padding: 0 24px;
+  max-width: 1520px;
+  margin: auto;
+}
+.play-panel {
+  width: min(100%, calc((100dvh - 158px) * 1.6));
+  margin: auto;
+  border: 1px solid #a29d7e30;
+  box-shadow: 0 24px 100px #0008;
+  background: #0b1015;
+}
+.viewport {
+  width: 100%;
+  aspect-ratio: 8/5;
+  position: relative;
+  overflow: hidden;
+  background: #111b21;
+}
+.poster {
+  position: absolute;
+  inset: 0;
+  background: #182129 url("/art/clockwell.png") center/cover;
+  opacity: 0.8;
+}
+#stage {
+  position: absolute;
+  inset: 0;
+}
+#stage iframe {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 960px;
+  height: 600px;
+  transform-origin: 0 0;
+  border: 0;
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(#070c1180, transparent 22%, transparent 76%, #070b1480),
+    radial-gradient(ellipse at 50% 40%, transparent 50%, #0004);
+}
+#damage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 100px #bd614b00;
+  transition: box-shadow 0.45s;
+}
+#damage.flash {
+  box-shadow: inset 0 0 100px #bd614b99;
+  transition: none;
+}
+.hud {
+  position: absolute;
+  top: 23px;
+  left: 27px;
+  right: 27px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+body.playing .hud,
+body.playing .bottom-hud,
+body.playing .depth-rail {
+  opacity: 1;
+}
+.micro {
+  font:
+    8px ui-monospace,
+    monospace;
+  letter-spacing: 2.5px;
+  color: #b5b9ab;
+}
+.vitals {
+  width: 156px;
+}
+#health {
+  display: flex;
+  gap: 6px;
+  margin: 11px 0;
+}
+#health i {
+  display: block;
+  width: 10px;
+  height: 14px;
+  transform: skew(-12deg);
+  background: #ede3c9;
+  box-shadow: 0 0 10px #d6cb9b22;
+}
+#health i.empty {
+  background: #75808028;
+  border: 1px solid #b0bbb24d;
+  box-shadow: none;
+}
+.energy-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  color: #c4cabb;
+}
+.energy-track {
+  width: 105px;
+  height: 3px;
+  background: #889c8e33;
+}
+.energy-track i {
+  display: block;
+  background: #b6d8c2;
+  height: 100%;
+  width: 50%;
+  transition: width 0.2s;
+}
+kbd {
+  font:
+    9px ui-monospace,
+    monospace;
+  border: 1px solid #8f9d8b42;
+  padding: 2px 4px;
+  border-radius: 2px;
+  color: #d0d4bf;
+  background: #10171955;
+}
+.mission {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-shadow: 0 2px 8px #000;
+}
+.mission strong {
+  font:
+    17px "Songti SC",
+    serif;
+  letter-spacing: 4px;
+}
+#depth {
+  font:
+    9px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  color: #a4b6b0;
+}
+.run-stats {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  gap: 7px;
+  font:
+    18px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+}
+.run-stats small {
+  font-size: 10px;
+  color: #aeb9b0;
+}
+.depth-rail {
+  position: absolute;
+  right: 20px;
+  top: 32%;
+  height: 37%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font:
+    10px Georgia,
+    serif;
+  color: #a49679;
+  opacity: 0;
+  pointer-events: none;
+}
+.rail {
+  position: relative;
+  width: 1px;
+  background: #c5b5903b;
+  flex: 1;
+}
+.rail b {
+  width: 5px;
+  height: 1px;
+  background: #c5b59066;
+  position: absolute;
+  left: -2px;
+}
+.rail i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  transform: translate(-3px, -3px) rotate(45deg);
+  background: #ecdbad;
+  box-shadow: 0 0 10px #d1b97b80;
+  position: absolute;
+  top: 0;
+}
+.bottom-hud {
+  position: absolute;
+  bottom: 18px;
+  left: 27px;
+  right: 27px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  pointer-events: none;
+  opacity: 0;
+}
+#hint {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #d1d6c6;
+  max-width: 80%;
+  text-shadow:
+    0 2px 8px #000,
+    0 0 15px #000;
+}
+#relics {
+  font:
+    12px Georgia,
+    serif;
+  letter-spacing: 3px;
+  color: #d8bf8a;
+  white-space: nowrap;
+}
+#boss {
+  position: absolute;
+  top: 112px;
+  left: 32%;
+  width: 36%;
+  font-size: 10px;
+  text-shadow: 0 1px 8px #000;
+}
+#boss > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #e3c48e;
+  letter-spacing: 2px;
+}
+#boss small {
+  font-size: 8px;
+  color: #c2c2af;
+  letter-spacing: 0;
+}
+.boss-track {
+  height: 3px;
+  background: #cbab7a33;
+}
+.boss-track i {
+  height: 100%;
+  display: block;
+  background: #d6a56e;
+  transition: width 0.2s;
+}
+.combo {
+  position: absolute;
+  top: 29%;
+  left: 28px;
+  color: #d9c99e;
+  font:
+    italic 25px Georgia,
+    serif;
+  white-space: pre-line;
+  line-height: 1.35;
+  text-shadow: 0 0 20px #bba56c66;
+  pointer-events: none;
+}
+.combo small {
+  font:
+    8px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  display: block;
+  color: #b4bfb0;
+}
+#toast {
+  position: absolute;
+  left: 50%;
+  bottom: 65px;
+  transform: translate(-50%, 8px);
+  opacity: 0;
+  transition: 0.3s;
+  pointer-events: none;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #eee1c2;
+  text-shadow: 0 2px 12px #000;
+  white-space: nowrap;
+}
+#toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.chapter {
+  position: absolute;
+  top: 35%;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.7s;
+  text-shadow: 0 2px 20px #000;
+}
+.chapter.visible {
+  opacity: 1;
+}
+.chapter > span {
+  display: block;
+  font:
+    9px ui-monospace,
+    monospace;
+  letter-spacing: 5px;
+  color: #d3b984;
+}
+.chapter strong {
+  display: block;
+  font:
+    32px "Songti SC",
+    serif;
+  letter-spacing: 10px;
+  margin: 14px 0;
+}
+.chapter p {
+  font-size: 11px;
+  color: #c8d1c7;
+  letter-spacing: 3px;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #071016ec, #0b151db8 44%, #0c171b25);
+  padding: 7% 8%;
+  z-index: 4;
+}
+.overlay-content {
+  max-width: 430px;
+  position: relative;
+  z-index: 1;
+}
+.eyebrow {
+  font:
+    9px ui-monospace,
+    monospace;
+  letter-spacing: 4px;
+  color: #c7af7d;
+}
+.overlay h1 {
+  font:
+    clamp(28px, 4.4vw, 65px)/1.25 "Songti SC",
+    "Noto Serif SC",
+    serif;
+  letter-spacing: 9px;
+  font-weight: 400;
+  margin: 22px 0;
+}
+.overlay p {
+  font-size: 12px;
+  line-height: 2.1;
+  letter-spacing: 1.5px;
+  color: #b8c3b9;
+  white-space: pre-line;
+}
+.overlay .primary {
+  margin-top: 19px;
+}
+.primary {
+  padding: 14px 25px;
+  min-width: 200px;
+  text-align: left;
+  background: #c7b282;
+  color: #172126;
+  border: 1px solid #c7b282;
+  letter-spacing: 3px;
+  font-size: 12px;
+}
+.primary span {
+  float: right;
+  margin-left: 30px;
+}
+.primary:hover:not(:disabled) {
+  background: #e1d1a3;
+  color: #0c151a;
+}
+.difficulty {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.difficulty button {
+  text-align: left;
+  padding: 10px 15px;
+  min-width: 155px;
+}
+.difficulty b {
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: 400;
+  display: block;
+}
+.difficulty span {
+  font-size: 9px;
+  color: #9eaba0;
+  letter-spacing: 1px;
+  display: block;
+  margin-top: 7px;
+}
+.difficulty button.selected {
+  border-color: #c7b282;
+  box-shadow: inset 0 -2px #c7b282;
+}
+.overlay-foot {
+  font-size: 9px !important;
+  color: #7f9188 !important;
+  margin-top: 16px;
+}
+.title-sigil {
+  position: absolute;
+  right: 12%;
+  top: 26%;
+  height: 48%;
+  width: 23%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.65;
+}
+.title-sigil > div {
+  position: absolute;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid #e3c88855;
+  transform: rotate(45deg);
+}
+.title-sigil > div:before,
+.title-sigil > div:after {
+  content: "";
+  position: absolute;
+  inset: 13%;
+  border: 1px solid #ebd69c33;
+}
+.title-sigil > div:after {
+  inset: -14%;
+  border-radius: 50%;
+  border-style: dashed;
+}
+.title-sigil span {
+  font:
+    90px Georgia,
+    serif;
+  color: #e9d9ae;
+  font-weight: 100;
+}
+.statusbar {
+  height: 31px;
+  padding: 0 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0c1217;
+  border-top: 1px solid #aaa98e20;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #95a49b;
+}
+#best {
+  color: #c4b389;
+}
+.controls {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 14px 0 8px;
+  flex-wrap: wrap;
+  font-size: 10px;
+  color: #9ca9a0;
+}
+.controls kbd {
+  margin-right: 4px;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 1200px;
+  color: #596c67;
+  font-size: 9px;
+  padding: 4px 0 12px;
+  letter-spacing: 1px;
+}
+footer div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+footer button {
+  padding: 4px;
+  border: 0;
+  font-size: 9px;
+  color: #778a80;
+}
+.guide {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  background: #0b1319ed;
+  backdrop-filter: blur(15px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  overflow: auto;
+}
+.guide > div {
+  max-width: 650px;
+}
+.guide h2 {
+  font:
+    24px "Songti SC",
+    serif;
+  letter-spacing: 3px;
+  margin: 17px 0 23px;
+}
+.guide dl {
+  display: grid;
+  grid-template-columns: 155px 1fr;
+  gap: 12px;
+  font-size: 11px;
+}
+.guide dt {
+  color: #dac797;
+}
+.guide dd {
+  margin: 0;
+  color: #b7c3b9;
+}
+.guide p {
+  font-size: 10px;
+  line-height: 1.8;
+  color: #81998b;
+}
+.guide button {
+  margin-top: 12px;
+}
+#results {
+  display: flex;
+  gap: 30px;
+  margin: 20px 0;
+}
+#results b {
+  display: block;
+  font:
+    23px Georgia,
+    serif;
+  color: #e4cea0;
+}
+#results span {
+  font-size: 9px;
+  color: #84998c;
+  letter-spacing: 2px;
+  display: block;
+  margin-top: 6px;
+}
+.mobile-note {
+  display: none;
+}
+.play-panel:fullscreen {
+  border: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #080c10;
+}
+.play-panel:fullscreen .viewport {
+  width: min(100vw, 160vh);
+  max-height: 100vh;
+  flex: none;
+}
+.play-panel:fullscreen .statusbar {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .edition {
+    display: none;
+  }
+  .topbar {
+    padding: 0 20px;
+  }
+  .controls {
+    gap: 12px;
+  }
+  .hud {
+    top: 17px;
+    left: 20px;
+    right: 20px;
+  }
+  .bottom-hud {
+    bottom: 14px;
+    left: 20px;
+    right: 20px;
+  }
+  .title-sigil {
+    right: 8%;
+  }
+  .overlay h1 {
+    font-size: 40px;
+  }
+  .difficulty button {
+    min-width: 130px;
+  }
+}
+@media (max-height: 760px) {
+  .topbar {
+    height: 50px;
+  }
+  .play-panel {
+    width: min(100%, calc((100dvh - 134px) * 1.6));
+  }
+  .overlay h1 {
+    font-size: 36px;
+    margin: 14px 0;
+  }
+  .overlay p {
+    font-size: 10px;
+  }
+  .difficulty {
+    margin-top: 14px;
+  }
+  .difficulty button {
+    padding: 8px 12px;
+    min-width: 135px;
+  }
+  .overlay .primary {
+    margin-top: 12px;
+  }
+  .overlay-foot {
+    margin: 8px 0 0;
+  }
+  .guide {
+    padding: 20px;
+  }
+  .guide dl {
+    gap: 8px;
+  }
+  .guide h2 {
+    font-size: 20px;
+    margin: 12px 0;
+  }
+  .controls {
+    padding: 9px 0 5px;
+  }
+}
+@media (max-width: 700px) {
+  main {
+    padding: 0 8px;
+  }
+  .topbar {
+    padding: 0 12px;
+  }
+  .wordmark small {
+    display: none;
+  }
+  nav {
+    gap: 0;
+  }
+  nav button {
+    padding: 8px;
+    font-size: 9px;
+  }
+  .play-panel {
+    width: 100%;
+  }
+  .overlay {
+    padding: 6%;
+  }
+  .overlay h1 {
+    font-size: 30px;
+    letter-spacing: 5px;
+  }
+  .overlay p {
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .title-sigil {
+    display: none;
+  }
+  .difficulty {
+    gap: 6px;
+  }
+  .difficulty button {
+    min-width: 120px;
+  }
+  .hud {
+    transform: scale(0.7);
+    transform-origin: top left;
+    width: 134%;
+  }
+  .bottom-hud {
+    font-size: 8px;
+  }
+  #hint {
+    font-size: 9px;
+  }
+  .mobile-note {
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    color: #bdac87;
+  }
+  .controls,
+  footer {
+    display: none;
+  }
+  .guide dl {
+    font-size: 9px;
+    grid-template-columns: 120px 1fr;
+  }
+  .guide h2 {
+    font-size: 16px;
+  }
+  .guide {
+    align-items: flex-start;
+  }
+  .statusbar {
+    font-size: 8px;
+  }
+  #boss {
+    top: 73px;
+    left: 28%;
+    width: 44%;
+  }
+  .depth-rail {
+    display: none;
+  }
+}

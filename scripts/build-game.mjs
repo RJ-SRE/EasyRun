@@ -6,6 +6,7 @@ const steps = [
   ["prototypes/runlab/extract-frames.mjs", "--run"],
   ["prototypes/runlab/build-games.mjs"],
   ["prototypes/runlab/build-rupture.mjs"],
+  ["prototypes/runlab/build-belfry.mjs"],
 ];
 for (const args of steps) {
   const result = spawnSync(process.execPath, args, {
