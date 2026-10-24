@@ -89,7 +89,14 @@ try {
     const v = await p.locator("#viewport").boundingBox(),
       c = await p.locator(".word-focus-card").boundingBox();
     assert.ok(c.x >= v.x && c.x + c.width <= v.x + v.width + 1);
-    assert.ok(c.height < v.height * 0.4);
+    assert.ok(
+      c.width <= 480,
+      "ritual must not expand into a screen-wide banner",
+    );
+    assert.ok(
+      c.width * c.height <= v.width * v.height * 0.14,
+      "the inscription must leave at least 86% of the scene unobscured",
+    );
     await p.screenshot({
       path: fileURLToPath(new URL(`focus-${width}.png`, out)),
       style: "#word-pause{visibility:hidden!important}",

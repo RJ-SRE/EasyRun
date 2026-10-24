@@ -156,3 +156,11 @@ bash scripts/with-env.sh pnpm game:package
 页面 rAF 只作宿主调度观察，不能称为引擎 FPS 或跨硬件性能保证。自动输入使用已知答案，不代表玩家读题速度或学习收益；本轮仍未证明真人乐趣、15%–25% 聚焦占比目标、长期记忆、Safari/低端设备体验或语言专家审校结果。
 
 复现主回归：`bash scripts/with-env.sh node scripts/test-game.mjs`。单项调试可使用 `--from=test-belfry-ninja.mjs` 等入口继续；跳过的前序检查不会因此被重新标成通过。独立通道钩索可在服务启动后运行 `RUNLAB_URL=http://127.0.0.1:4184 bash scripts/with-env.sh node prototypes/runlab/test-passages-grapple.mjs`。
+
+## 2026-10-25 · 断环刻印界面复测
+
+本轮仅调整网页排布、刻痕反馈、按钮键盘激活和页脚 CSS 作用域。原 18 项铭文流程及 5 项异常恢复重新通过，ESLint 与 Git 空白检查通过；没有重跑未修改的引擎全关回归，也不将旧整关结果标成本次新测。
+
+另以真实首平台、种子 324、库内最长词 consequence 检查 1440×1000、1280×720、1024×768：题框分别宽 480/440/480px，占场景约 6.8%/11.8%/12.9%；三种开场设置和词册均在游戏边界内。辨义框在前两种尺寸约占 6.9%/11.9%。这只是 DOM 覆盖面积，不代表任何性能数值。暂停继续、聚焦选项、词册关闭均验证 Enter 激活且不会漏入游戏动作。
+
+证据：[布局数据](evidence/inscription-style/layout.json)、[拼写实机](evidence/inscription-style/spelling-1280.png)、[辨义实机](evidence/inscription-style/meaning-1440.png)、[开场](evidence/inscription-style/menu-1280.png)、[词册](evidence/inscription-style/ledger-1280.png)、[本轮校验摘要](evidence/inscription-style/verification.json)。上一版截图与报告保留在原目录，供直接对照。

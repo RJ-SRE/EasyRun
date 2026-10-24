@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-24T19:11:03.007553+00:00",
+  "baseCommit": "7ab88cc504bf22617ed13ce69a4e24eec37a5eab",
+  "scope": "Web presentation and keyboard activation only; no simulation or word bank changes.",
+  "flowChecks": 18,
+  "resilienceChecks": 5,
+  "layoutChecks": "Three desktop viewports, longest available word, spelling/meaning/pause/menu/ledger, keyboard activation.",
+  "sourceSHA256": {
+    "prototypes/runlab/public/inscription-ui.js": "e700be9c518862c48f370a75e0093f7e79c9fd550505c4e49ec97f47e6e986ac",
+    "prototypes/runlab/public/inscription.css": "3ff38b5bf2fc46d43254caa65ce0ccea5aae8e8a64eafbc2206f978befb0cb99",
+    "prototypes/runlab/public/belfry.css": "cb653008a55576973d8cf61f28b0ac9c426b30dc3886de0b2c76eb2a1c4399c9",
+    "prototypes/runlab/test-belfry-inscription-resilience.mjs": "4bf08906d1c7d76f361e82ddba9e3d22ec109a9cf064fe4a14d7ebacb05b6e24"
+  },
+  "evidenceSHA256": {
+    "paused-1024.png": "ef28e7488fb731d56c929249c4b470511db105d4ffae03c75e59ec7dcb7d2579",
+    "flow.json": "81ac69a2e5903c15522615813ad4e8fbb07ce799fc5c1563405d95c66506535c",
+    "spelling-1440.png": "0c8beaffe29d231808c34f53e71d918e675b5fb1611ec605c06ebbf5cc259ae1",
+    "spelling-1280.png": "3719483fee047a3e985a299f8773321d02459675ac87e2ad15dc98716dcec1fe",
+    "layout.json": "99017f532ac0ef9836363dba8b51fd13410b19768a3f0ee4424a4994d9929206",
+    "resilience.json": "cae5c8df4c55580004172e4f9d49190ccab4cc4675df961dddc756483984c688",
+    "menu-1280.png": "fb32cd2097d588a19841f358194b357ff33a7a48f97e742c3d95dd2d93756e83",
+    "ledger-1280.png": "35af75f38d473909fd5f1a9359609ecccf9fe29f469130ac505101c64a743a0c",
+    "meaning-1440.png": "3af08a5e2b6ec4b76b41977858db81c22618493c131148e07b25077508606a22"
+  }
+}

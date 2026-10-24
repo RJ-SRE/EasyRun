@@ -590,7 +590,7 @@ kbd {
 .controls kbd {
   margin-right: 4px;
 }
-footer {
+main > footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -601,12 +601,12 @@ footer {
   padding: 4px 0 12px;
   letter-spacing: 1px;
 }
-footer div {
+main > footer div {
   display: flex;
   align-items: center;
   gap: 20px;
 }
-footer button {
+main > footer button {
   padding: 4px;
   border: 0;
   font-size: 9px;
