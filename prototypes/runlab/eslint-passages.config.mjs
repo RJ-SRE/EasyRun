@@ -6,6 +6,13 @@ export default [
       globals: Object.fromEntries(
         [
           "process",
+          "performance",
+          "MediaRecorder",
+          "AudioNode",
+          "Event",
+          "Blob",
+          "OfflineAudioContext",
+          "passageSound",
           "console",
           "URL",
           "Image",

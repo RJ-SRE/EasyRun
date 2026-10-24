@@ -64,6 +64,9 @@ func particle(x,y,vx,vy,life,size float64,kind int) {
 func burst(x,y float64,n,kind int,force float64) {
  for i:=0;i<n;i++ {a:=noise()*6.283; speed:=force*(0.3+noise()*0.7); particle(x,y,sin(a)*speed,cos(a)*speed,0.25+noise()*0.45,0.5+noise(),kind)}
 }
+func wake(x,y,vx,vy,size float64) {
+ if fxCount<70 {fxCount++; HookWake.clone []float64{x,y,vx,vy,size,float64(attempts)}}
+}
 func ring(x,y,size float64,kind int) {Pulse.clone []float64{x,y,size,float64(kind),float64(attempts)}}
 func floorActive(i int) bool {return floorKind[i]!=1 || foldTime>0 || checkpoint>0}
 func wallActive(i int) bool {
@@ -155,7 +158,7 @@ onStart => {
  for i:=0;i<len(anchorX);i++ {Anchor.clone i}
  for i:=0;i<len(pistonX);i++ {Piston.clone i}
  for i:=0;i<len(relicX);i++ {Relic.clone i}
- for i:=0;i<18;i++ {Rope.clone i}
+ for i:=0;i<36;i++ {Rope.clone i}
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
   if phase==1 {mechanisms(dt); Hero.update(dt); if phase==1 {updateWorld(dt)}}
@@ -163,7 +166,7 @@ onStart => {
   if float64(timer)-lastState>0.065 {
    lastState=float64(timer)
    grounded:=0; if Hero.grounded {grounded=1}
-   println "@state",phase,difficulty,checkpoint,elapsed,deaths,collected,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,Hero.pull,foldTime,liftTime,switchDone[0],switchDone[1],switchDone[2],switchDone[3],switchDone[4],windStage,attempts,hookCount,wallJumps,grounded,Hero.standing,Hero.dashCool,fxCount,failReason,cameraX,cameraY,worldTime
+   println "@state",phase,difficulty,checkpoint,elapsed,deaths,collected,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,Hero.pull,foldTime,liftTime,switchDone[0],switchDone[1],switchDone[2],switchDone[3],switchDone[4],windStage,attempts,hookCount,wallJumps,grounded,Hero.standing,Hero.dashCool,fxCount,failReason,cameraX,cameraY,worldTime,Hero.hookAge,Hero.hookFlight,Hero.hookContact,Hero.hookTension,Hero.hookX,Hero.hookY,Hero.ropeFade
   }
  }
 }

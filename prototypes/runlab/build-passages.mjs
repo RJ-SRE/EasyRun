@@ -237,7 +237,7 @@ const rings = {
   anchor: svg(
     90,
     90,
-    '<circle cx="45" cy="45" r="32" fill="#101c22" fill-opacity=".6" stroke="#c3b68b" stroke-width="3"/><circle cx="45" cy="45" r="22" fill="none" stroke="#f7e5af" stroke-width="2"/><path d="M45 5v12m0 56v12M5 45h12m56 0h12" stroke="#dfca94" stroke-width="2"/>',
+    '<circle cx="45" cy="45" r="32" fill="#0b1519" fill-opacity=".7" stroke="#514c3e" stroke-width="7"/><path d="M16 33a32 32 0 0 1 58-2M75 56a32 32 0 0 1-47 17" fill="none" stroke="#b5a27b" stroke-width="2"/><circle cx="45" cy="45" r="22" fill="none" stroke="#8c8065" stroke-width="1.6"/><path d="M43 8h5v8h-5zM8 43h8v5H8zM75 43h8v5h-8zM43 75h5v8h-5z" fill="#5a5140" stroke="#a18e6c" stroke-width=".7"/>',
   ),
   valve: svg(
     100,
@@ -396,15 +396,47 @@ for (let i = 0; i < 8; i++)
 sprite(
   "Rope",
   {
-    chain: svg(
-      25,
+    wire: svg(
+      24,
       6,
-      '<path d="M0 3h25" stroke="#a48754" stroke-width="4"/><path d="M0 2h25" stroke="#e5edc0"/>',
+      '<path d="M0 3h24" stroke="#0b1318" stroke-width="4"/><path d="M0 2.7h24" stroke="#92826a" stroke-width="1.5"/><path d="M1 2l3 2m3-2 3 2m3-2 3 2m3-2 3 2" stroke="#c3b394" stroke-width=".65" opacity=".8"/>',
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  `onCloned data => {i:=data.(int); for {waitNextFrame(); if Hero.hook>=0 {show; ax:=Hero.px+Hero.facing/90*12; ay:=Hero.py+40; dx:=Hero.hookX-ax; dy:=Hero.hookY-ay; t:=(float64(i)+0.5)/18; setXYpos ax+dx*t,ay+dy*t; setHeading angle(dx,dy); setSize dist(dx,dy)/18/25+0.03} else {hide}}}`,
+  await code("Rope"),
 );
+sprite(
+  "HookHead",
+  {
+    clasp: svg(
+      32,
+      26,
+      '<path d="M1 13h14l9-8 6 2-3 9-8 6-4-3 7-2 3-6-9 6H1z" fill="#302f2a" stroke="#bbab86" stroke-width="1.3"/><path d="M2 11h10m7-4 4-3" stroke="#e1cda4" stroke-width="1"/>',
+    ),
+  },
+  { visible: false, rotationStyle: "normal" },
+  await code("HookHead"),
+);
+for (const n of ["HookGlow", "HookWake"]) {
+  const im =
+    n === "HookGlow"
+      ? svg(
+          100,
+          100,
+          '<defs><radialGradient id="g"><stop stop-color="#f1d7a3" stop-opacity=".45"/><stop offset=".25" stop-color="#b79a65" stop-opacity=".19"/><stop offset="1" stop-color="#b79a65" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="50" r="49" fill="url(#g)"/><path d="M29 35a26 26 0 0 1 40 3M72 56a26 26 0 0 1-34 17M24 51l-8 2m60-12 8-4" fill="none" stroke="#d9c69c" stroke-width="1.1"/>',
+        )
+      : svg(
+          130,
+          36,
+          '<path d="M126 18Q68 5 4 20Q62 13 126 18" fill="#d8ccad" opacity=".42"/><path d="M116 24Q60 30 15 24" fill="none" stroke="#8a998d" stroke-opacity=".4" stroke-width="1"/><path d="M94 12Q55 2 28 10" fill="none" stroke="#c1b08d" stroke-opacity=".38" stroke-width=".7"/>',
+        );
+  sprite(
+    n,
+    { trace: im },
+    { visible: false, rotationStyle: "normal" },
+    await code(n),
+  );
+}
 for (const n of ["Trail", "PoseBlend"])
   sprite(
     n,
@@ -424,11 +456,11 @@ sprite(
     target: svg(
       110,
       110,
-      '<path d="M9 28V9h19m54 0h19v19m0 54v19H82m-54 0H9V82" fill="none" stroke="#e6f6d5" stroke-width="2"/>',
+      '<path d="M23 30a40 40 0 0 1 61 0M88 66a40 40 0 0 1-62 18M17 60l-5-5 5-5M98 50l5 5-5 5" fill="none" stroke="#d7c599" stroke-width="1.3" opacity=".8"/>',
     ),
   },
   { visible: false },
-  "onStart => {for {waitNextFrame(); if phase==1 && Hero.target>=0 {show; setXYpos anchorX[Hero.target],anchorY[Hero.target]; setSize 0.72+Hero.pull*0.4} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if phase==1 && Hero.target>=0 {show; setXYpos anchorX[Hero.target],anchorY[Hero.target]; setSize 0.64+Hero.pull*0.12} else {hide}}}",
 );
 sprite(
   "Relic",

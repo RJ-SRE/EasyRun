@@ -1,3 +1,4 @@
+import { PassageAudio } from "./passages-audio.js";
 const $ = (s) => document.querySelector(s);
 const fields = [
   "phase",
@@ -32,6 +33,13 @@ const fields = [
   "cameraX",
   "cameraY",
   "worldTime",
+  "hookAge",
+  "hookFlight",
+  "hookContact",
+  "hookTension",
+  "hookX",
+  "hookY",
+  "ropeFade",
 ];
 window.passageState = null;
 window.passageEvents = [];
@@ -46,9 +54,9 @@ let frame,
   modalPaused = false,
   modalKind = "",
   savedAttempt = -1,
-  audio,
-  master,
   soundOn = true;
+const audio = new PassageAudio();
+window.passageSound = () => audio.diagnostics();
 let records = [];
 try {
   const a = JSON.parse(localStorage.getItem("rupture-passages-v1") || "[]");
@@ -77,6 +85,7 @@ function focus() {
   frame?.contentWindow.document.querySelector("#game-canvas")?.focus();
 }
 function key(code) {
+  if (code === "Enter" || code === "Escape") initAudio();
   const w = frame?.contentWindow,
     c = w?.document.querySelector("#game-canvas");
   if (!c) return;
@@ -96,52 +105,7 @@ function key(code) {
   );
 }
 function initAudio() {
-  if (!soundOn) return;
-  audio ??= new AudioContext();
-  audio.resume().catch(() => {});
-  if (!master) {
-    master = audio.createGain();
-    master.gain.value = 0.18;
-    master.connect(audio.destination);
-  }
-}
-function sound(name) {
-  if (!audio || !soundOn || audio.state !== "running") return;
-  const settings = {
-    hook: [440, 0.12],
-    sling: [660, 0.18],
-    jump: [180, 0.1],
-    land: [90, 0.09],
-    dash: [230, 0.12],
-    fold: [220, 0.7],
-    valve: [330, 0.5],
-    shaftopen: [440, 0.8],
-    weight: [110, 0.9],
-    wind: [550, 0.8],
-    checkpoint: [660, 1],
-    relic: [880, 0.6],
-    fail: [70, 0.5],
-    finish: [440, 2],
-  };
-  if (!settings[name]) return;
-  const [freq, d] = settings[name],
-    now = audio.currentTime;
-  for (const r of [1, 2.01]) {
-    const o = audio.createOscillator(),
-      g = audio.createGain();
-    o.frequency.value = freq * r;
-    g.gain.setValueAtTime(0.001, now);
-    g.gain.exponentialRampToValueAtTime(0.2 / r, now + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.001, now + d);
-    o.connect(g);
-    g.connect(master);
-    o.start();
-    o.stop(now + d + 0.03);
-    o.onended = () => {
-      o.disconnect();
-      g.disconnect();
-    };
-  }
+  audio.init();
 }
 function toast(text) {
   $("#toast").textContent = text;
@@ -157,7 +121,7 @@ function event(name, t, x, y) {
     y: Number(y),
   });
   if (passageEvents.length > 1200) passageEvents.shift();
-  sound(name);
+  audio.event(name, Number(x), Number(y));
   const text = {
     fold: "折叠桥已展开 · 留意回收倒计时",
     valve: "泄压阀已解锁",
@@ -273,12 +237,7 @@ function receive(s) {
       String(Number(b.dataset.mode) === s.difficulty),
     );
   }
-  if (master)
-    master.gain.setTargetAtTime(
-      soundOn && (s.phase === 1 || s.phase === 2) ? 0.18 : 0,
-      audio.currentTime,
-      0.06,
-    );
+  audio.update(s);
   if (s.phase === priorPhase) return;
   priorPhase = s.phase;
   if (s.phase === 0) {
@@ -391,7 +350,7 @@ async function load() {
         )
       )
         e.preventDefault();
-      if (e.code === "Enter") initAudio();
+      if (e.code === "Enter" || e.code === "Escape") initAudio();
       if (e.code === "KeyM" && !e.repeat) {
         e.preventDefault();
         openSheet("map");
@@ -469,8 +428,7 @@ $("#map").onclick = () => openSheet("map");
 $("#close-sheet").onclick = closeSheet;
 $("#sound").onclick = () => {
   soundOn = !soundOn;
-  if (soundOn) initAudio();
-  else audio?.suspend();
+  audio.setEnabled(soundOn);
   $("#sound").textContent = `声音 ${soundOn ? "开" : "关"}`;
   $("#sound").setAttribute("aria-pressed", String(soundOn));
   focus();
@@ -498,12 +456,15 @@ window.addEventListener("keydown", (e) => {
     closeSheet();
   } else if (["Enter", "Escape", "KeyR", "Digit1", "Digit2"].includes(e.code)) {
     e.preventDefault();
-    if (e.code === "Enter") initAudio();
+    if (e.code === "Enter" || e.code === "Escape") initAudio();
     key(e.code);
   }
 });
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden && passageState?.phase === 1) key("Escape");
+  if (document.hidden) {
+    audio.hide();
+    if (passageState?.phase === 1) key("Escape");
+  }
 });
 new ResizeObserver(resize).observe($("#viewport"));
 best();

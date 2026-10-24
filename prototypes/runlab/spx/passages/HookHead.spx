@@ -1,0 +1,10 @@
+onStart => {
+ for {
+  waitNextFrame()
+  if (phase==1 || phase==4) && (Hero.hook>=0 || Hero.ropeFade>0) {
+   show; x:=Hero.ropeX(1); y:=Hero.ropeY(1)
+   setXYpos x,y; setHeading angle(x-Hero.ropeX(0.94),y-Hero.ropeY(0.94)); setSize 0.65
+   ghost:=0.0; if Hero.hook<0 {ghost=(1-Hero.ropeFade/0.16)*80}; setGraphicEffect GhostEffect,ghost
+  } else {hide}
+ }
+}

@@ -28,6 +28,7 @@ try {
   const cases = [
     ["test-passages-build.mjs", {}],
     ["test-passages.mjs", {}],
+    ["test-passages-grapple.mjs", {}],
     ["test-passages-route.mjs", { MODE: "0", FEATURES: "1" }],
     ["test-passages-route.mjs", { MODE: "1" }],
   ];
