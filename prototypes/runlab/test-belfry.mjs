@@ -114,7 +114,7 @@ try {
   const gate = await state();
   assert.equal(gate.phase, 1);
   assert.ok(gate.y <= -1100 && gate.y >= -1120, JSON.stringify(gate));
-  assert.equal(gate.gateOne, 2);
+  assert.equal(gate.gateOne, 4);
   assert.equal(gate.checkpoint, 1);
   for (let i = 0; i < 5; i++) {
     await page.keyboard.down("s");
@@ -139,7 +139,7 @@ try {
   assert.equal(retried.health, 5);
   assert.equal(retried.deaths, 1);
   assert.ok(retried.y > -1100 && retried.y < -1000);
-  assert.equal(retried.gateOne, 2);
+  assert.equal(retried.gateOne, 4);
   await save("checkpoint retry retains gate and death state");
   await tap("r");
   await page.waitForTimeout(1100);

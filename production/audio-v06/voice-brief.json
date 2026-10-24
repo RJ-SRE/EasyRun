@@ -1,6 +1,6 @@
 {
   "version": "audio-v06-design",
-  "status": "script_and_direction_only",
+  "status": "production_paused_by_user",
   "date": "2026-10-24",
   "approved_direction": "冷静的暗夜刺客：低声、克制、干燥幽默",
   "recorded_audio_available": false,
@@ -137,5 +137,7 @@
       "每类保留稳定的攻击预兆，情绪变化不使危险提示失去规律",
       "完整台词仍只有一个语义焦点，复声只能做不可辨词的薄底层或顺次接话"
     ]
-  }
+  },
+  "generated_dialogue_count": 2,
+  "current_decision": "2026-10-24 用户要求关闭语音包并移除游戏对白；保留设计与两条原始试音，不继续生成或接入。"
 }

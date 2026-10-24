@@ -20,6 +20,7 @@
       ><span class="edition">倒悬钟城 <i>／</i> THE HOLLOW BELFRY</span>
       <nav>
         <button id="sound" aria-pressed="true">声音 开</button
+        ><button id="audio-settings">声音设置</button
         ><button id="help">操作指南</button
         ><button id="pause" disabled>暂停 Esc</button
         ><button id="fullscreen" aria-label="全屏游戏">全屏 ↗</button>
@@ -92,11 +93,38 @@
               <button id="play" class="primary" hidden>
                 进入钟城 <span>↓</span>
               </button>
+              <button id="practice" class="secondary">进入排练场 · T</button>
               <p id="overlay-foot" class="overlay-foot"></p>
             </div>
             <div class="title-sigil" aria-hidden="true">
               <div></div>
               <span>↓</span>
+            </div>
+          </div>
+          <div id="settings-panel" class="guide settings-panel" hidden>
+            <div>
+              <span class="eyebrow">SOUNDS OF THE HOLLOW</span>
+              <h2>听见刀锋与钟声。</h2>
+              <label
+                >动作音效<input
+                  id="setting-sfx"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+              /></label>
+              <label
+                >环境音乐<input
+                  id="setting-music"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+              /></label>
+              <p>动作音效与环境音乐可独立调整。</p>
+              <button id="close-settings" class="primary">
+                回到钟城 <span>↗</span>
+              </button>
             </div>
           </div>
           <div id="guide" class="guide" hidden>
@@ -109,11 +137,15 @@
                 <dt>空格</dt>
                 <dd>跳跃 / 二段跳；贴墙可蹬墙跳</dd>
                 <dt>按住 E → 松开</dt>
-                <dd>牵引高亮目标 → 甩出；接近敌人自动回钩斩</dd>
+                <dd>牵引锚点/重敌 → 甩出；轻敌会被钩近并斩击</dd>
                 <dt>方向 + E</dt>
                 <dd>偏向该方向选目标；S + E 可钩向下方</dd>
-                <dt>J / S + J</dt>
-                <dd>斩击、斩断飞弹 / 空中坠星，击穿重甲</dd>
+                <dt>J → J → J</dt>
+                <dd>三段轻击；空中为两段追击。可稍提前输入下一击</dd>
+                <dt>W + J / S + J</dt>
+                <dd>挑空后追击 / 空中坠星，击穿重甲</dd>
+                <dt>按住 L → 松开</dt>
+                <dd>蓄力重击；金环亮起后可破甲、将轻敌撞向其他敌人</dd>
                 <dt>K 或 Shift</dt>
                 <dd>冲刺；W + K 向上，S + K 向下</dd>
                 <dt>Q</dt>
@@ -140,7 +172,8 @@
       <div class="controls">
         <span><kbd>A D</kbd> 移动</span><span><kbd>SPACE</kbd> 跳跃</span
         ><span><kbd>E</kbd> 按住钩索 · 松开甩出</span
-        ><span><kbd>J</kbd> 斩击</span><span><kbd>S J</kbd> 坠星</span
+        ><span><kbd>J</kbd> 连招</span><span><kbd>W J</kbd> 挑空</span
+        ><span><kbd>L</kbd> 蓄力</span><span><kbd>S J</kbd> 坠星</span
         ><span><kbd>K</kbd> 冲刺</span><span><kbd>Q</kbd> 断弦</span>
       </div>
       <footer>

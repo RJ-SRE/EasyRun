@@ -1,0 +1,36 @@
+{
+  "v6-h-arrival": {
+    "speaker": "hero",
+    "text": "Keep close. Let the bells do the talking.",
+    "prompt": "An original adult male character speaking natural English with a light British inflection. A watchful, self-possessed assassin speaking to one trusted companion nearby. Use a comfortable low-middle register, lightly textured, unforced, with clear consonants and small changes of breath. He listens before he answers. Under danger he becomes concise and decisive; his humour is understated and almost incidental. Capture a clean, intimate, dry performance with no music or designed sound effects. Let uncertainty and care appear in the timing rather than in a theatrical voice. Performance: 贴近同伴的低声；close 收短，第二句像观察所得。",
+    "take": "selected",
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "provider": "Qwen official public demo",
+    "provider_url": "https://huggingface.co/spaces/Qwen/Qwen3-TTS",
+    "native_sample_rate": 24000,
+    "master_duration": 2.696875,
+    "duration": 2.696917,
+    "file": "/audio/v06/v6-h-arrival.m4a",
+    "sha256": "e177c1bf58e5993e7fea573e7403b283da5fdf197329204750e5307f5db202d7",
+    "generated_seconds": 37.1,
+    "kind": "dialogue",
+    "identity_method": "original voice description; no real person reference"
+  },
+  "v6-h-arrival-alt": {
+    "speaker": "hero",
+    "text": "Someone's still keeping watch.",
+    "prompt": "An original adult male character speaking natural English with a light British inflection. A watchful, self-possessed assassin speaking to one trusted companion nearby. Use a comfortable low-middle register, lightly textured, unforced, with clear consonants and small changes of breath. He listens before he answers. Under danger he becomes concise and decisive; his humour is understated and almost incidental. Capture a clean, intimate, dry performance with no music or designed sound effects. Let uncertainty and care appear in the timing rather than in a theatrical voice. Performance: 警觉而轻；发现事实，不营造播音式悬念。",
+    "take": "selected",
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "provider": "Qwen official public demo",
+    "provider_url": "https://huggingface.co/spaces/Qwen/Qwen3-TTS",
+    "native_sample_rate": 24000,
+    "master_duration": 1.736875,
+    "duration": 1.736917,
+    "file": "/audio/v06/v6-h-arrival-alt.m4a",
+    "sha256": "804bdfe38973ece58689c36fcd926c24eefa52556153515a4ac5201bc47405bc",
+    "generated_seconds": 18.9,
+    "kind": "dialogue",
+    "identity_method": "original voice description; no real person reference"
+  }
+}

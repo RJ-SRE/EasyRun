@@ -2,7 +2,7 @@
   "version": "audio-v06-design",
   "language": "en",
   "subtitle_language": "zh-CN",
-  "status": "not_recorded_not_integrated",
+  "status": "disabled_by_user_2026-10-24",
   "lines": [
     {
       "id": "v6-h-arrival",
@@ -12,14 +12,14 @@
       "text_en": "Keep close. Let the bells do the talking.",
       "subtitle_zh": "跟紧。让钟声替我们说话。",
       "delivery_zh": "贴近同伴的低声；close 收短，第二句像观察所得。",
-      "target_duration_seconds": 3.0,
+      "target_duration_seconds": 3,
       "context": "story",
       "priority": 70,
       "candidate_ttl_ms": 8000,
       "repeat_rule": "once_per_run",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "generated_archived_not_in_game"
     },
     {
       "id": "v6-h-arrival-alt",
@@ -36,7 +36,7 @@
       "repeat_rule": "once_per_run",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "generated_archived_not_in_game"
     },
     {
       "id": "v6-h-practice",
@@ -53,7 +53,7 @@
       "repeat_rule": "once_per_run",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-warning",
@@ -70,7 +70,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-choice",
@@ -87,7 +87,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-open",
@@ -104,7 +104,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-clean",
@@ -114,14 +114,14 @@
       "text_en": "Quiet work.",
       "subtitle_zh": "干净利落。",
       "delivery_zh": "轻轻吐出一句，对玩家的认可。",
-      "target_duration_seconds": 1.0,
+      "target_duration_seconds": 1,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-risk",
@@ -138,7 +138,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-heavy",
@@ -155,7 +155,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-web",
@@ -165,14 +165,14 @@
       "text_en": "Loose thread.",
       "subtitle_zh": "线头露出来了。",
       "delivery_zh": "轻声观察，轻快收尾；不可遮住下一次预警。",
-      "target_duration_seconds": 1.0,
+      "target_duration_seconds": 1,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-retry",
@@ -182,14 +182,14 @@
       "text_en": "Same city. Another way.",
       "subtitle_zh": "还是这座城。换条路。",
       "delivery_zh": "平静重新集中注意力，无讥讽。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "story",
       "priority": 70,
       "candidate_ttl_ms": 8000,
       "repeat_rule": "once_per_run",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-low",
@@ -206,7 +206,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-guardian",
@@ -223,7 +223,7 @@
       "repeat_rule": "once_per_run",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-core",
@@ -233,14 +233,14 @@
       "text_en": "Easy. I've got you.",
       "subtitle_zh": "别怕。我接住你了。",
       "delivery_zh": "角色第一次明显温柔；对钟心说，也像对玩家说。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "story",
       "priority": 70,
       "candidate_ttl_ms": 8000,
       "repeat_rule": "once_per_run",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-finish",
@@ -250,14 +250,14 @@
       "text_en": "There. A little sky.",
       "subtitle_zh": "看。一小片天。",
       "delivery_zh": "长途之后放松半口气，绝不庆功播报。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "story",
       "priority": 70,
       "candidate_ttl_ms": 8000,
       "repeat_rule": "once_per_run",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-light",
@@ -267,14 +267,14 @@
       "text_en": "They left the light on. Someone must have thought we'd come back.",
       "subtitle_zh": "灯一直亮着。一定有人以为，我们还会回来。",
       "delivery_zh": "望着灯，句间停约 0.4 秒；想到后半句才说。",
-      "target_duration_seconds": 5.0,
+      "target_duration_seconds": 5,
       "context": "reflection",
       "priority": 20,
       "candidate_ttl_ms": 8000,
       "repeat_rule": "once_per_run",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-duty",
@@ -284,14 +284,14 @@
       "text_en": "I wonder who told it to wait. I wonder if they ever said how long.",
       "subtitle_zh": "我在想，是谁让它等的。有没有说，要等多久。",
       "delivery_zh": "第二句比第一句更轻；不总结人生道理。",
-      "target_duration_seconds": 5.0,
+      "target_duration_seconds": 5,
       "context": "reflection",
       "priority": 20,
       "candidate_ttl_ms": 8000,
       "repeat_rule": "once_per_run",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-h-trust",
@@ -308,7 +308,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-l-greet",
@@ -318,14 +318,14 @@
       "text_en": "There you are. I heard you breathing.",
       "subtitle_zh": "找到你了。我听见你呼吸了。",
       "delivery_zh": "前句带温柔微笑；breathing 收窄、突然无笑意。",
-      "target_duration_seconds": 3.0,
+      "target_duration_seconds": 3,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-l-lunge",
@@ -342,7 +342,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-l-hurt",
@@ -359,7 +359,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-l-end",
@@ -376,7 +376,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-w-greet",
@@ -393,7 +393,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-w-web",
@@ -410,7 +410,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-w-cut",
@@ -427,7 +427,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-w-volley",
@@ -444,7 +444,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-b-greet",
@@ -454,14 +454,14 @@
       "text_en": "Who let you leave?",
       "subtitle_zh": "谁准你离开的？",
       "delivery_zh": "粗低、缓慢，leave 像忍住的一声哭。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-b-wave",
@@ -471,14 +471,14 @@
       "text_en": "Kneel.",
       "subtitle_zh": "跪下。",
       "delivery_zh": "单词从低中音开始，尾声漏出极短细高哀音；之后才攻击。",
-      "target_duration_seconds": 1.0,
+      "target_duration_seconds": 1,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-b-hurt",
@@ -488,14 +488,14 @@
       "text_en": "I kept the watch.",
       "subtitle_zh": "我一直守着。",
       "delivery_zh": "像用尽气力辩解，kept 露出悲愤。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-b-exposed",
@@ -505,14 +505,14 @@
       "text_en": "Don't leave me here.",
       "subtitle_zh": "别把我留在这里。",
       "delivery_zh": "护壳破开后第一次恳求，几乎没有威严。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-m-greet",
@@ -529,7 +529,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": true,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-m-slash",
@@ -546,7 +546,7 @@
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-m-fail",
@@ -556,14 +556,14 @@
       "text_en": "You didn't make that sound.",
       "subtitle_zh": "你刚才不是这么叫的。",
       "delivery_zh": "困惑地观察自己的失败；认真得令人不安。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "aftermath",
       "priority": 30,
       "candidate_ttl_ms": 8000,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     },
     {
       "id": "v6-m-hurt",
@@ -573,14 +573,14 @@
       "text_en": "Was that... mine?",
       "subtitle_zh": "刚才那声……是我的？",
       "delivery_zh": "先陌生地痛呼，再疑惑自己的声音；笑意消失。",
-      "target_duration_seconds": 2.0,
+      "target_duration_seconds": 2,
       "context": "combat",
       "priority": 30,
       "candidate_ttl_ms": 1200,
       "repeat_rule": "no_repeat_within_10_minutes",
       "audition": false,
       "audio_file": null,
-      "production_status": "script_ready"
+      "production_status": "not_generated"
     }
   ],
   "enemy_revision": "organic_horror_2026-10-24"

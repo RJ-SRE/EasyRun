@@ -386,7 +386,8 @@ kbd {
 #toast {
   position: absolute;
   left: 50%;
-  bottom: 65px;
+  top: 110px;
+  bottom: auto;
   transform: translate(-50%, 8px);
   opacity: 0;
   transition: 0.3s;
@@ -845,5 +846,45 @@ footer button {
   }
   .depth-rail {
     display: none;
+  }
+}
+
+.secondary {
+  display: block;
+  margin: 12px 0 0;
+  padding: 7px 0;
+  color: #b6c7bc;
+  font-size: 12px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.settings-panel {
+  z-index: 30;
+}
+.settings-panel label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  margin: 18px 0;
+  color: #d6d7c8;
+  font-size: 14px;
+}
+.settings-panel input {
+  width: 52%;
+  accent-color: #c8b082;
+}
+.guide > div {
+  max-height: 100%;
+  overflow: auto;
+}
+.combo small {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+@media (max-height: 750px) {
+  .settings-panel label {
+    margin: 11px 0;
   }
 }

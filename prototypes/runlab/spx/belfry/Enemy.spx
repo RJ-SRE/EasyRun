@@ -1,14 +1,22 @@
 onCloned data => {
  i:=data.(int); kind:=enemyType[i]; if kind==3 {kind=2}
- setCostume kind; show
+ show
  for {
   waitNextFrame()
   if enemyHP[i]>0 {
    show; setXYpos enemyX[i],enemyY[i]
-   base:=0.19; if kind==1 {base=0.23}; if kind==2 {base=0.25}; if enemyType[i]==3 {base=0.60}
-   setSize base*(1+sin(enemyClock[i]*3)*0.025)
-   setHeading 90+sin(worldTime*1.6+float64(i))*5
-   glow:=0.0; if enemyState[i]==1 {glow=14+sin(worldTime*22)*9}; if enemyState[i]==2 {glow=7}; if enemyFlash[i]>0 {glow=75}
+   costume:=kind; base:=0.19; if kind==1 {base=0.23}; if kind==2 {base=0.25}; if enemyType[i]==3 {base=0.60}
+   if kind==4 {
+    base=0.23; costume=3
+    if enemyState[i]==1 {costume=4}; if enemyHazard[i]>0 {costume=5}; if enemyState[i]==2 && enemyHazard[i]<=0 {costume=6}
+   }
+   setCostume costume
+   lean:=sin(worldTime*1.6+float64(i))*5
+   if enemyState[i]==1 {lean-=12; base*=0.96}
+   if enemyHazard[i]>0 {lean+=18}
+   if enemyStun[i]>0 {lean=clamp(enemyVX[i]*0.055,-30,30)}
+   setSize base*(1+sin(enemyClock[i]*3)*0.025); setHeading 90+lean
+   glow:=0.0; if enemyState[i]==1 {glow=14+sin(worldTime*22)*9}; if enemyState[i]==2 {glow=7}; if enemyFlash[i]>0 {glow=60}
    setGraphicEffect BrightnessEffect,glow
   } else {hide}
  }

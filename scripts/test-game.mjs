@@ -49,6 +49,8 @@ try {
   const checks = process.argv.includes("--legacy")
     ? [{ file: "playtest.mjs" }]
     : [
+        { file: "test-belfry-combat.mjs" },
+        { file: "test-belfry-enemies.mjs" },
         { file: "test-belfry.mjs" },
         {
           file: "test-belfry-route.mjs",

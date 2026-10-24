@@ -1,0 +1,10 @@
+onCloned data => {
+ i:=data.(int)
+ for {
+  waitNextFrame()
+  if enemyHP[i]>0 && enemyState[i]==1 {
+   show; setXYpos enemyX[i],enemyY[i]; size:=0.75; if enemyType[i]==3 {size=1.9}
+   setSize size*(1+sin(worldTime*15)*0.07)
+  } else {hide}
+ }
+}

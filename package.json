@@ -1,6 +1,6 @@
 {
   "name": "easyrun-rupture",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "description": "EasyRun / 裂隙 · 倒悬钟城：spx 纵向钩索动作冒险与可复现开发流程",
@@ -15,6 +15,7 @@
     "lint": "eslint scripts/*.mjs *.js --max-warnings 0",
     "format": "prettier --write scripts/*.mjs *.json *.js *.yaml",
     "format:check": "prettier --check scripts/*.mjs *.json *.js *.yaml",
+    "game:voice": "node scripts/build-belfry-voice.mjs",
     "audio:fixture": "node scripts/audio-fixture.mjs",
     "audio:convert": "node scripts/audio-convert.mjs",
     "bootstrap": "bash scripts/bootstrap.sh",
@@ -24,7 +25,7 @@
     "game:test": "node scripts/test-game.mjs",
     "game:test:legacy": "node scripts/test-game.mjs --legacy",
     "game:package": "python3 prototypes/runlab/package.py",
-    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry.js --max-warnings 0"
+    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js --max-warnings 0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

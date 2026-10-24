@@ -43,11 +43,15 @@ export default tseslint.config(
         innerWidth: "readonly",
         requestAnimationFrame: "readonly",
         frameIntervals: "readonly",
+        soundDiagnostics: "readonly",
+        fetch: "readonly",
+        AudioContext: "readonly",
+        foes: "readonly",
       },
     },
   },
   {
-    files: ["prototypes/runlab/public/belfry.js"],
+    files: ["prototypes/runlab/public/belfry*.js"],
     languageOptions: {
       globals: {
         window: "readonly",
@@ -55,6 +59,7 @@ export default tseslint.config(
         localStorage: "readonly",
         location: "readonly",
         AudioContext: "readonly",
+        performance: "readonly",
         ResizeObserver: "readonly",
         URL: "readonly",
         Blob: "readonly",

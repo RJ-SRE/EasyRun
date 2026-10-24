@@ -1,3 +1,4 @@
+import { BelfryAudio } from "./belfry-audio.js";
 const $ = (s) => document.querySelector(s);
 const fields = [
   "phase",
@@ -37,6 +38,13 @@ const fields = [
   "sealRight",
   "gateOne",
   "gateTwo",
+  "attackKind",
+  "chainStep",
+  "chargeTime",
+  "threats",
+  "practice",
+  "attackTime",
+  "attackAge",
 ];
 window.latestState = null;
 window.runtimeErrors = [];
@@ -49,12 +57,12 @@ let frame,
   chapterTimer,
   guidePaused = false,
   recordedAttempt = -1;
-let soundOn = true,
-  audio,
-  master,
-  drone,
-  melodyAt = 0,
-  noteIndex = 0;
+let soundOn = true;
+window.foes = {};
+const soundscape = new BelfryAudio();
+Object.defineProperty(window, "soundDiagnostics", {
+  get: () => soundscape.diagnostics(),
+});
 let records = [];
 try {
   const saved = JSON.parse(localStorage.getItem("easyrun-belfry-v1") || "[]");
@@ -90,9 +98,14 @@ function key(code, key = code) {
     c = w?.document.querySelector("#game-canvas");
   if (!c) return;
   focusGame();
-  const keyCode = { Enter: 13, Escape: 27, KeyR: 82, Digit1: 49, Digit2: 50 }[
-    code
-  ];
+  const keyCode = {
+    Enter: 13,
+    Escape: 27,
+    KeyR: 82,
+    KeyT: 84,
+    Digit1: 49,
+    Digit2: 50,
+  }[code];
   const opts = { code, key, keyCode, which: keyCode, bubbles: true };
   c.dispatchEvent(new w.KeyboardEvent("keydown", opts));
   setTimeout(
@@ -105,6 +118,7 @@ function overlay(kicker, title, body, button) {
   $("#overlay-kicker").textContent = kicker;
   $("#overlay-title").textContent = title;
   $("#overlay-body").textContent = body;
+  $("#practice").hidden = ![0, 2, 3, 4].includes(window.latestState?.phase);
   $("#play").hidden = !button;
   $("#play").innerHTML = button ? `${button}<span>↗</span>` : "";
   $("#difficulty").hidden = true;
@@ -129,120 +143,18 @@ function chapter(n, title, copy) {
   );
 }
 function initAudio() {
-  if (!soundOn) return;
-  audio ??= new AudioContext();
-  audio.resume();
-  if (master) return;
-  master = audio.createGain();
-  master.gain.value = 0.4;
-  master.connect(audio.destination);
-  drone = audio.createOscillator();
-  const g = audio.createGain();
-  drone.type = "sine";
-  drone.frequency.value = 55;
-  g.gain.value = 0.035;
-  drone.connect(g);
-  g.connect(master);
-  drone.start();
+  soundscape.init();
 }
-function bell(freq, duration = 1.2, volume = 0.07) {
-  if (!audio || !soundOn || audio.state !== "running") return;
-  const now = audio.currentTime;
-  for (const [ratio, level] of [
-    [1, 1],
-    [2.01, 0.25],
-    [3.93, 0.08],
-  ]) {
-    const o = audio.createOscillator(),
-      g = audio.createGain();
-    o.frequency.value = freq * ratio;
-    g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(volume * level, now + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-    o.connect(g);
-    g.connect(master);
-    o.start();
-    o.stop(now + duration + 0.05);
-    o.onended = () => {
-      o.disconnect();
-      g.disconnect();
-    };
-  }
-}
-function sound(name) {
-  if (!audio || !soundOn || audio.state !== "running") return;
-  const settings = {
-    hook: [0.15, 2200, 0.07],
-    sling: [0.2, 3100, 0.06],
-    slash: [0.12, 4100, 0.06],
-    hit: [0.16, 1600, 0.11],
-    kill: [0.25, 2200, 0.12],
-    dash: [0.22, 2900, 0.07],
-    plunge: [0.3, 900, 0.06],
-    plungehit: [0.34, 1400, 0.1],
-    nova: [0.7, 2100, 0.13],
-    hurt: [0.2, 600, 0.12],
-    land: [0.1, 500, 0.025],
-    jump: [0.1, 1400, 0.02],
-  };
-  if (settings[name]) {
-    const [duration, cutoff, volume] = settings[name],
-      now = audio.currentTime,
-      b = audio.createBuffer(
-        1,
-        Math.ceil(audio.sampleRate * duration),
-        audio.sampleRate,
-      ),
-      data = b.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-    const src = audio.createBufferSource(),
-      f = audio.createBiquadFilter(),
-      g = audio.createGain();
-    src.buffer = b;
-    f.type = "lowpass";
-    f.frequency.setValueAtTime(cutoff, now);
-    f.frequency.exponentialRampToValueAtTime(90, now + duration);
-    g.gain.setValueAtTime(0.001, now);
-    g.gain.linearRampToValueAtTime(volume, now + 0.006);
-    g.gain.exponentialRampToValueAtTime(0.001, now + duration);
-    src.connect(f);
-    f.connect(g);
-    g.connect(master);
-    src.start();
-    src.onended = () => {
-      src.disconnect();
-      f.disconnect();
-      g.disconnect();
-    };
-  }
-  const notes = {
-    echo: 660,
-    checkpoint: 440,
-    core: 220,
-    bell: 82,
-    kill: 330,
-    nova: 110,
-    finish: 550,
-    fail: 73,
-  };
-  if (notes[name]) bell(notes[name], name === "core" ? 3 : 1.2, 0.1);
-}
-setInterval(() => {
-  if (!audio || !soundOn) return;
-  const playing = window.latestState?.phase === 1 && !document.hidden;
-  master?.gain.setTargetAtTime(playing ? 0.4 : 0, audio.currentTime, 0.3);
-  if (playing && audio.currentTime > melodyAt) {
-    const melody = [110, 0, 164.81, 0, 146.83, 0, 220, 0, 130.81, 0, 164.81, 0];
-    const n = melody[noteIndex++ % melody.length];
-    if (n) bell(n, 3.5, 0.025);
-    melodyAt = audio.currentTime + 2.4;
-  }
-}, 500);
 function onEvent(name, t, x, y) {
   window.runEvents.push({ name, time: Number(t), x: Number(x), y: Number(y) });
   if (window.runEvents.length > 800) window.runEvents.shift();
-  sound(name);
+  soundscape.onEvent(name, Number(x));
   const labels = {
+    webcut: "绊索已斩断 · 织缆者露出破绽",
+    launchhit: "挑空 → J 空中追击 → E 接钩索",
+    charged: "蓄力破甲 · 可将轻敌撞向其他敌人",
+    collision: "借敌破敌",
+    practice: "排练场 · 四种守卫会重生；Esc 后按 R 开始冒险",
     seal: "钟锁断开 · 两侧吊环牵制着钟卫",
     exposed: "钟卫失去钟锁 · 现在进攻",
     sealed: "钟锁保护中 · 钩住两侧悬环，拉断钟锁",
@@ -261,12 +173,17 @@ function onEvent(name, t, x, y) {
   if (labels[name]) toast(labels[name]);
   if (name === "start") {
     window.runEvents = window.runEvents.slice(-1);
+    window.foes = {};
     recordedAttempt = -1;
     chapter(
       "ACT I · DESCENT",
       "落入钟城",
       "金铜圆环是你的路。按住 E，松开后甩出。",
     );
+  }
+  if (name === "practice") {
+    $("#chapter").classList.remove("visible");
+    clearTimeout(chapterTimer);
   }
   if (name === "guardian")
     chapter(
@@ -291,6 +208,8 @@ function onEvent(name, t, x, y) {
 }
 function hint(s) {
   if (s.phase !== 1) return "";
+  if (s.practice)
+    return "排练场 · J 三连 / W+J 挑空 / L 蓄力 / E 钩近 · 守卫会重生 · Esc 后 R 进入冒险";
   if (s.segment === 2) {
     if (s.y > -430) return "回到左上方的休整灯。最后一段，借锚点跃出井口。";
     return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
@@ -299,7 +218,7 @@ function hint(s) {
     return `钩住${!s.sealLeft && !s.sealRight ? "左右两侧" : !s.sealLeft ? "左侧" : "右侧"}红色吊环，抵达吊环时拉断钟锁。`;
   if (s.segment === 1)
     return s.bossState === 2
-      ? "钟卫已露出破绽 · J 连斩 / S + J 坠星 / Q 断弦"
+      ? "钟卫已露出破绽 · J 三连 / L 蓄力破甲 / S + J 坠星"
       : "钟卫重甲闭合 · 回钩斩与坠星可破甲，注意橙色预警。";
   if (s.gateOne > 0 && s.y < -850 && s.y > -1300)
     return "第一钟锁 · 击破右侧织缆者，开启下方闸门。按住 E 回钩斩。";
@@ -309,13 +228,17 @@ function hint(s) {
   if (s.y > -230)
     return "D 向右跃入井中 · 按住 E 抓住高亮锚点；松开时借力起飞。";
   if (s.y > -900) return "接近敌人按 J；钩住敌人也能回钩斩。S + J 向下坠星。";
-  if (s.y > -1850) return "织缆者释放扇形飞弹。J 可斩断弹幕，K 冲刺穿过危险。";
+  if (s.y > -1850)
+    return "织缆者交替扇射与绊索。J 可切断绊索，K 冲刺穿过危险。";
   if (s.y > -2900)
     return "Q 释放断弦，消耗 60 弦能。侧翼的金色回声可补满弦能。";
   return "钟声来自更深处。S + 空格穿过脚下的平台。";
 }
 function receive(s) {
   window.latestState = s;
+  soundscape.stateChanged(s);
+  for (const [id, foe] of Object.entries(window.foes))
+    if (s.elapsed - foe.seen > 0.4) delete window.foes[id];
   if (fault) return;
   loading = false;
   document.body.classList.toggle("playing", s.phase !== 0);
@@ -336,13 +259,19 @@ function receive(s) {
     "CONFRONT / 02",
     "ASCEND / 03",
   ][s.segment];
-  $("#objective").textContent = ["寻找钟心", "打破守卫", "携心归来"][s.segment];
+  $("#objective").textContent = s.practice
+    ? "排练场 · 自由组合"
+    : ["寻找钟心", "打破守卫", "携心归来"][s.segment];
   $("#depth-marker").style.top =
     `${Math.max(0, Math.min(100, (-s.y / 3590) * 100))}%`;
   $("#hint").textContent = hint(s);
   $("#relics").textContent = `◈ ${s.echoes} / 3`;
   $("#combo").innerHTML =
-    s.combo >= 2 ? `${s.combo} <small>AIR CHAIN</small>` : "";
+    s.attackKind > 0
+      ? `<small>${{ 1: "一式 · 切线", 2: "二式 · 返刃", 3: "三式 · 断环", 4: "挑空", 5: "空中追击", 6: "空中返刃", 7: "蓄力破甲" }[s.attackKind] || ""}</small>`
+      : s.combo >= 2
+        ? `${s.combo} <small>AIR CHAIN</small>`
+        : "";
   $("#boss").hidden = !(s.segment === 1 && s.phase === 1);
   $("#boss-health").style.width =
     `${(s.bossHP / (s.difficulty === 0 ? 16 : 20)) * 100}%`;
@@ -381,6 +310,7 @@ function receive(s) {
   if (s.phase === 1) {
     $("#overlay").hidden = true;
     $("#guide").hidden = true;
+    $("#settings-panel").hidden = true;
     guidePaused = false;
   }
   if (s.phase === 4) {
@@ -420,7 +350,7 @@ function receive(s) {
       $("#overlay-foot").textContent =
         `Enter 从检查点继续 · R 从头开始 · 当前休整灯 ${s.checkpoint + 1}`;
     }
-    if (recordedAttempt !== s.attempts) {
+    if (recordedAttempt !== s.attempts && !s.practice) {
       recordedAttempt = s.attempts;
       records.push({
         date: new Date().toISOString(),
@@ -492,12 +422,46 @@ async function load() {
           }
           m = text.match(/@event\s+(\w+)\s+(\S+)\s+(\S+)\s+(\S+)/);
           if (m) onEvent(m[1], m[2], m[3], m[4]);
-          if (!text.includes("@state")) original(...args);
+          m = text.match(/@foe\s+(.+)/);
+          if (m) {
+            const a = m[1].trim().split(/\s+/).map(Number);
+            const keys = [
+              "id",
+              "kind",
+              "hp",
+              "x",
+              "y",
+              "state",
+              "mode",
+              "hazard",
+              "stun",
+              "clock",
+              "aimX",
+              "aimY",
+            ];
+            if (a.length === keys.length && a.every(Number.isFinite)) {
+              const foe = Object.fromEntries(keys.map((k, i) => [k, a[i]]));
+              foe.seen = window.latestState?.elapsed ?? 0;
+              window.foes[foe.id] = foe;
+            }
+          }
+          m = text.match(/@enemyEvent\s+(\w+)\s+(\d+)\s+(\d+)\s+(\S+)/);
+          if (m) {
+            soundscape.enemy(m[1], Number(m[2]), Number(m[3]));
+            window.runEvents.push({
+              name: "enemy_" + m[1],
+              id: Number(m[2]),
+              kind: Number(m[3]),
+              time: Number(m[4]),
+            });
+          }
+          if (!text.includes("@state") && !text.includes("@foe"))
+            original(...args);
         };
         w.onGameError(fail);
         w.onEngineCrash(fail);
         w.addEventListener("keydown", (e) => {
-          if (e.code === "Enter") initAudio();
+          if (["Enter", "KeyT"].includes(e.code)) initAudio();
           if (
             [
               "Space",
@@ -566,7 +530,7 @@ $("#pause").onclick = () => {
 $("#sound").onclick = () => {
   soundOn = !soundOn;
   if (soundOn) initAudio();
-  else audio?.suspend();
+  soundscape.mute(!soundOn);
   $("#sound").textContent = `声音 ${soundOn ? "开" : "关"}`;
   $("#sound").setAttribute("aria-pressed", String(soundOn));
   focusGame();
@@ -615,17 +579,45 @@ $("#export").onclick = () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 window.addEventListener("keydown", (e) => {
-  if (e.code === "Enter") initAudio();
+  if (["Enter", "KeyT"].includes(e.code)) initAudio();
   if (loading || e.repeat || e.target.closest("button")) return;
-  if (["Enter", "Escape", "KeyR", "Digit1", "Digit2"].includes(e.code)) {
+  if (
+    ["Enter", "Escape", "KeyR", "KeyT", "Digit1", "Digit2"].includes(e.code)
+  ) {
     e.preventDefault();
-    if (e.code === "Enter") initAudio();
+    if (["Enter", "KeyT"].includes(e.code)) initAudio();
     key(e.code, e.key);
   }
 });
 document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    soundscape.stopAll();
+  }
   if (document.hidden && window.latestState?.phase === 1)
     key("Escape", "Escape");
 });
+let settingsPaused = false;
+$("#practice").onclick = () => {
+  initAudio();
+  key("KeyT", "t");
+};
+$("#audio-settings").onclick = () => {
+  settingsPaused = window.latestState?.phase === 1;
+  if (settingsPaused) key("Escape", "Escape");
+  $("#settings-panel").hidden = false;
+  $("#close-settings").focus();
+};
+$("#close-settings").onclick = () => {
+  $("#settings-panel").hidden = true;
+  if (settingsPaused && window.latestState?.phase === 4)
+    key("Escape", "Escape");
+  settingsPaused = false;
+  focusGame();
+};
+for (const k of ["sfx", "music"]) {
+  const el = $("#setting-" + k);
+  el.value = soundscape.settings[k];
+  el.oninput = () => soundscape.set(k, Number(el.value));
+}
 best();
 load();

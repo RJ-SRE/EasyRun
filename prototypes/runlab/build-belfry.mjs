@@ -63,7 +63,7 @@ await copyFile(
 // fit it to a common texture size, preserve its alpha and leave the source intact.
 const source = await readFile(new URL("art/belfry/sentinels-source.png", root));
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
-let enemyFrames, actionFrames;
+let enemyFrames, actionFrames, combatFrames, mimicFrames;
 try {
   const page = await browser.newPage();
   enemyFrames = await page.evaluate(
@@ -147,6 +147,173 @@ try {
     },
     "data:image/png;base64," + actions.toString("base64"),
   );
+  async function importAtlas(path, cols, rows, size, maxH, separate = false) {
+    const source = await readFile(new URL(path, root));
+    return page.evaluate(
+      async ({ uri, cols, rows, size, maxH, separate }) => {
+        const im = new Image();
+        im.src = uri;
+        await im.decode();
+        const whole = document.createElement("canvas");
+        whole.width = im.width;
+        whole.height = im.height;
+        const wholeContext = whole.getContext("2d");
+        wholeContext.drawImage(im, 0, 0);
+        const pixels = wholeContext.getImageData(
+          0,
+          0,
+          im.width,
+          im.height,
+        ).data;
+        const labels = new Int32Array(im.width * im.height),
+          queue = new Int32Array(labels.length),
+          parts = [];
+        if (separate) {
+          // Extract actual connected sprites, not grid rectangles: long swords
+          // cross nominal cell boundaries without touching adjacent characters.
+          for (let seed = 0; seed < labels.length; seed++) {
+            if (labels[seed] || pixels[seed * 4 + 3] < 80) continue;
+            const id = parts.length + 1;
+            let head = 0,
+              tail = 1,
+              l = im.width,
+              r = 0,
+              t = im.height,
+              b = 0;
+            queue[0] = seed;
+            labels[seed] = id;
+            while (head < tail) {
+              const n = queue[head++],
+                x = n % im.width,
+                y = Math.floor(n / im.width);
+              l = Math.min(l, x);
+              r = Math.max(r, x);
+              t = Math.min(t, y);
+              b = Math.max(b, y);
+              for (let dy = -1; dy <= 1; dy++)
+                for (let dx = -1; dx <= 1; dx++) {
+                  const nx = x + dx,
+                    ny = y + dy;
+                  if (nx < 0 || ny < 0 || nx >= im.width || ny >= im.height)
+                    continue;
+                  const next = ny * im.width + nx;
+                  if (!labels[next] && pixels[next * 4 + 3] >= 80) {
+                    labels[next] = id;
+                    queue[tail++] = next;
+                  }
+                }
+            }
+            parts.push({ id, l, r, t, b, area: tail });
+          }
+        }
+        const principal = parts
+          .sort((a, b) => b.area - a.area)
+          .slice(0, cols * rows);
+        const out = [];
+        for (let k = 0; k < cols * rows; k++) {
+          const c = document.createElement("canvas");
+          let l = 0,
+            t = 0,
+            r,
+            b;
+          if (separate) {
+            const part = principal.find(
+              (p) =>
+                Math.min(
+                  cols - 1,
+                  Math.floor(((p.l + p.r) / 2 / im.width) * cols),
+                ) ===
+                  k % cols &&
+                Math.min(
+                  rows - 1,
+                  Math.floor(((p.t + p.b) / 2 / im.height) * rows),
+                ) === Math.floor(k / cols),
+            );
+            if (!part)
+              throw new Error(
+                `Missing connected sprite ${k}: ${JSON.stringify(principal)}`,
+              );
+            c.width = part.r - part.l + 1;
+            c.height = part.b - part.t + 1;
+            const ctx = c.getContext("2d"),
+              target = ctx.createImageData(c.width, c.height);
+            for (let y = 0; y < c.height; y++)
+              for (let x = 0; x < c.width; x++) {
+                const at = (y + part.t) * im.width + x + part.l;
+                if (labels[at] !== part.id) continue;
+                for (let channel = 0; channel < 4; channel++)
+                  target.data[(y * c.width + x) * 4 + channel] =
+                    pixels[at * 4 + channel];
+              }
+            ctx.putImageData(target, 0, 0);
+            r = c.width - 1;
+            b = c.height - 1;
+          } else {
+            c.width = Math.floor(im.width / cols);
+            c.height = Math.floor(im.height / rows);
+            const ctx = c.getContext("2d");
+            ctx.drawImage(
+              im,
+              -(k % cols) * c.width,
+              -Math.floor(k / cols) * c.height,
+            );
+            const d = ctx.getImageData(0, 0, c.width, c.height).data;
+            l = c.width;
+            t = c.height;
+            r = 0;
+            b = 0;
+            for (let y = 0; y < c.height; y++)
+              for (let x = 0; x < c.width; x++)
+                if (d[(y * c.width + x) * 4 + 3] > 80) {
+                  l = Math.min(l, x);
+                  r = Math.max(r, x);
+                  t = Math.min(t, y);
+                  b = Math.max(b, y);
+                }
+          }
+          const o = document.createElement("canvas");
+          o.width = o.height = size;
+          const scale = Math.min((size - 20) / (r - l + 1), maxH / (b - t + 1));
+          o.getContext("2d").drawImage(
+            c,
+            l,
+            t,
+            r - l + 1,
+            b - t + 1,
+            (size - (r - l + 1) * scale) / 2,
+            size - 18 - (b - t + 1) * scale,
+            (r - l + 1) * scale,
+            (b - t + 1) * scale,
+          );
+          out.push(o.toDataURL("image/png").split(",")[1]);
+        }
+        return out;
+      },
+      {
+        uri: "data:image/png;base64," + source.toString("base64"),
+        cols,
+        rows,
+        size,
+        maxH,
+        separate,
+      },
+    );
+  }
+  combatFrames = await importAtlas(
+    "art/belfry/combat-source.png",
+    4,
+    3,
+    418,
+    330,
+    true,
+  );
+  mimicFrames = await importAtlas(
+    "art/belfry/mimic-source.png",
+    2,
+    2,
+    512,
+    470,
+  );
 } finally {
   await browser.close();
 }
@@ -161,6 +328,15 @@ for (let i = 0; i < 8; i++)
     new URL(`art/belfry/frames/action-${i}.png`, root),
     Buffer.from(actionFrames[i], "base64"),
   );
+for (const [prefix, frames] of [
+  ["combat", combatFrames],
+  ["mimic", mimicFrames],
+])
+  for (let i = 0; i < frames.length; i++)
+    await writeFile(
+      new URL(`art/belfry/frames/${prefix}-${i}.png`, root),
+      Buffer.from(frames[i], "base64"),
+    );
 const bg = await png("art/belfry/clockwell.png", 1510);
 sprite(
   "Cathedral",
@@ -228,6 +404,7 @@ sprite(
    if phase==1 {if enemyHP[guard]<=0 {opening=clamp(opening+dt*1.3,0,1)} else {opening=0}}
    x+=opening*900; ghost=opening*70
   }
+  if practice==1 {if i==0 {setSize 800/1983; x=480; y=0; ghost=0} else {ghost=100}} else {setSize floorW[i]/1983}
   setXYpos x,y; setHeading heading; setGraphicEffect GhostEffect,ghost
  }
 }`,
@@ -247,6 +424,18 @@ for (let i = 0; i < 4; i++) {
     `onStart => {for {waitNextFrame(); if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(worldTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
   );
 }
+sprite(
+  "AbandonedPost",
+  {
+    post: vector(
+      100,
+      150,
+      '<path d="M15 147h70M30 140V75h40v65M24 75h52" fill="#171e23" stroke="#80745d" stroke-width="3"/><path d="M23 65V34Q50 2 77 34v31l-27 13Z" fill="#293034" stroke="#a28d65" stroke-width="2"/><path d="M30 43h40M39 53h22" stroke="#080f15" stroke-width="5"/><path d="M50 19V5M49 78l-9 35 23 19" stroke="#586560" stroke-width="2"/>',
+    ),
+  },
+  { x: 805, y: -2025 },
+  "onStart => {for {waitNextFrame(); if practice==1 {hide} else {show}}}",
+);
 const anchorBase =
   '<circle cx="28" cy="28" r="20" fill="#111d24" stroke="#af956b" stroke-width="3"/><circle cx="28" cy="28" r="12" fill="none" stroke="#e9d9aa" stroke-width="1.5"/><path d="M28 1v13m0 28v13M1 28h13m28 0h13" stroke="#7e725c" stroke-width="4"/><path d="M28 20l8 8-8 8-8-8z" fill="#c9f0db"/>';
 sprite(
@@ -298,6 +487,8 @@ sprite(
 const enemyImages = {};
 for (let i = 0; i < 3; i++)
   enemyImages["kind" + i] = await png(`art/belfry/frames/${i}.png`, 512);
+for (let i = 0; i < 4; i++)
+  enemyImages["mimic" + i] = await png(`art/belfry/frames/mimic-${i}.png`, 512);
 sprite(
   "Enemy",
   enemyImages,
@@ -314,7 +505,41 @@ sprite(
     ),
   },
   { visible: false },
-  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyHP[i]>0 && enemyState[i]==1 {show; setXYpos enemyX[i],enemyY[i]; setSize 0.7; if enemyType[i]==3 {setSize 1.9}} else {hide}}}",
+  await code("EnemyTell"),
+);
+sprite(
+  "Hazard",
+  {
+    beam: vector(
+      400,
+      12,
+      '<path d="M0 6h400" stroke="#e69b77" stroke-width="3"/><path d="M0 6h400" stroke="#fff1cc" stroke-width="1" stroke-dasharray="12 9"/>',
+    ),
+    wave: vector(
+      200,
+      200,
+      '<circle cx="100" cy="100" r="95" fill="none" stroke="#e9af76" stroke-width="3"/><circle cx="100" cy="100" r="90" fill="none" stroke="#ffe6b5" stroke-width="1"/>',
+    ),
+    cleave: vector(
+      260,
+      260,
+      '<path d="M25 20Q270 40 225 240" fill="none" stroke="#eba78b" stroke-width="12"/><path d="M35 25Q260 50 220 230" fill="none" stroke="#ffeccc" stroke-width="2"/>',
+    ),
+  },
+  { visible: false, rotationStyle: "normal" },
+  await code("Hazard"),
+);
+sprite(
+  "ChargeHalo",
+  {
+    ring: vector(
+      110,
+      110,
+      '<circle cx="55" cy="55" r="47" fill="none" stroke="#dfbb76" stroke-width="1.5" stroke-dasharray="18 12"/><path d="M55 2v16m53 37H92M55 108V92M2 55h16" stroke="#fff0b9" stroke-width="2"/>',
+    ),
+  },
+  { visible: false, rotationStyle: "normal" },
+  "onStart => {for {waitNextFrame(); if Hero.charging && phase==1 {show; setXYpos Hero.px,Hero.py+30; setHeading 90+worldTime*120; setSize 0.45+Hero.chargeTime*0.4; setGraphicEffect BrightnessEffect,Hero.chargeTime*30} else {hide}}}",
 );
 sprite(
   "Echo",
@@ -409,6 +634,12 @@ for (let i = 0; i < 8; i++)
     pivotX: 24 + (actionReg[i][0] * 418) / 500,
     pivotY: (actionReg[i][1] * 418) / 500,
   };
+for (let i = 0; i < 12; i++)
+  hero["combat" + i] = {
+    ...(await png(`art/belfry/frames/combat-${i}.png`, 82)),
+    pivotX: 209,
+    pivotY: 400,
+  };
 sprite(
   "Trail",
   hero,
@@ -451,6 +682,31 @@ sprite(
       500,
       500,
       '<circle cx="250" cy="250" r="170" fill="none" stroke="#fff4c9" stroke-width="4"/><circle cx="250" cy="250" r="190" fill="none" stroke="#c7a467" stroke-width="18" opacity=".2"/><path d="M30 240Q250 100 470 260Q250 380 30 240M240 30Q400 250 260 470Q100 250 240 30" fill="none" stroke="#eddbac" stroke-width="2"/>',
+    ),
+    reverse: vector(
+      260,
+      220,
+      '<path d="M30 190Q260 180 228 32Q235 132 30 190" fill="#c0f4df" fill-opacity=".65"/><path d="M45 179Q235 155 225 49" fill="none" stroke="#eeffe6" stroke-width="2"/>',
+    ),
+    finish: vector(
+      320,
+      240,
+      '<ellipse cx="160" cy="120" rx="143" ry="72" fill="none" stroke="#e7d7a2" stroke-width="4"/><path d="M15 145Q170 10 306 110M20 164Q160 35 305 120" fill="none" stroke="#b7eee0" stroke-width="2"/>',
+    ),
+    rising: vector(
+      210,
+      290,
+      '<path d="M30 270Q175 240 140 10Q220 190 30 270" fill="#c7f6e0" fill-opacity=".7"/><path d="M40 260Q196 216 150 20" fill="none" stroke="#fbffe0" stroke-width="3"/>',
+    ),
+    air: vector(
+      280,
+      230,
+      '<path d="M15 50Q280 5 250 205Q285 80 15 50" fill="#cdf4e8"/><path d="M40 65Q260 20 249 180" fill="none" stroke="#93c8c0" stroke-width="3"/>',
+    ),
+    heavy: vector(
+      280,
+      310,
+      '<path d="M60 10Q300 40 192 290Q240 110 60 10" fill="#ffdc9c" fill-opacity=".85"/><path d="M72 20Q290 55 200 275" fill="none" stroke="#fff9d4" stroke-width="5"/>',
     ),
   },
   { visible: false, rotationStyle: "left-right" },
@@ -556,6 +812,7 @@ const initialization = `func initLevel() {
  floorX=${floats(platforms.map((a) => a[0]))}; floorW=${floats(platforms.map((a) => a[1]))}; floorY=${floats(platforms.map((a) => a[2]))}; floorKind=${ints(platforms.map((a) => a[3]))}
  enemyBaseX=${floats(enemies.map((a) => a[0]))}; enemyBaseY=${floats(enemies.map((a) => a[1]))}; enemyX=${floats(enemies.map((a) => a[0]))}; enemyY=${floats(enemies.map((a) => a[1]))}; enemyType=${ints(enemies.map((a) => a[2]))}
  enemyHP=${ints(enemies.map(() => 0))}; enemyState=${ints(enemies.map(() => 0))}; enemyClock=${floats(enemies.map(() => 0))}; enemyFlash=${floats(enemies.map(() => 0))}
+ enemyAttackHealth=${ints(enemies.map(() => 0))}; enemyMode=${ints(enemies.map(() => 0))}; enemyCycle=${ints(enemies.map(() => 0))}; enemyGreeted=${ints(enemies.map(() => 0))}; enemyOffX=${floats(enemies.map(() => 0))}; enemyOffY=${floats(enemies.map(() => 0))}; enemyVX=${floats(enemies.map(() => 0))}; enemyVY=${floats(enemies.map(() => 0))}; enemyStun=${floats(enemies.map(() => 0))}; enemyThrown=${floats(enemies.map(() => 0))}; enemyAimX=${floats(enemies.map(() => 0))}; enemyAimY=${floats(enemies.map(() => 0))}; enemyHazard=${floats(enemies.map(() => 0))};
  echoX=${floats(echoes.map((a) => a[0]))}; echoY=${floats(echoes.map((a) => a[1]))}; echoTaken=${ints(echoes.map(() => 0))}
  checkpointX=${floats(checkpoints.map((a) => a[0]))}; checkpointY=${floats(checkpoints.map((a) => a[1]))}
 }

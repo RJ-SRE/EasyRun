@@ -1,9 +1,9 @@
 onCloned data => {
- p:=data.([]float64); age:=0.0
- setCostume int(p[3]); setXYpos p[0],p[1]; setHeading p[2]; setSize 0.4; setGraphicEffect GhostEffect,0; show
- for age<0.24 && int(p[4])==attempts {
+ p:=data.([]float64); age:=0.0; style:=int(p[3]); duration:=0.20; if style==1 || style==6 {duration=0.32}
+ setCostume style; setXYpos p[0],p[1]; setHeading p[2]; setSize 0.4; setGraphicEffect GhostEffect,0; show
+ for age<duration && int(p[4])==attempts && phase!=2 && phase!=3 {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
-  if phase!=4 {age+=dt; t:=clamp(age/0.24,0,1); setSize 0.6+t*0.55; setGraphicEffect GhostEffect,t*t*100; setXYpos Hero.px,Hero.py+32}
+  if phase==1 {age+=dt; t:=clamp(age/duration,0,1); setSize 0.43+t*0.38; setGraphicEffect GhostEffect,t*t*100; setXYpos Hero.px+p[2]/90*18,Hero.py+34}
  }
  die
 }

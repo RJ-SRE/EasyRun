@@ -1,0 +1,506 @@
+[
+  {
+    "id": "blade-1",
+    "cue": "blade",
+    "file": "/audio/sfx/blade-1.m4a",
+    "duration": 0.25909881161600845,
+    "seed": 2398241889,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "e3d4f27c99315c49cb46a1028fcbce6f989300d0847408d2c7c4ef1f202669c6"
+  },
+  {
+    "id": "blade-2",
+    "cue": "blade",
+    "file": "/audio/sfx/blade-2.m4a",
+    "duration": 0.27626901099626705,
+    "seed": 3919583298,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "e29b6143db3e516f73f519b0f40c6d42154e6e6dde4c777aac85d20cac365631"
+  },
+  {
+    "id": "blade-3",
+    "cue": "blade",
+    "file": "/audio/sfx/blade-3.m4a",
+    "duration": 0.2900638108584394,
+    "seed": 1862119292,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "766ec95c191fddbb37249e2a1bb2c9f1749f6343db678c29b0021a3f78a01817"
+  },
+  {
+    "id": "blade-4",
+    "cue": "blade",
+    "file": "/audio/sfx/blade-4.m4a",
+    "duration": 0.2719183159980669,
+    "seed": 3328816999,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "9efc0d4d9f4e72522e838f3cad09341e41ed0ec4de80ea02b170948cd0e08de7"
+  },
+  {
+    "id": "blade-5",
+    "cue": "blade",
+    "file": "/audio/sfx/blade-5.m4a",
+    "duration": 0.25723125611296516,
+    "seed": 3675797519,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "070e141d0ba26520891293316d5e6f0e658e19080910d7e4da940466ac97b0da"
+  },
+  {
+    "id": "blade-6",
+    "cue": "blade",
+    "file": "/audio/sfx/blade-6.m4a",
+    "duration": 0.2717331275016781,
+    "seed": 244915448,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "1dcd5c9a4e91c2dd15d81216884fff19f7214ad92a0a11b79c23183fdc055c08"
+  },
+  {
+    "id": "cloth-1",
+    "cue": "cloth",
+    "file": "/audio/sfx/cloth-1.m4a",
+    "duration": 0.18401088255905249,
+    "seed": 2758392719,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "50b64700dfc0e775cf8d0d9b7d74b7952326c2f947e3a66c4755b61436a6f40c"
+  },
+  {
+    "id": "cloth-2",
+    "cue": "cloth",
+    "file": "/audio/sfx/cloth-2.m4a",
+    "duration": 0.18706272131725218,
+    "seed": 2300171749,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "cdd9794e340f350197488db8144ca6c6ffbbbd92ace59526399bd99e374ea97d"
+  },
+  {
+    "id": "cloth-3",
+    "cue": "cloth",
+    "file": "/audio/sfx/cloth-3.m4a",
+    "duration": 0.18834497450619392,
+    "seed": 2134153844,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "09650eb2a8df163a3d0533087833791814e82d1cf797136d703210f74cf4b40f"
+  },
+  {
+    "id": "cloth-4",
+    "cue": "cloth",
+    "file": "/audio/sfx/cloth-4.m4a",
+    "duration": 0.18294592407077256,
+    "seed": 1525427257,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "cce2420833ead2902e0b5b2ce6c393bf929aef053ee67215146c935840544d1d"
+  },
+  {
+    "id": "hook-1",
+    "cue": "hook",
+    "file": "/audio/sfx/hook-1.m4a",
+    "duration": 0.15787765795439665,
+    "seed": 3533929302,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "ce7c089e4d25c81cd1dc5986168feab2b3b2239091baf01e6607837e2011a2b8"
+  },
+  {
+    "id": "hook-2",
+    "cue": "hook",
+    "file": "/audio/sfx/hook-2.m4a",
+    "duration": 0.17197594904841537,
+    "seed": 3304083110,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "58a923ba31bc40534a08c6978c75f9e340ace311977cfa810e5f7d8b49f892d3"
+  },
+  {
+    "id": "hook-3",
+    "cue": "hook",
+    "file": "/audio/sfx/hook-3.m4a",
+    "duration": 0.16623540727140587,
+    "seed": 4070485291,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "adb9b81e05f8d284aef0b8f0333f698b9ca9b4c692ce028fa814a39c96c1a0f3"
+  },
+  {
+    "id": "hook-4",
+    "cue": "hook",
+    "file": "/audio/sfx/hook-4.m4a",
+    "duration": 0.17169663878576266,
+    "seed": 3938137285,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "6ec6da87fec1f1b79b0f4f63f9f33271957fff62563a7a54eb7c8d443c71becd"
+  },
+  {
+    "id": "attach-1",
+    "cue": "attach",
+    "file": "/audio/sfx/attach-1.m4a",
+    "duration": 0.2191657439966751,
+    "seed": 3609809713,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "40ed32797cc8fed40f5cab1e0b2fd9cf4c1d3d6c1be421205979da71419b7af6"
+  },
+  {
+    "id": "attach-2",
+    "cue": "attach",
+    "file": "/audio/sfx/attach-2.m4a",
+    "duration": 0.2112127926702267,
+    "seed": 3818918588,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "c9456160419b9d850738498185b30adc1f6b099521552870c84d159d0e7b9541"
+  },
+  {
+    "id": "attach-3",
+    "cue": "attach",
+    "file": "/audio/sfx/attach-3.m4a",
+    "duration": 0.22958273636733703,
+    "seed": 778266640,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "636caf2547537fa5b707115bbc793bb7219668a45da578a03d5ef0edaea28e79"
+  },
+  {
+    "id": "attach-4",
+    "cue": "attach",
+    "file": "/audio/sfx/attach-4.m4a",
+    "duration": 0.23398501727221996,
+    "seed": 584343818,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "392671d151a4756665bbd6614b1bf6d7561bd9e925c9807079b0b8ba76e5ad37"
+  },
+  {
+    "id": "tension-1",
+    "cue": "tension",
+    "file": "/audio/sfx/tension-1.m4a",
+    "duration": 0.4087692621579457,
+    "seed": 875837015,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "f3d77a431d31f94a61c7bcb0e04c39062a32de901be439647d663de7030468a9"
+  },
+  {
+    "id": "tension-2",
+    "cue": "tension",
+    "file": "/audio/sfx/tension-2.m4a",
+    "duration": 0.45307508938522045,
+    "seed": 233423316,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "5982acd3e81efedc7af80979d165ae89ca52739ad059b58afe15dc262a9d2ce1"
+  },
+  {
+    "id": "tension-3",
+    "cue": "tension",
+    "file": "/audio/sfx/tension-3.m4a",
+    "duration": 0.4134051709412069,
+    "seed": 3595057213,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "f92244f164cd5b669086645ff3523240f5c745f7dd23fb9def031b039ed891f8"
+  },
+  {
+    "id": "tension-4",
+    "cue": "tension",
+    "file": "/audio/sfx/tension-4.m4a",
+    "duration": 0.450622362421202,
+    "seed": 4208891159,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "166ecc26d464ee0e10990fa8d5a165fa9cec499579387de60fe2b7293a119921"
+  },
+  {
+    "id": "sling-1",
+    "cue": "sling",
+    "file": "/audio/sfx/sling-1.m4a",
+    "duration": 0.3028210723259671,
+    "seed": 3910696418,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "db88b42952ee3eea530161cdcf84cb150b0612b91af3118aa19236863d13079b"
+  },
+  {
+    "id": "sling-2",
+    "cue": "sling",
+    "file": "/audio/sfx/sling-2.m4a",
+    "duration": 0.27766168047157386,
+    "seed": 2837892591,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "4cc040ff3d2dae878a61aee1c7db008ab28a1689152fb08b0afe4bcf15ea4735"
+  },
+  {
+    "id": "sling-3",
+    "cue": "sling",
+    "file": "/audio/sfx/sling-3.m4a",
+    "duration": 0.28673793600931863,
+    "seed": 1672327207,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "4ebd8ebd7c3869439fc7875e376d52e5bfdf885e09b192a975c7c408d1985a8b"
+  },
+  {
+    "id": "sling-4",
+    "cue": "sling",
+    "file": "/audio/sfx/sling-4.m4a",
+    "duration": 0.3128004336587868,
+    "seed": 3149114130,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "193ae85e7ff34febf6c574e35d896fc86f84b2a7352e70b6aa4936c30ba07b7c"
+  },
+  {
+    "id": "porcelain-1",
+    "cue": "porcelain",
+    "file": "/audio/sfx/porcelain-1.m4a",
+    "duration": 0.4671692602361369,
+    "seed": 3642997270,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "6c0dc21ad4772eca9a39c62f9ce980e200a3fabc94b9497c060fc2bf5e735454"
+  },
+  {
+    "id": "porcelain-2",
+    "cue": "porcelain",
+    "file": "/audio/sfx/porcelain-2.m4a",
+    "duration": 0.4808060593006655,
+    "seed": 2798122973,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "c42a58813fa7c2eadebbca01585188c8305e27affce826ec90b784f8cf88442f"
+  },
+  {
+    "id": "porcelain-3",
+    "cue": "porcelain",
+    "file": "/audio/sfx/porcelain-3.m4a",
+    "duration": 0.5000043031026302,
+    "seed": 3059693338,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "719d554396a93c5b99f617ffce48a34a4281ca480501b5cf053d94b82de80928"
+  },
+  {
+    "id": "porcelain-4",
+    "cue": "porcelain",
+    "file": "/audio/sfx/porcelain-4.m4a",
+    "duration": 0.5260876742273317,
+    "seed": 2647913903,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "9405b36b2eb08966d3909f8716735e8a9445ae72b77cfd3e57fae8f90e9401ef"
+  },
+  {
+    "id": "porcelain-5",
+    "cue": "porcelain",
+    "file": "/audio/sfx/porcelain-5.m4a",
+    "duration": 0.4976615468975524,
+    "seed": 1482527698,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "7f37e797bead4c9dd7f47ea8cce800f72c377e99e49de32e8137fa0ad3e72976"
+  },
+  {
+    "id": "brass-1",
+    "cue": "brass",
+    "file": "/audio/sfx/brass-1.m4a",
+    "duration": 0.6489031888743518,
+    "seed": 1501943853,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "eab775770c3dd432ef2d173f05edd2ba37474fe5fd8ef7c009faf8fc506f14ff"
+  },
+  {
+    "id": "brass-2",
+    "cue": "brass",
+    "file": "/audio/sfx/brass-2.m4a",
+    "duration": 0.668292665031505,
+    "seed": 1176373032,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "2260402e2cdae901adb678629614bd89cb5706553c344245ba5cbdac9a9d4c99"
+  },
+  {
+    "id": "brass-3",
+    "cue": "brass",
+    "file": "/audio/sfx/brass-3.m4a",
+    "duration": 0.6710088928467551,
+    "seed": 3965845735,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "bb06a99d46fc4f992561392cd1b90d998e6ec10231f644c6724e91ea4a194c84"
+  },
+  {
+    "id": "brass-4",
+    "cue": "brass",
+    "file": "/audio/sfx/brass-4.m4a",
+    "duration": 0.6975299384906056,
+    "seed": 266430871,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "7e8c75b53920ee76acb69af8310cdc3f123cb1c55f38431a7a67d29f56517148"
+  },
+  {
+    "id": "brass-5",
+    "cue": "brass",
+    "file": "/audio/sfx/brass-5.m4a",
+    "duration": 0.6978998699885601,
+    "seed": 4111979355,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "f346dd23c973bc66be1dc2fc263c157ff145f5b52da79ac557646a38621c6e43"
+  },
+  {
+    "id": "heavy-1",
+    "cue": "heavy",
+    "file": "/audio/sfx/heavy-1.m4a",
+    "duration": 0.5232103142160851,
+    "seed": 2713186070,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "4a3b51f1297e617a26a673f6c2ac47c10d23fa8e968c1947cbd3004294106207"
+  },
+  {
+    "id": "heavy-2",
+    "cue": "heavy",
+    "file": "/audio/sfx/heavy-2.m4a",
+    "duration": 0.5395207647127411,
+    "seed": 4020314332,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "af12d35760394410936533447668d5cebe1fc8a0edbdb936303b19bb04ac81f2"
+  },
+  {
+    "id": "heavy-3",
+    "cue": "heavy",
+    "file": "/audio/sfx/heavy-3.m4a",
+    "duration": 0.5854452566786355,
+    "seed": 1884563385,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "765f576b2e5364ecdac79f89be16d19de1e05e0ac6898d535409717eb2ac0ffa"
+  },
+  {
+    "id": "heavy-4",
+    "cue": "heavy",
+    "file": "/audio/sfx/heavy-4.m4a",
+    "duration": 0.5199327147290872,
+    "seed": 4165015109,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "16e31c2a8da38ecd79866c1861a3fa0485b0c58abcde22bb719aa485b8479465"
+  },
+  {
+    "id": "dash-1",
+    "cue": "dash",
+    "file": "/audio/sfx/dash-1.m4a",
+    "duration": 0.21284811101144877,
+    "seed": 3781895115,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "dcd0cdbfd233dc4895d054013de0d95851bc52772b533f0d9c24f546b7ee0250"
+  },
+  {
+    "id": "dash-2",
+    "cue": "dash",
+    "file": "/audio/sfx/dash-2.m4a",
+    "duration": 0.20442515550680043,
+    "seed": 861800907,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "9325a49cfa3f50d28e2c7a19d4d510b4084623607af12563361d014f550370c9"
+  },
+  {
+    "id": "dash-3",
+    "cue": "dash",
+    "file": "/audio/sfx/dash-3.m4a",
+    "duration": 0.23482462423595027,
+    "seed": 1178615861,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "0a3f44764bc2edb47e060c6bc10d7922ef1cf2023b2be2688e4b51924076e021"
+  },
+  {
+    "id": "dash-4",
+    "cue": "dash",
+    "file": "/audio/sfx/dash-4.m4a",
+    "duration": 0.22453028575776934,
+    "seed": 1482086993,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "c95b27ae9ac4224d2c22601d3d9944b30485eaafc09bcbf9aacd169df6627614"
+  },
+  {
+    "id": "nova-1",
+    "cue": "nova",
+    "file": "/audio/sfx/nova-1.m4a",
+    "duration": 1.2394261227137178,
+    "seed": 4249257237,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "606ae2542e40a40f621eb80c787cb8a5832722186567debd4d04ea3c6f424891"
+  },
+  {
+    "id": "nova-2",
+    "cue": "nova",
+    "file": "/audio/sfx/nova-2.m4a",
+    "duration": 1.1570228549623987,
+    "seed": 3038291259,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "d12b82da4e9377ee03233a3478a2cc0bd4fd92a52130f6ce71132329c0ada69d"
+  },
+  {
+    "id": "nova-3",
+    "cue": "nova",
+    "file": "/audio/sfx/nova-3.m4a",
+    "duration": 1.109471705547982,
+    "seed": 1301619115,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "c98dccb0d710055066e30b85fbc3e90475585cc334bc43dc2801f43646b0b7a0"
+  },
+  {
+    "id": "tell-1",
+    "cue": "tell",
+    "file": "/audio/sfx/tell-1.m4a",
+    "duration": 0.47241159279382017,
+    "seed": 2431015539,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "a03869e422378c081ac5412f0fd124302e1c7d4e6b8654b1e744bd44da8939d3"
+  },
+  {
+    "id": "tell-2",
+    "cue": "tell",
+    "file": "/audio/sfx/tell-2.m4a",
+    "duration": 0.5062414709922565,
+    "seed": 712644734,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "37052287381f5e97932ad8aabb34632e2be38fd4f70caa73909b434c54c56833"
+  },
+  {
+    "id": "tell-3",
+    "cue": "tell",
+    "file": "/audio/sfx/tell-3.m4a",
+    "duration": 0.49213942740358735,
+    "seed": 2215266646,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "a4aafbdbfc3357099fb07611680d94292cd38ad48db437c47b21dcb5a100c262"
+  },
+  {
+    "id": "land-1",
+    "cue": "land",
+    "file": "/audio/sfx/land-1.m4a",
+    "duration": 0.2209185284959957,
+    "seed": 1211631850,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "66704b70d6807b2259a660cc131f45992f9fb67a07da8e0154b13d18797e0518"
+  },
+  {
+    "id": "land-2",
+    "cue": "land",
+    "file": "/audio/sfx/land-2.m4a",
+    "duration": 0.2226851415981055,
+    "seed": 2921112339,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "0924e59fc52875eaf36a6b307e5943576ee8ccfb1872c77f35b22225f57ec3b4"
+  },
+  {
+    "id": "land-3",
+    "cue": "land",
+    "file": "/audio/sfx/land-3.m4a",
+    "duration": 0.22647175110728873,
+    "seed": 3409629850,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "00f822aa0412f6b894ace171dec4e7f4e5b10d08c65d2b8a67af38a3e1c6421f"
+  },
+  {
+    "id": "web-1",
+    "cue": "web",
+    "file": "/audio/sfx/web-1.m4a",
+    "duration": 0.3446105423386565,
+    "seed": 3295779578,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "eb0c41a1dc1322771d566ec2c1626173ed9c34a169d816729d8c837beaf311c2"
+  },
+  {
+    "id": "web-2",
+    "cue": "web",
+    "file": "/audio/sfx/web-2.m4a",
+    "duration": 0.32787677284205335,
+    "seed": 1630501390,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "c4ea8e53a3b53ce127508208800decd17963970c7bc58509df195295bf6f11c5"
+  },
+  {
+    "id": "web-3",
+    "cue": "web",
+    "file": "/audio/sfx/web-3.m4a",
+    "duration": 0.31900566676259423,
+    "seed": 2668751694,
+    "source": "original layered procedural Foley-style synthesis",
+    "sha256": "c2048d87449c219ff5713f679ce9d14e7ccb9bb4658d96ac909b07445b84a311"
+  }
+]

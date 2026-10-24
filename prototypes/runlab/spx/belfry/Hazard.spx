@@ -1,0 +1,19 @@
+onCloned data => {
+ i:=data.(int)
+ for {
+  waitNextFrame(); kind:=enemyType[i]; tell:=enemyState[i]==1 && enemyMode[i]==1; active:=enemyHazard[i]>0
+  if enemyHP[i]>0 && (tell || active) && (kind==1 || kind==2 || kind==3 || kind==4 || kind==0) {
+   show; setGraphicEffect GhostEffect,0
+   if kind==2 || kind==3 {
+    setCostume 1; setXYpos enemyX[i],enemyY[i]; setHeading 90
+    if tell {setSize 1.4; setGraphicEffect GhostEffect,65} else {setSize (0.9-enemyHazard[i])*360/95}
+   } else if kind==4 && enemyMode[i]==0 {
+    setCostume 2; setXYpos enemyX[i],enemyY[i]; setSize 0.9; setHeading angle(Hero.px-enemyX[i],Hero.py+28-enemyY[i])
+   } else {
+    dx:=enemyAimX[i]-enemyX[i]; dy:=enemyAimY[i]-enemyY[i]
+    setCostume 0; setXYpos enemyX[i]+dx/2,enemyY[i]+dy/2; setHeading angle(dx,dy); setSize dist(dx,dy)/400
+    if tell {setGraphicEffect GhostEffect,65}
+   }
+  } else {hide}
+ }
+}

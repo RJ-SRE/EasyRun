@@ -17,7 +17,7 @@ for game, (name, description) in GAMES.items():
         "type": "game",
         "displayName": name + " · 玩法原型",
         "description": description,
-        "instructions": "1/2 选择难度；Enter 开始或检查点继续；A/D 移动；空格二段跳；按住 E 牵引、松开甩出；J 斩击；S+J 坠星；K/Shift 冲刺；W+K 上冲；Q 断弦；S+空格下平台；R 从头开始；Esc 暂停。配套本地试玩页面提供中文界面、音效、战绩与结算。" if game == "belfry" else "Enter 开始；A/D 移动；空格跳跃；E 特殊动作；S 滑行；R 重来；Esc 暂停。推荐使用配套本地试玩页面查看中文提示、分数与结算。",
+        "instructions": "1/2 选择难度；Enter 开始或检查点继续；A/D 移动；空格二段跳；按住 E 牵引、松开甩出；J 三连；W+J 挑空；按住 L 蓄力松开重击；S+J 坠星；K/Shift 冲刺；W+K 上冲；Q 断弦；S+空格下平台；R 从头开始；Esc 暂停；开场或暂停后 T 排练场。配套本地试玩页面提供中文界面、动作音效、环境音乐、战绩与结算；当前不提供角色语音或对白。" if game == "belfry" else "Enter 开始；A/D 移动；空格跳跃；E 特殊动作；S 滑行；R 重来；Esc 暂停。推荐使用配套本地试玩页面查看中文提示、分数与结算。",
     }
     target = DEST / (game + ".xbp")
     with ZipFile(target, "w", ZIP_DEFLATED) as z:
