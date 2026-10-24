@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>裂隙 RUPTURE — 盗速者</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23c5ae8c' d='M33 0L9 35h20L23 64l32-41H35z'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/rupture.css" />
+  </head>
+  <body data-game="rupture">
+    <main>
+      <header>
+        <a class="brand" href="/">裂 隙 <span>R U P T U R E</span></a>
+        <p>盗速者 <i>/</i> 风暴前的最后一座城</p>
+        <div class="header-actions">
+          <button id="sound" aria-pressed="false">音效 关</button
+          ><button id="pause" disabled>暂停 Esc</button
+          ><button id="fullscreen">全屏 ↗</button>
+        </div>
+      </header>
+      <section class="play-panel">
+        <div class="viewport" id="viewport">
+          <div class="poster"></div>
+          <div id="stage"></div>
+          <div class="vignette"></div>
+          <div id="impact"></div>
+          <div class="hud">
+            <div>
+              <p class="eyebrow">THE ENGINE GRAVEYARD</p>
+              <strong id="scene-name">01 / 风机墓场</strong
+              ><small id="attempt">一段失衡的旅程</small>
+            </div>
+            <div class="stats">
+              <span>TIME <b id="time">00.00</b></span
+              ><span>RELIC <b id="score">0000</b></span>
+            </div>
+          </div>
+          <div id="overlay" class="overlay">
+            <div class="overlay-card">
+              <p class="eyebrow" id="overlay-kicker">ENTER THE RUPTURE</p>
+              <h1 id="overlay-title">正在唤醒遗迹</h1>
+              <p id="overlay-body">加载本地游戏引擎。</p>
+              <button class="primary" id="play" hidden>
+                进入遗迹 <span>↗</span>
+              </button>
+              <div id="feedback" hidden>
+                <p>这一段让你想继续吗？</p>
+                <div class="feedback-buttons">
+                  <button data-feedback="again">再走一次</button
+                  ><button data-feedback="other">还缺点什么</button
+                  ><button data-feedback="no">没有感觉</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="toast" aria-live="polite"></div>
+          <div id="world-hint" class="in-world-hint"></div>
+          <div class="progress-track"><div id="progress"></div></div>
+        </div>
+        <div class="run-status">
+          <span id="mechanic-state">动能为空</span><span id="beats"></span
+          ><span id="best">本机最佳 —</span>
+        </div>
+      </section>
+      <section class="under-stage">
+        <div id="controls" class="controls"></div>
+        <div class="challenge">
+          <span class="eyebrow">EVERY THEFT HAS A CONSEQUENCE</span>
+          <p id="challenge">你获得的速度，来自这座城的某一次停转。</p>
+        </div>
+      </section>
+      <footer>
+        <span>可玩场景研究 · 风机停转 / 桥梁失压 / 升降冻结</span>
+        <div>
+          <span id="save-status">记录保存在本机</span
+          ><button id="export">导出记录</button
+          ><a href="/legacy.html">查看旧原型</a>
+        </div>
+      </footer>
+      <p class="mobile-note">请使用电脑和实体键盘进入遗迹。</p>
+    </main>
+    <script type="module" src="/rupture.js"></script>
+  </body>
+</html>

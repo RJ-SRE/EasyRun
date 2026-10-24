@@ -1,0 +1,17 @@
+onCloned data => {
+ p:=data.([]float64); age:=-p[2]
+ hide
+ for age<0.42 && int(p[4])==attempts {
+  dt:=float64(waitNextFrame()); if dt>0.04 {dt=0.04}
+  if phase!=4 {
+   age+=dt
+   if age>=0 {
+    t:=age/0.42; if t>1 {t=1}; ease:=t*t*(3-2*t)
+    setXYpos p[0]+(Hero.px-p[0])*ease,p[1]+(Hero.py+35-p[1])*ease+sin(t*3.1416)*p[3]
+    setSize 0.35+sin(t*3.1416)*0.65
+    setGraphicEffect GhostEffect,5+t*t*55; show
+   }
+  }
+ }
+ die
+}

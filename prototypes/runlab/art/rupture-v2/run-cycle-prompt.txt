@@ -1,0 +1,15 @@
+Use case: stylized-concept. Asset type: production 2D game sprite animation atlas. The attached image is a character identity and rendering style REFERENCE, not the output layout. Create a NEW EXACTLY 4 columns × 3 rows equally spaced atlas of TWELVE successive frames of ONE seamless run cycle. Transparent RGBA background, no text, no grid lines. Same dark hooded masked wanderer, rust orange narrow scarf, dark textured leather long coat, bronze mechanical forearm, boots. Mature painterly game art as reference. Strict side view, character always facing RIGHT, camera fixed, SAME head proportions, same torso tilt, same character scale and centered hip position in every cell. Fixed ground baseline at 90% down each cell. Head top at 10% down. Plenty of empty margin, each complete character wholly inside its equal cell.
+CRITICAL: a REAL animated run cycle with alternating near and far legs and opposite arm swings, not twelve similar running illustrations. Row-major temporal order across twelve frames:
+1 near leg extended forward heel contact, far leg extended back.
+2 near knee compresses supporting weight, far foot lifts behind.
+3 near foot beneath pelvis, far knee swings forward past support leg.
+4 near leg extends behind toe push off, far thigh swinging forward.
+5 both feet airborne, near knee folded behind, far knee forward.
+6 far leg extends forward preparing contact, near leg bent back.
+7 FAR leg extended forward heel contact, NEAR leg extended back (opposite half cycle from frame1).
+8 far knee compresses supporting weight, near foot lifts behind.
+9 far foot beneath pelvis, near knee swings forward past support leg.
+10 far leg extends behind toe push off, near thigh swinging forward.
+11 both feet airborne, far knee folded behind, near knee forward.
+12 near leg extends forward preparing frame1 contact, far leg bent back.
+Torso steady, tiny vertical bounce, scarf has progressive smooth trailing wave; visible hands swing opposite legs. Every cell uses equal scale and lighting. EXACTLY twelve isolated full body frames in a regular 4x3 grid. Atlas aspect ratio 4:3. No scenery, no ground shadows, no glow or effects. Clean edges on actual transparency.

@@ -1,0 +1,16 @@
+{
+  "tool": "Built-in image_gen.imagegen",
+  "generatedOn": "2026-10-24",
+  "assets": [
+    {
+      "file": "storm-city.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept.\nAsset type: finished environment artwork to be used as the parallax BACKGROUND layer of a premium adult-oriented 2D side-scrolling parkour game, not a poster. Wide landscape 2:1 composition.\nPrimary request: a haunting storm-wrecked mechanical megastructure, colossal cathedral-like industrial turbines and a broken skeletal bridge suspended over a roiling sea of fog. This is an abandoned machine-city whose engines still move. Awe, immense scale, danger and mystery; sophisticated tactile painterly concept art.\nScene: near-black oxidized steel ribs at far left, the giant circular turbine architecture dominates the center distance; descending chains and fractured elevated viaducts lead right toward a small distant burning amber beacon. Strong atmospheric depth: distant desaturated chalky ivory stormlight, middle slate blue-gray structures, sparse rust orange lamps; very restrained electric cyan only inside machinery. Diagonal storm rain and wind-torn cloth banners. Worn metal, charcoal abrasion, layered brush grain, matte cinematic texture.\nComposition: a true SIDE VIEW landscape for 2D gameplay. The ground is absent, bottom third is deep dark fog / abyss. Keep the central horizontal gameplay band (55–80% image height) open and low detail, for independent platforms and a moving character to be overlaid later. Main distant architecture lies ABOVE that band. Distinct silhouetted masses, asymmetrical composition, generous negative space, legible at 960x540.\nConstraints: environment ONLY, no people, no characters, no foreground playable platforms, no text, no title, no UI, no logos, no watermarks. No cute/cartoon children's style, no stick figure, no generic purple cyberpunk skyline, no flat vector geometry, no oversaturated neon. The result should feel like a carefully art-directed dark science-fantasy indie game environment."
+    },
+    {
+      "file": "turbine.png",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept.\nAsset type: one game-ready foreground machinery sprite, transparent background.\nCreate a single large circular six-bladed industrial turbine rotor seen perfectly straight on, orthographic front view. A brutal ancient industrial machine from a storm-ravaged mechanical cathedral. Six massive asymmetric tapered weathered black iron blades arranged radially around a heavy bronze central hub, scuffed steel bevels, exposed bolts, burnt umber oxidation, small dim amber conduits close to the hub. Highly readable distinctive silhouette. Atmospheric hand-painted dark fantasy game art with crisp material edges, charcoal grain and beautiful detailed metal patina. Light comes from upper left. Entire rotor must fit inside the image with a transparent margin on all four sides. Gaps between blades must be fully transparent. No outer housing ring, no environment, no floor, no text, no UI, no glow aura, no characters. It will rotate as a single sprite in a side-scrolling game. Not a toy or plastic, no cartoon thick outlines."
+    }
+  ]
+}
