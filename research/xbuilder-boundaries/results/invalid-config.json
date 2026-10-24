@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-23T11:53:03.967Z",
+  "runtime": "@xgo-pkgs/spx@3.3.0",
+  "browser": "156.0.8078.4",
+  "headless": true,
+  "scenarios": [
+    {
+      "name": "frame-30",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756384966
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756385221
+        },
+        {
+          "type": "log",
+          "text": "2026/10/23 19:53:05.247000 [ERROR] [SPX] invalid configuration: autoSetCollisionLayer and physics enabled state must not be the same",
+          "at": 1792756385248
+        }
+      ],
+      "errors": [
+        "Error: Initialization exceeded 20 seconds\n    at Timeout._onTimeout (file:///Users/rj/Documents/ChatGPT/%E4%B8%83%E7%89%9B%E9%BB%91%E5%AE%A2%E6%9D%BE/research/xbuilder-boundaries/run-probes.mjs:51:71)\n    at listOnTimeout (node:internal/timers:685:17)\n    at process.processTimers (node:internal/timers:618:7)"
+      ],
+      "timings": {}
+    },
+    {
+      "name": "frame-60",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756404895
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756405147
+        },
+        {
+          "type": "log",
+          "text": "2026/10/23 19:53:25.175000 [ERROR] [SPX] invalid configuration: autoSetCollisionLayer and physics enabled state must not be the same",
+          "at": 1792756405177
+        }
+      ],
+      "errors": [
+        "Error: Initialization exceeded 20 seconds\n    at Timeout._onTimeout (file:///Users/rj/Documents/ChatGPT/%E4%B8%83%E7%89%9B%E9%BB%91%E5%AE%A2%E6%9D%BE/research/xbuilder-boundaries/run-probes.mjs:51:71)\n    at listOnTimeout (node:internal/timers:685:17)\n    at process.processTimers (node:internal/timers:618:7)"
+      ],
+      "timings": {}
+    },
+    {
+      "name": "clones-50",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756424997
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756425268
+        },
+        {
+          "type": "log",
+          "text": "2026/10/23 19:53:45.293000 [ERROR] [SPX] invalid configuration: autoSetCollisionLayer and physics enabled state must not be the same",
+          "at": 1792756425294
+        }
+      ],
+      "errors": [
+        "Error: Initialization exceeded 20 seconds\n    at Timeout._onTimeout (file:///Users/rj/Documents/ChatGPT/%E4%B8%83%E7%89%9B%E9%BB%91%E5%AE%A2%E6%9D%BE/research/xbuilder-boundaries/run-probes.mjs:51:71)\n    at listOnTimeout (node:internal/timers:685:17)\n    at process.processTimers (node:internal/timers:618:7)"
+      ],
+      "timings": {}
+    },
+    {
+      "name": "clones-150",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756445196
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756445465
+        },
+        {
+          "type": "log",
+          "text": "2026/10/23 19:54:05.492000 [ERROR] [SPX] invalid configuration: autoSetCollisionLayer and physics enabled state must not be the same",
+          "at": 1792756445494
+        }
+      ],
+      "errors": [
+        "page.evaluate: Target page, context or browser has been closed\n    at <workspace>/research/xbuilder-boundaries/run-probes.mjs:39:49"
+      ],
+      "timings": {}
+    }
+  ]
+}

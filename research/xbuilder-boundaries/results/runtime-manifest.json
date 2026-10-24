@@ -1,0 +1,14 @@
+{
+  "engine.wasm": {
+    "bytes": 32866657,
+    "sha256": "1e4cfba2a4d314049e1c7610551eb76d7ddc91aac9d56cf2f0190f0eaf0475a8"
+  },
+  "ispx.wasm": {
+    "bytes": 50542873,
+    "sha256": "7653ffdf6f3ccfe453e4b81684acf04780ffb42302264615d1097d63c87cb912"
+  },
+  "engine.zip": {
+    "bytes": 87424,
+    "sha256": "5b5d57c270b1c85bce0f5108419e7acec0ab32aca38885fb23b443a847b4e22e"
+  }
+}

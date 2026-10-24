@@ -1,0 +1,116 @@
+[
+  {
+    "name": "frame-30",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":30,\"zorder\":[\"Hero\"],\"physics\":false,\"autoSetCollisionLayer\":false}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "onStart => {\n for {\n  dt := waitNextFrame()\n  changeXpos 90 * float64(dt)\n  if xpos > 300 { setXpos -300 }\n }\n}\nonKey KeySpace, => { println \"PROBE KEY\", currentFrame(), timer }",
+      "main.spx": "onStart => {\nwait 0.5\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nprintln \"PROBE DONE\"\n}"
+    },
+    "keys": [
+      {
+        "key": "Space",
+        "delay": 800
+      }
+    ]
+  },
+  {
+    "name": "frame-60",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Hero\"],\"physics\":false,\"autoSetCollisionLayer\":false}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "onStart => {\n for {\n  dt := waitNextFrame()\n  changeXpos 90 * float64(dt)\n  if xpos > 300 { setXpos -300 }\n }\n}\nonKey KeySpace, => { println \"PROBE KEY\", currentFrame(), timer }",
+      "main.spx": "onStart => {\nwait 0.5\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nprintln \"PROBE DONE\"\n}"
+    },
+    "keys": [
+      {
+        "key": "Space",
+        "delay": 800
+      }
+    ]
+  },
+  {
+    "name": "clones-50",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Hero\",\"Particle\"],\"physics\":false,\"autoSetCollisionLayer\":false}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "",
+      "assets/sprites/Particle/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":false,\"costumeIndex\":0,\"collisionShapeType\":\"none\",\"collisionShapeParams\":[8,8],\"collisionLayer\":0,\"collisionMask\":0,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":4,\"y\":4,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Particle/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Particle.spx": "var (\n phase float64\n)\nonCloned data => {\n spawned++\n phase = float64(data.(int))\n setXYpos (float64(data.(int)%30)-15)*24, (float64(data.(int)/30)-5)*24\n setGraphicEffect GhostEffect, 35\n show\n for {\n  dt := waitNextFrame()\n  changeXpos 35 * float64(dt)\n  if xpos > 450 { setXpos -450 }\n }\n}",
+      "main.spx": "var (\n spawned int\n)\nonStart => {\n for i:=0; i<50; i++ {\n  Particle.clone i\n  if i % 10 == 9 { waitNextFrame() }\n }\n wait 0.2\n println \"PROBE CLONES\", 50, spawned\n wait 0.5\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nprintln \"PROBE DONE\"\n}"
+    }
+  },
+  {
+    "name": "clones-150",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Hero\",\"Particle\"],\"physics\":false,\"autoSetCollisionLayer\":false}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "",
+      "assets/sprites/Particle/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":false,\"costumeIndex\":0,\"collisionShapeType\":\"none\",\"collisionShapeParams\":[8,8],\"collisionLayer\":0,\"collisionMask\":0,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":4,\"y\":4,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Particle/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Particle.spx": "var (\n phase float64\n)\nonCloned data => {\n spawned++\n phase = float64(data.(int))\n setXYpos (float64(data.(int)%30)-15)*24, (float64(data.(int)/30)-5)*24\n setGraphicEffect GhostEffect, 35\n show\n for {\n  dt := waitNextFrame()\n  changeXpos 35 * float64(dt)\n  if xpos > 450 { setXpos -450 }\n }\n}",
+      "main.spx": "var (\n spawned int\n)\nonStart => {\n for i:=0; i<150; i++ {\n  Particle.clone i\n  if i % 10 == 9 { waitNextFrame() }\n }\n wait 0.2\n println \"PROBE CLONES\", 150, spawned\n wait 0.5\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nprintln \"PROBE DONE\"\n}"
+    }
+  },
+  {
+    "name": "clones-300",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Hero\",\"Particle\"],\"physics\":false,\"autoSetCollisionLayer\":false}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "",
+      "assets/sprites/Particle/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":false,\"costumeIndex\":0,\"collisionShapeType\":\"none\",\"collisionShapeParams\":[8,8],\"collisionLayer\":0,\"collisionMask\":0,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":4,\"y\":4,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Particle/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Particle.spx": "var (\n phase float64\n)\nonCloned data => {\n spawned++\n phase = float64(data.(int))\n setXYpos (float64(data.(int)%30)-15)*24, (float64(data.(int)/30)-5)*24\n setGraphicEffect GhostEffect, 35\n show\n for {\n  dt := waitNextFrame()\n  changeXpos 35 * float64(dt)\n  if xpos > 450 { setXpos -450 }\n }\n}",
+      "main.spx": "var (\n spawned int\n)\nonStart => {\n for i:=0; i<300; i++ {\n  Particle.clone i\n  if i % 10 == 9 { waitNextFrame() }\n }\n wait 0.2\n println \"PROBE CLONES\", 300, spawned\n wait 0.5\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nprintln \"PROBE DONE\"\n}"
+    }
+  },
+  {
+    "name": "clones-350",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Hero\",\"Particle\"],\"physics\":false,\"autoSetCollisionLayer\":false}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "",
+      "assets/sprites/Particle/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":false,\"costumeIndex\":0,\"collisionShapeType\":\"none\",\"collisionShapeParams\":[8,8],\"collisionLayer\":0,\"collisionMask\":0,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":4,\"y\":4,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Particle/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Particle.spx": "var (\n phase float64\n)\nonCloned data => {\n spawned++\n phase = float64(data.(int))\n setXYpos (float64(data.(int)%30)-15)*24, (float64(data.(int)/30)-5)*24\n setGraphicEffect GhostEffect, 35\n show\n for {\n  dt := waitNextFrame()\n  changeXpos 35 * float64(dt)\n  if xpos > 450 { setXpos -450 }\n }\n}",
+      "main.spx": "var (\n spawned int\n)\nonStart => {\n for i:=0; i<350; i++ {\n  Particle.clone i\n  if i % 10 == 9 { waitNextFrame() }\n }\n wait 0.2\n println \"PROBE CLONES\", 350, spawned\n wait 0.5\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nwait 1\nprintln \"PROBE SAMPLE\", currentFrame(), timer\nprintln \"PROBE DONE\"\n}"
+    }
+  },
+  {
+    "name": "physics",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Floor\",\"Wall\",\"Hero\"],\"physics\":true,\"autoSetCollisionLayer\":false,\"globalGravity\":1,\"globalFriction\":0,\"globalAirDrag\":0}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":-200,\"y\":40,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"kinematic\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "onStart => {\n wait 0.8\n println \"PROBE FLOOR\", xpos, ypos, isOnFloor\n setVelocity 0, 320\n wait 0.2\n println \"PROBE JUMP\", xpos, ypos, isOnFloor\n setGravity 0\n setVelocity 2400, 0\n wait 0.3\n println \"PROBE DASH_WALL\", xpos, ypos\n setVelocity 0, 0\n setGravity 1\n wait 0.8\n println \"PROBE LAND\", xpos, ypos, isOnFloor\n}\nonTouchStart \"Wall\", => { println \"PROBE TOUCH_WALL\", currentFrame(), xpos, ypos }\n",
+      "assets/sprites/Floor/index.json": "{\"heading\":90,\"x\":0,\"y\":-80,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"static\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[900,20],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":450,\"y\":10,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Floor/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"900\" height=\"20\"><rect width=\"900\" height=\"20\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Floor.spx": "",
+      "assets/sprites/Wall/index.json": "{\"heading\":90,\"x\":150,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"static\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[10,300],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":5,\"y\":150,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Wall/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"300\"><rect width=\"10\" height=\"300\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Wall.spx": "",
+      "main.spx": "onStart => { wait 3; println \"PROBE DONE\" }"
+    }
+  },
+  {
+    "name": "animation-effects-camera",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Hero\"],\"physics\":false,\"autoSetCollisionLayer\":false}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"f0\",\"path\":\"f0.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1},{\"name\":\"f1\",\"path\":\"f1.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1},{\"name\":\"f2\",\"path\":\"f2.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1},{\"name\":\"f3\",\"path\":\"f3.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{\"pulse\":{\"frameFrom\":\"f0\",\"frameTo\":\"f3\",\"frameFps\":20}}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "onStart => {\n wait 0.3\n t := timer\n animateAndWait \"pulse\"\n println \"PROBE ANIMATION\", float64(timer-t), costumeName\n t = timer\n animate \"pulse\", true\n wait 0.1\n stopAnimation \"pulse\"\n setCostume \"f2\"\n println \"PROBE STOP\", currentFrame(), costumeName\n wait 0.3\n println \"PROBE HELD\", currentFrame(), costumeName\n target := currentFrame()+3\n atFrame target, => { println \"PROBE ATFRAME\", target, currentFrame() }\n setGraphicEffect GhostEffect, 50\n setGraphicEffect BrightnessEffect, 50\n Camera.setZoom 1.25\n Camera.setXYpos 100, 0\n println \"PROBE CAMERA\", Camera.zoom, Camera.xpos, Camera.ypos\n}",
+      "assets/sprites/Hero/f0.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "assets/sprites/Hero/f1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\"><rect width=\"32\" height=\"32\" rx=\"3\" fill=\"#ffa726\"/></svg>",
+      "assets/sprites/Hero/f2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"40\" height=\"32\"><rect width=\"40\" height=\"32\" rx=\"3\" fill=\"#ef5350\"/></svg>",
+      "assets/sprites/Hero/f3.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"32\"><rect width=\"48\" height=\"32\" rx=\"3\" fill=\"#ab47bc\"/></svg>",
+      "main.spx": "onStart => { wait 2.5; println \"PROBE DONE\" }"
+    }
+  }
+]

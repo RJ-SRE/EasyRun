@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-23T11:57:02.629Z",
+  "runtime": "@xgo-pkgs/spx@3.3.0",
+  "browser": "156.0.8078.4",
+  "headless": true,
+  "scenarios": [
+    {
+      "name": "ai-qualified-module",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756623612
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756623855
+        },
+        {
+          "type": "log",
+          "text": "PROBE AI_IMPORT_AND_ROLE_OK",
+          "at": 1792756623910
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756623910
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0430c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756623960
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0430c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756623971
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0430c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756623979
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0430c200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+          "at": 1792756623993
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 876.4900000095367,
+        "buildMs": 243.7699999809265,
+        "startMs": 44.954999923706055
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    }
+  ]
+}

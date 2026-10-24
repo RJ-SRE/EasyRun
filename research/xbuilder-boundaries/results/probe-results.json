@@ -1,0 +1,495 @@
+{
+  "date": "2026-10-23T11:54:12.479Z",
+  "runtime": "@xgo-pkgs/spx@3.3.0",
+  "browser": "156.0.8078.4",
+  "headless": true,
+  "scenarios": [
+    {
+      "name": "frame-30",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756453451
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756453699
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0f35ce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756453807
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0f35ce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756453819
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0f35ce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756453827
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x11c0f35ce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+          "at": 1792756453856
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 17 0.683",
+          "at": 1792756454286
+        },
+        {
+          "type": "log",
+          "text": "PROBE KEY 29 1.086",
+          "at": 1792756454686
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 47 1.692",
+          "at": 1792756455285
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 77 2.692",
+          "at": 1792756456285
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 107 3.692",
+          "at": 1792756457286
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756457286
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 868.3450000286102,
+        "buildMs": 248.66499996185303,
+        "startMs": 45.78999996185303
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "frame-60",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756458194
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756458439
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 31 0.652",
+          "at": 1792756459000
+        },
+        {
+          "type": "log",
+          "text": "PROBE KEY 54 1.035",
+          "at": 1792756459383
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 91 1.652",
+          "at": 1792756459999
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 151 2.652",
+          "at": 1792756460998
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 211 3.652",
+          "at": 1792756461998
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756461998
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 699.0900001525879,
+        "buildMs": 245.45000004768372,
+        "startMs": 44.09499979019165
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "clones-50",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756462884
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756463183
+        },
+        {
+          "type": "log",
+          "text": "PROBE CLONES 50 50",
+          "at": 1792756463642
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 49 1.085",
+          "at": 1792756464157
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 110 2.101",
+          "at": 1792756465175
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 170 3.101",
+          "at": 1792756466176
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 231 4.118",
+          "at": 1792756467191
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756467191
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 681.2599999904633,
+        "buildMs": 299.02999997138977,
+        "startMs": 44.59500002861023
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "clones-150",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756468178
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756468447
+        },
+        {
+          "type": "log",
+          "text": "PROBE CLONES 150 150",
+          "at": 1792756469104
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 58 1.261",
+          "at": 1792756469604
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 118 2.262",
+          "at": 1792756470604
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 178 3.262",
+          "at": 1792756471603
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 238 4.262",
+          "at": 1792756472603
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756472604
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 679.960000038147,
+        "buildMs": 268.2850000858307,
+        "startMs": 46.19999980926514
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "clones-300",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756473495
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756473765
+        },
+        {
+          "type": "log",
+          "text": "PROBE CLONES 300 300",
+          "at": 1792756474636
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 73 1.483",
+          "at": 1792756475136
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 133 2.483",
+          "at": 1792756476137
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 192 3.492",
+          "at": 1792756477153
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 252 4.492",
+          "at": 1792756478153
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756478153
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 682.7450001239777,
+        "buildMs": 270.5549998283386,
+        "startMs": 45.74000000953674
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "clones-350",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756479062
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756479370
+        },
+        {
+          "type": "log",
+          "text": "PROBE CLONES 350 300",
+          "at": 1792756480316
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 79 1.554",
+          "at": 1792756480832
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 137 2.555",
+          "at": 1792756481831
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 197 3.555",
+          "at": 1792756482833
+        },
+        {
+          "type": "log",
+          "text": "PROBE SAMPLE 257 4.555",
+          "at": 1792756483832
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756483832
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 687.5899999141693,
+        "buildMs": 307.7699999809265,
+        "startMs": 49.424999952316284
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "physics",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756484897
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756485191
+        },
+        {
+          "type": "log",
+          "text": "PROBE FLOOR -200 40 false",
+          "at": 1792756486035
+        },
+        {
+          "type": "log",
+          "text": "PROBE JUMP -200 104.00001525878906 false",
+          "at": 1792756486250
+        },
+        {
+          "type": "log",
+          "text": "PROBE DASH_WALL 132.96876525878906 104.00001525878906",
+          "at": 1792756486551
+        },
+        {
+          "type": "log",
+          "text": "PROBE LAND 132.96876525878906 104.00001525878906 false",
+          "at": 1792756487367
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756488250
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 703.4399998188019,
+        "buildMs": 294.710000038147,
+        "startMs": 50.00499987602234
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "animation-effects-camera",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756489095
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756489331
+        },
+        {
+          "type": "log",
+          "text": "PROBE ANIMATION 0.2 f0",
+          "at": 1792756489867
+        },
+        {
+          "type": "log",
+          "text": "PROBE STOP 35 f2",
+          "at": 1792756489967
+        },
+        {
+          "type": "log",
+          "text": "PROBE HELD 53 f2",
+          "at": 1792756490267
+        },
+        {
+          "type": "log",
+          "text": "PROBE CAMERA 1.25 100 0",
+          "at": 1792756490271
+        },
+        {
+          "type": "log",
+          "text": "PROBE ATFRAME 56 56",
+          "at": 1792756490400
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756491867
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 685.4400000572205,
+        "buildMs": 236.11500000953674,
+        "startMs": 46.700000047683716
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    }
+  ]
+}

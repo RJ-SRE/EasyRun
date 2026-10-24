@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-23T11:48:00.561Z",
+  "runtime": "@xgo-pkgs/spx@3.3.0",
+  "browser": "156.0.8078.4",
+  "headless": true,
+  "scenarios": [
+    {
+      "name": "pilot",
+      "console": [
+        {
+          "type": "log",
+          "text": "2026/10/23 19:48:05.547000 [WARN] [SPX] For loop execution timed out. Please check if there is an infinite loop in the code.\ngoroutine 20 [running]:\ngithub.com/goplus/spx/v3/internal/debug.GetStackTrace()\n\tgithub.com/goplus/spx/v3@v3.0.0/internal/debug/debug.go:93 +0x9\ngithub.com/goplus/spx/v3.Sched.func2()\n\tgithub.com/goplus/spx/v3@v3.0.0/game_run.go:147 +0x2\ngithub.com/goplus/spx/v3/internal/core/runtime.Sched({0x0, {0xc2aef03ca001f840, 0x59b50301, 0x152b160}, {0xc2aef03d608b4c80, 0x10d141f01, 0x152b160}, 0xb2d05e00}, 0x40a7700000000000, {0x0, ...})\n\tgithub.com/goplus/spx/v3@v3.0.0/internal/core/runtime/sched.go:71 +0x8\ngithub.com/goplus/spx/v3.Sched()\n\tgithub.com/goplus/spx/v3@v3.0.0/game_run.go:129 +0x5\ngithub.com/goplus/spx/v3/pkg/ispx/internal/pkg/github.com/goplus/spx/v3.func_Sched({0x2573400, 0x1, {0x1540060, 0x0, 0x0}})\n\tgithub.com/goplus/spx/v3@v3.0.0/pkg/ispx/internal/pkg/github.com/goplus/spx/v3/export.go:836 +0x2\ngithub.com/goplus/ixgo.(*Interp).invokeDirectCall(0x2d05500, 0x2573400, 0x3412f8, 0x1, {0x1540060, 0x0, 0x0})\n\tgithub.com/goplus/ixgo@v1.1.7/direct_call.go:252 +0x5\ngithub.com/goplus/ixgo.makeStaticDirectCallInstr.func1(0x2573400)\n\tgithub.com/goplus/ixgo@v1.1.7/direct_call.go:195 +0x2\ngithub.com/goplus/ixgo.(*frame).run(0x2573400)\n\tgithub.com/goplus/ixgo@v1.1.7/interp.go:1173 +0xd\ngithub.com/goplus/ixgo.(*Interp).callFunctionByReflect(0x2d05500, 0x2573280, 0x2f1f180, {0x4c2e08, 0xdeec0}, {0x1540060, 0x0, 0x0}, {0x24858e0, 0x1, ...})\n\tgithub.com/goplus/ixgo@v1.1.7/interp.go:796 +0x1f\ngithub.com/goplus/ixgo.(*function).makeFunction.func1({0x1540060, 0x0, 0x0})\n\tgithub.com/goplus/ixgo@v1.1.7/runtime_func.go:108 +0x3\ngithub.com/goplus/spx/v3.(*scriptEventRegistry).doWhenStart.func1(0x258ad20, 0x2a246c0)\n\tgithub.com/goplus/spx/v3@v3.0.0/runtime_events.go:349 +0x18\ngithub.com/goplus/spx/v3.(*scriptEventRegistry).dispatchStartEventBatch.scriptEventDispatch.task.func4(0x258ad20)\n\tgithub.com/goplus/spx/v3@v3.0.0/runtime_event_dispatch.go:55 +0x4\ngithub.com/goplus/spx/v3.(*scriptEventRegistry).dispatchStartEventBatch.func3(0x258ad20)\n\tgithub.com/goplus/spx/v3@v3.0.0/runtime_event_dispatch.go:142 +0x15\ngithub.com/goplus/spx/v3/internal/coroutine.(*Coroutines).registerBatch.func3(0x258ad20)\n\tgithub.com/goplus/spx/v3@v3.0.0/internal/coroutine/batch.go:78 +0x6\ngithub.com/goplus/spx/v3/internal/coroutine.(*Coroutines).runThread(0x1942000, 0x258ad20, 0x2a98520, 0x0)\n\tgithub.com/goplus/spx/v3@v3.0.0/internal/coroutine/lifecycle.go:131 +0x2c\ncreated by github.com/goplus/spx/v3/internal/coroutine.(*Coroutines).createThread.func1 in goroutine 19\n\tgithub.com/goplus/spx/v3@v3.0.0/internal/coroutine/lifecycle.go:82 +0x5\n",
+          "at": 1792756085551
+        },
+        {
+          "type": "log",
+          "text": "2026/10/23 19:48:05.551000 [WARN] [SPX] engine update exceeded 1 second - deferring remaining work to next frame (waitMainCount=0)",
+          "at": 1792756085552
+        },
+        {
+          "type": "log",
+          "text": "PROBE start 1 0.147",
+          "at": 1792756085554
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x10c0bcff800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756085571
+        },
+        {
+          "type": "log",
+          "text": "2026/10/23 19:48:05.571000 [ERROR] [SPX] For loop execution timed out. Please check if there is an infinite loop in the code.",
+          "at": 1792756085572
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x10c0bcff800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756085620
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x10c0bcff800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756085620
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x10c0bcff800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+          "at": 1792756085636
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 1358.0699999332428,
+        "buildMs": 242.13499999046326,
+        "startMs": 50.47499990463257
+      },
+      "runtimeErrors": [
+        "For loop execution timed out. Please check if there is an infinite loop in the code."
+      ],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    }
+  ]
+}

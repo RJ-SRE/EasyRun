@@ -1,0 +1,12 @@
+[
+  {
+    "name": "ai-qualified-module",
+    "files": {
+      "assets/index.json": "{\"map\":{\"width\":1920,\"height\":1080},\"run\":{\"width\":960,\"height\":540},\"maxFPS\":60,\"zorder\":[\"Hero\"],\"physics\":false,\"autoSetCollisionLayer\":true}",
+      "assets/sprites/Hero/index.json": "{\"heading\":90,\"x\":0,\"y\":0,\"size\":1,\"rotationStyle\":\"none\",\"physicsMode\":\"no\",\"visible\":true,\"costumeIndex\":0,\"collisionShapeType\":\"rect\",\"collisionShapeParams\":[24,32],\"collisionLayer\":1,\"collisionMask\":1,\"triggerShapeType\":\"none\",\"costumes\":[{\"name\":\"idle\",\"path\":\"idle.svg\",\"x\":12,\"y\":16,\"bitmapResolution\":1}],\"fAnimations\":{}}",
+      "assets/sprites/Hero/idle.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"32\"><rect width=\"24\" height=\"32\" rx=\"3\" fill=\"#26c6da\"/></svg>",
+      "Hero.spx": "",
+      "main.spx": "import \"github.com/goplus/builder/tools/ai\"\nvar npc ai.Player\nonStart => {\n npc.setRole \"Robot guide\"\n println \"PROBE AI_IMPORT_AND_ROLE_OK\"\n println \"PROBE DONE\"\n}"
+    }
+  }
+]

@@ -1,0 +1,204 @@
+{
+  "date": "2026-10-23T11:56:04.659Z",
+  "runtime": "@xgo-pkgs/spx@3.3.0",
+  "browser": "156.0.8078.4",
+  "headless": true,
+  "scenarios": [
+    {
+      "name": "physics-controller",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756565739
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756566035
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x114158fce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756566157
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x114158fce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756566172
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x114158fce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+          "at": 1792756566180
+        },
+        {
+          "type": "warning",
+          "text": "[.WebGL-0x114158fce00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+          "at": 1792756566192
+        },
+        {
+          "type": "log",
+          "text": "PROBE FLOOR -200 -53.98190689086914 true",
+          "at": 1792756566891
+        },
+        {
+          "type": "log",
+          "text": "PROBE JUMP -200 -11.758304595947266 false",
+          "at": 1792756567088
+        },
+        {
+          "type": "log",
+          "text": "PROBE DASH_WALL 132.9935302734375 -9.424971580505371",
+          "at": 1792756567388
+        },
+        {
+          "type": "log",
+          "text": "PROBE LAND 132.9935302734375 -53.986366271972656 true",
+          "at": 1792756568303
+        },
+        {
+          "type": "log",
+          "text": "PROBE TELEPORT 250 -54",
+          "at": 1792756568505
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756568505
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 967.3199999332428,
+        "buildMs": 296.9500000476837,
+        "startMs": 53.22499990463257
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "clone-lifecycle",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756569558
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756569853
+        },
+        {
+          "type": "log",
+          "text": "PROBE INITIAL 300 300",
+          "at": 1792756570613
+        },
+        {
+          "type": "log",
+          "text": "PROBE RECOVERY 310 300",
+          "at": 1792756571713
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756571714
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 714.8099999427795,
+        "buildMs": 294.9300000667572,
+        "startMs": 50.454999923706055
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    },
+    {
+      "name": "ai-module",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756572779
+        }
+      ],
+      "errors": [
+        "page.evaluate: Error: failed to build: failed to build XGo source: main.spx:1:8: not found package\n    at syscall/js.valueNew (http://127.0.0.1:54602/go.wasm.exec.js:404:31)\n    at http://127.0.0.1:54602/ispx.wasm:wasm-function[3149]:0x2649f2\n    at http://127.0.0.1:54602/ispx.wasm:wasm-function[3148]:0x264727\n    at http://127.0.0.1:54602/ispx.wasm:wasm-function[30962]:0x1c60d49\n    at http://127.0.0.1:54602/ispx.wasm:wasm-function[1839]:0x16a64f\n    at http://127.0.0.1:54602/ispx.wasm:wasm-function[1846]:0x16a742\n    at globalThis.Go._resume (http://127.0.0.1:54602/go.wasm.exec.js:559:23)\n    at http://127.0.0.1:54602/go.wasm.exec.js:570:8\n    at GameApp.buildGame (http://127.0.0.1:54602/game.js:356:32)\n    at http://127.0.0.1:54602/game.js:300:56\n    at <workspace>/research/xbuilder-boundaries/run-probes.mjs:39:49"
+      ],
+      "timings": {}
+    },
+    {
+      "name": "script-hitstop",
+      "console": [
+        {
+          "type": "log",
+          "text": "PROBE ENGINE_READY",
+          "at": 1792756573706
+        },
+        {
+          "type": "log",
+          "text": "PROBE BUILD_READY",
+          "at": 1792756573973
+        },
+        {
+          "type": "log",
+          "text": "PROBE FREEZE_BEGIN 29 60.559801370836794 f2",
+          "at": 1792756574539
+        },
+        {
+          "type": "log",
+          "text": "PROBE FROZEN 30 60.559801370836794 f2",
+          "at": 1792756574555
+        },
+        {
+          "type": "log",
+          "text": "PROBE FROZEN 31 60.559801370836794 f2",
+          "at": 1792756574572
+        },
+        {
+          "type": "log",
+          "text": "PROBE FROZEN 32 60.559801370836794 f2",
+          "at": 1792756574589
+        },
+        {
+          "type": "log",
+          "text": "PROBE RESUMED 38 72.55980199668556 f0",
+          "at": 1792756574689
+        },
+        {
+          "type": "log",
+          "text": "PROBE DONE",
+          "at": 1792756576039
+        }
+      ],
+      "errors": [],
+      "timings": {
+        "engineMs": 735.039999961853,
+        "buildMs": 267.17000007629395,
+        "startMs": 50.295000076293945
+      },
+      "completed": true,
+      "runtimeErrors": [],
+      "canvas": {
+        "width": 960,
+        "height": 540,
+        "clientWidth": 960,
+        "clientHeight": 540
+      }
+    }
+  ]
+}

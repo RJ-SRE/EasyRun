@@ -1,0 +1,90 @@
+{
+  "scope": "Local Chromium headless runtime microprobes; engine updates are not a rendered FPS or device compatibility benchmark.",
+  "hardware": "Apple M1 Pro, 32 GiB RAM",
+  "runtime": "@xgo-pkgs/spx@3.3.0",
+  "browser": "156.0.8078.4",
+  "rates": [
+    {
+      "name": "frame-30",
+      "frames": 90,
+      "wallSeconds": 3,
+      "engineUpdatesPerSecond": 30
+    },
+    {
+      "name": "frame-60",
+      "frames": 180,
+      "wallSeconds": 2.998,
+      "engineUpdatesPerSecond": 60.0400266844563
+    },
+    {
+      "name": "clones-50",
+      "frames": 182,
+      "wallSeconds": 3.034,
+      "engineUpdatesPerSecond": 59.98681608437706
+    },
+    {
+      "name": "clones-150",
+      "frames": 180,
+      "wallSeconds": 2.999,
+      "engineUpdatesPerSecond": 60.02000666888963
+    },
+    {
+      "name": "clones-300",
+      "frames": 179,
+      "wallSeconds": 3.017,
+      "engineUpdatesPerSecond": 59.33046072257209
+    },
+    {
+      "name": "clones-350",
+      "frames": 178,
+      "wallSeconds": 3,
+      "engineUpdatesPerSecond": 59.333333333333336
+    }
+  ],
+  "checks": [
+    {
+      "name": "All 12 non-alias scenarios compile and complete",
+      "passed": true
+    },
+    {
+      "name": "Configured 30 and 60 Hz are observed",
+      "passed": true
+    },
+    {
+      "name": "350 clone requests create 300 clones",
+      "passed": true
+    },
+    {
+      "name": "Hidden clones count and deletion restores capacity",
+      "passed": true
+    },
+    {
+      "name": "Kinematic controller lands, jumps, stops at thin wall, lands again",
+      "passed": true
+    },
+    {
+      "name": "Position assignment can teleport through the wall",
+      "passed": true
+    },
+    {
+      "name": "Four-frame 20 Hz animation completes near 0.2 seconds",
+      "passed": true
+    },
+    {
+      "name": "Stopped animation preserves explicit costume",
+      "passed": true
+    },
+    {
+      "name": "AtFrame callback runs on requested engine frame",
+      "passed": true
+    },
+    {
+      "name": "Script hitstop preserves position and pose for three ticks",
+      "passed": true
+    },
+    {
+      "name": "Bare ai import fails but qualified module import works",
+      "passed": true
+    }
+  ]
+}
