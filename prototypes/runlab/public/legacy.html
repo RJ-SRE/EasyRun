@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RUN / LAB — 跑酷试验场</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2374f1d2'/%3E%3Cpath d='M18 44V20h20v12H20l24 16' fill='none' stroke='%230b1825' stroke-width='7'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body data-game="velocity">
+    <main>
+      <header>
+        <a class="wordmark" href="/"
+          >RUN<span>/</span>LAB <small>跑酷试验场</small></a
+        >
+        <div class="edition">
+          <span class="live-dot"></span> PLAYABLE STUDIES <b>01—02</b>
+        </div>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">TWO WAYS TO FEEL THE FLOW</p>
+          <h1>速度，还是风格？</h1>
+          <p class="lede">两段短跑，两种想再来一次的理由。用你的双手做判断。</p>
+        </div>
+        <p class="prototype-note">
+          玩法原型 · 本地试玩<br />键盘操作 / 单局约 20—30 秒
+        </p>
+      </section>
+      <nav class="games" aria-label="切换原型">
+        <button
+          class="game-tab selected"
+          data-select="velocity"
+          aria-pressed="true"
+        >
+          <span class="number">01</span
+          ><span
+            ><strong>盗速者</strong
+            ><small>把城市的动能，变成你的速度。</small></span
+          ><span class="tag">MOMENTUM</span>
+        </button>
+        <button class="game-tab" data-select="cinema" aria-pressed="false">
+          <span class="number">02</span
+          ><span
+            ><strong>一镜到底</strong
+            ><small>同一条路，跑出你的招牌镜头。</small></span
+          ><span class="tag">STYLE</span>
+        </button>
+      </nav>
+      <section class="play-panel" aria-label="试玩区">
+        <div class="hud">
+          <div class="hud-title">
+            <span class="live-dot"></span
+            ><strong id="scene-name">KINETIC DISTRICT</strong
+            ><span id="attempt">等待起跑</span>
+          </div>
+          <div class="stats">
+            <span>TIME <b id="time">00.00</b></span
+            ><span>SCORE <b id="score">0000</b></span
+            ><button id="sound" aria-pressed="false" title="切换音效">
+              音效 关</button
+            ><button id="pause" disabled>暂停 Esc</button>
+          </div>
+        </div>
+        <div class="viewport" id="viewport">
+          <div id="stage"></div>
+          <div id="overlay" class="overlay">
+            <div class="overlay-card">
+              <p class="eyebrow" id="overlay-kicker">PREPARING THE CITY</p>
+              <h2 id="overlay-title">正在搭建跑道</h2>
+              <p id="overlay-body">首次加载需要读取本地游戏引擎，请稍候。</p>
+              <button id="play" class="primary" hidden>
+                开始奔跑 <span>↗</span>
+              </button>
+              <div id="feedback" hidden>
+                <p>这一局之后，你的直觉是？</p>
+                <div class="feedback-buttons">
+                  <button data-feedback="again">还想再跑</button
+                  ><button data-feedback="other">想试另一款</button
+                  ><button data-feedback="no">暂时没感觉</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="toast" aria-live="polite"></div>
+          <div class="in-world-hint" id="world-hint"></div>
+        </div>
+        <div class="progress-track"><div id="progress"></div></div>
+        <div class="run-status">
+          <span id="mechanic-state">准备就绪后，按 Enter 起跑</span>
+          <div id="beats"></div>
+          <span id="best">本机最佳 —</span>
+        </div>
+      </section>
+      <section class="under-stage">
+        <div class="controls" id="controls"></div>
+        <div class="challenge">
+          <span class="eyebrow">THIS RUN, TRY TO…</span>
+          <p id="challenge"></p>
+        </div>
+      </section>
+      <footer>
+        <span>原型关卡与美术 · 游戏逻辑运行于 XBuilder / spx</span>
+        <div>
+          <span id="save-status">试玩记录仅保存在本机</span
+          ><button id="export">导出试玩记录 ↗</button>
+        </div>
+      </footer>
+      <p class="mobile-note">本次原型需要实体键盘。请在电脑浏览器中试玩。</p>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
