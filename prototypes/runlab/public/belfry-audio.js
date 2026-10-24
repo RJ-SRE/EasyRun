@@ -156,6 +156,11 @@ export class BelfryAudio {
   stateChanged(s) {
     const old = this.state;
     this.state = s;
+    if (old?.phase === 5 && s.phase === 1 && old.attempts === s.attempts) {
+      const pending = this.focusEvents || [];
+      this.focusEvents = [];
+      for (const [name, x] of pending) this.onEvent(name, x);
+    }
     if (
       old &&
       ((old.phase === 1 && ![1, 2, 5].includes(s.phase)) ||
@@ -170,6 +175,9 @@ export class BelfryAudio {
     this.focusMode = true;
     this.focusPaused = false;
     this.nextFocus = 0;
+    this.focusProgress = 0;
+    this.focusEvents = [];
+    this.focusTone(180, 70, 0.32, 0.025);
   }
   pauseFocus(paused) {
     this.focusPaused = paused;
@@ -179,6 +187,7 @@ export class BelfryAudio {
   endFocus() {
     this.focusMode = false;
     this.focusPaused = false;
+    this.focusEvents = [];
     this.stopCue("focus");
   }
   focusTone(freq, end, duration, volume) {
@@ -212,6 +221,7 @@ export class BelfryAudio {
     source.stop(t + duration);
   }
   inscribe(progress) {
+    this.focusProgress = progress;
     this.focusTone(220 + progress * 220, 330 + progress * 330, 0.11, 0.024);
   }
   allowed() {
@@ -362,6 +372,18 @@ export class BelfryAudio {
     }
   }
   onEvent(name, x = 480) {
+    // A resolved arrow emits its sound before @wordResolved / the next @state.
+    // Keep that real event until the matching run returns to combat instead of
+    // dropping it through allowed(). Never replay across a restart or cancel.
+    if (
+      this.focusMode &&
+      this.state?.phase === 5 &&
+      ["bowshot", "heavy", "bindrelease"].includes(name)
+    ) {
+      this.focusEvents ||= [];
+      if (this.focusEvents.length < 4) this.focusEvents.push([name, x]);
+      return;
+    }
     if (["start", "practice", "retry", "fail"].includes(name)) this.stopAll();
     if (["healbreak", "healcomplete", "hurt"].includes(name))
       this.stopCue("healstart");
@@ -440,8 +462,9 @@ export class BelfryAudio {
       return;
     }
     if (focused && now > this.nextFocus) {
-      this.focusTone(110, 82.4, 1.6, 0.018);
-      this.nextFocus = now + 1.3;
+      const tension = this.focusProgress || 0;
+      this.focusTone(110 + tension * 55, 82.4 + tension * 42, 1.3, 0.018);
+      this.nextFocus = now + 1.05 - tension * 0.25;
     }
     if (active && this.allowed() && now > this.nextNote) {
       this.tone(s.segment === 1 ? 55 : 73.4, 5, 0.022);

@@ -88,3 +88,8 @@
 ## 8. 后续内容设计提案（未实装）
 
 [三十词远征 v0.8 策划](planning/thirty-word-expedition/README.md)将30词安排进五区域、十五房间、主线与全探索路线，补充语义机关、不同语境复核、余响续招与环境叙事。配套[关卡设计](planning/thirty-word-expedition/LEVELS.md)、[美术规范](planning/thirty-word-expedition/ART.md)和[30词用途样例](planning/thirty-word-expedition/WORDS.md)。这些是后续制作方案，不改变上文当前v0.7的实际交付状态；不将概念图、名义排程或设计校验当作已经可玩的关卡。
+
+
+### 当前流畅度补丁
+
+已加入有限“余响续招”：一次答对后12个有效动作秒内，最多两次原本需刻印的技能可完整释放，冷却/消耗照常且不重复计词；解控题不自动跳过。完整规则见[实现记录](INSCRIPTION_V07.md)。上述v0.8五区、语义机关、全局节奏调度仍是策划内容。

@@ -4,7 +4,7 @@ onCloned data => {
   waitNextFrame()
   if Hero.hook>=0 {
    dx:=Hero.hookX-Hero.px; dy:=Hero.hookY-Hero.py-30; t:=(float64(i)+0.5)/24
-   sag:=sin(t*3.14159)*6*sin(worldTime*16)
+   sag:=sin(t*3.14159)*6*sin(visualTime*16)
    setXYpos Hero.px+dx*t,Hero.py+30+dy*t+sag
    setHeading angle(dx,dy)
    setSize dist(dx,dy)/24/24+0.05

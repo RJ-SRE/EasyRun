@@ -30,7 +30,7 @@ onCloned data => {
     previous=costume; blend=0.065; setCostume costume
    }
    setCostume costume; setHeading enemyFacing[i]*90
-   breath:=0.0; if state==0 {breath=sin(worldTime*2.3+float64(i))*0.004}
+   breath:=0.0; if state==0 {breath=sin(visualTime*2.3+float64(i))*0.004}
    setSize size*(1+breath); setXYpos enemyX[i],enemyY[i]-34
    // Stationary silhouettes mark actual past positions; they never hit or hide
    // the body. The same pool and attempt/pause lifetime rules bound the cost.
@@ -38,10 +38,12 @@ onCloned data => {
    if fast && enemyStun[i]<=0 && abs(enemyVX[i])>130 && phase==1 && elapsed-trailAt>0.065 && fxCount<70 {
     trailAt=elapsed; fxCount++; EnemyBlend.clone []float64{float64(i),float64(costume),enemyFacing[i]*90,size,float64(attempts),enemyX[i],enemyY[i]-34,0.18}
    }
-   ghost:=0.0; if phase==1 {blend=clamp(blend-dt,0,0.065)}; if blend>0 {ghost=blend/0.065*35}
+   ghost:=0.0; if phase==1 || phase==5 {blend=clamp(blend-presentationDelta(dt),0,0.065)}; if blend>0 {ghost=blend/0.065*35}
    if kind==2 && state==0 {ghost=25}
    setGraphicEffect GhostEffect,ghost
-   light:=8.0; if state==1 {light=12}; if enemyFlash[i]>0 {light=58}
+   light:=8.0; if state==1 {light=12}
+   flash:=enemyFlash[i]; if phase==5 {flash=clamp(flash-wordFocusAge*0.28,0,1)}
+   if flash>0 {light=58}
    setGraphicEffect BrightnessEffect,light
   } else {hide; previous=-1}
  }

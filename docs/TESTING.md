@@ -176,3 +176,14 @@ bash scripts/with-env.sh pnpm game:package
 证据：[58 项摘要与源码哈希](evidence/inscription-motion/verification.json)、[动作与输入衔接](evidence/inscription-motion/motion.json)、[不录屏对照](evidence/inscription-motion/performance.json)、[铭文流程](evidence/inscription-motion/flow.json)、[技能回归](evidence/inscription-motion/skills.json)、[生命周期](evidence/inscription-motion/lifecycle.json)、[聚焦画面](evidence/inscription-motion/focus.png)。动效演示为真实首平台按键录制，无测试遭遇注入；浏览器录屏不包含音轨。
 
 复现新增检查：`RUNLAB_URL=http://127.0.0.1:4184/ bash scripts/with-env.sh node prototypes/runlab/test-belfry-inscription-motion.mjs`。可加 `RECORD_MOTION=1` 保存完整测试录像；已纳入统一 `scripts/test-game.mjs`，默认不录屏。
+
+
+## 2026-10-25 · 蓄势与余响续招复测
+
+本轮重新通过42项浏览器检查：铭文流程18、异常恢复5、忍者身法10、连续性与余响9。构建为359文件/44精灵；修改的JavaScript经ESLint和Prettier检查，Git空白检查通过。本轮未重跑完整通关路线，不把旧整关证据算成本次新测。
+
+真实首平台检查覆盖：冻结保护与表现时钟前进、输入反馈、静音与暂停、最后字母E隔离、确认后立即接受新跳跃、正确放箭的音效确实入播放队列、两次续招依次扣额但不加词、正常技能冷却、暂停不消耗余响、答错不给新额度、过期不自动弹题、下次主动满蓄恢复刻印、减少运动及重开清理。忍者检查覆盖连续位移、反击、跳过扫链、攻击打断及暂停/重开。
+
+本轮录屏运行：提交至引擎确认正确约5.1ms，错误约6.7ms；宿主rAF中位数16.7ms、P95 50.0ms。它们不是引擎GPU帧率，也不代表全程稳定60FPS。首轮并发运行另一WASM测试时帧时间受干扰，最终动效专项单独复测；仍保留对长帧的限制说明，不用输入确认速度冒充渲染性能。
+
+证据：[42项摘要及源码哈希](evidence/inscription-resonance/verification.json)、[动效/余响报告](evidence/inscription-resonance/motion.json)、[真实输入录像片段](evidence/inscription-resonance/flow-preview.mp4)、[聚焦画面](evidence/inscription-resonance/focus.png)。录像按原速截取，浏览器录像不带音轨；音频通过播放队列断言验证。

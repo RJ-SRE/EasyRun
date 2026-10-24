@@ -7,7 +7,7 @@ onCloned data => {
    setCostume 0; setGraphicEffect GhostEffect,0
    if enemyType[i]==1 && enemyMode[i]==1 && enemyState[i]==1 && enemyClock[i]<0.32 && enemyStep[i]==0 {setCostume 1; setSize 0.27}
    if enemyState[i]==5 {setSize 0.34; setGraphicEffect GhostEffect,50}
-   setGraphicEffect BrightnessEffect,8+sin(worldTime*20)*5
+   setGraphicEffect BrightnessEffect,8+sin(visualTime*20)*5
   } else {hide}
  }
 }

@@ -408,7 +408,7 @@ for (let i = 0; i < 5; i++)
     "Dial" + i,
     { dial: clockArt() },
     { x: i % 2 ? 750 : 195, y: -430 - i * 760, rotationStyle: "normal" },
-    `onStart => {for {waitNextFrame(); setHeading 90+worldTime*${i % 2 ? 0.8 : -0.8}; setGraphicEffect GhostEffect,68}}`,
+    `onStart => {for {waitNextFrame(); setHeading 90+visualTime*${i % 2 ? 0.8 : -0.8}; setGraphicEffect GhostEffect,68}}`,
   );
 // Foreground buttresses frame the vertical play field without obscuring routes.
 for (let side = 0; side < 2; side++) {
@@ -457,7 +457,7 @@ for (let i = 0; i < 4; i++) {
       ),
     },
     { x, y: y + 80 },
-    `onStart => {for {waitNextFrame(); if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(worldTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
+    `onStart => {for {waitNextFrame(); if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(visualTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
   );
 }
 sprite(
@@ -518,7 +518,7 @@ sprite(
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[10],enemyY[10]; setHeading 90+worldTime*10} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[10],enemyY[10]; setHeading 90+visualTime*10} else {hide}}}",
 );
 sprite(
   "Niche",
@@ -623,7 +623,7 @@ sprite(
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if Hero.charging && phase==1 {show; setXYpos Hero.px,Hero.py+30; setHeading 90+worldTime*120; setSize 0.45+Hero.chargeTime*0.4; setGraphicEffect BrightnessEffect,Hero.chargeTime*30} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if Hero.charging && (phase==1 || phase==5) {show; setXYpos Hero.px,Hero.py+30; setHeading 90+visualTime*120; setSize 0.45+Hero.chargeTime*0.4; setGraphicEffect BrightnessEffect,Hero.chargeTime*30} else {hide}}}",
 );
 sprite(
   "Echo",
@@ -647,7 +647,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos Hero.px-35,Hero.py+62+sin(worldTime*3)*7; setSize 0.36} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos Hero.px-35,Hero.py+62+sin(visualTime*3)*7; setSize 0.36} else {hide}}}",
 );
 sprite(
   "Rope",
@@ -784,7 +784,7 @@ sprite(
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if Hero.healTime>0 && phase!=2 && phase!=3 {show; setXYpos Hero.px,Hero.py+30; setSize 0.35+Hero.healTime*0.65; setHeading 90+worldTime*80; setGraphicEffect GhostEffect,Hero.healTime*40} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if Hero.healTime>0 && phase!=2 && phase!=3 {show; setXYpos Hero.px,Hero.py+30; setSize 0.35+Hero.healTime*0.65; setHeading 90+visualTime*80; setGraphicEffect GhostEffect,Hero.healTime*40} else {hide}}}",
 );
 sprite(
   "裂印",
@@ -796,7 +796,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyMark[i]>0 && enemyHP[i]>0 {show; setXYpos enemyX[i],enemyY[i]+58; setSize 0.45; setGraphicEffect GhostEffect,15+sin(worldTime*7)*12} else {hide}}}",
+  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyMark[i]>0 && enemyHP[i]>0 {show; setXYpos enemyX[i],enemyY[i]+58; setSize 0.45; setGraphicEffect GhostEffect,15+sin(visualTime*7)*12} else {hide}}}",
 );
 sprite(
   "Arrow",
@@ -857,7 +857,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onStart => {for {waitNextFrame(); i:=Hero.target; if phase==1 && i>=0 && Hero.hook<0 && !Hero.bowCharging {show; if i<len(anchorX) {setXYpos anchorX[i],anchorY[i]} else {j:=i-len(anchorX); setXYpos enemyX[j],enemyY[j]}; setSize 0.85+sin(worldTime*5)*0.04} else {hide}}}",
+  "onStart => {for {waitNextFrame(); i:=Hero.target; if phase==1 && i>=0 && Hero.hook<0 && !Hero.bowCharging {show; if i<len(anchorX) {setXYpos anchorX[i],anchorY[i]} else {j:=i-len(anchorX); setXYpos enemyX[j],enemyY[j]}; setSize 0.85+sin(visualTime*5)*0.04} else {hide}}}",
 );
 sprite(
   "Slash",
@@ -978,7 +978,7 @@ sprite(
   "Motes",
   { dust: vector(1400, 1000, dust) },
   {},
-  "onStart => {for {waitNextFrame(); setXYpos 480+sin(worldTime*0.07)*30,cameraY+sin(worldTime*0.11)*50}}",
+  "onStart => {for {waitNextFrame(); setXYpos 480+sin(visualTime*0.07)*30,cameraY+sin(visualTime*0.11)*50}}",
 );
 sprite(
   "Mist",
@@ -990,7 +990,7 @@ sprite(
     ),
   },
   {},
-  "onStart => {for {waitNextFrame(); setXYpos 480+sin(worldTime*0.1)*85,cameraY+sin(worldTime*0.18)*28}}",
+  "onStart => {for {waitNextFrame(); setXYpos 480+sin(visualTime*0.1)*85,cameraY+sin(visualTime*0.18)*28}}",
 );
 sprite(
   "RisingVoid",

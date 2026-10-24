@@ -3,6 +3,9 @@ import "math"
 var (
  wordVisualPaused bool
  wordFocusAge float64
+ wordVisualRate float64
+ wordFlowTime float64
+ wordFlowCharges int
  visualTime float64
  wordMode int
  wordWanted int
@@ -284,17 +287,24 @@ onStart => {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
   if phase==1 {
    Hero.captureAttack()
-   if hitStop>0 {hitStop-=dt} else {Hero.update(dt); if phase==1 {updateWorld(dt)}; beginWord()}
+   if hitStop>0 {hitStop-=dt} else {
+    wordFlowTime=math.Max(0,wordFlowTime-dt); if wordFlowTime<=0 {wordFlowCharges=0}
+    Hero.update(dt); if phase==1 {updateWorld(dt)}; beginWord()
+   }
   }
   if phase==0 {worldTime+=dt}
   if phase==5 && !wordVisualPaused {wordFocusAge+=dt}
+  if phase==1 || phase==5 && !wordVisualPaused {
+   targetRate:=1.0; if phase==5 {targetRate=0.28}
+   wordVisualRate+=(targetRate-wordVisualRate)*(1-exp(-dt/0.09))
+  }
   visualDt:=presentationDelta(dt)
   if phase==0 || phase==1 || phase==5 {visualTime+=visualDt}
   if phase==0 || phase==1 || phase==5 && !wordVisualPaused {Hero.render(visualDt)}
   if float64(timer)-lastState>0.07 {
    lastState=float64(timer)
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}
-   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[10],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink
+   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[10],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordFlowTime,wordFlowCharges,wordVisualRate,visualTime
    for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i],enemyFacing[i],enemyStep[i],enemyMark[i]}}
   }
  }
