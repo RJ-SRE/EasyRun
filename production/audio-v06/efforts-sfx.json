@@ -1,0 +1,249 @@
+{
+  "version": "audio-v06-design",
+  "status": "not_recorded_not_integrated",
+  "cues": [
+    {
+      "id": "effort-light",
+      "trigger": "light_attack",
+      "layers": [
+        "短发力呼气"
+      ],
+      "direction": "低音量的气息；三连最多选一处播放。",
+      "variant_count": 6,
+      "target_duration_seconds": [
+        0.12,
+        0.28
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "effort-heavy",
+      "trigger": "heavy_release",
+      "layers": [
+        "蓄力吸气",
+        "闭口短促发力"
+      ],
+      "direction": "用腹部发力感，不拉长吼声；不把吸气和释放绑定成不能取消的长文件。",
+      "variant_count": 4,
+      "target_duration_seconds": [
+        0.25,
+        0.6
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "effort-grapple",
+      "trigger": "hook_sling",
+      "layers": [
+        "绳索拉紧时的吃力呼吸"
+      ],
+      "direction": "只在强甩出或险情使用，普通钩索安静。",
+      "variant_count": 3,
+      "target_duration_seconds": [
+        0.18,
+        0.35
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "effort-land",
+      "trigger": "hard_landing",
+      "layers": [
+        "受力时短吐气"
+      ],
+      "direction": "只在高落差硬落地触发；轻落地用布料和鞋底。",
+      "variant_count": 3,
+      "target_duration_seconds": [
+        0.15,
+        0.4
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "effort-hurt",
+      "trigger": "hurt",
+      "layers": [
+        "被打断的呼吸",
+        "短痛呼"
+      ],
+      "direction": "短、克制，与强度匹配；保留角色身份。",
+      "variant_count": 4,
+      "target_duration_seconds": [
+        0.2,
+        0.55
+      ],
+      "priority": "body",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "effort-recover",
+      "trigger": "safe_after_low_health",
+      "layers": [
+        "不规则呼吸恢复"
+      ],
+      "direction": "从急促到稳定；进战斗或说话立即淡出。",
+      "variant_count": 2,
+      "target_duration_seconds": [
+        1.0,
+        2.0
+      ],
+      "priority": "ambient",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-blade",
+      "trigger": "light1/light2/finisher",
+      "layers": [
+        "衣袖/皮革",
+        "窄而快的刀风",
+        "命中时单独追加材质层"
+      ],
+      "direction": "切线轻快、返刃偏薄、终结有收势；挥空绝不播放命中。",
+      "variant_count": 6,
+      "target_duration_seconds": [
+        0.08,
+        0.28
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-hook",
+      "trigger": "hook/attach/sling",
+      "layers": [
+        "卡扣释放",
+        "短钢丝抽出",
+        "命中铜环",
+        "受力绷紧",
+        "甩出回卷"
+      ],
+      "direction": "五个独立可中断事件；接触声来自目标位置，绳索声跟随主角。",
+      "variant_count": 4,
+      "target_duration_seconds": [
+        0.06,
+        0.45
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-porcelain",
+      "trigger": "impact_lantern",
+      "layers": [
+        "细硬接触",
+        "短瓷裂",
+        "稀疏碎片落下"
+      ],
+      "direction": "先清脆的小裂纹；破坏时才出现更大的散裂。",
+      "variant_count": 5,
+      "target_duration_seconds": [
+        0.08,
+        0.5
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-brass",
+      "trigger": "impact_bell",
+      "layers": [
+        "钝的金属接触",
+        "短暂铜腔共振"
+      ],
+      "direction": "轻击被挡发闷；破甲附带裂口，延迟尾响让位给下一击。",
+      "variant_count": 5,
+      "target_duration_seconds": [
+        0.15,
+        0.7
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-heavy",
+      "trigger": "charged_hit",
+      "layers": [
+        "衣料拉伸",
+        "短发力",
+        "锋刃破入",
+        "低频瞬态",
+        "材质碎片"
+      ],
+      "direction": "命中才有重量层；空挥保留刀风与收势，不加爆炸。",
+      "variant_count": 4,
+      "target_duration_seconds": [
+        0.15,
+        0.8
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-dash",
+      "trigger": "dash",
+      "layers": [
+        "贴身衣料",
+        "短气流位移"
+      ],
+      "direction": "根据方向与速度变化；避免激光与固定音高哨声。",
+      "variant_count": 4,
+      "target_duration_seconds": [
+        0.12,
+        0.24
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-nova",
+      "trigger": "nova",
+      "layers": [
+        "弦绷到极限",
+        "绷断瞬态",
+        "低频压力",
+        "高处铜件余振"
+      ],
+      "direction": "释放前世界声轻退约 40ms，保留危险提示；尾声可被重要信息压低。",
+      "variant_count": 3,
+      "target_duration_seconds": [
+        0.4,
+        1.3
+      ],
+      "priority": "combat",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "sfx-enemy-tell",
+      "trigger": "enemy_tell",
+      "layers": [
+        "提灯快门/织缆棘轮/钟摆制动/模仿刃轻触"
+      ],
+      "direction": "四类各一组独特预兆；大攻击跟身体动作准确同步，听觉可区分。",
+      "variant_count": 3,
+      "target_duration_seconds": [
+        0.15,
+        0.65
+      ],
+      "priority": "warning",
+      "audio_files": [],
+      "status": "to_produce"
+    }
+  ]
+}

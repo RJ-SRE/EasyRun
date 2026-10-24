@@ -1,0 +1,71 @@
+{
+  "status": "awaiting_audio_production",
+  "voice_line_ids": [
+    "v6-h-arrival",
+    "v6-h-warning",
+    "v6-h-risk",
+    "v6-h-low",
+    "v6-h-core",
+    "v6-h-light",
+    "v6-l-greet",
+    "v6-b-wave"
+  ],
+  "takes_per_line": 3,
+  "voice_candidate_count": 2,
+  "workflow": [
+    "两条候选声线先各录 arrival/core 两句，等响度干声对比",
+    "选定声线后，八句按 A/B/C 三种演绎制作",
+    "对话与发力声先单独听，再用约 30 秒游戏事件顺序试听混音"
+  ],
+  "listening_checks": [
+    "像同一个角色，情绪变化时仍稳定",
+    "不用音乐也能感到警觉或关切",
+    "呼吸和停顿有动机",
+    "短指令清晰，幽默不挤占操作注意力",
+    "台词结束保留字尾，循环试听不疲劳"
+  ],
+  "montage_timeline": [
+    {
+      "seconds": [
+        0,
+        4
+      ],
+      "cue": "暗井环境、衣料，主角 arrival"
+    },
+    {
+      "seconds": [
+        4,
+        8
+      ],
+      "cue": "钩索五段事件，不说话"
+    },
+    {
+      "seconds": [
+        8,
+        10
+      ],
+      "cue": "敌人预兆，主角 Left. Move.，其他声音避让"
+    },
+    {
+      "seconds": [
+        10,
+        16
+      ],
+      "cue": "轻击→挑空→重击：发力、瓷裂、铜腔，连续动作中无长对白"
+    },
+    {
+      "seconds": [
+        16,
+        21
+      ],
+      "cue": "安全落地，呼吸恢复，Next time... a floor."
+    },
+    {
+      "seconds": [
+        21,
+        30
+      ],
+      "cue": "危险退去、灯光细响，转入一条探索台词"
+    }
+  ]
+}

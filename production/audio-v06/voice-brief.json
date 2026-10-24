@@ -1,0 +1,77 @@
+{
+  "version": "audio-v06-design",
+  "status": "script_and_direction_only",
+  "date": "2026-10-24",
+  "approved_direction": "冷静的暗夜刺客：低声、克制、干燥幽默",
+  "recorded_audio_available": false,
+  "runtime_integrated": false,
+  "hero": {
+    "name": "持弦者",
+    "working_voice_cast": "成年、偏低的男中音；自然中低音区，保留轻微粗粝，不刻意压喉",
+    "language": "English",
+    "dialect": "轻微英式语感，以清楚自然为先",
+    "performance": "像在靠近同伴时交代一件危险但熟悉的事；听起来始终注意着四周。",
+    "modes": {
+      "stealth": "低声有声讲话，字头轻，收尾短；只有真正要避开敌人时使用耳语。",
+      "combat": "更明确、更短，发力与呼吸跟随身体；紧急指令可提高音量。",
+      "aftermath": "允许半口气、轻微迟疑；幽默平说，感情藏在停顿里。"
+    },
+    "avoid": [
+      "每句都气声耳语",
+      "预告片播音腔",
+      "夸张的沙哑或压低音调",
+      "每次击杀讲笑话",
+      "技能名称喊叫",
+      "整句均匀速度和重音",
+      "把抒情长句塞进战斗"
+    ],
+    "casting_prompt_en": "An original adult male character speaking natural English with a light British inflection. A watchful, self-possessed assassin speaking to one trusted companion nearby. Use a comfortable low-middle register, lightly textured, unforced, with clear consonants and small changes of breath. He listens before he answers. Under danger he becomes concise and decisive; his humour is understated and almost incidental. Capture a clean, intimate, dry performance with no music or designed sound effects. Let uncertainty and care appear in the timing rather than in a theatrical voice.",
+    "take_directions": {
+      "A": "警觉：低音量，有声，话前短吸气。",
+      "B": "干燥：平说，最后一个关键词稍轻。",
+      "C": "柔和：收起讽刺，像在保护同伴。"
+    }
+  },
+  "enemies": {
+    "lantern": {
+      "name": "提灯者",
+      "persona": "极其礼貌的旧救援员，真诚关切逐渐显露强制性",
+      "performance": "语气自然、礼貌得令人不安；保持可懂度，机械味只放在灯具和关节声音里",
+      "processing": "主声保持干净；尾音少量窄带副层，不整句强滤波"
+    },
+    "weaver": {
+      "name": "织缆者",
+      "persona": "被反复打断工作的老工匠",
+      "performance": "短句快一点，厌烦藏在呼气里，偶尔自言自语",
+      "processing": "窄空间短反射；齿轮与缆线另轨"
+    },
+    "bell": {
+      "name": "钟卫",
+      "persona": "值守太久、依然不肯离岗的守卫",
+      "performance": "迟缓但坚定，句间留白；愤怒时仍能听出疲倦",
+      "processing": "干声保留字头，句尾接铜腔共振；不把人声整体降八度"
+    },
+    "mimic": {
+      "name": "模仿侍从",
+      "persona": "很想表现得专业，越认真越露出破绽",
+      "performance": "略晚半拍，模仿主角的停顿和用词；失手后短暂尴尬",
+      "processing": "轻微金属附层；节奏变化承担幽默"
+    }
+  },
+  "candidate_production_route": {
+    "first": "用原创新声线做 8 句试音，每句 3 种演绎；先听无配乐干声。",
+    "then": "保留一个稳定声线，以确认的表演指令逐句录制或合成；身体发力声单独制作。",
+    "fallback": "若可控合成依然缺少表演，用同一脚本交给配音演员；不通过堆叠效果掩饰朗读。",
+    "tools_state": "当前未连接专业语音生成服务；没有调用、购买或生成新配音。"
+  },
+  "sources": [
+    {
+      "url": "https://elevenlabs.io/docs/eleven-creative/voices/voice-design/",
+      "supports": "候选方案可按文字描述探索声线；质量须试音验证。"
+    },
+    {
+      "url": "https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices",
+      "supports": "候选语音引擎支持表演指令；标签表现依赖声线与模型，不能保证结果。"
+    }
+  ]
+}
