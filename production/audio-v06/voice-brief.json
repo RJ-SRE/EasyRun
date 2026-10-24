@@ -35,31 +35,83 @@
   "enemies": {
     "lantern": {
       "name": "提灯者",
-      "persona": "极其礼貌的旧救援员，真诚关切逐渐显露强制性",
-      "performance": "语气自然、礼貌得令人不安；保持可懂度，机械味只放在灯具和关节声音里",
-      "processing": "主声保持干净；尾音少量窄带副层，不整句强滤波"
+      "voice_identity": "幽甜的引路者",
+      "persona": "它渴望把活着的东西留在灯下，关切中带着捕食欲。",
+      "performance": "成年偏高、细薄、带微笑的软声；句头像安抚，句尾突然失去温度。追逐时声音短暂收紧成尖细的吸气叫，随后骤停。",
+      "processing": "先录完整自然表演；允许一点真实呼气副层与短空间反射。人声不加机械音色。",
+      "vocal_gestures": {
+        "notice": "像发现藏起来的同伴，轻轻吸气，笑意浮出。",
+        "tell": "细长吸气后突然安静，留出攻击前辨识点。",
+        "hurt": "微笑裂开成短促尖叫，随即勉强恢复轻声。",
+        "death": "原本在笑的呼气逐渐变成困惑，句尾像想继续呼吸。"
+      },
+      "casting_prompt_en": "An original adult apparition with a thin, high, intimate voice and unsettling warmth. Speak as if gently coaxing someone out of hiding. The smile should be audible at first, then drain away at the end of a thought. Use small, uneven breaths and a brief, controlled falsetto break when distressed. Keep the words intelligible. Record a dry living performance without electronic or mechanical treatment.",
+      "take_directions": {
+        "A": "幽甜安抚，带微笑。",
+        "B": "微笑消失，暴露占有欲。",
+        "C": "灯要熄灭时慌乱，尖声短暂失控。"
+      }
     },
     "weaver": {
       "name": "织缆者",
-      "persona": "被反复打断工作的老工匠",
-      "performance": "短句快一点，厌烦藏在呼气里，偶尔自言自语",
-      "processing": "窄空间短反射；齿轮与缆线另轨"
+      "voice_identity": "巢中的缝合者",
+      "persona": "把移动的身体当成需要缝回原位的东西，耐心与饥饿混在一起。",
+      "performance": "尖、窄、干涩的鼻腔与齿间发声，短句低语，偶尔吞掉句首。出招前用短促舌颚轻响作辨识；受挫时一句词突然向上折。",
+      "processing": "用真实口腔声和细微吐息补充；言语主声清楚，不用齿轮或电子噪声塑造嗓音。",
+      "vocal_gestures": {
+        "notice": "两下不等距的舌颚轻响，然后像在嗅闻。",
+        "tell": "短齿间吸气，末端干涩地截断。",
+        "hurt": "破音的抽气，带着被抢走东西的恼怒。",
+        "death": "一串越来越短的气音，声音找不到下一口气。"
+      },
+      "casting_prompt_en": "An original nest-dwelling horror character with a narrow, wiry adult voice. Speak in short, impatient fragments through lightly clenched teeth. Let fascination with repairing living things emerge as disturbing tenderness. Place small tongue and palate sounds between thoughts, never over the words. Distress may lift one syllable into a sharp natural break. No robotic rhythm, digital processing or sustained shrieking.",
+      "take_directions": {
+        "A": "专注研究，近乎温柔。",
+        "B": "猎物挣扎时烦躁，句子更短。",
+        "C": "作品被破坏，压不住短促尖声。"
+      }
     },
     "bell": {
       "name": "钟卫",
-      "persona": "值守太久、依然不肯离岗的守卫",
-      "performance": "迟缓但坚定，句间留白；愤怒时仍能听出疲倦",
-      "processing": "干声保留字头，句尾接铜腔共振；不把人声整体降八度"
+      "voice_identity": "守着葬礼的哀鸣者",
+      "persona": "它把守候当作最后的存在理由；攻击时像宣判，破甲后露出被遗弃的恐惧。",
+      "performance": "粗糙、空洞的成年低中音，长呼气里有哭腔。重要句尾可由另一次真实演绎的细高哀声接过去，像壳里还有一个被困者。",
+      "processing": "干声保持自然；极少量第二人声延续元音，不叠第二条可懂台词。铜壳声仍是单独的物体音效，不作为人声滤镜。",
+      "vocal_gestures": {
+        "notice": "压着呼吸的低吟，像试图把悲伤吞回去。",
+        "tell": "低吟升成短哀声，在攻击前干脆停住。",
+        "hurt": "粗声裂开，漏出一瞬细高哭音。",
+        "death": "巨大呼气之后，只剩很轻的一句，像终于卸下职责。"
+      },
+      "casting_prompt_en": "An original exhausted guardian with a rough, hollow low-middle voice and restrained grief. Commands are slow and certain, but they cost breath. When the armour of certainty breaks, allow a brief high lament to escape naturally. The central performance must remain understandable and recognisably alive. Any second vocal performance is recorded separately as a nonverbal tail. No artificial octave-down monster voice or machine effect.",
+      "take_directions": {
+        "A": "仍在履职，低声宣判。",
+        "B": "愤怒的哀鸣，气息增重。",
+        "C": "护壳破裂后怕被留下，几乎恳求。"
+      }
     },
     "mimic": {
       "name": "模仿侍从",
-      "persona": "很想表现得专业，越认真越露出破绽",
-      "performance": "略晚半拍，模仿主角的停顿和用词；失手后短暂尴尬",
-      "processing": "轻微金属附层；节奏变化承担幽默"
+      "voice_identity": "偷来熟悉声音的窃声者",
+      "persona": "它在学主角，却不理解哪些话是安慰、哪些动作会伤人；让熟悉突然变得不可信。",
+      "performance": "前几个词刻意学本作原创主角的节奏，停顿稍长，最后一个词滑回尖细、兴奋的本声。偶尔先笑半口气，再像想起来应该说话。",
+      "processing": "演员按两个自然发声状态顺次表演，必要时分句录制拼接；不做电子卡顿、采样故障或机械变声。",
+      "vocal_gestures": {
+        "notice": "半口不合时宜的笑，然后安静。",
+        "tell": "模仿主角吸气节奏，紧接着发出自己短而尖的笑声。",
+        "hurt": "先学主角的痛呼，再露出自己的困惑气音。",
+        "death": "最后想重复一句熟悉的话，停在不该停的地方。"
+      },
+      "casting_prompt_en": "An original uncanny imitator trying to copy the cadence of our own fictional hero. Begin a phrase with controlled familiarity, pause slightly too long, then let the last word escape in the creature's thinner, eager natural voice. Humour is uncomfortable and sparse. Use sequential vocal choices rather than simultaneous intelligible speakers. No electronic glitches, robot stutters or cartoon squeaks.",
+      "take_directions": {
+        "A": "努力学得很像，末尾有微小破绽。",
+        "B": "过分兴奋，尖细本声露出。",
+        "C": "没理解情境，熟悉的安慰听起来像威胁。"
+      }
     }
   },
   "candidate_production_route": {
-    "first": "用原创新声线做 8 句试音，每句 3 种演绎；先听无配乐干声。",
+    "first": "主角保留已选暗夜刺客方向；共 10 句试音覆盖主角与四种敌人，每句 3 种演绎。敌人使用各自 A/B/C 表演指令。",
     "then": "保留一个稳定声线，以确认的表演指令逐句录制或合成；身体发力声单独制作。",
     "fallback": "若可控合成依然缺少表演，用同一脚本交给配音演员；不通过堆叠效果掩饰朗读。",
     "tools_state": "当前未连接专业语音生成服务；没有调用、购买或生成新配音。"
@@ -73,5 +125,17 @@
       "url": "https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices",
       "supports": "候选语音引擎支持表演指令；标签表现依赖声线与模型，不能保证结果。"
     }
-  ]
+  ],
+  "enemy_direction_update": {
+    "date": "2026-10-24",
+    "user_requirement": "敌人声音可以尖锐、恐怖，不要机械/机器人声音",
+    "creative_premise": "旧躯壳里困着执念；声线像有生命的异物。此为新的声音叙事设想，不要求改变已实现机械外形。",
+    "global_rules": [
+      "人声主体禁用声码器、规则音高台阶、电子故障切片和统一金属滤波",
+      "锋利感来自发音、气息、音区变化与突然收声，控制刺耳频段，不靠增大音量",
+      "四类分别以幽甜、虫性、哀鸣、错位模仿建立辨识度",
+      "每类保留稳定的攻击预兆，情绪变化不使危险提示失去规律",
+      "完整台词仍只有一个语义焦点，复声只能做不可辨词的薄底层或顺次接话"
+    ]
+  }
 }

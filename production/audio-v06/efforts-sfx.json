@@ -233,9 +233,10 @@
       "id": "sfx-enemy-tell",
       "trigger": "enemy_tell",
       "layers": [
-        "提灯快门/织缆棘轮/钟摆制动/模仿刃轻触"
+        "敌人各自固定的身体/物体预兆",
+        "在关键攻击上添加自然发声提示"
       ],
-      "direction": "四类各一组独特预兆；大攻击跟身体动作准确同步，听觉可区分。",
+      "direction": "物体音保留读图作用。敌人发声分别用幽细吸气、齿间干吸、低吟转哀声、错位模仿短笑；语音不加机器滤镜。",
       "variant_count": 3,
       "target_duration_seconds": [
         0.15,
@@ -244,6 +245,104 @@
       "priority": "warning",
       "audio_files": [],
       "status": "to_produce"
+    },
+    {
+      "id": "enemy-vocal-lantern",
+      "trigger": "key_attack_tell / hurt / collapse",
+      "layers": [
+        "自然发声主体",
+        "可选独立非语义气息尾层"
+      ],
+      "direction": "细长吸气→骤停；受伤时微笑裂成短尖声；崩解时失去呼吸",
+      "actions": [
+        "tell",
+        "hurt",
+        "collapse"
+      ],
+      "variants_per_action": 2,
+      "variant_count": 6,
+      "target_duration_seconds": [
+        0.15,
+        0.8
+      ],
+      "priority": "warning_or_body",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "enemy-vocal-weaver",
+      "trigger": "key_attack_tell / hurt / collapse",
+      "layers": [
+        "自然发声主体",
+        "可选独立非语义气息尾层"
+      ],
+      "direction": "舌颚轻响→齿间吸气；受挫破音；越来越短的气声",
+      "actions": [
+        "tell",
+        "hurt",
+        "collapse"
+      ],
+      "variants_per_action": 2,
+      "variant_count": 6,
+      "target_duration_seconds": [
+        0.15,
+        0.8
+      ],
+      "priority": "warning_or_body",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "enemy-vocal-bell",
+      "trigger": "key_attack_tell / hurt / collapse",
+      "layers": [
+        "自然发声主体",
+        "可选独立非语义气息尾层"
+      ],
+      "direction": "低吟→短哀鸣；受击漏出细高哭音；卸力长呼气",
+      "actions": [
+        "tell",
+        "hurt",
+        "collapse"
+      ],
+      "variants_per_action": 2,
+      "variant_count": 6,
+      "target_duration_seconds": [
+        0.15,
+        0.8
+      ],
+      "priority": "warning_or_body",
+      "audio_files": [],
+      "status": "to_produce"
+    },
+    {
+      "id": "enemy-vocal-mimic",
+      "trigger": "key_attack_tell / hurt / collapse",
+      "layers": [
+        "自然发声主体",
+        "可选独立非语义气息尾层"
+      ],
+      "direction": "模仿吸气→尖短笑；借来痛呼→自己困惑；未说完的熟悉语气",
+      "actions": [
+        "tell",
+        "hurt",
+        "collapse"
+      ],
+      "variants_per_action": 2,
+      "variant_count": 6,
+      "target_duration_seconds": [
+        0.15,
+        0.8
+      ],
+      "priority": "warning_or_body",
+      "audio_files": [],
+      "status": "to_produce"
     }
-  ]
+  ],
+  "enemy_voice_rules": {
+    "perceptual_priority": "危险预兆保持稳定；高声、低声和安静交替",
+    "high_vocal_limit": "首轮调音目标：同一听觉区域最多 1 个高强度尖叫主体，其他退到短气音或物体声",
+    "speech_layering": "只允许一个可懂句子；哀声副层不带另一套词",
+    "sound_fx_separation": "金属、关节、钟鸣可用于躯壳与环境，不能替代敌人的活物式发声"
+  }
 }
