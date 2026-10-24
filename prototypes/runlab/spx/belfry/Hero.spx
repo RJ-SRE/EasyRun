@@ -1,0 +1,213 @@
+import "math"
+
+var (
+ px float64
+ py float64
+ vx float64
+ vy float64
+ facing float64
+ grounded bool
+ airJump bool
+ coyote float64
+ buffer float64
+ dropTime float64
+ hook int
+ target int
+ ropeLength float64
+ hookCool float64
+ hookAge float64
+ hookX float64
+ hookY float64
+ dashTime float64
+ dashCool float64
+ attackTime float64
+ attackCool float64
+ invulnerable float64
+ plunging bool
+ prevJump bool
+ prevHook bool
+ prevAttack bool
+ prevDash bool
+ prevBurst bool
+ runDistance float64
+ pose int
+ blendTime float64
+ blendDuration float64
+ bodyOffset float64
+ bodyVelocity float64
+ renderY float64
+ trailAt float64
+ landing float64
+)
+func resetHero(x,y float64) {
+ px=x; py=y; vx=0; vy=0; facing=90; grounded=true; airJump=true; coyote=0.12; buffer=0; dropTime=0; hook=-1; target=-1; hookCool=0
+ dashTime=0; dashCool=0; attackTime=0; attackCool=0; invulnerable=1.0; plunging=false
+ prevJump=false; prevHook=false; prevAttack=false; prevDash=false; prevBurst=false; runDistance=0; pose=0; blendTime=0; bodyOffset=0; bodyVelocity=0; renderY=y; landing=0; trailAt=0
+ cameraY=y-100; cameraRenderY=cameraY; cameraRenderX=480; Camera.setXYpos 480,cameraY; setXYpos px,py; show
+}
+func chooseTarget() {
+ target=-1; best:=1000000.0
+ wantX:=0.0; wantY:=1.0
+ if keyPressed(KeyA)||keyPressed(KeyLeft) {wantX=-0.65}
+ if keyPressed(KeyD)||keyPressed(KeyRight) {wantX=0.65}
+ if keyPressed(KeyS)||keyPressed(KeyDown) {wantY=-1}
+ for i:=0;i<len(anchorX)+len(enemyHP);i++ {
+  x:=0.0; y:=0.0; valid:=true
+  if i<len(anchorX) {x=anchorX[i]; y=anchorY[i]} else {j:=i-len(anchorX); x=enemyX[j]; y=enemyY[j]; valid=enemyHP[j]>0}
+  dx:=x-px; dy:=y-py-28; d:=dist(dx,dy)
+  if valid && d<475 && d>55 {
+   cost:=d-(dy*wantY+dx*wantX)*0.72
+   if dy*wantY < -30 {cost+=420}
+   if i>=len(anchorX) {cost-=45}
+   if segment==1 && bossShield>0 {if i==14 && !sealLeft {cost-=320}; if i==15 && !sealRight {cost-=320}}
+   if cost<best {best=cost; target=i}
+  }
+ }
+}
+func releaseHook(boost bool) {
+ if hook>=0 {
+  hook=-1; hookCool=0.14; airJump=true
+  if boost {vy=clamp(vy+220,480,780); dashCool=0; ring(px,py+30,0.75,0); event("sling")}
+ }
+}
+func slash() {
+ if attackCool>0 {return}
+ attackCool=0.25; attackTime=0.19
+ if (keyPressed(KeyS)||keyPressed(KeyDown)) && !grounded {
+  plunging=true; hook=-1; vy=-1050; vx*=0.4; ring(px,py+20,0.7,1); event("plunge")
+ } else {
+  Slash.clone []float64{px,py+32,facing,0,float64(attempts)}; event("slash")
+  for i:=0;i<len(enemyHP);i++ {
+   reach:=114.0; if enemyType[i]==3 {reach=155}
+   dx:=enemyX[i]-px; dy:=enemyY[i]-py-28
+   if dist(dx,dy)<reach && (dx*facing> -2000 || abs(dx)<55) {hitEnemy(i,1)}
+  }
+ }
+}
+func nova() {
+ if energy<60 {event("empty"); return}
+ energy-=60; attackTime=0.32; invulnerable=0.6; releaseHook(false); vy=math.Max(vy,350); shock=7
+ ring(px,py+32,2.6,1); Slash.clone []float64{px,py+32,90,1,float64(attempts)}; burst(px,py+32,25,0,500)
+ for i:=0;i<len(enemyHP);i++ {if dist(px-enemyX[i],py+28-enemyY[i])<245 {hitEnemy(i,3)}}
+ event("nova")
+}
+func update(dt float64) {
+ if invulnerable>0 {invulnerable-=dt}; if hookCool>0 {hookCool-=dt}; if dashCool>0 {dashCool-=dt}; if attackCool>0 {attackCool-=dt}; if attackTime>0 {attackTime-=dt}; if dropTime>0 {dropTime-=dt}; if landing>0 {landing-=dt}
+ chooseTarget()
+ jump:=keyPressed(KeySpace); grap:=keyPressed(KeyE); attack:=keyPressed(KeyJ); dash:=keyPressed(KeyK)||keyPressed(KeyShift); special:=keyPressed(KeyQ)
+ if jump && !prevJump {buffer=0.13}; if buffer>0 {buffer-=dt}
+ if grounded {coyote=0.12; airJump=true} else {coyote-=dt}
+ if buffer>0 {
+  down:=keyPressed(KeyS)||keyPressed(KeyDown)
+  if grounded && down {dropTime=0.25; py-=8; grounded=false; vy=-120; coyote=0; buffer=0} else if coyote>0 || airJump || px<102 || px>858 {
+   if coyote<=0 {airJump=false}
+   releaseHook(false); vy=560; grounded=false; coyote=0; buffer=0; plunging=false; bodyVelocity=-30
+   if px<102 {vx=360}; if px>858 {vx=-360}
+   ring(px,py+4,0.65,0); burst(px,py,5,0,110); event("jump")
+  }
+ }
+ if !jump && prevJump && vy>270 && hook<0 && dashTime<=0 {vy*=0.72}
+ if grap && !prevHook && hookCool<=0 {
+  if target>=0 {hook=target; hookAge=0; hookCount++; hookX=anchorX[0]; hookY=anchorY[0]; grounded=false; plunging=false; event("hook"); ropeLength=475} else {event("nohook")}
+ }
+ if !grap && prevHook {releaseHook(true)}
+ if attack && !prevAttack {slash()}
+ if special && !prevBurst {nova()}
+ if dash && !prevDash && dashCool<=0 {
+  releaseHook(false); dashTime=0.18; dashCool=0.8; invulnerable=0.25; plunging=false; grounded=false
+  dx:=facing/90; dy:=0.0
+  if keyPressed(KeyW)||keyPressed(KeyUp) {dy=1; if !keyPressed(KeyA)&&!keyPressed(KeyD)&&!keyPressed(KeyLeft)&&!keyPressed(KeyRight) {dx=0}}
+  if keyPressed(KeyS)||keyPressed(KeyDown) {dy=-1}
+  d:=dist(dx,dy); vx=dx/d*850; vy=dy/d*850; burst(px,py+28,10,0,240); event("dash")
+ }
+ prevJump=jump; prevHook=grap; prevAttack=attack; prevDash=dash; prevBurst=special
+ input:=0.0; if keyPressed(KeyA)||keyPressed(KeyLeft) {input-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {input+=1}
+ wasGrounded:=grounded; oldY:=py
+ if dashTime>0 {dashTime-=dt} else {
+  accel:=850.0; if grounded {accel=2200}
+  if hook<0 {
+   requested:=input*300
+   if input!=0 || grounded {if vx<requested {vx=math.Min(requested,vx+accel*dt)} else {vx=math.Max(requested,vx-accel*dt)}} else {vx*=1-dt*0.5}
+  } else {vx+=input*1100*dt}
+  gravity:=1250.0; if grap && hook>=0 {gravity=460}
+  vy-=gravity*dt
+ }
+ if hook>=0 {
+  hookAge+=dt
+  valid:=true
+  if hook<len(anchorX) {hookX=anchorX[hook]; hookY=anchorY[hook]} else {j:=hook-len(anchorX); hookX=enemyX[j]; hookY=enemyY[j]; valid=enemyHP[j]>0}
+  dx:=hookX-px; dy:=hookY-py-28; d:=dist(dx,dy)
+  if !valid {releaseHook(true)} else if d<64 {
+   if hook<len(anchorX) {cutSeal(hook)}
+   if hook>=len(anchorX) {hitEnemy(hook-len(anchorX),2)}
+   releaseHook(true)
+  } else {
+   vx+=dx/d*2500*dt; vy+=dy/d*2500*dt
+   speed:=dist(vx,vy); if speed>820 {vx*=820/speed; vy*=820/speed}
+   ropeLength=math.Max(70,math.Min(ropeLength,d)-170*dt)
+  }
+ }
+ if plunging {vy=-1100}
+ vy=clamp(vy,-900,950); if plunging {vy=-1100}; vx=clamp(vx,-900,900)
+ px+=vx*dt; py+=vy*dt
+ if py>420 {py=420; vy=math.Min(0,vy)}
+ if hook>=0 {
+  dx:=px-hookX; dy:=py+28-hookY; d:=dist(dx,dy)
+  if d>ropeLength && d>1 {px=hookX+dx/d*ropeLength; py=hookY+dy/d*ropeLength-28; outward:=(vx*dx+vy*dy)/d; if outward>0 {vx-=dx/d*outward; vy-=dy/d*outward}}
+ }
+ grounded=false
+ if px<92 {px=92; vx=math.Max(0,vx); if vy < -240 {vy=-240}}
+ if px>868 {px=868; vx=math.Min(0,vx); if vy < -240 {vy=-240}}
+ fallSpeed:=-vy
+ if vy<=0 {
+  for i:=0;i<len(floorX);i++ {
+   top:=floorY[i]
+   active:=true; if segment==2 && floorKind[i]==1 {active=false}
+   if floorKind[i]==2 && enemyHP[2]<=0 {active=false}; if floorKind[i]==3 && enemyHP[6]<=0 {active=false}
+   solid:=floorKind[i]>=2 || i==14
+   if hook>=0 && hookY<py+20 && !solid {active=false}
+   tolerance:=4.0; if solid {tolerance=14}
+   if active && (dropTime<=0 || solid) && px+12>floorX[i] && px-12<floorX[i]+floorW[i] && oldY>=top-tolerance && py<=top {py=top; vy=0; grounded=true}
+  }
+ }
+ if plunging {
+  for i:=0;i<len(enemyHP);i++ {
+   if enemyHP[i]>0 && abs(px-enemyX[i])<80 && oldY+20>=enemyY[i]-45 && py<enemyY[i]+50 {
+    if hitEnemy(i,2) {plunging=false; vy=560; dashCool=0; ring(px,py,1.8,1); event("plungehit")}
+   }
+  }
+ }
+ if grounded && !wasGrounded {
+  bodyVelocity=-clamp(fallSpeed/6,20,110); landing=0.13
+  if fallSpeed>200 {burst(px,py+3,8,2,150); ring(px,py+2,0.8,0); event("land")}
+  if plunging {shock=6; ring(px,py,2.1,1); for i:=0;i<len(enemyHP);i++ {if dist(px-enemyX[i],py+35-enemyY[i])<160 {hitEnemy(i,2)}}}
+  plunging=false
+ }
+ if py < -3650 {py=-3590; vy=0; hurt(3)}
+ if grounded {runDistance+=abs(vx)*dt}
+ if (dashTime>0 || hook>=0 || plunging) && worldTime-trailAt>0.055 {
+  trailAt=worldTime; Trail.clone []float64{px,renderY,float64(pose),facing,float64(attempts)}
+  particle(px,py+28,-vx*0.1,-vy*0.1,0.25,0.8,0)
+ }
+}
+func render(dt float64) {
+ next:=0
+ if plunging {next=21} else if attackTime>0.12 {next=19} else if attackTime>0 {next=20} else if hook>=0 {next=18; if hookAge<0.1 {next=17}} else if dashTime>0 {next=24} else if !grounded {if vy>70 {next=13} else {next=15}} else if landing>0 {next=22} else if abs(vx)>30 {next=int(runDistance/14)%12+1}
+ if next!=pose {
+  duration:=0.055; if next>=1 && next<=12 && pose>=1 && pose<=12 {duration=0.025}
+  PoseBlend.clone []float64{float64(pose),duration,float64(attempts),facing}; pose=next; blendTime=duration; blendDuration=duration; setCostume pose
+ }
+ if vx < -20 {facing=-90} else if vx>20 {facing=90}; setHeading facing
+ bodyVelocity+=(-210*bodyOffset-23*bodyVelocity)*dt; bodyOffset+=bodyVelocity*dt; renderY=py+bodyOffset
+ ghost:=0.0
+ if blendTime>0 {blendTime=math.Max(0,blendTime-dt); ghost=blendTime/blendDuration*40}
+ if invulnerable>0 && int(worldTime*14)%2==0 {ghost=65}
+ setGraphicEffect GhostEffect,ghost
+ setXYpos px,renderY
+ targetY:=py-80+clamp(vy*0.18,-100,150)
+ if segment==2 {targetY=py+95+clamp(vy*0.1,0,80)}
+ targetY=clamp(targetY,-3350,220)
+ cameraY+=(targetY-cameraY)*(1-exp(-7*dt))
+ cameraRenderX=480+sin(worldTime*81)*shock; cameraRenderY=cameraY+sin(worldTime*73)*shock*0.6
+ Camera.setXYpos cameraRenderX,cameraRenderY
+}

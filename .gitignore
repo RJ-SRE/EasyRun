@@ -36,6 +36,8 @@ prototypes/runlab/exports/
 prototypes/runlab/public/velocity.json
 prototypes/runlab/public/cinema.json
 prototypes/runlab/public/rupture.json
+prototypes/runlab/public/belfry.json
+prototypes/runlab/art/belfry/frames/
 prototypes/runlab/public/art/
 prototypes/runlab/art/rupture-v2/frames/
 prototypes/runlab/art/rupture-v2/run-frames/

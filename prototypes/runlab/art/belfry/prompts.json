@@ -1,0 +1,16 @@
+{
+  "tool": "Built-in image_gen.imagegen",
+  "generatedOn": "2026-10-24",
+  "assets": [
+    {
+      "name": "clockwell",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: finished 2D game background, wide 16:9 cinematic landscape. Create the interior of an immense inverted gothic clock cathedral hanging above an abyss. View straight from side, no floor, no characters. Weathered ivory stone ribs and tarnished bronze clock mechanisms vanish upwards; huge ruined suspended bells and delicate chains on the outer edges, deep central vertical shaft open for gameplay. A distant pale gold shaft of light from high above, blue charcoal shadows and smoky teal mist low down. Adult sophisticated painterly dark fantasy with tactile brushwork, confident shapes, haunting majestic scale, exceptional material detail. Keep central 65 percent spacious, darker and low contrast so a small character, enemies and platforms will read. Foreground silhouettes at far left and right only. No playable platforms, UI, logos, writing or human figures. No neon city, no cartoon toy, no geometric placeholder. Fine volumetric light, drifting dust, beautiful architecture, premium indie game atmosphere."
+    },
+    {
+      "name": "sentinels",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game enemy sprite atlas, three isolated sprites side by side in three equal-width columns, 1536x1024 landscape. No environment. Each distinct enemy completely contained in its own column with transparent margins, no overlap. Dark mechanical fantasy, elegant adult game concept art, painted patinated brass, ivory porcelain and charcoal steel. LEFT: a hovering slender rescue automaton, faceless long ivory mask, ragged narrow black cloak, two curving thin articulated arms, an amber lantern hanging below its body, compact silhouette. CENTER: a menacing articulated cable-weaver automaton, ivory central spindle body with amber slit eye, six long delicate bronze mechanical legs gracefully curving inward, visible fine mechanisms. RIGHT: a heavy floating bell guardian, large aged bronze cathedral bell shell as torso with an ivory death-mask face, dangling glowing copper pendulum core and two severe angular armored arms, regal ruined ceremonial carvings. All full body, all face slightly to the left in 3/4 view suitable for side-view 2D action game. Strong silhouette, upper-left diffuse illumination, restrained warm luminous accents, intricate crisp edges; each sprite approximately same visual height. True transparent background and holes, no shadows on floor, no circles around figures, no text, no grid, no panel borders, no humans, no cute style, no thick black comic outline."
+    }
+  ]
+}
