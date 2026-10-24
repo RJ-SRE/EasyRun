@@ -1,6 +1,9 @@
 import "math"
 
 var (
+ wordVisualPaused bool
+ wordFocusAge float64
+ visualTime float64
  wordMode int
  wordWanted int
  wordPending int
@@ -250,6 +253,7 @@ onKey KeyF1, => {resolveWord(1)}
 onKey KeyF2, => {resolveWord(2)}
 onKey KeyF3, => {resolveWord(3)}
 onKey KeyF4, => {if phase==0 || phase==2 || phase==3 || phase==4 {wordMode=1-wordMode; event("wordmode")}}
+onKey KeyF6, => {if phase==5 {wordVisualPaused=!wordVisualPaused}}
 onKey KeyF5, => {
  if phase==0 && hostCheckpoint>=0 {
   startRun(); checkpoint=hostCheckpoint; segment=hostSegment; elapsed=hostElapsed; score=hostScore
@@ -283,7 +287,10 @@ onStart => {
    if hitStop>0 {hitStop-=dt} else {Hero.update(dt); if phase==1 {updateWorld(dt)}; beginWord()}
   }
   if phase==0 {worldTime+=dt}
-  if phase==0 || phase==1 {Hero.render(dt)}
+  if phase==5 && !wordVisualPaused {wordFocusAge+=dt}
+  visualDt:=presentationDelta(dt)
+  if phase==0 || phase==1 || phase==5 {visualTime+=visualDt}
+  if phase==0 || phase==1 || phase==5 && !wordVisualPaused {Hero.render(visualDt)}
   if float64(timer)-lastState>0.07 {
    lastState=float64(timer)
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}

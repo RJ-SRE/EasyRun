@@ -128,11 +128,16 @@ export class BelfryAudio {
       this.ctx?.suspend();
     } else this.init();
   }
-  stopAll() {
+  stopAll(fade = 0) {
     this.epoch++;
     for (const h of this.sources) {
       try {
-        h.source.stop();
+        if (fade && this.ctx) {
+          const t = this.ctx.currentTime;
+          h.gain.gain.cancelScheduledValues(t);
+          h.gain.gain.setTargetAtTime(0.0001, t, fade / 3);
+          h.source.stop(t + fade);
+        } else h.source.stop();
       } catch {
         /* Already stopped. */
       }
@@ -153,10 +158,61 @@ export class BelfryAudio {
     this.state = s;
     if (
       old &&
-      ((old.phase === 1 && s.phase !== 1 && s.phase !== 2) ||
+      ((old.phase === 1 && ![1, 2, 5].includes(s.phase)) ||
         old.attempts !== s.attempts)
     )
       this.stopAll();
+    if (![1, 5].includes(s.phase) || (old && old.attempts !== s.attempts))
+      this.endFocus();
+  }
+  beginFocus() {
+    this.stopAll(0.12);
+    this.focusMode = true;
+    this.focusPaused = false;
+    this.nextFocus = 0;
+  }
+  pauseFocus(paused) {
+    this.focusPaused = paused;
+    if (paused) this.stopCue("focus");
+    else this.nextFocus = 0;
+  }
+  endFocus() {
+    this.focusMode = false;
+    this.focusPaused = false;
+    this.stopCue("focus");
+  }
+  focusTone(freq, end, duration, volume) {
+    if (
+      !this.focusMode ||
+      this.focusPaused ||
+      !this.enabled ||
+      document.hidden ||
+      this.ctx?.state !== "running"
+    )
+      return;
+    const a = this.ctx,
+      t = a.currentTime,
+      source = a.createOscillator(),
+      gain = a.createGain();
+    source.frequency.setValueAtTime(freq, t);
+    source.frequency.exponentialRampToValueAtTime(end, t + duration);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(volume, t + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+    source.connect(gain);
+    gain.connect(this.buses.sfx);
+    const h = { source, gain, cue: "focus" };
+    this.sources.add(h);
+    source.onended = () => {
+      this.sources.delete(h);
+      source.disconnect();
+      gain.disconnect();
+    };
+    source.start();
+    source.stop(t + duration);
+  }
+  inscribe(progress) {
+    this.focusTone(220 + progress * 220, 330 + progress * 330, 0.11, 0.024);
   }
   allowed() {
     return (
@@ -371,16 +427,21 @@ export class BelfryAudio {
   tick() {
     const s = this.state,
       active = s?.phase === 1 && !document.hidden,
+      focused = this.focusMode && !this.focusPaused && !document.hidden,
       now = this.now();
     if (this.master)
       this.master.gain.setTargetAtTime(
-        this.enabled && (active || s?.phase === 2) ? 0.65 : 0,
+        this.enabled && (active || focused || s?.phase === 2) ? 0.65 : 0,
         this.ctx.currentTime,
         0.04,
       );
-    if ((!active && s?.phase !== 2) || document.hidden) {
+    if ((!active && !focused && s?.phase !== 2) || document.hidden) {
       if (this.sources.size) this.stopAll();
       return;
+    }
+    if (focused && now > this.nextFocus) {
+      this.focusTone(110, 82.4, 1.6, 0.018);
+      this.nextFocus = now + 1.3;
     }
     if (active && this.allowed() && now > this.nextNote) {
       this.tone(s.segment === 1 ? 55 : 73.4, 5, 0.022);
@@ -397,6 +458,7 @@ export class BelfryAudio {
       activeSources: this.sources.size,
       fx: [...this.fxHistory],
       dialogueEnabled: false,
+      focusActive: !!this.focusMode && !this.focusPaused,
     };
   }
 }

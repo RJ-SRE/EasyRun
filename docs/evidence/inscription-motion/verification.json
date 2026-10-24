@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-24T19:36:39.924530+00:00",
+  "baseline": "723686666921539af4c38270cbc405267b2692b8",
+  "checks": {
+    "flow.json": 18,
+    "resilience.json": 5,
+    "skills.json": 17,
+    "lifecycle.json": 12,
+    "motion.json": 6
+  },
+  "totalCases": 58,
+  "build": "359 files / 44 sprites",
+  "staticChecks": [
+    "ESLint modified JavaScript and new browser regression: passed",
+    "Prettier modified JavaScript/CSS: passed",
+    "git diff --check: passed"
+  ],
+  "limitations": [
+    "Local headless Chromium; host rAF is not engine FPS.",
+    "No new full-route, Safari, low-end device or human enjoyment claim.",
+    "Combat remains protected/frozen during answers; only presentation continues."
+  ],
+  "sha256": {
+    "prototypes/runlab/public/inscription-motion.js": "776b7eee428e12320c779f71c25c1366161dfed7c446f2b159b9f83640d46eb3",
+    "prototypes/runlab/public/inscription-ui.js": "080a44d58b23a3a2397f76c4c9dfd3ed5fdac8e2ed1db4e0bd44d06acb2c0651",
+    "prototypes/runlab/public/belfry-audio.js": "94e60d8de02b713f67a2e1d4629062210f04dc84babe6d1f08375989dea65932",
+    "prototypes/runlab/public/inscription.css": "fc80730f585040847bffcad4efda55b008a12c7cb1e25e5061c24a75942ebd31",
+    "prototypes/runlab/test-belfry-inscription-motion.mjs": "e6b9b611504169d0b3cc78650227cc17634a23122db4c04dd2375592b271d09b",
+    "scripts/test-game.mjs": "463e64c7849d2f46b9aa4a078b5ae094d904ccb46e735e2641536c9b03725bef",
+    "prototypes/runlab/spx/belfry/PoseBlend.spx": "bf00aa17cd082c0f87257149e643b74b19331b7da0ac15032bd87a16c2e56431",
+    "prototypes/runlab/spx/belfry/Arrow.spx": "20d60762f410573c4550550f2d561cbb322658fa4e5d4b6f7955555fb29fd444",
+    "prototypes/runlab/spx/belfry/Echo.spx": "63dc8b8e2455451dc4d3e9de89f30665c5d7cd7e2cb7a4983e7be76d68f47e6a",
+    "prototypes/runlab/spx/belfry/EnemyTell.spx": "185b733bb818eea55947388ae3b8515bdd40579b878fadede1559d396748fe47",
+    "prototypes/runlab/spx/belfry/Hazard.spx": "9e3145130dcf2f9a53fda4637845889420e1c2fa1d2861de2c288235c8afeb9e",
+    "prototypes/runlab/spx/belfry/SkillFX.spx": "d61b2f396d420e44be2755be434c9452e065af5b0ec0115e3ffc90d663e41355",
+    "prototypes/runlab/spx/belfry/Bolt.spx": "5f20137c00318ba9a37a2dd147093a6f96c36aa5847693cc11d91f184e3663e5",
+    "prototypes/runlab/spx/belfry/Hero.spx": "1d5d86ad54504993fb759e0b2afeb04be221dad48f4edb19a5ecafd2dc018599",
+    "prototypes/runlab/spx/belfry/EnemyBlend.spx": "5e95a8d184543fbca3c73428c84e4c49efa7c55797e6806427d2ae7debac75c5",
+    "prototypes/runlab/spx/belfry/main.spx": "494da7b24542cf5b10fc9dd503f61668ec42c5e35f35578d2146b266689f3a5f",
+    "prototypes/runlab/spx/belfry/Trail.spx": "6aa3181e42d2af411036a0b7a742ee09e6081b5c9373688b8f5ee323691c4bca",
+    "prototypes/runlab/spx/belfry/Slash.spx": "780f6399ddd8d51c95149859a0bdafee2c520ffddeb0cfb50be3f2eb7cbea294",
+    "prototypes/runlab/spx/belfry/Enemy.spx": "0481e01415b2a5033ca73baaeb0d4bf379f489e139affb45c186b3f1cfa5386d",
+    "prototypes/runlab/spx/belfry/Assassins.spx": "a24c3ec25e97c45b282a2ddfcb1127301f93635f69839beacf4e09e4c04ca522",
+    "prototypes/runlab/spx/belfry/Anchor.spx": "82360c658df026d48696e511110ccad736f6aee92a8d5113f89bed1f9239514e",
+    "prototypes/runlab/spx/belfry/Particle.spx": "28100ee0919f5c41673be3221d264a2d310fcdd8342bdbf2d1e372065fa78961",
+    "prototypes/runlab/spx/belfry/Rope.spx": "f9bb98b8d405ed6902114850d7babe95e53fa401eb6733e339326c11bc6eb56a",
+    "prototypes/runlab/spx/belfry/Inscription.spx": "3dacab2226b63ea5dc941bca6225c5ad59e270a21ee7e57f95ad68c4d3e375a8",
+    "prototypes/runlab/spx/belfry/Pulse.spx": "5df78f128f518dc6104ac63bf92aec9a08deddbae167266e319a24505a8bca28"
+  }
+}

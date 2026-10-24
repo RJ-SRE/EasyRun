@@ -1,3 +1,4 @@
+import { InscriptionMotion } from "./inscription-motion.js";
 import {
   InscriptionBook,
   BANK,
@@ -50,6 +51,7 @@ export class InscriptionUI {
     this.last = performance.now();
     this.lastSave = 0;
     this.create();
+    this.motion = new InscriptionMotion();
     this.capture(window);
     this.renderMenu();
     this.renderBook();
@@ -71,6 +73,8 @@ export class InscriptionUI {
         run: JSON.parse(JSON.stringify(this.book.run)),
         paused: this.paused,
         storageBlocked: !!this.storageBlocked,
+        motion: this.motion.diagnostics(),
+        lastRelease: this.lastRelease,
       }),
     });
   }
@@ -178,13 +182,20 @@ export class InscriptionUI {
       }
     };
     $("#word-resume").onclick = () => {
+      if (this.paused) this.internal("F6");
       this.paused = false;
+      this.audio.pauseFocus(false);
+      document.body.classList.remove("word-focus-paused");
       this.composing = false;
       $("#word-pause").hidden = true;
       this.focusAnswer();
     };
     $("#word-abandon").onclick = () => {
+      if (this.paused) this.internal("F6");
       this.paused = false;
+      this.audio.pauseFocus(false);
+      document.body.classList.remove("word-focus-paused");
+      $("#word-pause").hidden = true;
       this.finish(false, "放弃");
     };
     const restart = document.createElement("button");
@@ -336,7 +347,8 @@ export class InscriptionUI {
           e.stopImmediatePropagation();
         };
         if (
-          /^(?:Key)?F[1-5]$/.test(e.code) &&
+          (/^(?:Key)?F[1-5]$/.test(e.code) ||
+            (e.code === "F6" && this.state?.phase === 5)) &&
           (this.book.settings.enabled || this.state?.phase !== 1)
         ) {
           block();
@@ -580,7 +592,13 @@ export class InscriptionUI {
     this.composing = false;
     this.entryHeld = new Set(this.held);
     this.releaseHeld();
-    this.audio.stopAll();
+    this.audio.beginFocus();
+    this.motion.begin(kind, this.state);
+    this.cardExit?.cancel();
+    document.body.classList.remove("word-focus-paused");
+    $("#word-focus").classList.remove("word-released");
+    $("#word-focus").inert = false;
+    $("#word-focus").removeAttribute("aria-hidden");
     $("#word-focus").hidden = false;
     document.body.classList.add("word-focusing");
     $("#word-pause").hidden = true;
@@ -658,6 +676,14 @@ export class InscriptionUI {
     $("#word-input").value = this.input;
     const prefix = w.accepted.some((v) => v.startsWith(this.input));
     this.renderLetters(w);
+    if (prefix && this.input.length > (a.furthest || 0)) {
+      a.furthest = this.input.length;
+      this.motion.inscribe(
+        this.input.length / w.word.length,
+        this.input.at(-1),
+      );
+      this.audio.inscribe(this.input.length / w.word.length);
+    }
     $("#word-input").classList.toggle("word-mistyped", !prefix);
     if (matches(w, this.input)) this.finish(true, "正确");
   }
@@ -670,7 +696,10 @@ export class InscriptionUI {
   }
   pause(reason) {
     if (!this.active || this.active.result) return;
+    if (!this.paused) this.internal("F6");
     this.paused = true;
+    this.audio.pauseFocus(true);
+    document.body.classList.add("word-focus-paused");
     $("#word-pause-label").textContent = reason;
     $("#word-pause").hidden = false;
   }
@@ -686,7 +715,11 @@ export class InscriptionUI {
       : `${reason === "选择" ? "未选中" : reason} · ${w.word} = ${w.meaning}`;
     this.quarantine = new Set([...(this.entryHeld || []), ...this.held]);
     this.releaseHeld();
-    a.sendAt = performance.now() + (correct ? 120 : 650);
+    // Feedback continues as a non-interactive afterimage, never holds the action.
+    a.sendAt = performance.now();
+    a.sent = true;
+    a.sentAt = a.sendAt;
+    this.internal(correct ? "F1" : "F2");
   }
   onResolved(attempt, serial, kind, result) {
     const a = this.active;
@@ -699,6 +732,11 @@ export class InscriptionUI {
       !a.sent
     )
       return;
+    this.lastRelease = {
+      kind,
+      result,
+      responseMs: performance.now() - a.sentAt,
+    };
     this.book.settle(
       a.actionId,
       result === 1 ? "correct" : result === 3 ? "cancel" : "wrong",
@@ -706,6 +744,7 @@ export class InscriptionUI {
       a.assisted,
     );
     this.audio.stateChanged({ ...this.state, phase: 1 });
+    this.motion.release(result === 1);
     this.cancel(false);
     this.save();
     this.renderBook();
@@ -719,13 +758,51 @@ export class InscriptionUI {
     this.entryHeld = new Set();
     this.active = null;
     this.paused = false;
-    $("#word-focus").hidden = true;
-    document.body.classList.remove("word-focusing");
+    this.audio.endFocus();
+    document.body.classList.remove("word-focusing", "word-focus-paused");
+    const panel = $("#word-focus");
+    this.cardExit?.cancel();
+    if (system) {
+      this.motion.reset();
+      panel.hidden = true;
+    } else {
+      panel.classList.add("word-released");
+      panel.inert = true;
+      panel.setAttribute("aria-hidden", "true");
+      const reduced =
+        this.book.settings.reduced ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const duration = reduced
+        ? 180
+        : panel.dataset.result === "wrong"
+          ? 800
+          : 460;
+      this.cardExit = panel.animate(
+        [
+          { opacity: 1, transform: "translateY(0)" },
+          {
+            opacity: 0,
+            transform: reduced ? "none" : "translateY(-8px)",
+          },
+        ],
+        { duration, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" },
+      );
+      this.cardExit.onfinish = () => {
+        panel.hidden = true;
+      };
+    }
     this.focus();
   }
   tick(now) {
     const dt = Math.max(0, (now - this.last) / 1000);
     this.last = now;
+    this.motion.tick(
+      dt,
+      this.state,
+      this.paused,
+      this.book.settings.reduced ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
     const a = this.active;
     const foreground = !document.hidden;
     if (
@@ -756,11 +833,6 @@ export class InscriptionUI {
         100 * (1 - Math.min(1, remaining / a.duration)),
       );
       if (!a.result && remaining <= 0) this.finish(false, "时间到");
-      if (a.result && !a.sent && now >= a.sendAt) {
-        a.sent = true;
-        a.sentAt = now;
-        this.internal(a.result === "correct" ? "F1" : "F2");
-      }
       if (a.sent && now - a.sentAt > 2500) {
         $("#word-feedback").textContent =
           "释放响应中断，请刷新并从休整灯继续；本次不会重复计分。";

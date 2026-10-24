@@ -164,3 +164,15 @@ bash scripts/with-env.sh pnpm game:package
 另以真实首平台、种子 324、库内最长词 consequence 检查 1440×1000、1280×720、1024×768：题框分别宽 480/440/480px，占场景约 6.8%/11.8%/12.9%；三种开场设置和词册均在游戏边界内。辨义框在前两种尺寸约占 6.9%/11.9%。这只是 DOM 覆盖面积，不代表任何性能数值。暂停继续、聚焦选项、词册关闭均验证 Enter 激活且不会漏入游戏动作。
 
 证据：[布局数据](evidence/inscription-style/layout.json)、[拼写实机](evidence/inscription-style/spelling-1280.png)、[辨义实机](evidence/inscription-style/meaning-1440.png)、[开场](evidence/inscription-style/menu-1280.png)、[词册](evidence/inscription-style/ledger-1280.png)、[本轮校验摘要](evidence/inscription-style/verification.json)。上一版截图与报告保留在原目录，供直接对照。
+
+## 2026-10-25 · 聚焦动作连续性复测
+
+本轮重新执行 58 项浏览器检查：铭文全流程 18、异常恢复 5、四技能 17、游戏生命周期 12、新增动作衔接 6。构建输出 359 个文件 / 44 个精灵；修改的 JavaScript 通过 ESLint、Prettier，Git 空白检查通过。没有重跑整关路线，旧报告仍保留其原始验证日期。
+
+新增检查在真实首平台进行，只固定词组，不改坐标或战斗状态：表现运动时角色位置/生命/冷却不变，逐字输入推进能量反馈；静音清理聚焦音源；暂停同时冻结镜头、表现和题目；末字母 E 不触发钩索，但新 Space 可马上跳跃；答错不再等待 650 毫秒；系统减少运动关闭推镜和粒子；重开清理旧结果、镜头与声音。最新录屏运行中，宿主提交至引擎确认分别约 10.5 / 15.8 毫秒，这只量化本机输入交接，不代表完整设备输入延迟。
+
+不录屏、单独运行的 1280×800 Chromium 对照：普通首平台、完整聚焦、减少动效聚焦的宿主 rAF 中位数均约 16.7 毫秒，P95 均约 33.3 毫秒；恢复动作后中位数约 33.3 毫秒。普通动作样本仍出现约 150 毫秒长帧，聚焦样本约 66.7 毫秒。不能声称全程稳定 60 FPS，宿主 rAF 也不是引擎 GPU 帧率；本轮主要消除了人为硬停和等待反馈造成的节奏断裂。
+
+证据：[58 项摘要与源码哈希](evidence/inscription-motion/verification.json)、[动作与输入衔接](evidence/inscription-motion/motion.json)、[不录屏对照](evidence/inscription-motion/performance.json)、[铭文流程](evidence/inscription-motion/flow.json)、[技能回归](evidence/inscription-motion/skills.json)、[生命周期](evidence/inscription-motion/lifecycle.json)、[聚焦画面](evidence/inscription-motion/focus.png)。动效演示为真实首平台按键录制，无测试遭遇注入；浏览器录屏不包含音轨。
+
+复现新增检查：`RUNLAB_URL=http://127.0.0.1:4184/ bash scripts/with-env.sh node prototypes/runlab/test-belfry-inscription-motion.mjs`。可加 `RECORD_MOTION=1` 保存完整测试录像；已纳入统一 `scripts/test-game.mjs`，默认不录屏。

@@ -2,7 +2,7 @@ onCloned data => {
  p:=data.([]float64); age:=0.0
  setCostume int(p[0]); setHeading p[3]; setGraphicEffect GhostEffect,55; setXYpos Hero.px,Hero.renderY; show
  for age<p[1] && int(p[2])==attempts {
-  dt:=float64(waitNextFrame()); if phase!=4 {age+=dt; setXYpos Hero.px,Hero.renderY; setGraphicEffect GhostEffect,55+clamp(age/p[1],0,1)*45}
+  dt:=float64(waitNextFrame()); if phase!=4 {dt=presentationDelta(dt); age+=dt; setXYpos Hero.px,Hero.renderY; setGraphicEffect GhostEffect,55+clamp(age/p[1],0,1)*45}
  }
  die
 }

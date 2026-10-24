@@ -1,7 +1,12 @@
 // The browser owns word content and input; the simulation owns every effect.
-// phase 5 freezes the same clocks as pause. Internal F1-F3 replies are sent
+// phase 5 freezes combat clocks; a separate presentation clock keeps the focus alive. Internal F1-F3 replies are sent
 // only by the host adapter after checking the run/serial pair and its epoch.
-func resetInscription() {wordWanted=0; wordPending=0; wordOwner=-1; wordSegment=segment}
+func presentationDelta(dt float64) float64 {
+ if phase==4 || phase==5 && wordVisualPaused {return 0}
+ if phase==5 {return dt*(0.12+0.88*exp(-wordFocusAge/0.12))}
+ return dt
+}
+func resetInscription() {wordVisualPaused=false; wordFocusAge=0; wordWanted=0; wordPending=0; wordOwner=-1; wordSegment=segment}
 func requestWord(kind int) {
  if wordMode==0 || practice==1 || phase!=1 || wordPending>0 || wordWanted>0 {return}
  wordWanted=kind; wordOwner=-1; wordSegment=segment
@@ -17,7 +22,7 @@ func beginWord() {
  if kind==4 && (Hero.ultimateTime<=0 || segment!=wordSegment) {Hero.ultimateGated=true; return}
  if kind==5 && (chainOwner<0 || chainOwner!=wordOwner) {return}
  if kind==6 && (bindEnemy<0 || bindEnemy!=wordOwner) {return}
- wordPending=kind; wordSerial++; phase=5; hitStop=0
+ wordPending=kind; wordSerial++; phase=5; hitStop=0; wordFocusAge=0; wordVisualPaused=false
  Hero.attackBuffer=0; Hero.attackPressed=false; Hero.buffer=0
  println "@word",attempts,wordSerial,kind
 }

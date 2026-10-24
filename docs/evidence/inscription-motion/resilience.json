@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-24T19:32:45.351Z",
+  "cases": [
+    "missing word content falls back to an explicitly labelled playable action mode",
+    "blocked storage is disclosed while play remains available",
+    "two desktop viewports keep the compact inscription ribbon inside the game",
+    "background visibility pauses the challenge and requires a conscious resume",
+    "held final E cannot leak into grapple; a new jump responds before E is released"
+  ],
+  "errors": [],
+  "note": "Real first platform, no world mutations. Faults are injected only into resource/storage/visibility APIs."
+}

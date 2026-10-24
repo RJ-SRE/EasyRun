@@ -57,6 +57,7 @@ try {
         { file: "test-belfry-bow.mjs" },
         { file: "test-belfry-inscription.mjs", words: true },
         { file: "test-belfry-inscription-resilience.mjs", words: true },
+        { file: "test-belfry-inscription-motion.mjs", words: true },
         { file: "test-belfry.mjs" },
         {
           file: "test-belfry-route.mjs",

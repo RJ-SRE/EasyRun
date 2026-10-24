@@ -444,10 +444,11 @@ func render(dt float64) {
  }
  if attackKind==0 && !charging && !bowCharging && ultimateTime<=0 {if vx < -20 {facing=-90} else if vx>20 {facing=90}}; setHeading facing
  bodyVelocity+=(-210*bodyOffset-23*bodyVelocity)*dt; bodyOffset+=bodyVelocity*dt; renderY=py+bodyOffset
- if charging {renderY+=sin(worldTime*43)*chargeTime*1.8}; if bindTime>0 {renderY+=sin(worldTime*35)*1.2}
+ if charging {renderY+=sin(visualTime*43)*chargeTime*1.8}; if bindTime>0 {renderY+=sin(visualTime*35)*1.2}
+ if phase==5 {renderY+=sin(visualTime*4)*1.3}
  ghost:=0.0
  if blendTime>0 {blendTime=math.Max(0,blendTime-dt); ghost=blendTime/blendDuration*40}
- if invulnerable>0 && int(worldTime*14)%2==0 {ghost=35}
+ if invulnerable>0 && int(visualTime*14)%2==0 {ghost=35}
  setGraphicEffect GhostEffect,ghost
  setXYpos px,renderY
  targetY:=py-80+clamp(vy*0.18,-100,150)
@@ -455,6 +456,7 @@ func render(dt float64) {
  if practice==1 {targetY=120}
  targetY=clamp(targetY,-3350,220)
  cameraY+=(targetY-cameraY)*(1-exp(-7*dt))
- cameraRenderX=480+sin(worldTime*81)*shock; cameraRenderY=cameraY+sin(worldTime*73)*shock*0.6
+ renderShock:=shock; if phase==5 {renderShock*=exp(-wordFocusAge*12)}
+ cameraRenderX=480+sin(visualTime*81)*renderShock; cameraRenderY=cameraY+sin(visualTime*73)*renderShock*0.6
  Camera.setXYpos cameraRenderX,cameraRenderY
 }
