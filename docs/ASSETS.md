@@ -40,3 +40,15 @@ bash scripts/with-env.sh node prototypes/runlab/extract-frames.mjs --run
 基础主角和 12 格跑步仍来自 `art/rupture-v2/`，详见上文。新图透明通道已检查；原图不被覆盖。图集重心与非均匀行分界在 `build-belfry.mjs` 明确注册。
 
 锚点、钟锁、绳段、护罩、钟盘、粒子和其他指示采用项目自绘 SVG；声音由网页内 Web Audio 合成，未引入外部音乐或商业游戏素材。当前素材适合作为实际关卡资产验证，动画一致性与最终商业美术仍需独立评估。
+
+## v0.5 战斗素材（2026-10-24）
+
+- `prototypes/runlab/art/belfry/combat-source.png`：12 个原创持弦者战斗关键姿态，内置 imagegen，以本项目动作原图为角色参考。提示词 `combat-prompt.txt`。
+- `prototypes/runlab/art/belfry/mimic-source.png`：模仿侍从 2×2 姿态，以原敌人图集为风格参考。提示词 `mimic-prompt.txt`。
+- 原图保留透明 alpha。构建导入为统一画布和脚底基准，源图保持原样，生成拆帧忽略。
+- 新斩弧、蓄力环、绊索和钟波为项目生成的 SVG，渲染于 spx。
+## 当前运行音频 · 2026-10-24
+
+按用户要求停用角色语音与对白。运行目录 `public/audio/sfx/` 只有 56 个原创程序化动作/材质采样，包含刀风、衣料、钩索、瓷裂、铜壳和危险预警；不是演员录音。生成器为 `scripts/render-belfry-foley.py`，母版及来源清单保留在 `production/audio-v06/`。两条 Qwen 原创主角试音仅作制作资料保留，未启用于当前游戏；旧系统样音和废弃运行包归档到忽略目录 `.cache/disabled-audio/`。
+
+制作目录的当前用途、归档边界与可重建命令见 [音频制作资料](../production/audio-v06/README.md)。旧 44 条系统样音已停用，不作为当前游戏资产交付。

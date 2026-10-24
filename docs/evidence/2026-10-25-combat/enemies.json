@@ -1,0 +1,1788 @@
+{
+  "cases": [
+    {
+      "name": "safe idle never loads or displays dialogue despite old chatty preferences",
+      "state": {
+        "phase": 1,
+        "segment": 0,
+        "difficulty": 0,
+        "elapsed": 46.232373198233546,
+        "health": 8,
+        "maxHealth": 8,
+        "score": 0,
+        "combo": 0,
+        "bestCombo": 0,
+        "kills": 0,
+        "energy": 50,
+        "echoes": 0,
+        "x": 230,
+        "y": 0,
+        "vx": 0,
+        "vy": 0,
+        "hook": -1,
+        "target": 0,
+        "checkpoint": 0,
+        "bossHP": 16,
+        "returnTime": 0,
+        "riseY": -4020,
+        "attempts": 1,
+        "deaths": 0,
+        "hookCount": 0,
+        "failReason": 0,
+        "fxCount": 0,
+        "cameraY": -80.00000000000003,
+        "dashCool": 0,
+        "invulnerable": -0.0008907037228346182,
+        "bossState": 0,
+        "bossShield": 2,
+        "bossStage": 0,
+        "sealLeft": 0,
+        "sealRight": 0,
+        "gateOne": 4,
+        "gateTwo": 6,
+        "attackKind": 0,
+        "chainStep": 0,
+        "chargeTime": 0,
+        "threats": 0,
+        "practice": 0,
+        "attackTime": 0,
+        "attackAge": 0
+      },
+      "events": [
+        {
+          "name": "start",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "pause clears effects and music",
+      "state": {
+        "phase": 4,
+        "segment": 0,
+        "difficulty": 0,
+        "elapsed": 46.249039198942484,
+        "health": 8,
+        "maxHealth": 8,
+        "score": 0,
+        "combo": 0,
+        "bestCombo": 0,
+        "kills": 0,
+        "energy": 50,
+        "echoes": 0,
+        "x": 230,
+        "y": 0,
+        "vx": 0,
+        "vy": 0,
+        "hook": -1,
+        "target": 0,
+        "checkpoint": 0,
+        "bossHP": 16,
+        "returnTime": 0,
+        "riseY": -4020,
+        "attempts": 1,
+        "deaths": 0,
+        "hookCount": 0,
+        "failReason": 0,
+        "fxCount": 0,
+        "cameraY": -80.00000000000003,
+        "dashCool": 0,
+        "invulnerable": -0.0008907037228346182,
+        "bossState": 0,
+        "bossShield": 2,
+        "bossStage": 0,
+        "sealLeft": 0,
+        "sealRight": 0,
+        "gateOne": 4,
+        "gateTwo": 6,
+        "attackKind": 0,
+        "chainStep": 0,
+        "chargeTime": 0,
+        "threats": 0,
+        "practice": 0,
+        "attackTime": 0,
+        "attackAge": 0
+      },
+      "events": [
+        {
+          "name": "start",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "all four enemy patterns alternate; mimic responds to dash",
+      "state": {
+        "phase": 1,
+        "segment": 0,
+        "difficulty": 0,
+        "elapsed": 10.267887174785137,
+        "health": 5,
+        "maxHealth": 8,
+        "score": 0,
+        "combo": 0,
+        "bestCombo": 0,
+        "kills": 0,
+        "energy": 100,
+        "echoes": 0,
+        "x": 373.57768136991893,
+        "y": 0,
+        "vx": 0,
+        "vy": 0,
+        "hook": -1,
+        "target": 17,
+        "checkpoint": 0,
+        "bossHP": 16,
+        "returnTime": 0,
+        "riseY": -4020,
+        "attempts": 2,
+        "deaths": 0,
+        "hookCount": 0,
+        "failReason": 0,
+        "fxCount": 0,
+        "cameraY": 119.99999999999996,
+        "dashCool": -4.1723251298364517e-8,
+        "invulnerable": -0.016659066826105073,
+        "bossState": 0,
+        "bossShield": 2,
+        "bossStage": 0,
+        "sealLeft": 0,
+        "sealRight": 0,
+        "gateOne": 20,
+        "gateTwo": 20,
+        "attackKind": 0,
+        "chainStep": 0,
+        "chargeTime": 0,
+        "threats": 4,
+        "practice": 1,
+        "attackTime": 0,
+        "attackAge": 0
+      },
+      "events": [
+        {
+          "name": "start",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        },
+        {
+          "name": "practice",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        },
+        {
+          "name": "enemy_greet",
+          "id": 0,
+          "kind": 0,
+          "time": 0.016666000708937645
+        },
+        {
+          "name": "enemy_greet",
+          "id": 3,
+          "kind": 4,
+          "time": 0.016666000708937645
+        },
+        {
+          "name": "enemy_greet",
+          "id": 6,
+          "kind": 2,
+          "time": 0.6761423571407795
+        },
+        {
+          "name": "enemy_greet",
+          "id": 2,
+          "kind": 1,
+          "time": 1.208960715532303
+        },
+        {
+          "name": "enemy_tell",
+          "id": 3,
+          "kind": 4,
+          "time": 2.0422940923273565
+        },
+        {
+          "name": "enemy_tell",
+          "id": 0,
+          "kind": 0,
+          "time": 2.608960788547993
+        },
+        {
+          "name": "enemy_tell",
+          "id": 2,
+          "kind": 1,
+          "time": 2.608960788547993
+        },
+        {
+          "name": "enemy_mimicslash",
+          "id": 3,
+          "kind": 4,
+          "time": 2.842294134050608
+        },
+        {
+          "name": "dash",
+          "time": 2.858960801586509,
+          "x": 405.9388130239375,
+          "y": 0
+        },
+        {
+          "name": "enemy_tell",
+          "id": 6,
+          "kind": 2,
+          "time": 2.9422941392660142
+        },
+        {
+          "name": "hurt",
+          "time": 3.125627482160926,
+          "x": 625.9041019242936,
+          "y": 0
+        },
+        {
+          "name": "enemy_volley",
+          "id": 0,
+          "kind": 0,
+          "time": 3.408960830271244
+        },
+        {
+          "name": "enemy_volley",
+          "id": 2,
+          "kind": 1,
+          "time": 3.408960830271244
+        },
+        {
+          "name": "enemy_volley",
+          "id": 6,
+          "kind": 2,
+          "time": 3.7422941809892656
+        },
+        {
+          "name": "hurt",
+          "time": 4.792294235751033,
+          "x": 572.4665774444787,
+          "y": 0
+        },
+        {
+          "name": "enemy_tell",
+          "id": 3,
+          "kind": 4,
+          "time": 7.351237360090018
+        },
+        {
+          "name": "enemy_tell",
+          "id": 0,
+          "kind": 0,
+          "time": 7.917904056310654
+        },
+        {
+          "name": "enemy_tell",
+          "id": 2,
+          "kind": 1,
+          "time": 7.917904056310654
+        },
+        {
+          "name": "enemy_lunge",
+          "id": 3,
+          "kind": 4,
+          "time": 8.151237401813269
+        },
+        {
+          "name": "enemy_mimic_missed",
+          "id": 3,
+          "kind": 4,
+          "time": 8.534570755138994
+        },
+        {
+          "name": "enemy_lunge",
+          "id": 0,
+          "kind": 0,
+          "time": 8.717904098033905
+        },
+        {
+          "name": "enemy_web",
+          "id": 2,
+          "kind": 1,
+          "time": 8.717904098033905
+        },
+        {
+          "name": "hurt",
+          "time": 8.717904098033905,
+          "x": 373.57768136991893,
+          "y": 0
+        },
+        {
+          "name": "enemy_tell",
+          "id": 6,
+          "kind": 2,
+          "time": 9.451237469613552
+        },
+        {
+          "name": "enemy_wave",
+          "id": 6,
+          "kind": 2,
+          "time": 10.2512211740762
+        },
+        {
+          "name": "bell",
+          "time": 10.2512211740762,
+          "x": 373.57768136991893,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "player severs a live weaver web",
+      "state": {
+        "phase": 1,
+        "segment": 0,
+        "difficulty": 0,
+        "elapsed": 9.600362775549293,
+        "health": 7,
+        "maxHealth": 8,
+        "score": 150,
+        "combo": 1,
+        "bestCombo": 1,
+        "kills": 1,
+        "energy": 100,
+        "echoes": 0,
+        "x": 868,
+        "y": 33.12798467637176,
+        "vx": 0,
+        "vy": 69.16666558012366,
+        "hook": -1,
+        "target": 19,
+        "checkpoint": 0,
+        "bossHP": 0,
+        "returnTime": 0,
+        "riseY": -4020,
+        "attempts": 3,
+        "deaths": 0,
+        "hookCount": 0,
+        "failReason": 0,
+        "fxCount": 9,
+        "cameraY": 119.99999999999996,
+        "dashCool": 0,
+        "invulnerable": -0.016614056006073907,
+        "bossState": 0,
+        "bossShield": 2,
+        "bossStage": 0,
+        "sealLeft": 0,
+        "sealRight": 0,
+        "gateOne": 18,
+        "gateTwo": 0,
+        "attackKind": 6,
+        "chainStep": 6,
+        "chargeTime": 0,
+        "threats": 3,
+        "practice": 1,
+        "attackTime": 0,
+        "attackAge": 0
+      },
+      "events": [
+        {
+          "name": "start",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        },
+        {
+          "name": "practice",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        },
+        {
+          "name": "enemy_greet",
+          "id": 0,
+          "kind": 0,
+          "time": 0.016666000708937645
+        },
+        {
+          "name": "enemy_greet",
+          "id": 3,
+          "kind": 4,
+          "time": 0.016666000708937645
+        },
+        {
+          "name": "enemy_greet",
+          "id": 6,
+          "kind": 2,
+          "time": 0.6499740276485682
+        },
+        {
+          "name": "enemy_greet",
+          "id": 2,
+          "kind": 1,
+          "time": 0.749970031902194
+        },
+        {
+          "name": "hurt",
+          "time": 1.1499540489166975,
+          "x": 541.9866542422355,
+          "y": 0
+        },
+        {
+          "name": "aircut",
+          "time": 1.4832740630954504,
+          "x": 641.1197789889768,
+          "y": 43.12514976564845
+        },
+        {
+          "name": "slash",
+          "time": 1.4832740630954504,
+          "x": 641.1197789889768,
+          "y": 43.12514976564845
+        },
+        {
+          "name": "enemy_impact",
+          "id": 2,
+          "kind": 1,
+          "time": 1.4832740630954504
+        },
+        {
+          "name": "hit",
+          "time": 1.4832740630954504,
+          "x": 641.1197789889768,
+          "y": 43.12514976564845
+        },
+        {
+          "name": "armor",
+          "time": 1.4832740630954504,
+          "x": 641.1197789889768,
+          "y": 43.12514976564845
+        },
+        {
+          "name": "aircut",
+          "time": 1.6832660716027021,
+          "x": 695.1813099067252,
+          "y": 57.86126862242829
+        },
+        {
+          "name": "slash",
+          "time": 1.6832660716027021,
+          "x": 695.1813099067252,
+          "y": 57.86126862242829
+        },
+        {
+          "name": "enemy_impact",
+          "id": 2,
+          "kind": 1,
+          "time": 1.6832660716027021
+        },
+        {
+          "name": "hit",
+          "time": 1.6832660716027021,
+          "x": 695.1813099067252,
+          "y": 57.86126862242829
+        },
+        {
+          "name": "armor",
+          "time": 1.6832660716027021,
+          "x": 695.1813099067252,
+          "y": 57.86126862242829
+        },
+        {
+          "name": "aircut",
+          "time": 1.8832580801099539,
+          "x": 744.0779112844665,
+          "y": 72.59738747920815
+        },
+        {
+          "name": "slash",
+          "time": 1.8832580801099539,
+          "x": 744.0779112844665,
+          "y": 72.59738747920815
+        },
+        {
+          "name": "armor",
+          "time": 1.8832580801099539,
+          "x": 744.0779112844665,
+          "y": 72.59738747920815
+        },
+        {
+          "name": "enemy_tell",
+          "id": 3,
+          "kind": 4,
+          "time": 2.0332520864903927
+        },
+        {
+          "name": "aircut",
+          "time": 2.0832500886172056,
+          "x": 788.3030300649781,
+          "y": 63.515499230905554
+        },
+        {
+          "name": "slash",
+          "time": 2.0832500886172056,
+          "x": 788.3030300649781,
+          "y": 63.515499230905554
+        },
+        {
+          "name": "armor",
+          "time": 2.0832500886172056,
+          "x": 788.3030300649781,
+          "y": 63.515499230905554
+        },
+        {
+          "name": "aircut",
+          "time": 2.2832420971244574,
+          "x": 828.3029702661534,
+          "y": 54.43361098260298
+        },
+        {
+          "name": "slash",
+          "time": 2.2832420971244574,
+          "x": 828.3029702661534,
+          "y": 54.43361098260298
+        },
+        {
+          "name": "armor",
+          "time": 2.2832420971244574,
+          "x": 828.3029702661534,
+          "y": 54.43361098260298
+        },
+        {
+          "name": "aircut",
+          "time": 2.483234105631709,
+          "x": 864.4813969208864,
+          "y": 45.3517227343004
+        },
+        {
+          "name": "slash",
+          "time": 2.483234105631709,
+          "x": 864.4813969208864,
+          "y": 45.3517227343004
+        },
+        {
+          "name": "enemy_tell",
+          "id": 0,
+          "kind": 0,
+          "time": 2.608283774778247
+        },
+        {
+          "name": "aircut",
+          "time": 2.6932274436950685,
+          "x": 868,
+          "y": 34.23756410058287
+        },
+        {
+          "name": "slash",
+          "time": 2.6932274436950685,
+          "x": 868,
+          "y": 34.23756410058287
+        },
+        {
+          "name": "enemy_mimicslash",
+          "id": 3,
+          "kind": 4,
+          "time": 2.8432214500755073
+        },
+        {
+          "name": "aircut",
+          "time": 2.8932194522023202,
+          "x": 868,
+          "y": 24.920359055215638
+        },
+        {
+          "name": "slash",
+          "time": 2.8932194522023202,
+          "x": 868,
+          "y": 24.920359055215638
+        },
+        {
+          "name": "enemy_tell",
+          "id": 6,
+          "kind": 2,
+          "time": 2.943217454329133
+        },
+        {
+          "name": "aircut",
+          "time": 3.093211460709572,
+          "x": 868,
+          "y": 15.838470806913058
+        },
+        {
+          "name": "slash",
+          "time": 3.093211460709572,
+          "x": 868,
+          "y": 15.838470806913058
+        },
+        {
+          "name": "enemy_mimic_missed",
+          "id": 3,
+          "kind": 4,
+          "time": 3.243205467090011
+        },
+        {
+          "name": "aircut",
+          "time": 3.2932034692168237,
+          "x": 868,
+          "y": 6.75658255861048
+        },
+        {
+          "name": "slash",
+          "time": 3.2932034692168237,
+          "x": 868,
+          "y": 6.75658255861048
+        },
+        {
+          "name": "enemy_tell",
+          "id": 2,
+          "kind": 1,
+          "time": 3.3432014713436367
+        },
+        {
+          "name": "enemy_volley",
+          "id": 0,
+          "kind": 0,
+          "time": 3.4098654741793872
+        },
+        {
+          "name": "light1",
+          "time": 3.4925164746493103,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 3.4925164746493103,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light2",
+          "time": 3.659168148264289,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 3.659168148264289,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_volley",
+          "id": 6,
+          "kind": 2,
+          "time": 3.7424131518602373
+        },
+        {
+          "name": "parry",
+          "time": 3.7590798193961383,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 3.7590798193961383,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 3.7590798193961383,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "finisher",
+          "time": 3.925746494755149,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 3.925746494755149,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 3.925746494755149
+        },
+        {
+          "name": "hit",
+          "time": 3.925746494755149,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_volley",
+          "id": 2,
+          "kind": 1,
+          "time": 4.142356505468488
+        },
+        {
+          "name": "light1",
+          "time": 4.192356508076191,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 4.192356508076191,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light2",
+          "time": 4.359023183435202,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 4.359023183435202,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "finisher",
+          "time": 4.625536529198289,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 4.625536529198289,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 4.625536529198289
+        },
+        {
+          "name": "hit",
+          "time": 4.625536529198289,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light1",
+          "time": 4.892203209772706,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 4.892203209772706,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 4.892203209772706
+        },
+        {
+          "name": "hit",
+          "time": 4.892203209772706,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 4.908869877308607,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 4.908869877308607,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 4.908869877308607,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 4.908869877308607,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light2",
+          "time": 5.058869885131717,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 5.058869885131717,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 5.058869885131717
+        },
+        {
+          "name": "hit",
+          "time": 5.058869885131717,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "finisher",
+          "time": 5.325536565706134,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 5.325536565706134,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 5.325536565706134
+        },
+        {
+          "name": "hit",
+          "time": 5.325536565706134,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light1",
+          "time": 5.592203246280551,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 5.592203246280551,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 5.592203246280551
+        },
+        {
+          "name": "hit",
+          "time": 5.592203246280551,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light2",
+          "time": 5.758869921639562,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 5.758869921639562,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 5.758869921639562
+        },
+        {
+          "name": "hit",
+          "time": 5.758869921639562,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "finisher",
+          "time": 6.025536602213979,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 6.025536602213979,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 6.025536602213979
+        },
+        {
+          "name": "hit",
+          "time": 6.025536602213979,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light1",
+          "time": 6.292203282788396,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 6.292203282788396,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 6.292203282788396
+        },
+        {
+          "name": "hit",
+          "time": 6.292203282788396,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light2",
+          "time": 6.458869958147407,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 6.458869958147407,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 6.458869958147407
+        },
+        {
+          "name": "hit",
+          "time": 6.458869958147407,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "finisher",
+          "time": 6.742203306257725,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 6.742203306257725,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 6.742203306257725
+        },
+        {
+          "name": "hit",
+          "time": 6.742203306257725,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light1",
+          "time": 7.008869986832142,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 7.008869986832142,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 7.008869986832142
+        },
+        {
+          "name": "hit",
+          "time": 7.008869986832142,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light2",
+          "time": 7.175536662191153,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 7.175536662191153,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_tell",
+          "id": 3,
+          "kind": 4,
+          "time": 7.342203337550163
+        },
+        {
+          "name": "finisher",
+          "time": 7.434414006471634,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 7.434414006471634,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 7.434414006471634
+        },
+        {
+          "name": "hit",
+          "time": 7.434414006471634,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "light1",
+          "time": 7.7010706846416,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 7.7010706846416,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 7.7010706846416
+        },
+        {
+          "name": "hit",
+          "time": 7.7010706846416,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "kill",
+          "time": 7.7010706846416,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "enemy_collapse",
+          "id": 6,
+          "kind": 2,
+          "time": 7.7010706846416
+        },
+        {
+          "name": "gate",
+          "time": 7.7010706846416,
+          "x": 868,
+          "y": 0
+        },
+        {
+          "name": "aircut",
+          "time": 7.867730691730976,
+          "x": 868,
+          "y": 65.90090751599817
+        },
+        {
+          "name": "slash",
+          "time": 7.867730691730976,
+          "x": 868,
+          "y": 65.90090751599817
+        },
+        {
+          "name": "enemy_tell",
+          "id": 0,
+          "kind": 0,
+          "time": 7.917728693857789
+        },
+        {
+          "name": "aircut",
+          "time": 8.067722700238228,
+          "x": 868,
+          "y": 99.15232589619481
+        },
+        {
+          "name": "slash",
+          "time": 8.067722700238228,
+          "x": 868,
+          "y": 99.15232589619481
+        },
+        {
+          "name": "enemy_mimicslash",
+          "id": 3,
+          "kind": 4,
+          "time": 8.150652702599764
+        },
+        {
+          "name": "aircut",
+          "time": 8.26707370735705,
+          "x": 868,
+          "y": 97.80639220671127
+        },
+        {
+          "name": "slash",
+          "time": 8.26707370735705,
+          "x": 868,
+          "y": 97.80639220671127
+        },
+        {
+          "name": "aircut",
+          "time": 8.46702938310802,
+          "x": 868,
+          "y": 88.766884688564
+        },
+        {
+          "name": "slash",
+          "time": 8.46702938310802,
+          "x": 868,
+          "y": 88.766884688564
+        },
+        {
+          "name": "enemy_mimic_missed",
+          "id": 3,
+          "kind": 4,
+          "time": 8.550362720787525
+        },
+        {
+          "name": "enemy_tell",
+          "id": 2,
+          "kind": 1,
+          "time": 8.650362726002932
+        },
+        {
+          "name": "aircut",
+          "time": 8.667029393538833,
+          "x": 868,
+          "y": 79.68354946899194
+        },
+        {
+          "name": "slash",
+          "time": 8.667029393538833,
+          "x": 868,
+          "y": 79.68354946899194
+        },
+        {
+          "name": "enemy_lunge",
+          "id": 0,
+          "kind": 0,
+          "time": 8.717029396146536
+        },
+        {
+          "name": "aircut",
+          "time": 8.867029403969646,
+          "x": 868,
+          "y": 70.60021424941988
+        },
+        {
+          "name": "slash",
+          "time": 8.867029403969646,
+          "x": 868,
+          "y": 70.60021424941988
+        },
+        {
+          "name": "aircut",
+          "time": 9.067029414400459,
+          "x": 868,
+          "y": 61.516879029847814
+        },
+        {
+          "name": "slash",
+          "time": 9.067029414400459,
+          "x": 868,
+          "y": 61.516879029847814
+        },
+        {
+          "name": "aircut",
+          "time": 9.267029424831271,
+          "x": 868,
+          "y": 52.43354381027575
+        },
+        {
+          "name": "slash",
+          "time": 9.267029424831271,
+          "x": 868,
+          "y": 52.43354381027575
+        },
+        {
+          "name": "enemy_web",
+          "id": 2,
+          "kind": 1,
+          "time": 9.450362767726183
+        },
+        {
+          "name": "aircut",
+          "time": 9.467029435262084,
+          "x": 868,
+          "y": 43.35020859070369
+        },
+        {
+          "name": "slash",
+          "time": 9.467029435262084,
+          "x": 868,
+          "y": 43.35020859070369
+        },
+        {
+          "name": "webcut",
+          "time": 9.483696102797985,
+          "x": 868,
+          "y": 42.766875118292845
+        },
+        {
+          "name": "enemy_webcut",
+          "id": 2,
+          "kind": 1,
+          "time": 9.483696102797985
+        }
+      ]
+    },
+    {
+      "name": "closed bell armor blocks light strike and accepts charged heavy",
+      "state": {
+        "phase": 1,
+        "segment": 0,
+        "difficulty": 0,
+        "elapsed": 3.7333335280418396,
+        "health": 7,
+        "maxHealth": 8,
+        "score": 0,
+        "combo": 0,
+        "bestCombo": 0,
+        "kills": 0,
+        "energy": 100,
+        "echoes": 0,
+        "x": 729.5000292062762,
+        "y": 0,
+        "vx": 19.99998852610588,
+        "vy": 0,
+        "hook": -1,
+        "target": 19,
+        "checkpoint": 0,
+        "bossHP": 0,
+        "returnTime": 0,
+        "riseY": -4020,
+        "attempts": 4,
+        "deaths": 0,
+        "hookCount": 0,
+        "failReason": 0,
+        "fxCount": 32,
+        "cameraY": 119.99999999965577,
+        "dashCool": 0,
+        "invulnerable": -6.780028338759791e-8,
+        "bossState": 0,
+        "bossShield": 2,
+        "bossStage": 0,
+        "sealLeft": 0,
+        "sealRight": 0,
+        "gateOne": 17,
+        "gateTwo": 17,
+        "attackKind": 7,
+        "chainStep": 7,
+        "chargeTime": 0.6333333663642406,
+        "threats": 4,
+        "practice": 1,
+        "attackTime": 0.1,
+        "attackAge": 0.25000001303851604
+      },
+      "events": [
+        {
+          "name": "start",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        },
+        {
+          "name": "practice",
+          "time": 0,
+          "x": 230,
+          "y": 0
+        },
+        {
+          "name": "enemy_greet",
+          "id": 0,
+          "kind": 0,
+          "time": 0.01666666753590107
+        },
+        {
+          "name": "enemy_greet",
+          "id": 3,
+          "kind": 4,
+          "time": 0.01666666753590107
+        },
+        {
+          "name": "enemy_greet",
+          "id": 6,
+          "kind": 2,
+          "time": 0.6666667014360428
+        },
+        {
+          "name": "enemy_greet",
+          "id": 2,
+          "kind": 1,
+          "time": 0.7666667066514492
+        },
+        {
+          "name": "hurt",
+          "time": 1.1666667275130749,
+          "x": 542.0000174194575,
+          "y": 0
+        },
+        {
+          "name": "enemy_tell",
+          "id": 3,
+          "kind": 4,
+          "time": 2.0333334393799305
+        },
+        {
+          "name": "enemy_tell",
+          "id": 0,
+          "kind": 0,
+          "time": 2.600000135600567
+        },
+        {
+          "name": "light1",
+          "time": 2.600000135600567,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 2.600000135600567,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "armor",
+          "time": 2.600000135600567,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "enemy_tell",
+          "id": 2,
+          "kind": 1,
+          "time": 2.616666803136468
+        },
+        {
+          "name": "enemy_mimicslash",
+          "id": 3,
+          "kind": 4,
+          "time": 2.833333481103182
+        },
+        {
+          "name": "charge",
+          "time": 2.850000148639083,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "enemy_tell",
+          "id": 6,
+          "kind": 2,
+          "time": 2.9500001538544893
+        },
+        {
+          "name": "enemy_mimic_missed",
+          "id": 3,
+          "kind": 4,
+          "time": 3.2166668344289064
+        },
+        {
+          "name": "chargeready",
+          "time": 3.383333509787917,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "enemy_volley",
+          "id": 0,
+          "kind": 0,
+          "time": 3.400000177323818
+        },
+        {
+          "name": "enemy_volley",
+          "id": 2,
+          "kind": 1,
+          "time": 3.4166668448597193
+        },
+        {
+          "name": "heavy",
+          "time": 3.633333522826433,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "charged",
+          "time": 3.633333522826433,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "slash",
+          "time": 3.633333522826433,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 2,
+          "kind": 1,
+          "time": 3.633333522826433
+        },
+        {
+          "name": "hit",
+          "time": 3.633333522826433,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "enemy_impact",
+          "id": 6,
+          "kind": 2,
+          "time": 3.633333522826433
+        },
+        {
+          "name": "hit",
+          "time": 3.633333522826433,
+          "x": 718.333362626533,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 3.7166668605059385,
+          "x": 729.1666960467898,
+          "y": 0
+        },
+        {
+          "name": "parry",
+          "time": 3.7166668605059385,
+          "x": 729.1666960467898,
+          "y": 0
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "final": {
+    "state": {
+      "phase": 1,
+      "segment": 0,
+      "difficulty": 0,
+      "elapsed": 3.7333335280418396,
+      "health": 7,
+      "maxHealth": 8,
+      "score": 0,
+      "combo": 0,
+      "bestCombo": 0,
+      "kills": 0,
+      "energy": 100,
+      "echoes": 0,
+      "x": 729.5000292062762,
+      "y": 0,
+      "vx": 19.99998852610588,
+      "vy": 0,
+      "hook": -1,
+      "target": 19,
+      "checkpoint": 0,
+      "bossHP": 0,
+      "returnTime": 0,
+      "riseY": -4020,
+      "attempts": 4,
+      "deaths": 0,
+      "hookCount": 0,
+      "failReason": 0,
+      "fxCount": 32,
+      "cameraY": 119.99999999965577,
+      "dashCool": 0,
+      "invulnerable": -6.780028338759791e-8,
+      "bossState": 0,
+      "bossShield": 2,
+      "bossStage": 0,
+      "sealLeft": 0,
+      "sealRight": 0,
+      "gateOne": 17,
+      "gateTwo": 17,
+      "attackKind": 7,
+      "chainStep": 7,
+      "chargeTime": 0.6333333663642406,
+      "threats": 4,
+      "practice": 1,
+      "attackTime": 0.1,
+      "attackAge": 0.25000001303851604
+    },
+    "events": [
+      {
+        "name": "start",
+        "time": 0,
+        "x": 230,
+        "y": 0
+      },
+      {
+        "name": "practice",
+        "time": 0,
+        "x": 230,
+        "y": 0
+      },
+      {
+        "name": "enemy_greet",
+        "id": 0,
+        "kind": 0,
+        "time": 0.01666666753590107
+      },
+      {
+        "name": "enemy_greet",
+        "id": 3,
+        "kind": 4,
+        "time": 0.01666666753590107
+      },
+      {
+        "name": "enemy_greet",
+        "id": 6,
+        "kind": 2,
+        "time": 0.6666667014360428
+      },
+      {
+        "name": "enemy_greet",
+        "id": 2,
+        "kind": 1,
+        "time": 0.7666667066514492
+      },
+      {
+        "name": "hurt",
+        "time": 1.1666667275130749,
+        "x": 542.0000174194575,
+        "y": 0
+      },
+      {
+        "name": "enemy_tell",
+        "id": 3,
+        "kind": 4,
+        "time": 2.0333334393799305
+      },
+      {
+        "name": "enemy_tell",
+        "id": 0,
+        "kind": 0,
+        "time": 2.600000135600567
+      },
+      {
+        "name": "light1",
+        "time": 2.600000135600567,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "slash",
+        "time": 2.600000135600567,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "armor",
+        "time": 2.600000135600567,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "enemy_tell",
+        "id": 2,
+        "kind": 1,
+        "time": 2.616666803136468
+      },
+      {
+        "name": "enemy_mimicslash",
+        "id": 3,
+        "kind": 4,
+        "time": 2.833333481103182
+      },
+      {
+        "name": "charge",
+        "time": 2.850000148639083,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "enemy_tell",
+        "id": 6,
+        "kind": 2,
+        "time": 2.9500001538544893
+      },
+      {
+        "name": "enemy_mimic_missed",
+        "id": 3,
+        "kind": 4,
+        "time": 3.2166668344289064
+      },
+      {
+        "name": "chargeready",
+        "time": 3.383333509787917,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "enemy_volley",
+        "id": 0,
+        "kind": 0,
+        "time": 3.400000177323818
+      },
+      {
+        "name": "enemy_volley",
+        "id": 2,
+        "kind": 1,
+        "time": 3.4166668448597193
+      },
+      {
+        "name": "heavy",
+        "time": 3.633333522826433,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "charged",
+        "time": 3.633333522826433,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "slash",
+        "time": 3.633333522826433,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "enemy_impact",
+        "id": 2,
+        "kind": 1,
+        "time": 3.633333522826433
+      },
+      {
+        "name": "hit",
+        "time": 3.633333522826433,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "enemy_impact",
+        "id": 6,
+        "kind": 2,
+        "time": 3.633333522826433
+      },
+      {
+        "name": "hit",
+        "time": 3.633333522826433,
+        "x": 718.333362626533,
+        "y": 0
+      },
+      {
+        "name": "parry",
+        "time": 3.7166668605059385,
+        "x": 729.1666960467898,
+        "y": 0
+      },
+      {
+        "name": "parry",
+        "time": 3.7166668605059385,
+        "x": 729.1666960467898,
+        "y": 0
+      }
+    ],
+    "foes": {
+      "0": {
+        "id": 0,
+        "kind": 0,
+        "hp": 20,
+        "x": 467.6410705653687,
+        "y": 51.0360742403315,
+        "state": 2,
+        "mode": 0,
+        "hazard": 0,
+        "stun": 0,
+        "clock": 3.7333335280418396,
+        "aimX": 718.333362626533,
+        "aimY": 28,
+        "seen": 3.7333335280418396
+      },
+      "2": {
+        "id": 2,
+        "kind": 1,
+        "hp": 17,
+        "x": 745.906983655534,
+        "y": 222.19918552661042,
+        "state": 2,
+        "mode": 0,
+        "hazard": 0,
+        "stun": 0.5999999947845935,
+        "clock": 3.6300001695007085,
+        "aimX": 718.333362626533,
+        "aimY": 28,
+        "seen": 3.7333335280418396
+      },
+      "3": {
+        "id": 3,
+        "kind": 4,
+        "hp": 20,
+        "x": 548.2695553450998,
+        "y": 80.67145293063432,
+        "state": 2,
+        "mode": 0,
+        "hazard": -2.0861625649182258e-8,
+        "stun": 0,
+        "clock": 4.30333352804184,
+        "aimX": 708.8889106776977,
+        "aimY": 28,
+        "seen": 3.7333335280418396
+      },
+      "6": {
+        "id": 6,
+        "kind": 2,
+        "hp": 17,
+        "x": 798.0687372749928,
+        "y": 42.72620085311911,
+        "state": 2,
+        "mode": 0,
+        "hazard": 0,
+        "stun": 0.5999999947845935,
+        "clock": 4.490000174716116,
+        "aimX": 718.333362626533,
+        "aimY": 28,
+        "seen": 3.7333335280418396
+      }
+    }
+  }
+}

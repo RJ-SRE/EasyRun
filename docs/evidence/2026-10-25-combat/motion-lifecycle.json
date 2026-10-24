@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Pause freezes motion, machinery and live particle lifetimes.",
+    "Retry cancels effects from the previous attempt and resets camera/rotor.",
+    "Jump lands, compression settles, and water/mist particles retire."
+  ],
+  "errors": [],
+  "passed": true
+}

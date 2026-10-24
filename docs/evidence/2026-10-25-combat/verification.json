@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-24T16:19:01.971066+00:00",
+  "codeCommit": "6c775cdbb3ba2d3dc7ea798f37f97464ff1a852a",
+  "sourceTree": "666144ebd1a52c3106f99e41b4949c97345425d2",
+  "environment": "macOS ARM64; Node 24.22.1; pnpm 11.9.0; spx 3.3.0; Playwright 1.64.1 / Chromium",
+  "method": "Exported Git staged tree into a separate directory, reused installed locked dependencies, rebuilt source assets, ran test-game.mjs with its isolated random-port server, and packaged four XBuilder projects. Concurrent changes in the main working directory are excluded.",
+  "checks": {
+    "build": true,
+    "lint": true,
+    "gameLint": true,
+    "formatCheck": true,
+    "pythonSyntax": true,
+    "allAudioHashes": 56,
+    "fullRegression": true,
+    "packageIntegrity": true
+  },
+  "reports": {
+    "combat.json": {
+      "cases": 13,
+      "errors": 0,
+      "sha256": "e879fb968b80784b342e1b2fca04355811a7d43536b86111029956d2aabe95b6"
+    },
+    "enemies.json": {
+      "cases": 5,
+      "errors": 0,
+      "sha256": "d8b4e8ee1c36e6fe7d523c3defab04d485aa0dec448d85e4e240ca91ba2201aa"
+    },
+    "lifecycle.json": {
+      "cases": 12,
+      "errors": 0,
+      "sha256": "7a3400a33c806b8ccf36807c01e9e36fc28bfd626c83c99bc6b65613b34fc9a1"
+    },
+    "route-0.json": {
+      "cases": 0,
+      "errors": 0,
+      "sha256": "240fd04d0bbcd4832d175c99631cfd8a6bf8588e366f71380618bbeb9d28aed3",
+      "elapsed": 51.10290035519748,
+      "deaths": 1,
+      "kills": 11,
+      "hookCount": 35,
+      "peakFX": 84
+    },
+    "route-1.json": {
+      "cases": 0,
+      "errors": 0,
+      "sha256": "e50a1f3cf0b073ab5403250a0ac6e2d468dd16dba6d12bfc007c48b783c02ede",
+      "elapsed": 31.879305325821043,
+      "deaths": 0,
+      "kills": 9,
+      "hookCount": 31,
+      "peakFX": 68
+    },
+    "rupture-tests.json": {
+      "cases": 4,
+      "errors": 0,
+      "sha256": "61bbf01f35061c611d038ce54bba56834471936abf05127f5bad3b0207df942a"
+    },
+    "motion-lifecycle.json": {
+      "cases": 3,
+      "errors": 0,
+      "sha256": "2fac5d7b9d4e9b98957b441917832eb53a0c23a7955f808f49e83524693385e8"
+    }
+  },
+  "packages": [
+    {
+      "file": "belfry.xbp",
+      "bytes": 21561099,
+      "sha256": "8a011ae27f798b073a89f909a9f37fd1bf1c7608040f92bdd6db77fa1b41caec"
+    },
+    {
+      "file": "cinema.xbp",
+      "bytes": 13896,
+      "sha256": "6d3078639d8991e0af30ba73608492d6a5f74abbb06edbe5660a4c018fd56532"
+    },
+    {
+      "file": "rupture.xbp",
+      "bytes": 9898833,
+      "sha256": "28adf0f612fc0d29897b4ae6dc96114e825c41dfb2a488a11baa7b3e3bc5328c"
+    },
+    {
+      "file": "velocity.xbp",
+      "bytes": 17765,
+      "sha256": "2a8a42cf370a5063acb8f369287a2c496d89facaed1671ca57df1caa43f234e1"
+    }
+  ],
+  "remoteCI": "Not evaluated in this local report."
+}

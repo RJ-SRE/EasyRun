@@ -1,5 +1,7 @@
 # 当前入口：倒悬钟城
 
+当前 v0.5 已加入 J 三连、W+J 挑空、L 蓄力、四类敌人的多种攻击、排练场与动作音效；角色语音/对白现已按用户要求关闭。完整规则见 [PRD](../../docs/PRD.md)。
+
 默认 `/` 和 `/belfry.html` 是纵向钩索战斗完整单关。项目说明、操作、构建和测试见 [根 README](../../README.md)、[PRD](../../docs/PRD.md)、[技术设计](../../docs/TECHNICAL_DESIGN.md)。
 
 - 核心源码：`spx/belfry/`。
