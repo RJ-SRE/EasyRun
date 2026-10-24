@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-24",
+  "sourceCommit": "75c144c0a728819a9908fbb25aac45455ee984cf",
+  "method": "git archive of tracked source into an empty directory; reused installed locked node_modules and Chromium cache; no generated game artifacts copied",
+  "build": "passed",
+  "currentRegression": true,
+  "effectLifecycle": true,
+  "packages": [
+    {
+      "name": "cinema.xbp",
+      "bytes": 13896
+    },
+    {
+      "name": "rupture.xbp",
+      "bytes": 9898833
+    },
+    {
+      "name": "velocity.xbp",
+      "bytes": 17765
+    }
+  ],
+  "limitation": "This verifies clean source reconstruction, not a fresh network dependency installation or a second operating system."
+}

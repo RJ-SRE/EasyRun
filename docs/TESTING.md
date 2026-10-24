@@ -34,6 +34,7 @@ bash scripts/with-env.sh pnpm game:package
 - `rupture-tests.json`：本次整理后重新执行的当前路线回归。
 - `motion-lifecycle.json`：本次整理后重新执行的生命周期检查。
 - `legacy-tests.json`：修正旧入口后的对照原型回归。
+- `clean-source-verification.json`：仅用 Git 纳管文件重建、测试和打包的结果（复用本机已安装依赖）。
 - `motion-observation.json`：上一轮动作修订的浏览器调度与事件摘要，不冒充本次新测数据。
 - `motion-preview.mp4`：上一轮修订后的真实游戏画布录像，静音视频，不含网页 HUD；没有后期补绘特效。
 - `rupture-dash.png`：上一轮运行截图。

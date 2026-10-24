@@ -3,6 +3,11 @@
   "timezone": "Asia/Shanghai",
   "files": [
     {
+      "file": "clean-source-verification.json",
+      "bytes": 675,
+      "sha256": "203b1adc41d9ae858924688fa99ea42b0013e81ca011e3d43e414f22aea1f907"
+    },
+    {
       "file": "legacy-tests.json",
       "bytes": 11969,
       "sha256": "82521b27b9f3060a87215cbbb1793c2a4b3f69ea8c797b04fb68ae4ef52d1e58"
