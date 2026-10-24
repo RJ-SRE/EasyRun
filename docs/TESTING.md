@@ -187,3 +187,17 @@ bash scripts/with-env.sh pnpm game:package
 本轮录屏运行：提交至引擎确认正确约5.1ms，错误约6.7ms；宿主rAF中位数16.7ms、P95 50.0ms。它们不是引擎GPU帧率，也不代表全程稳定60FPS。首轮并发运行另一WASM测试时帧时间受干扰，最终动效专项单独复测；仍保留对长帧的限制说明，不用输入确认速度冒充渲染性能。
 
 证据：[42项摘要及源码哈希](evidence/inscription-resonance/verification.json)、[动效/余响报告](evidence/inscription-resonance/motion.json)、[真实输入录像片段](evidence/inscription-resonance/flow-preview.mp4)、[聚焦画面](evidence/inscription-resonance/focus.png)。录像按原速截取，浏览器录像不带音轨；音频通过播放队列断言验证。
+
+## 2026-10-25 · 钟城铭录成就验收
+
+本轮通过 9 项成就规则测试与 45 项浏览器检查：新增成就流程 13、原铭文流程 18、连续性与余响 9、异常恢复 5。构建输出 359 文件 / 44 精灵，完整游戏 JavaScript 的 ESLint、修改文件的 Prettier 与 Git 空白检查通过。共享依赖工作树内直接使用 Node 执行 CLI；pnpm 脚本入口曾尝试重装共享依赖，被无终端保护中止，没有据此修改或清除依赖。
+
+规则覆盖：16 个唯一目标、称号权限、事件去重与过期尝试、排练排除、不同锚点的连续腾空、真实命中和回血条件、单局回声、完整新冒险无伤资格、不同词的累计、五连对及失败中断、同一余响窗口、损坏记录恢复。
+
+浏览器成就专项使用真实首平台按键，只固定词池：实际获得落笔成锋、刀锋余响、借风起身；验证题中入口锁定、已有提示队列避让下一道题、重复词不重发、打开册页暂停位置 / 血量 / 冷却、Esc 恢复、原暂停状态保留、Tab 焦点、动作键隔离、称号佩戴、JSON 导出、刷新保留和练习不计。故障场景验证坏存档、存储禁用、成就模块加载失败、词库模块加载失败时仍可玩，后者额外检查按住移动键打开册页后不会继续自动移动。
+
+桌面 1280×800、短屏 1280×720 和窄屏 390×844 的册页已检查与截图；窄屏无横向溢出，不等于触屏游戏支持。测试中修正了 Esc 关闭册页被旧输入隔离拦截的问题。新模块加载、导出和刷新由自动化检查；用户实际浏览器页也已打开成就册确认入口、16 项和分类可见。
+
+本轮没有重新跑完整通关路线；无伤通关等罕见目标由事件规则测试覆盖，不将其包装为真人实机全成就。没有新增帧率基准或声称稳定 60 FPS。成就没有自己的逐帧循环、声音或战斗加成。
+
+证据：[54 项检查摘要与源码哈希](evidence/achievements/verification.json)、[成就专项](evidence/achievements/achievements.json)、[铭文回归](evidence/achievements/flow.json)、[动作回归](evidence/achievements/motion.json)、[恢复回归](evidence/achievements/resilience.json)、[成就册](evidence/achievements/ledger.png)、[解锁铜牌](evidence/achievements/unlock.png)、[窄屏册页](evidence/achievements/ledger-narrow.png)。复现入口见 [成就设计与实现](ACHIEVEMENTS_V07.md)；两套新增测试也已纳入统一 `scripts/test-game.mjs`。

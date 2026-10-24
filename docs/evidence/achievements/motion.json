@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-24T20:14:23.698Z",
+  "browser": "156.0.8078.4",
+  "cases": [
+    "live focus motion and tension audio while damage, physics and cooldowns remain frozen",
+    "correct letters charge the hero effect without advancing combat",
+    "mute clears focus sources and unmute preserves the pending challenge",
+    "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final E",
+    "first resonance continuation releases a charged sword without a question or extra word credit; pause preserves its action-time budget",
+    "second continuation obeys bow cooldown and consumes the last charge without repeat grading",
+    "wrong meaning resumes the fallback attack promptly and leaves only passive feedback",
+    "reduced motion removes zoom and particles; restart clears motion, audio and old results",
+    "unused resonance expires after twelve action seconds without auto-opening a question; the next deliberate full charge asks normally"
+  ],
+  "errors": [],
+  "timing": {
+    "successReleaseMs": 4.824999995529652,
+    "failureReleaseMs": 4.744999997317791,
+    "focusFrameMedianMs": 16.664999999999964,
+    "focusFrameP95Ms": 33.335000000000036
+  },
+  "note": "Real opening platform, real keyboard inputs; seeded vocabulary only. Frame timings are local headless measurements, not a device-wide performance guarantee."
+}

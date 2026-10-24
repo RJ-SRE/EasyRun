@@ -92,7 +92,7 @@ const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
 });
-let inscription;
+let inscription, achievements;
 try {
   const { InscriptionUI } = await import("./inscription-ui.js");
   inscription = new InscriptionUI({
@@ -100,6 +100,7 @@ try {
     focus: focusGame,
     toast,
     audio: soundscape,
+    onSettle: (s) => achievements?.word(s),
   });
 } catch {
   const notice = document.createElement("span");
@@ -108,6 +109,40 @@ try {
   notice.setAttribute("role", "status");
   document.querySelector(".controls").prepend(notice);
   const noop = () => {};
+  const held = new Map(),
+    quarantine = new Set();
+  let engine;
+  const capture = (w) => {
+    w.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.inscriptionTransport) return;
+        if (/^F[1-5]$/.test(e.code) || quarantine.has(e.code)) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
+        held.set(e.code, {
+          code: e.code,
+          key: e.key,
+          keyCode: e.keyCode,
+          which: e.which,
+          bubbles: true,
+        });
+      },
+      true,
+    );
+    w.addEventListener(
+      "keyup",
+      (e) => {
+        if (e.inscriptionTransport) return;
+        held.delete(e.code);
+        quarantine.delete(e.code);
+      },
+      true,
+    );
+  };
+  capture(window);
   inscription = {
     onEvent: noop,
     receive: noop,
@@ -119,18 +154,37 @@ try {
         "wordMode=0",
       );
     },
-    attach: (w) =>
-      w.addEventListener(
-        "keydown",
-        (e) => {
-          if (/^F[1-5]$/.test(e.code)) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-          }
-        },
-        true,
-      ),
+    attach: (w) => {
+      engine = w;
+      held.clear();
+      quarantine.clear();
+      capture(w);
+    },
+    lockHeld: () => {
+      const canvas = engine?.document.querySelector("#game-canvas");
+      for (const [code, opts] of held) {
+        quarantine.add(code);
+        if (!canvas) continue;
+        const e = new engine.KeyboardEvent("keyup", opts);
+        Object.defineProperty(e, "inscriptionTransport", { value: true });
+        canvas.dispatchEvent(e);
+      }
+      held.clear();
+    },
   };
+}
+try {
+  const { AchievementUI } = await import("./belfry-achievements.js");
+  achievements = new AchievementUI({
+    send: (code, value) => key(code, value, true),
+    focus: focusGame,
+    lockInput: () => inscription.lockHeld?.(),
+  });
+} catch {
+  const notice = document.createElement("span");
+  notice.id = "achievement-load-error";
+  notice.textContent = "成就册暂不可用";
+  document.querySelector(".controls").append(notice);
 }
 let records = [];
 try {
@@ -162,7 +216,7 @@ function formatTime(t) {
 function focusGame() {
   frame?.contentWindow?.document.querySelector("#game-canvas")?.focus();
 }
-function key(code, key = code) {
+function key(code, key = code, transport = false) {
   const w = frame?.contentWindow,
     c = w?.document.querySelector("#game-canvas");
   if (!c) return;
@@ -181,11 +235,14 @@ function key(code, key = code) {
     Digit6: 54,
   }[code];
   const opts = { code, key, keyCode, which: keyCode, bubbles: true };
-  c.dispatchEvent(new w.KeyboardEvent("keydown", opts));
-  setTimeout(
-    () => c.isConnected && c.dispatchEvent(new w.KeyboardEvent("keyup", opts)),
-    65,
-  );
+  const dispatch = (type) => {
+    const e = new w.KeyboardEvent(type, opts);
+    if (transport)
+      Object.defineProperty(e, "inscriptionTransport", { value: true });
+    c.dispatchEvent(e);
+  };
+  dispatch("keydown");
+  setTimeout(() => c.isConnected && dispatch("keyup"), 65);
 }
 function overlay(kicker, title, body, button) {
   $("#overlay").hidden = false;
@@ -344,6 +401,7 @@ function receive(s) {
   window.latestState = s;
   soundscape.stateChanged(s);
   inscription.receive(s);
+  achievements?.receive(s);
   $("#practice-controls").hidden = !(s.practice && s.phase === 1);
   document.querySelectorAll("[data-spar]").forEach((b) => {
     const selected = Number(b.dataset.spar) === s.practiceKind;
@@ -560,6 +618,7 @@ function resize() {
     frame.style.transform = `scale(${$("#viewport").clientWidth / 960})`;
 }
 async function load() {
+  achievements?.resetSession();
   loading = true;
   fault = false;
   previousPhase = -1;
@@ -592,6 +651,26 @@ async function load() {
           }
           m = text.match(/@event\s+(\w+)\s+(\S+)\s+(\S+)\s+(\S+)/);
           if (m) onEvent(m[1], m[2], m[3], m[4]);
+          m = text.match(/@deed\s+(\d+)\s+(\w+)\s+(.+)/);
+          if (m) {
+            const values = m[3].trim().split(/\s+/).map(Number);
+            const keys = [
+              "attempt",
+              "phase",
+              "practice",
+              "health",
+              "difficulty",
+              "deaths",
+              "echoes",
+              "hook",
+            ];
+            if (values.length === keys.length && values.every(Number.isFinite))
+              achievements?.deed({
+                serial: Number(m[1]),
+                name: m[2],
+                ...Object.fromEntries(keys.map((k, i) => [k, values[i]])),
+              });
+          }
           m = text.match(/@wordResolved\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
           if (m) inscription.onResolved(...m.slice(1).map(Number));
           m = text.match(/@word\s+(\d+)\s+(\d+)\s+(\d+)/);

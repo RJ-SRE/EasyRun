@@ -24,7 +24,8 @@ const sealPaths = {
   6: "M18 20l11 10-9 14M46 20L35 30l9 14M32 17v7M32 40v7",
 };
 export class InscriptionUI {
-  constructor({ send, focus, toast, audio }) {
+  constructor({ send, focus, toast, audio, onSettle = () => {} }) {
+    this.onSettle = onSettle;
     this.send = send;
     this.focus = focus;
     this.toast = toast;
@@ -338,6 +339,10 @@ export class InscriptionUI {
       c.dispatchEvent(e);
     }
     this.held.clear();
+  }
+  lockHeld() {
+    for (const code of this.held) this.quarantine.add(code);
+    this.releaseHeld();
   }
   capture(w) {
     w.addEventListener(
@@ -758,12 +763,19 @@ export class InscriptionUI {
       result,
       responseMs: performance.now() - a.sentAt,
     };
-    this.book.settle(
+    const settled = this.book.settle(
       a.actionId,
       result === 1 ? "correct" : result === 3 ? "cancel" : "wrong",
       a.elapsed,
       a.assisted,
     );
+    if (settled)
+      this.onSettle({
+        actionId: a.actionId,
+        attempt,
+        wordId: a.q.wordId,
+        result,
+      });
     this.audio.stateChanged({ ...this.state, phase: 1 });
     this.motion.release(result === 1);
     this.cancel(false);

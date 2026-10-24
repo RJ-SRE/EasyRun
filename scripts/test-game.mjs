@@ -50,6 +50,7 @@ try {
     ? [{ file: "playtest.mjs" }]
     : [
         { file: "test-inscription-core.mjs" },
+        { file: "test-belfry-achievements-core.mjs" },
         { file: "test-belfry-combat.mjs" },
         { file: "test-belfry-enemies.mjs" },
         { file: "test-belfry-ninja.mjs" },
@@ -58,6 +59,7 @@ try {
         { file: "test-belfry-inscription.mjs", words: true },
         { file: "test-belfry-inscription-resilience.mjs", words: true },
         { file: "test-belfry-inscription-motion.mjs", words: true },
+        { file: "test-belfry-achievements.mjs", words: true },
         { file: "test-belfry.mjs" },
         {
           file: "test-belfry-route.mjs",

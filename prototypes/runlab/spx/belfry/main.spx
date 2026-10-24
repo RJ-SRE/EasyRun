@@ -1,6 +1,7 @@
 import "math"
 
 var (
+ deedSerial int
  wordVisualPaused bool
  wordFocusAge float64
  wordVisualRate float64
@@ -118,7 +119,14 @@ func dist(x,y float64) float64 {return math.Sqrt(x*x+y*y)}
 func angle(x,y float64) float64 {return 90-math.Atan2(y,x)*180/3.14159265}
 func clamp(v,lo,hi float64) float64 {if v<lo {return lo}; if v>hi {return hi}; return v}
 func noise() float64 {fxSeed=(fxSeed*73+41)%997; return float64(fxSeed)/997}
-func event(name string) {println "@event",name,elapsed,Hero.px,Hero.py}
+func event(name string) {
+ println "@event",name,elapsed,Hero.px,Hero.py
+ // Snapshot at the actual event, independent of the 70 ms HUD sample.
+ if name=="start" || name=="practice" || name=="retry" || name=="restored" || name=="menu" || name=="hurt" || name=="fail" || name=="finish" || name=="sling" || name=="hookattach" || name=="touchdown" || name=="guardian" || name=="core" || name=="echo" || name=="parry" || name=="markbreak" || name=="collision" || name=="healcomplete" || name=="wordflow" {
+  deedSerial++
+  println "@deed",deedSerial,name,attempts,phase,practice,health,difficulty,deaths,echoes,Hero.hook
+ }
+}
 func particle(x,y,vx,vy,life,size float64,kind int) {
  if fxCount<90 {fxCount++; Particle.clone []float64{x,y,vx,vy,life,size,float64(kind),float64(attempts)}}
 }

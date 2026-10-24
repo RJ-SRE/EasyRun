@@ -419,6 +419,7 @@ func update(dt float64) {
   }
  }
  if grounded && !wasGrounded {
+  event("touchdown")
   bodyVelocity=-clamp(fallSpeed/6,20,110); landing=0.13
   if fallSpeed>200 {burst(px,py+3,8,2,150); ring(px,py+2,0.8,0); if fallSpeed>600 {event("hardland")} else {event("land")}}
   if plunging {shock=6; ring(px,py,2.1,1); for i:=0;i<len(enemyHP);i++ {if dist(px-enemyX[i],py+35-enemyY[i])<160 {hitEnemy(i,2)}}}
