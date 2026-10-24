@@ -25,7 +25,12 @@
     "game:test": "node scripts/test-game.mjs",
     "game:test:legacy": "node scripts/test-game.mjs --legacy",
     "game:package": "python3 prototypes/runlab/package.py",
-    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js --max-warnings 0"
+    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js --max-warnings 0",
+    "level:build": "node prototypes/runlab/build-passages.mjs",
+    "level:dev": "node prototypes/runlab/server.mjs",
+    "level:test": "node scripts/test-passages.mjs",
+    "level:package": "python3 prototypes/runlab/passages-package.py",
+    "level:lint": "eslint -c prototypes/runlab/eslint-passages.config.mjs prototypes/runlab/*passages*.mjs prototypes/runlab/public/passages.js scripts/test-passages.mjs --max-warnings 0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

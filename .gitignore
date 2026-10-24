@@ -45,3 +45,8 @@ research/xbuilder-boundaries/projects/
 research/xbuilder-boundaries/packages/
 research/xbuilder-boundaries/cases.json
 research/xbuilder-boundaries/followup-cases.json
+
+# Independent traversal module outputs
+prototypes/runlab/public/passages.json
+prototypes/runlab/public/passages-map.json
+prototypes/runlab/art/passages/imported/
