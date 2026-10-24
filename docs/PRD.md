@@ -84,3 +84,7 @@
 自动检查包括词库成员与抽取、键盘隔离、冻结、六类触发、裂印免题连携、正确/错误/超时/放弃、退款、解控、输入法、重开、检查点、刷新恢复、非 30 词通关、敌人身法、四技能、自动瞄准、音频失败回退及两种整关路线。证据与执行范围见 [TESTING.md](TESTING.md) 和 [v0.7 实现说明](INSCRIPTION_V07.md)。
 
 后续优先做真人对照试玩与词条独立审校；跨设备、触屏/手柄、长期复习效果、完整考试词表覆盖、正式商业发行仍不在当前验收结论内。
+
+## 8. 后续内容设计提案（未实装）
+
+[三十词远征 v0.8 策划](planning/thirty-word-expedition/README.md)将30词安排进五区域、十五房间、主线与全探索路线，补充语义机关、不同语境复核、余响续招与环境叙事。配套[关卡设计](planning/thirty-word-expedition/LEVELS.md)、[美术规范](planning/thirty-word-expedition/ART.md)和[30词用途样例](planning/thirty-word-expedition/WORDS.md)。这些是后续制作方案，不改变上文当前v0.7的实际交付状态；不将概念图、名义排程或设计校验当作已经可玩的关卡。

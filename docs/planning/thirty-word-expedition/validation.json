@@ -1,0 +1,399 @@
+{
+  "date": "2026-10-24T19:58:54.978Z",
+  "baseline": "61a6a64",
+  "scope": "Design-data consistency and nominal opportunity capacity only. No game implementation, empirical retention, encounter enjoyment, language review or physical reachability claim.",
+  "checks": [
+    "5 regions, 15 distinct rooms, 30 unique existing CET-4 entries with unchanged target senses and two authored contexts",
+    "main route 10 rooms; full route visits all 15 once; optional story branch precedes the boss and rising tide",
+    "nominal main/full schedules fit room durations, 25-second minimum action gap at 8-second answers, max 2 requests per 90 seconds, and spaced known-word reviews",
+    "R03 consecutive permanent anchor centers fit the existing 470-unit reach envelope; not a collision/pathfinding test"
+  ],
+  "schedules": {
+    "main": {
+      "seconds": 1150,
+      "newWords": 18,
+      "reviews": 4,
+      "prompts": 22,
+      "answerSecondsAt5_5": 121,
+      "answerShareAt5_5": 0.10521739130434783,
+      "events": [
+        {
+          "word": "climb",
+          "type": "first",
+          "room": "R01",
+          "at": 10
+        },
+        {
+          "word": "follow",
+          "type": "first",
+          "room": "R01",
+          "at": 56
+        },
+        {
+          "word": "narrow",
+          "type": "first",
+          "room": "R02",
+          "at": 102
+        },
+        {
+          "word": "reach",
+          "type": "first",
+          "room": "R02",
+          "at": 148
+        },
+        {
+          "word": "repair",
+          "type": "first",
+          "room": "R03",
+          "at": 210
+        },
+        {
+          "word": "energy",
+          "type": "first",
+          "room": "R03",
+          "at": 256
+        },
+        {
+          "word": "balance",
+          "type": "first",
+          "room": "R04",
+          "at": 310
+        },
+        {
+          "word": "protect",
+          "type": "first",
+          "room": "R04",
+          "at": 356
+        },
+        {
+          "word": "reach",
+          "type": "review",
+          "room": "R04",
+          "at": 402
+        },
+        {
+          "word": "search",
+          "type": "first",
+          "room": "R05",
+          "at": 448
+        },
+        {
+          "word": "memory",
+          "type": "first",
+          "room": "R05",
+          "at": 494
+        },
+        {
+          "word": "evidence",
+          "type": "first",
+          "room": "R06",
+          "at": 540
+        },
+        {
+          "word": "reveal",
+          "type": "first",
+          "room": "R06",
+          "at": 586
+        },
+        {
+          "word": "energy",
+          "type": "review",
+          "room": "R06",
+          "at": 632
+        },
+        {
+          "word": "trust",
+          "type": "first",
+          "room": "R07",
+          "at": 678
+        },
+        {
+          "word": "doubt",
+          "type": "first",
+          "room": "R07",
+          "at": 724
+        },
+        {
+          "word": "contrast",
+          "type": "first",
+          "room": "R08",
+          "at": 770
+        },
+        {
+          "word": "resist",
+          "type": "first",
+          "room": "R09",
+          "at": 850
+        },
+        {
+          "word": "purpose",
+          "type": "first",
+          "room": "R09",
+          "at": 896
+        },
+        {
+          "word": "reveal",
+          "type": "review",
+          "room": "R09",
+          "at": 942
+        },
+        {
+          "word": "escape",
+          "type": "first",
+          "room": "R10",
+          "at": 1030
+        },
+        {
+          "word": "repair",
+          "type": "review",
+          "room": "R10",
+          "at": 1076
+        }
+      ]
+    },
+    "full": {
+      "seconds": 1910,
+      "newWords": 30,
+      "reviews": 8,
+      "prompts": 38,
+      "answerSecondsAt5_5": 209,
+      "answerShareAt5_5": 0.1094240837696335,
+      "events": [
+        {
+          "word": "climb",
+          "type": "first",
+          "room": "R01",
+          "at": 10
+        },
+        {
+          "word": "follow",
+          "type": "first",
+          "room": "R01",
+          "at": 56
+        },
+        {
+          "word": "narrow",
+          "type": "first",
+          "room": "R02",
+          "at": 102
+        },
+        {
+          "word": "reach",
+          "type": "first",
+          "room": "R02",
+          "at": 148
+        },
+        {
+          "word": "danger",
+          "type": "first",
+          "room": "S01",
+          "at": 210
+        },
+        {
+          "word": "journey",
+          "type": "first",
+          "room": "S01",
+          "at": 256
+        },
+        {
+          "word": "repair",
+          "type": "first",
+          "room": "R03",
+          "at": 330
+        },
+        {
+          "word": "energy",
+          "type": "first",
+          "room": "R03",
+          "at": 376
+        },
+        {
+          "word": "balance",
+          "type": "first",
+          "room": "R04",
+          "at": 430
+        },
+        {
+          "word": "protect",
+          "type": "first",
+          "room": "R04",
+          "at": 476
+        },
+        {
+          "word": "reach",
+          "type": "review",
+          "room": "R04",
+          "at": 522
+        },
+        {
+          "word": "enable",
+          "type": "first",
+          "room": "S02",
+          "at": 568
+        },
+        {
+          "word": "limit",
+          "type": "first",
+          "room": "S02",
+          "at": 614
+        },
+        {
+          "word": "narrow",
+          "type": "review",
+          "room": "S02",
+          "at": 660
+        },
+        {
+          "word": "search",
+          "type": "first",
+          "room": "R05",
+          "at": 706
+        },
+        {
+          "word": "memory",
+          "type": "first",
+          "room": "R05",
+          "at": 752
+        },
+        {
+          "word": "evidence",
+          "type": "first",
+          "room": "R06",
+          "at": 798
+        },
+        {
+          "word": "reveal",
+          "type": "first",
+          "room": "R06",
+          "at": 844
+        },
+        {
+          "word": "energy",
+          "type": "review",
+          "room": "R06",
+          "at": 890
+        },
+        {
+          "word": "ancient",
+          "type": "first",
+          "room": "S03",
+          "at": 936
+        },
+        {
+          "word": "notice",
+          "type": "first",
+          "room": "S03",
+          "at": 982
+        },
+        {
+          "word": "follow",
+          "type": "review",
+          "room": "S03",
+          "at": 1028
+        },
+        {
+          "word": "trust",
+          "type": "first",
+          "room": "R07",
+          "at": 1074
+        },
+        {
+          "word": "doubt",
+          "type": "first",
+          "room": "R07",
+          "at": 1120
+        },
+        {
+          "word": "contrast",
+          "type": "first",
+          "room": "R08",
+          "at": 1166
+        },
+        {
+          "word": "aware",
+          "type": "first",
+          "room": "S04",
+          "at": 1260
+        },
+        {
+          "word": "ignore",
+          "type": "first",
+          "room": "S04",
+          "at": 1306
+        },
+        {
+          "word": "choice",
+          "type": "first",
+          "room": "S04",
+          "at": 1352
+        },
+        {
+          "word": "evidence",
+          "type": "review",
+          "room": "S04",
+          "at": 1398
+        },
+        {
+          "word": "freedom",
+          "type": "first",
+          "room": "S05",
+          "at": 1444
+        },
+        {
+          "word": "consequence",
+          "type": "first",
+          "room": "S05",
+          "at": 1490
+        },
+        {
+          "word": "persist",
+          "type": "first",
+          "room": "S05",
+          "at": 1536
+        },
+        {
+          "word": "choice",
+          "type": "review",
+          "room": "S05",
+          "at": 1582
+        },
+        {
+          "word": "resist",
+          "type": "first",
+          "room": "R09",
+          "at": 1628
+        },
+        {
+          "word": "purpose",
+          "type": "first",
+          "room": "R09",
+          "at": 1674
+        },
+        {
+          "word": "reveal",
+          "type": "review",
+          "room": "R09",
+          "at": 1720
+        },
+        {
+          "word": "escape",
+          "type": "first",
+          "room": "R10",
+          "at": 1790
+        },
+        {
+          "word": "repair",
+          "type": "review",
+          "room": "R10",
+          "at": 1836
+        }
+      ]
+    }
+  },
+  "anchorDistances": [
+    362.3534186398687,
+    339.7057550292606,
+    354.682957019364,
+    325.5764119219941
+  ]
+}
