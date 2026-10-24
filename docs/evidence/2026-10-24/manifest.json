@@ -1,0 +1,36 @@
+{
+  "organizedOn": "2026-10-24",
+  "timezone": "Asia/Shanghai",
+  "files": [
+    {
+      "file": "legacy-tests.json",
+      "bytes": 11969,
+      "sha256": "82521b27b9f3060a87215cbbb1793c2a4b3f69ea8c797b04fb68ae4ef52d1e58"
+    },
+    {
+      "file": "motion-lifecycle.json",
+      "bytes": 275,
+      "sha256": "2fac5d7b9d4e9b98957b441917832eb53a0c23a7955f808f49e83524693385e8"
+    },
+    {
+      "file": "motion-observation.json",
+      "bytes": 4338,
+      "sha256": "d116c648494bb189c16147073570b332761c13879f05960a4c826e2ea24b165b"
+    },
+    {
+      "file": "motion-preview.mp4",
+      "bytes": 2604624,
+      "sha256": "d31d3482c576f3e276451a6a5d958ca2c32e63c895056b403af4bba4798a6cd8"
+    },
+    {
+      "file": "rupture-dash.png",
+      "bytes": 975545,
+      "sha256": "9f689a006bdcd947ae8295de6f538023ab34162b2b7c1c8d5ec0193edc27b218"
+    },
+    {
+      "file": "rupture-tests.json",
+      "bytes": 25919,
+      "sha256": "7c36c4a38ddcf97a8a4892e8fc510531c02084bcbfd563fc25a631c5cf02410d"
+    }
+  ]
+}

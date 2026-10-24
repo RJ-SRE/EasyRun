@@ -1,0 +1,44 @@
+name: Verify playable prototype
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install test browser
+        run: pnpm exec playwright install --with-deps --no-shell chromium
+      - name: Build from source atlases
+        run: pnpm game:build
+      - name: Run keyboard routes and effect lifecycle checks
+        run: pnpm game:test
+      - name: Package XBuilder projects
+        run: pnpm game:package
+      - name: Save test output and project packages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prototype-${{ github.sha }}
+          path: |
+            prototypes/runlab/test-results/
+            prototypes/runlab/exports/
+          retention-days: 14
+          if-no-files-found: warn
