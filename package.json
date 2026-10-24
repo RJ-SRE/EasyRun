@@ -1,0 +1,41 @@
+{
+  "name": "easyrun-rupture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "EasyRun / 裂隙：spx 二维动能跑酷原型、技术研究与可复现开发流程",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=24.22.1 <25",
+    "pnpm": "11.9.0"
+  },
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "check": "pnpm doctor",
+    "lint": "eslint scripts/*.mjs *.js --max-warnings 0",
+    "format": "prettier --write scripts/*.mjs *.json *.js *.yaml",
+    "format:check": "prettier --check scripts/*.mjs *.json *.js *.yaml",
+    "audio:fixture": "node scripts/audio-fixture.mjs",
+    "audio:convert": "node scripts/audio-convert.mjs",
+    "bootstrap": "bash scripts/bootstrap.sh",
+    "setup:xbuilder": "bash scripts/setup-xbuilder-reference.sh",
+    "game:build": "node scripts/build-game.mjs",
+    "game:dev": "node prototypes/runlab/server.mjs",
+    "game:test": "node scripts/test-game.mjs",
+    "game:test:legacy": "node scripts/test-game.mjs --legacy",
+    "game:package": "python3 prototypes/runlab/package.py"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.10.1",
+    "@vitest/coverage-v8": "5.0.5",
+    "@xgo-pkgs/spx": "3.3.0",
+    "eslint": "10.13.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}

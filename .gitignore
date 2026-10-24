@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+
+# Local credentials and environment settings
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Dependencies and generated output
+node_modules/
+.venv/
+__pycache__/
+dist/
+build/
+coverage/
+*.log
+
+# Project-local runtimes, downloads, and third-party reference source
+.tools/
+.cache/
+.pnpm-store/
+
+# Local test outputs
+playwright-report/
+test-results/
+.vitest/
+.vite/
+
+# Microphone recordings are local diagnostic data
+recordings/
+
+# Reproducible game exports and imported texture cells (keep source atlases)
+prototypes/runlab/projects/
+prototypes/runlab/exports/
+prototypes/runlab/public/velocity.json
+prototypes/runlab/public/cinema.json
+prototypes/runlab/public/rupture.json
+prototypes/runlab/public/art/
+prototypes/runlab/art/rupture-v2/frames/
+prototypes/runlab/art/rupture-v2/run-frames/
+research/xbuilder-boundaries/projects/
+research/xbuilder-boundaries/packages/
+research/xbuilder-boundaries/cases.json
+research/xbuilder-boundaries/followup-cases.json
