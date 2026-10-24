@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Asia/Shanghai",
+  "scope": "Complete single level; local Chromium keyboard verification",
+  "cases": {
+    "lifecycle": 12,
+    "journey": "finish after deliberate rising-void failure and checkpoint retry",
+    "fearless": "finish after two normal combat retries",
+    "previous_rupture": "routes and motion lifecycle passed"
+  },
+  "commands": [
+    "pnpm game:lint",
+    "pnpm game:build",
+    "RECORD=1 pnpm game:test",
+    "pnpm lint",
+    "pnpm format:check",
+    "pnpm game:package"
+  ],
+  "video": {
+    "source": "actual Playwright browser capture of final fearless route",
+    "startSeconds": 52.08,
+    "durationSeconds": 30,
+    "audio": false
+  },
+  "limits": [
+    "Not a first-time-user study",
+    "Host rAF is not an engine FPS measure",
+    "XBuilder ZIP validated; editor roundtrip not tested",
+    "Remote CI not run for local branch"
+  ],
+  "cleanSource": {
+    "commit": "ecb0c41d805d18373e5c9ae575d8a37ad176d611",
+    "method": "git archive into an empty directory, symlink the freshly installed locked dependencies, run full source build and all four XBuilder packages",
+    "passed": true,
+    "scope": "Source completeness; reused local Chromium cache, not a different OS"
+  }
+}

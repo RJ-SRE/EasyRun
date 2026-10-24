@@ -1,8 +1,8 @@
 # EasyRun · 裂隙 RUPTURE
 
-在风暴中的机械遗迹里，夺取机器的动能，选择何时释放速度。风机会停转，桥梁会失压，升降机可以成为临时落脚点。
+向下潜入倒悬钟城，钩住机械守卫与悬环，取回钟心，再沿正在崩塌的通道向上逃离。
 
-当前是 **XBuilder / spx 3.3.0 的二维动作跑酷可玩片段**，桌面浏览器、实体键盘操作。默认试玩《裂隙》，早期《盗速者》《一镜到底》保留为对照原型。目前熟练通关约 6–7 秒，不能代表完整关卡时长或商业验证结果。英语教学、语音、AI 对话和付费功能不属于当前版本。
+当前默认版本为 **《裂隙 · 倒悬钟城》完整单关**，使用 XBuilder / spx 3.3.0，面向电脑浏览器与实体键盘。包含两档难度、两道钟门、两阶段核心战、返程、结局、检查点、合成声音和本机战绩。不是多关商业发行版，真人乐趣、首次游玩时长和跨设备性能尚待验证。
 
 ## 先看哪些文件
 
@@ -30,28 +30,30 @@ bash scripts/with-env.sh pnpm game:build
 bash scripts/with-env.sh pnpm game:dev
 ```
 
-打开 <http://127.0.0.1:4177/>。旧原型地址为 <http://127.0.0.1:4177/legacy.html>。XBuilder 固定源码仅用于研究，按需运行 `bash scripts/setup-xbuilder-reference.sh`，不影响游戏启动。
+打开 <http://127.0.0.1:4177/>。上一版风机墓场为 <http://127.0.0.1:4177/rupture.html>，更早原型为 <http://127.0.0.1:4177/legacy.html>。XBuilder 固定源码仅用于研究，按需运行 `bash scripts/setup-xbuilder-reference.sh`，不影响游戏启动。
 
-| 按键             | 功能                         |
-| ---------------- | ---------------------------- |
-| A / D 或左右箭头 | 移动                         |
-| Space            | 跳跃，松开可缩短普通跳跃     |
-| E / Shift        | 无动能时夺取；持有动能时释放 |
-| W + E            | 向上释放动能                 |
-| R                | 立即重试                     |
-| Esc              | 暂停 / 继续                  |
+| 按键            | 功能                               |
+| --------------- | ---------------------------------- |
+| A/D、左右键     | 移动、空中转向                     |
+| Space           | 跳跃 / 二段跳 / 蹬墙               |
+| 按住 E，松开    | 牵引高亮目标，甩出；方向键辅助选点 |
+| J / S+J         | 斩击 / 空中坠星                    |
+| K 或 Shift      | 冲刺，W 配合向上                   |
+| Q               | 断弦，消耗 60 弦能                 |
+| S+Space         | 下穿普通平台                       |
+| Enter / Esc / R | 开始或检查点继续 / 暂停 / 从头重开 |
 
-音效默认关闭，可在页面打开。成绩和反馈只保存在当前浏览器，不需要登录。
+声音在用户开始后启用，可关闭。战绩只保存在当前浏览器；不需要登录。开场可选择旅人或无畏，操作指南中有完整说明。
 
 ## 构建与检查
 
 ```sh
 bash scripts/with-env.sh pnpm game:build
 bash scripts/with-env.sh pnpm game:test       # 自动启动独立测试服务
-bash scripts/with-env.sh pnpm game:package    # Python 3，导出三个 .xbp
+bash scripts/with-env.sh pnpm game:package    # Python 3，导出四个 .xbp
 ```
 
-动作与特效的最新人工可检查资料见 [验证记录](docs/TESTING.md)。不要只修改生成目录；玩法源文件在 `prototypes/runlab/spx/rupture/`，场景与资源配置在 `prototypes/runlab/build-rupture.mjs`。
+动作与特效的最新人工可检查资料见 [验证记录](docs/TESTING.md)。不要只修改生成目录；玩法源文件在 `prototypes/runlab/spx/belfry/`，场景与资源配置在 `prototypes/runlab/build-belfry.mjs` 与 `belfry-level.mjs`。
 
 ## 仓库历史
 

@@ -1,3 +1,14 @@
+# 当前入口：倒悬钟城
+
+默认 `/` 和 `/belfry.html` 是纵向钩索战斗完整单关。项目说明、操作、构建和测试见 [根 README](../../README.md)、[PRD](../../docs/PRD.md)、[技术设计](../../docs/TECHNICAL_DESIGN.md)。
+
+- 核心源码：`spx/belfry/`。
+- 关卡与资源：`belfry-level.mjs`、`build-belfry.mjs`、`art/belfry/`。
+- 宿主：`public/belfry.html`、`.css`、`.js`。
+- 上一版本：`/rupture.html`；以下内容保留为旧原型说明。
+
+---
+
 # RUN / LAB：两个可玩的跑酷原型
 
 **更新：** 默认试玩入口已替换为《裂隙》场景改版。重做原因、玩法变化、源码和测试说明见 [RUPTURE.md](RUPTURE.md)。下方是第一版两个原型的存档说明，它们仍可在 `/legacy.html` 对照试玩。
