@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-25",
+  "timezone": "Asia/Shanghai",
+  "version": "0.6.0",
+  "functionalCases": 37,
+  "routes": {
+    "journey": {
+      "passed": true,
+      "blackTideRetry": true
+    },
+    "fearless": {
+      "passed": true
+    }
+  },
+  "build": {
+    "files": 303,
+    "sprites": 38,
+    "assassinPoses": 32,
+    "engine": "spx 3.3.0"
+  },
+  "notes": [
+    "All tests use public controls and read-only telemetry; no state injection.",
+    "Enemy final run recorded real browser video. Character dialogue remains disabled.",
+    "Routes and hero/lifecycle suites ran before the final two elbow poses were added. Final enemy suite reran after that visual-only addition.",
+    "No cross-browser, long-duration, real-user fun or commercial quality claim."
+  ],
+  "files": [
+    {
+      "file": "assassin-encounter.png",
+      "bytes": 1246531,
+      "sha256": "2f7cae2436758e321b3b15e90a418843effb6ffd208dbd9ce7377d329e956859"
+    },
+    {
+      "file": "assassin-playtest.webm",
+      "bytes": 29025963,
+      "sha256": "37f25bef522e93c41e67515c7fcd54fc9d90bc58b2dc030feb94a169e008164b"
+    },
+    {
+      "file": "binder-capture.png",
+      "bytes": 1214649,
+      "sha256": "6442162b640c5d4c9429a6a789730509cbdba71726b1858cf6de478ba1317916"
+    },
+    {
+      "file": "combat.json",
+      "bytes": 42752,
+      "sha256": "27759b8ff7f81f1b6595974098d641b57803bf74e09bfa7fd710c726ad3b55df"
+    },
+    {
+      "file": "enemies.json",
+      "bytes": 25324,
+      "sha256": "33c8b64e6a7e33c07d3c907e271b0bc1f5eff2cdef140794b877fead34a53f3e"
+    },
+    {
+      "file": "lifecycle.json",
+      "bytes": 15866,
+      "sha256": "dca51154d73763eb3052d378a66a78a8453843f60e03fce7f1cd68c5cef813af"
+    },
+    {
+      "file": "martial-combo.png",
+      "bytes": 1222839,
+      "sha256": "160d8ab40ceecd3354159e07b870bbcac0dc564ba154fc7287b15e6dbf3a6b85"
+    },
+    {
+      "file": "route-0.json",
+      "bytes": 70131,
+      "sha256": "d8f7273f5d92cf43893f5e498b08915b3e7bc34e58e57c77597e4b14a8769944"
+    },
+    {
+      "file": "route-1.json",
+      "bytes": 73811,
+      "sha256": "3e31a33c2918ed64ef722d27d07d4af3b15d669a204261b81908615f0855d7c4"
+    },
+    {
+      "file": "wall-archer.png",
+      "bytes": 1213077,
+      "sha256": "4dd08f1c78d8c61558902973eaac419d9eb04e1db340db24e83849a28dc455f9"
+    }
+  ]
+}

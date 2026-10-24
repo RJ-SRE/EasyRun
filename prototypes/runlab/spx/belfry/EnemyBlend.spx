@@ -1,0 +1,11 @@
+onCloned data => {
+ p:=data.([]float64); i:=int(p[0]); age:=0.0; life:=0.065; frozen:=len(p)>5
+ if frozen {life=p[7]; setXYpos p[5],p[6]; setGraphicEffect BrightnessEffect,16}
+ setCostume int(p[1]); setHeading p[2]; setSize p[3]; show
+ for age<life && int(p[4])==attempts && enemyHP[i]>0 && phase!=2 && phase!=3 {
+  dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
+  if phase==1 && hitStop<=0 {age+=dt}; if !frozen {setXYpos enemyX[i],enemyY[i]-34}
+  opacity:=35.0; if frozen {opacity=70}; setGraphicEffect GhostEffect,opacity+age/life*(100-opacity)
+ }
+ fxCount--; die
+}

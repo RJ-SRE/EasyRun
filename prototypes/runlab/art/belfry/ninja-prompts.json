@@ -1,0 +1,27 @@
+{
+  "method": "built-in imagegen",
+  "date": "2026-10-25",
+  "assets": [
+    {
+      "key": "ninja-fighter",
+      "reference": "/Users/rj/Documents/ChatGPT/七牛黑客松/prototypes/runlab/art/belfry/assassin-fighter-source.png",
+      "prompt": "Create an additional 3-column by 2-row animation sprite sheet of EXACTLY the same adult dark-fantasy red-tunic black-haired bronze-half-mask ninja assassin in the reference. Transparent background, six fully isolated non-touching full-body poses, generous empty gutters, no letters, no floor/shadows, no effects, no other figures. Painterly realistic game art, match same clothing anatomy lighting and camera. Every body faces SCREEN RIGHT in strict side/three-quarter profile. Read left-to-right, top-to-bottom: 1) controlled low backward evasive hop, dagger held near torso, rear foot reaching left, scarf whips right; 2) solid parry guard, both forearms crossed raised in front of chest, short dagger angled vertically, knees bent; 3) explosive leap anticipation, deeply coiled legs one knee lifted, arms compact; 4) powerful airborne side kick with RIGHT leg fully extended horizontally to the right, left knee tightly tucked, torso leaning back, fists tucked; 5) three-point crouch landing on forward right foot and one hand, shoulders compressed; 6) recovery rising to balanced guard, dagger low, legs spread. Maintain consistent character physical proportions and scale across poses. NOT six idle figures. Exactly six distinct poses in six clean equal cells. Preserve original transparency.",
+      "output": "prototypes/runlab/art/belfry/ninja-fighter-source.png",
+      "original": "/Users/rj/.codex/generated_images/01a16de9-32c8-7d62-bc96-8daee20707e0/exec-83298d83-8831-49a5-ad8d-849417be5652.png"
+    },
+    {
+      "key": "ninja-archer",
+      "reference": "/Users/rj/Documents/ChatGPT/七牛黑客松/prototypes/runlab/art/belfry/assassin-archer-source.png",
+      "prompt": "Create two additional animation sprite poses of EXACTLY the same moss green hooded dark-fantasy masked archer assassin from the reference. Transparent background, two equal horizontal cells, generous empty gutter, each complete full-body isolated, no letters no wall no ground no shadows no VFX. Match reference costume and painterly adult game art. Both face SCREEN RIGHT. LEFT CELL: ninja wall-kick takeoff, left rear leg thrust backward, right knee lifted and torso pitched forward, compact bow held close in right hand, moss cloak and quiver trailing. RIGHT CELL: airborne archer shooting bow horizontally screen right, legs dramatically tucked underneath in a midair crouch, left arm holds drawn bow, right hand releases string at cheek, cloak billows behind. Strong clear distinctive acrobatic silhouettes, identical anatomy and outfit, natural athletic poses, all body and bow within cell boundaries. Exactly two poses, preserve transparency.",
+      "output": "prototypes/runlab/art/belfry/ninja-archer-source.png",
+      "original": "/Users/rj/.codex/generated_images/01a16de9-32c8-7d62-bc96-8daee20707e0/exec-04c91d8a-94f1-4e52-b8d1-f9a67e3d2fad.png"
+    },
+    {
+      "key": "ninja-chain",
+      "reference": "/Users/rj/Documents/ChatGPT/七牛黑客松/prototypes/runlab/art/belfry/assassin-chain-source.png",
+      "prompt": "Create TWO additional full body animation poses of exactly the same hooded muscular dark-fantasy chain assassin in the reference. Match worn brown sleeveless coat, black hood, bronze mask, muscular wrapped arms, boots, realistic painterly adult game art. Transparent background, two horizontal cells with large gap, absolutely no overlapping poses, no text no floor no shadow. Both face RIGHT. Left pose: LOW SWEEP ANTICIPATION, wide deeply bent horse stance, torso coiled away, one strong arm holding the chain handle just behind the left hip, other arm balancing, chain gathered close not extending outside body. Right pose: LOW SWEEP STRIKE, right/front knee deeply bent, left leg extended backward, torso twisted toward screen right, throwing right arm extended DOWN and RIGHT at knee height, firm chain handle in the right hand, short attached chain dangling near knee, coat whipping backward. The weapon's long flying chain will be drawn by the game so keep only a short chain/handle near hand; NO huge swinging chain taking up the cell. Mature martial artist grounded weight transfer and realistic balanced anatomy. Same physical character scale, each whole figure fits comfortably inside its own cell. Exactly two poses with transparent surroundings.",
+      "output": "prototypes/runlab/art/belfry/ninja-chain-source.png",
+      "original": "/Users/rj/.codex/generated_images/01a16de9-32c8-7d62-bc96-8daee20707e0/exec-c388fb8c-9ef8-42dd-a212-860d626421d8.png"
+    }
+  ]
+}

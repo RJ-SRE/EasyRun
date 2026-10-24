@@ -1,0 +1,9 @@
+onCloned data => {
+ p:=data.([]float64); age:=0.0; kind:=int(p[3]); duration:=0.38; if kind==2 {duration=0.65}; if kind==4 {duration=0.3}
+ setCostume kind; setHeading p[2]; setXYpos p[0],p[1]; setSize p[4]*0.6; setGraphicEffect GhostEffect,0; show
+ for age<duration && int(p[5])==attempts && phase!=2 && phase!=3 {
+  dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
+  if phase==1 {age+=dt; t:=clamp(age/duration,0,1); setSize p[4]*(0.65+0.45*(1-(1-t)*(1-t))); setGraphicEffect GhostEffect,t*t*100}
+ }
+ fxCount--; if fxCount<0 {fxCount=0}; die
+}

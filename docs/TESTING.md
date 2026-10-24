@@ -1,6 +1,6 @@
 # 验证与证据
 
-基线：2026-10-24。测试结果分为运行正确性、画面观感、性能观察和真人可玩性，不能用其中一项替代其它项。
+当前集成版 v0.7，2026-10-25，结果见本文末尾。前面章节保留历史基线，不累计冒充本轮覆盖。测试结果分为运行正确性、画面观感、性能观察和真人可玩性，不能用其中一项替代其它项。
 
 ## 1. 可复现命令
 
@@ -103,3 +103,56 @@ bash scripts/with-env.sh pnpm game:package
 这些时间是自动输入的模拟时间，不代表首次游玩时长。尚未覆盖的真人试玩、跨设备、全收集与耐久验证保持原边界。远程 CI 以 GitHub Actions 的实际运行结果为准。
 
 证据：[总表](evidence/2026-10-25-combat/verification.json)、[战斗](evidence/2026-10-25-combat/combat.json)、[敌人](evidence/2026-10-25-combat/enemies.json)、[旅人](evidence/2026-10-25-combat/route-0.json)、[无畏](evidence/2026-10-25-combat/route-1.json)。
+
+
+## 2026-10-25 · v0.6 五类刺客
+
+本轮结果：主角战斗 **13 项**、五类刺客 **12 项**、生命周期 **12 项**，共 **37 项**通过；旅人、无畏两条完整路线均到达结局，无运行错误。旅人额外验证黑潮致死、暂停及井底检查点续关。报告对应本机 Chromium，不能据此宣称跨浏览器或真人手感通过。
+
+新增专项验证飞刀单/双投、短锋三段与地面支撑、壁弓末段锁向与两种箭、链条牵引/斩断/锚点解除，以及封脉所有输入阻断、0.7 秒准确释放、暂停冻结、脱离免疫、跳跃躲擒、控制中重开。组合测试实际包含擒拿样本，确认同时攻击不超过两人且控制中不受伤。
+
+构建、`game:lint`、`lint`、`git diff --check` 和四个 `.xbp` 打包通过；当前 Belfry 303 个项目文件、38 类精灵、32 个刺客关键姿势。两档路线、主角/生命周期测试完成后，仅追加两帧专用肘击美术；最终刺客专项已在该美术版本带录屏复测。
+
+记录过两个测试时序问题：锁链解除事件先于定期遥测，因此等待两者都成立；截图/录屏编码不能放入 0.7 秒控制计时断言中，已把视觉留证分到独立遭遇。未放宽玩法时长或修改控制规则来满足测试。
+
+证据：[汇总与 SHA-256](evidence/2026-10-25-assassins/verification.json)、[敌人专项](evidence/2026-10-25-assassins/enemies.json)、[主角回归](evidence/2026-10-25-assassins/combat.json)、[生命周期](evidence/2026-10-25-assassins/lifecycle.json)、[旅人](evidence/2026-10-25-assassins/route-0.json)、[无畏](evidence/2026-10-25-assassins/route-1.json)、[实机录屏](evidence/2026-10-25-assassins/assassin-playtest.webm)。素材和完整范围见 ASSASSINS_V06_PLAN.md。
+
+```sh
+bash scripts/with-env.sh node prototypes/runlab/build-belfry.mjs
+bash scripts/with-env.sh node prototypes/runlab/test-belfry-combat.mjs
+RECORD=1 bash scripts/with-env.sh node prototypes/runlab/test-belfry-enemies.mjs
+bash scripts/with-env.sh node prototypes/runlab/test-belfry.mjs
+MODE=0 RETURN_FAILURE=1 bash scripts/with-env.sh node prototypes/runlab/test-belfry-route.mjs
+MODE=1 RETURN_FAILURE=0 bash scripts/with-env.sh node prototypes/runlab/test-belfry-route.mjs
+bash scripts/with-env.sh pnpm game:package
+```
+
+## 2026-10-25 · v0.7 铭文远征集成验证
+
+在 `feat/inscription-v1` 独立工作树完成，使用本机 Chromium 156 / Node 24.22.1 / spx 3.3.0。敌人、技能、词汇、输入与声音均在同一构建中验证。来源边界见 [集成说明](INSCRIPTION_V07.md)；另一个聊天后来新增的敌人攻击特效不属于本次冻结源码。
+
+| 检查 | 数量 | 实际覆盖 |
+| --- | ---: | --- |
+| 词汇纯逻辑 | 9 | 3 档各 1,000 个种子；30 个唯一词、短词保底、来源成员、顺序、复习、去重、存档与通关确认 |
+| 铭文浏览器流程 | 18 | 六种触发、裂印免题、终式一次作答、冻结、失败/退款/超时、控制脱身、IME、重开、检查点、刷新、非 30 词通关 |
+| 故障与输入恢复 | 5 | 模块加载失败、存储受限、两个桌面尺寸、后台暂停、最后字母仍按住时的新动作输入 |
+| 主角与声音 | 13 | 原连段、打断、暂停、语音禁用与 82 个采样解码 |
+| 刺客基本规则 | 12 | 五种敌人、硬控/软控、控制免疫、攻击预算与排练 |
+| 忍者身法 | 10 | 连续轨迹、飞踢/低扫、护刃/破架、蹬墙空射、绕位、可打断和暂停 |
+| 四技能 | 17 | 裂印与增伤、穿透/挡墙、独立冷却、余烬、回血打断、五段终式、空中追击上限 |
+| 自动瞄准 | 9 | 最近有效目标、背后/高处/方向输入、锁定稳定、死亡/遮挡失效、护盾排除 |
+| 页面与生命周期 | 12 | 难度、暂停/指南、死亡/续关/重开、全屏、本机战绩和短屏 |
+| 旧风机墓场 / 动作生命周期 | 4 / 3 | 原路线与效果生命周期回归 |
+| 独立通道钩索 | 6 | 材质音、张力、松手、静音、后台及迟到资源，不把独立通道等同于已合入钟城 |
+
+两条整关路线分别验证旅人纯动作（包含主动黑潮死亡、暂停和续关）与无畏铭文模式（实际回答题目后通关）。均使用真实键盘输入，没有写入坐标、生命、分数或结局。技能和铭文专项使用测试响应中的固定场地/遭遇，生产输入、Hero、物理、题目宿主与结算代码不替换；这些夹具不会进入导出包。
+
+本轮还检查构建、脚本/游戏/通道 ESLint、配置范围内的 Prettier、Git 空白问题、82 个音效 SHA-256，以及四个 `.xbp` ZIP。Belfry 构建为 359 个文件、44 类精灵。CI 超时预算由 20 分钟调整为 45 分钟以容纳扩展后的浏览器回归；本机通过不等于远程 Actions 已通过。
+
+最终回归首次在壁弓位移断言失败：70 毫秒遥测的首个/最后一个腾空样本并不对应起跳/落地。测试改为从观察到的起手位置测量轨迹，并等待真实收招位置验证返回，保留原位移阈值。原始失败日志保留，修正后从忍者专项继续执行，未修改游戏轨迹来迁就断言。
+
+证据入口：[验证摘要与文件哈希](evidence/inscription-v1/verification.json)、[铭文流程](evidence/inscription-v1/inscription.json)、[异常恢复](evidence/inscription-v1/resilience.json)、[旅人路线](evidence/inscription-v1/route-0.json)、[无畏铭文路线](evidence/inscription-v1/route-1.json)、[1280×720 聚焦界面](evidence/inscription-v1/focus-1280.png)、[开始页](evidence/inscription-v1/menu.png)。源码哈希与完整本轮日志同目录保存。
+
+页面 rAF 只作宿主调度观察，不能称为引擎 FPS 或跨硬件性能保证。自动输入使用已知答案，不代表玩家读题速度或学习收益；本轮仍未证明真人乐趣、15%–25% 聚焦占比目标、长期记忆、Safari/低端设备体验或语言专家审校结果。
+
+复现主回归：`bash scripts/with-env.sh node scripts/test-game.mjs`。单项调试可使用 `--from=test-belfry-ninja.mjs` 等入口继续；跳过的前序检查不会因此被重新标成通过。独立通道钩索可在服务启动后运行 `RUNLAB_URL=http://127.0.0.1:4184 bash scripts/with-env.sh node prototypes/runlab/test-passages-grapple.mjs`。

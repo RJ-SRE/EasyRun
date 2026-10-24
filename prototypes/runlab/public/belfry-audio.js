@@ -1,6 +1,16 @@
 // Gameplay audio only. Character speech and dialogue are intentionally disabled.
 const defaults = { sfx: 0.8, music: 0.35 };
 const counts = {
+  bowdraw: 2,
+  bowshot: 3,
+  bowready: 2,
+  arrowhit: 3,
+  heavycut: 3,
+  markbreak: 2,
+  healstart: 2,
+  healcomplete: 2,
+  chaincut: 4,
+  chainfinish: 3,
   blade: 6,
   cloth: 4,
   hook: 4,
@@ -129,6 +139,14 @@ export class BelfryAudio {
     }
     this.sources.clear();
     this.nextNote = 0;
+    if (this.buses)
+      for (const k of ["sfx", "music", "danger"]) {
+        this.buses[k].gain.cancelScheduledValues(this.ctx.currentTime);
+        this.buses[k].gain.setValueAtTime(
+          this.settings[k === "danger" ? "sfx" : k],
+          this.ctx.currentTime,
+        );
+      }
   }
   stateChanged(s) {
     const old = this.state;
@@ -180,7 +198,7 @@ export class BelfryAudio {
       const buffer = await this.buffer(this.path(cue, variant));
       if (epoch !== this.epoch || !this.allowed() || this.now() - at > maxAge)
         return;
-      this.source(buffer, bus, volume, pan);
+      this.source(buffer, bus, volume, pan).cue = cue;
       this.fxHistory.push({ cue, at });
       if (this.fxHistory.length > 160) this.fxHistory.shift();
     } catch (e) {
@@ -215,6 +233,17 @@ export class BelfryAudio {
       o.stop(t + duration);
     }
   }
+  stopCue(...cues) {
+    for (const h of this.sources)
+      if (cues.includes(h.cue)) {
+        try {
+          h.source.stop();
+        } catch {
+          /* The source already ended. */
+        }
+        this.sources.delete(h);
+      }
+  }
   sound(name, x = 480) {
     const pan = Math.max(-0.65, Math.min(0.65, (x - 480) / 550));
     const choose = {
@@ -223,7 +252,17 @@ export class BelfryAudio {
       finisher: "blade",
       aircut: "blade",
       launcher: "blade",
-      heavy: "blade",
+      heavy: "heavycut",
+      bowdraw: "bowdraw",
+      bowshot: "bowshot",
+      bowready: "bowready",
+      arrowhit: "arrowhit",
+      markbreak: "markbreak",
+      healstart: "healstart",
+      healcomplete: "healcomplete",
+      chainstart: "tension",
+      swordcut: "chaincut",
+      chainfinish: "chainfinish",
       hook: "hook",
       hookattach: "attach",
       hooktension: "tension",
@@ -235,7 +274,12 @@ export class BelfryAudio {
       land: "land",
       hardland: "land",
       jump: "cloth",
-      webcut: "web",
+      chaincut: "brass",
+      wordok: "brass",
+      wordmiss: "cloth",
+      chainfree: "cloth",
+      bind: "heavy",
+      bindrelease: "cloth",
       charge: "tension",
       parry: "brass",
       collision: "heavy",
@@ -255,15 +299,28 @@ export class BelfryAudio {
       this.sample("cloth", { pan, volume: 0.25 });
     if (["checkpoint", "echo", "core", "finish"].includes(name))
       this.tone(name === "finish" ? 220 : 146.8, 2.8, 0.045, "music");
-    if (name === "nova" && this.buses) {
+    if (name === "chainstart" && this.buses) {
       const t = this.ctx.currentTime;
       this.buses.music.gain.setTargetAtTime(0.02, t, 0.01);
-      this.buses.sfx.gain.setTargetAtTime(this.settings.sfx * 0.55, t, 0.01);
-      this.buses.sfx.gain.setTargetAtTime(this.settings.sfx, t + 0.04, 0.025);
+      this.buses.music.gain.setTargetAtTime(this.settings.music, t + 1.1, 0.2);
     }
   }
   onEvent(name, x = 480) {
     if (["start", "practice", "retry", "fail"].includes(name)) this.stopAll();
+    if (["healbreak", "healcomplete", "hurt"].includes(name))
+      this.stopCue("healstart");
+    if (
+      [
+        "bowshot",
+        "heavy",
+        "dash",
+        "jump",
+        "hook",
+        "hurt",
+        "chainstart",
+      ].includes(name)
+    )
+      this.stopCue("bowdraw", "tension");
     this.sound(name, x);
   }
   enemy(name, id, kind) {
@@ -275,12 +332,39 @@ export class BelfryAudio {
       Math.min(0.7, ((f?.x ?? 480) - (s?.x ?? 480)) / 500),
     );
     if (name === "tell")
-      this.sample("tell", { bus: "danger", pan, volume: 0.75 });
+      this.sample(kind === 2 || kind === 4 ? "tension" : "cloth", {
+        bus: "danger",
+        pan,
+        volume: 0.85,
+      });
+    const attacks = {
+      knife: "blade",
+      arrow: "sling",
+      cut: "blade",
+      elbow: "cloth",
+      sweep: "cloth",
+      chaincast: "hook",
+      tether: "attach",
+      chainbreak: "brass",
+      grabattempt: "dash",
+      grip: "cloth",
+      release: "cloth",
+      backstep: "cloth",
+      shadowstep: "dash",
+      aircross: "dash",
+      wallkick: "cloth",
+      flyingkick: "dash",
+      chainsweep: "hook",
+      parry: "brass",
+      guardbreak: "heavy",
+      land: "cloth",
+    };
+    if (attacks[name]) this.sample(attacks[name], { pan, volume: 0.7 });
     if (name === "impact") {
-      this.sample(
-        kind === 2 || kind === 3 ? "brass" : kind === 1 ? "web" : "porcelain",
-        { pan, volume: 0.85 },
-      );
+      this.sample(kind === 3 || kind === 4 ? "heavy" : "cloth", {
+        pan,
+        volume: 0.85,
+      });
       if (s?.attackKind === 7) this.sample("heavy", { pan, volume: 0.8 });
     }
   }

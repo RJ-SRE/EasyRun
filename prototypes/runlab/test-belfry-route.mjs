@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { BANK } from "./public/inscription-core.js";
 const out = new URL("./test-results/belfry/", import.meta.url);
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
@@ -99,6 +100,15 @@ try {
       await hold([]);
       await page.keyboard.press("Enter", { delay: 80 });
       await page.waitForTimeout(200);
+      continue;
+    }
+    if (s.phase === 5) {
+      await hold([]);
+      const q = await page.evaluate(() => window.inscriptionDiagnostics.active.q);
+      const word = BANK.get(q.wordId);
+      if (q.type === "spell") await page.keyboard.type(word.word, { delay: 65 });
+      else await page.keyboard.press(String(q.options.indexOf(word.meaning) + 1));
+      await page.waitForFunction(() => latestState.phase === 1 && !window.inscriptionDiagnostics.active);
       continue;
     }
     if (
@@ -245,6 +255,7 @@ try {
     events: runEvents,
     errors: runtimeErrors,
     frameIntervals,
+    inscriptions: window.inscriptionDiagnostics.run,
   }));
   result.date = new Date().toISOString();
   result.browser = browser.version();

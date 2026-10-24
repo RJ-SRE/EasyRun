@@ -1,0 +1,6 @@
+PASS pause stops voices, tension and room tails
+PASS cast, contact, tension and recoil follow actual hook lifecycle
+PASS mute removes every voice; unmute resumes from current state
+PASS early release cancels contact and tension cues
+PASS hidden page stops audio; a resume gesture restarts only the current ambience
+PASS late sample loading cannot resurrect a paused cast

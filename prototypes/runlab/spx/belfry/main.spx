@@ -1,7 +1,42 @@
 import "math"
 
 var (
+ wordMode int
+ wordWanted int
+ wordPending int
+ wordSerial int
+ wordOwner int
+ wordSegment int
+ hostCheckpoint int
+ hostSegment int
+ hostElapsed float64
+ hostScore int
+ embers int
+ emberHits int
+ enemyMark []float64
  practice int
+ practiceKind int
+ attackSlots int
+ bindEnemy int
+ bindTime float64
+ bindX float64
+ bindY float64
+ controlImmune float64
+ controlGrace float64
+ chainOwner int
+ chainTime float64
+ enemyFacing []float64
+ enemyStride []float64
+ enemyFloor []int
+ enemyStep []int
+ enemySpent []int
+ enemyRecover []float64
+ enemyFromX []float64
+ enemyFromY []float64
+ enemyMoveX []float64
+ enemyMoveY []float64
+ enemyMoveTime []float64
+ enemyMoveArc []float64
  lastMove int
  threatCount int
  enemyAttackHealth []int
@@ -85,6 +120,17 @@ func burst(x,y float64,n,kind int,force float64) {
  for i:=0;i<n;i++ {a:=noise()*6.283; speed:=force*(0.3+noise()*0.7); particle(x,y,sin(a)*speed,cos(a)*speed,0.25+noise()*0.45,0.5+noise(),kind)}
 }
 func ring(x,y,scale float64,kind int) {Pulse.clone []float64{x,y,scale,float64(kind),float64(attempts)}}
+// World-space effects are authored in engine sprites, and also ship in .xbp.
+func skillFX(x,y,heading float64,kind int,size float64) {if fxCount<85 {fxCount++; SkillFX.clone []float64{x,y,heading,float64(kind),size,float64(attempts)}}}
+func blockedLine(ax,ay,bx,by float64) bool {
+ for i:=0;i<len(floorX);i++ {
+  active:=true; if segment==2 && floorKind[i]==1 {active=false}
+  if floorKind[i]==2 && enemyHP[2]<=0 {active=false}; if floorKind[i]==3 && enemyHP[6]<=0 {active=false}
+  dy:=by-ay
+  if active && abs(dy)>0.01 {t:=(floorY[i]-ay)/dy; x:=ax+(bx-ax)*t; if t>0.01 && t<=1 && x>=floorX[i] && x<=floorX[i]+floorW[i] {return true}}
+ }
+ return false
+}
 func cutSeal(i int) {
  if segment!=1 || bossShield<=0 {return}
  cut:=false
@@ -100,15 +146,20 @@ func lineDistance(px,py,ax,ay,bx,by float64) float64 {
  t:=clamp(((px-ax)*dx+(py-ay)*dy)/length,0,1)
  return dist(px-ax-dx*t,py-ay-dy*t)
 }
-func clearEnemyMotion(i int) {enemyOffX[i]=0; enemyOffY[i]=0; enemyVX[i]=0; enemyVY[i]=0; enemyStun[i]=0; enemyThrown[i]=0; enemyHazard[i]=0; enemyMode[i]=0; enemyCycle[i]=0; enemyGreeted[i]=0}
 func hitEnemy(i,damage int) bool {
  if enemyHP[i]<=0 {return false}
  if enemyFlash[i]>0 {return false}
  if i==10 && bossShield>0 {enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],5,1,110); event("sealed"); return false}
- if (enemyType[i]==2 || enemyType[i]==3) && enemyState[i]!=2 && damage<2 {
+ // A visible, scheduled stance can parry ONE frontal light hit. It never
+ // reads input, blocks a heavy strike, or protects the assassin's back.
+ guarding:=enemyType[i]==1 && enemyState[i]==1 && enemyMode[i]==1 && enemyClock[i]<0.32 && enemyStep[i]==0 && (Hero.px-enemyX[i])*enemyFacing[i]>0 && abs(Hero.py+30-enemyY[i])<85
+ if guarding && damage==1 {enemyStep[i]=1; enemyFlash[i]=0.12; burst(enemyX[i]+enemyFacing[i]*24,enemyY[i],7,1,130); enemyEvent("parry",i); return false}
+ if guarding && damage>=2 {enemyEvent("guardbreak",i)}
+ if enemyType[i]==3 && enemyState[i]!=2 && damage<2 {
   enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],6,1,110); event("armor"); return false
  }
- enemyHP[i]-=damage; enemyFlash[i]=0.14; enemyStun[i]=0.12; if enemyType[i]!=3 {enemyHazard[i]=0}; energy+=5; if energy>100 {energy=100}; enemyEvent("impact",i); shock=3; hitStop=0.035
+ if embers<2 {emberHits++; if emberHits>=4 {embers++; emberHits=0; event("embergain")}}
+ enemyHP[i]-=damage; enemyFlash[i]=0.14; enemyStun[i]=0.16; if enemyType[i]!=3 {if chainOwner==i {breakChain("chaincut")}; enemyRecoverFor(i,0.65)}; energy+=5; if energy>100 {energy=100}; enemyEvent("impact",i); shock=3; hitStop=0.035
  if i==10 && bossStage==0 && enemyHP[i]<=8 {enemyHP[i]=8; bossStage=1; bossShield=2; sealLeft=false; sealRight=false; event("enrage"); ring(enemyX[i],enemyY[i],2.5,2)}
  burst(enemyX[i],enemyY[i],12,1,250); event("hit")
  if enemyHP[i]<=0 {
@@ -118,134 +169,57 @@ func hitEnemy(i,damage int) bool {
   Hero.dashCool=0; Hero.airJump=true; Hero.vy=math.Max(Hero.vy,510)
   hitStop=0.065; event("kill"); enemyEvent("collapse",i)
   if i==2 || i==6 {event("gate"); shock=5}
-  if enemyType[i]==3 {segment=2; checkpoint=4; health=maxHealth; returnTime=0; riseY=-4020; energy=100; event("core"); for j:=11;j<len(enemyHP);j++ {enemyHP[j]=2}}
+  if enemyType[i]==3 {segment=2; checkpoint=4; health=maxHealth; returnTime=0; riseY=-4020; energy=100; event("core"); for j:=11;j<len(enemyHP);j++ {clearEnemyMotion(j); enemyHP[j]=enemyMaxHP(enemyType[j]); enemyState[j]=0; enemyClock[j]=0}}
  }
  bossHP=enemyHP[10]; if bossHP<0 {bossHP=0}
  return true
 }
 func hurt(reason int) {
- if phase!=1 || Hero.invulnerable>0 {return}
+ if phase!=1 || Hero.invulnerable>0 || bindTime>0 || controlGrace>0 {return}
  health--; combo=0; comboTime=0; Hero.invulnerable=1.3; shock=9; hitStop=0.06
- Hero.cancelAttack(); Hero.hook=-1; Hero.vy=330; burst(Hero.px,Hero.py+32,12,3,200); event("hurt")
+ Hero.cancelAttack(); Hero.ultimateTime=0; Hero.hook=-1; Hero.vy=330; Hero.grounded=false; burst(Hero.px,Hero.py+32,12,3,200); event("hurt")
  if health<=0 {phase=3; failReason=reason; deaths++; event("fail")}
 }
-func resetEnemies() {
- for i:=0;i<len(enemyHP);i++ {
-  hp:=3; if enemyType[i]==1 {hp=4}; if enemyType[i]==2 {hp=6}; if enemyType[i]==4 {hp=4}; if enemyType[i]==3 {hp=20; if difficulty==0 {hp=16}}
-  if i>=11 {hp=0}
-  clearEnemyMotion(i); enemyHP[i]=hp; enemyState[i]=0; enemyClock[i]=float64(i)*0.19; enemyFlash[i]=0
- }
- bossHP=enemyHP[10]
-}
 func startRun() {
- initLevel(); practice=0; lastMove=0; threatCount=0
- attempts++; phase=1; segment=0; score=0; combo=0; bestCombo=0; kills=0; echoes=0; checkpoint=0; hookCount=0; deaths=0
+ resetInscription()
+ initLevel(); practice=0; practiceKind=5; lastMove=0; threatCount=0; attackSlots=0; bindEnemy=-1; bindTime=0; controlImmune=0; controlGrace=0; chainOwner=-1; chainTime=0
+ attempts++; embers=1; emberHits=0; phase=1; segment=0; score=0; combo=0; bestCombo=0; kills=0; echoes=0; checkpoint=0; hookCount=0; deaths=0
  maxHealth=5; if difficulty==0 {maxHealth=8}; health=maxHealth; energy=50
  elapsed=0; worldTime=0; returnTime=0; riseY=-4020; shock=0; hitStop=0; comboTime=0; failReason=0
  bossShield=2; bossStage=0; sealLeft=false; sealRight=false
  for i:=0;i<len(echoTaken);i++ {echoTaken[i]=0}; resetEnemies(); Hero.resetHero(230,0); event("start")
 }
-func startPractice() {
- startRun(); practice=1
+func practiceEncounter(kind int) {
+ startRun(); practice=1; practiceKind=kind
  for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0; enemyBaseY[i]=-7000}
- enemyBaseX[0]=450; enemyBaseY[0]=55; enemyHP[0]=20
- enemyBaseX[2]=730; enemyBaseY[2]=190; enemyHP[2]=20
- enemyBaseX[6]=760; enemyBaseY[6]=45; enemyHP[6]=20
- enemyBaseX[3]=570; enemyBaseY[3]=75; enemyHP[3]=20
+ enemyType[0]=0; enemyBaseX[0]=450; enemyBaseY[0]=65
+ enemyType[1]=1; enemyBaseX[1]=580; enemyBaseY[1]=34
+ enemyType[3]=2; enemyBaseX[3]=848; enemyBaseY[3]=150
+ enemyType[6]=4; enemyBaseX[6]=730; enemyBaseY[6]=34
+ enemyType[4]=5; enemyBaseX[4]=650; enemyBaseY[4]=34
+ for i:=0;i<len(enemyHP);i++ {
+  enabled:=false
+  if kind==5 {enabled=i==0 || i==1 || i==3 || i==6 || i==4} else {
+   if kind==0 {enabled=i==0}; if kind==1 {enabled=i==1}; if kind==2 {enabled=i==3}; if kind==3 {enabled=i==6}; if kind==4 {enabled=i==4}
+  }
+  if enabled {enemyHP[i]=20; clearEnemyMotion(i); enemyState[i]=0; enemyClock[i]=0} else {enemyBaseY[i]=-7000; enemyY[i]=-7000}
+ }
  Hero.resetHero(230,0); energy=100; event("practice")
 }
+func startPractice() {practiceEncounter(5)}
 func retryCheckpoint() {
- if practice==1 {startPractice(); return}
- attempts++; phase=1; health=maxHealth; energy=50; combo=0; shock=0; hitStop=0; failReason=0
+ resetInscription()
+ if practice==1 {practiceEncounter(practiceKind); return}
+ attempts++; embers=1; emberHits=0; bindEnemy=-1; bindTime=0; controlImmune=0; controlGrace=0; chainOwner=-1; chainTime=0; phase=1; health=maxHealth; energy=50; combo=0; shock=0; hitStop=0; failReason=0
  score-=100; if score<0 {score=0}
  if segment==1 {enemyHP[10]=20; if difficulty==0 {enemyHP[10]=16}; bossHP=enemyHP[10]; bossShield=2; bossStage=0; sealLeft=false; sealRight=false}
  if segment==2 {returnTime=0; riseY=-4020}
  for i:=0;i<len(enemyClock);i++ {clearEnemyMotion(i); enemyClock[i]=0; enemyState[i]=0; enemyFlash[i]=0}
  Hero.resetHero(checkpointX[checkpoint],checkpointY[checkpoint]); event("retry")
 }
-func fire(i int,spread float64) {
- dx:=Hero.px-enemyX[i]; dy:=Hero.py+28-enemyY[i]; d:=dist(dx,dy); if d<1 {d=1}
- speed:=250.0; if difficulty==0 {speed=190}
- vx:=dx/d*speed; vy:=dy/d*speed
- Bolt.clone []float64{enemyX[i],enemyY[i],vx-spread*vy,vy+spread*vx,float64(attempts)}
-}
-func updateEnemies(dt float64) {
- threatCount=0
- for i:=0;i<len(enemyHP);i++ {
-  if enemyFlash[i]>0 {enemyFlash[i]-=dt}
-  if enemyStun[i]>0 {enemyStun[i]-=dt}
-  if enemyThrown[i]>0 {enemyThrown[i]-=dt}
-  enemyOffX[i]+=enemyVX[i]*dt; enemyOffY[i]+=enemyVY[i]*dt
-  if enemyStun[i]>0 {enemyVX[i]*=1-dt*1.5; enemyVY[i]-=650*dt} else {
-   enemyVX[i]+=(-enemyOffX[i]*14-enemyVX[i]*7)*dt; enemyVY[i]+=(-enemyOffY[i]*14-enemyVY[i]*7)*dt
-  }
-  enemyOffX[i]=clamp(enemyOffX[i],100-enemyBaseX[i],860-enemyBaseX[i]); enemyOffY[i]=clamp(enemyOffY[i],-220,340)
-  enemyX[i]=enemyBaseX[i]+sin(worldTime*0.7+float64(i))*35+enemyOffX[i]
-  enemyY[i]=enemyBaseY[i]+sin(worldTime*1.6+float64(i))*13+enemyOffY[i]
-  if enemyHP[i]<=0 {
-   enemyHazard[i]=0
-   if practice==1 && (i==0 || i==2 || i==3 || i==6) {enemyClock[i]+=dt; if enemyClock[i]>3 {enemyHP[i]=20; enemyClock[i]=0; clearEnemyMotion(i)}}
-  }
-  if enemyHP[i]>0 {
-  if dist(enemyX[i]-Hero.px,enemyY[i]-Hero.py-28)<480 {threatCount++}
-  if enemyThrown[i]>0 {
-   for j:=0;j<len(enemyHP);j++ {
-    if j!=i && enemyHP[j]>0 && dist(enemyX[i]-enemyX[j],enemyY[i]-enemyY[j])<75 {
-     if hitEnemy(j,2) {enemyThrown[i]=0; enemyVX[i]*=-0.3; enemyStun[j]=0.65; event("collision")}
-    }
-   }
-  }
-  if dist(enemyX[i]-Hero.px,enemyY[i]-Hero.py-28)<480 || enemyHazard[i]>0 {
-   if enemyGreeted[i]==0 && dist(enemyX[i]-Hero.px,enemyY[i]-Hero.py)<380 {enemyGreeted[i]=1; enemyEvent("greet",i)}
-   if enemyStun[i]>0 {enemyState[i]=2}
-   if enemyStun[i]<=0 {
-   enemyClock[i]+=dt
-   cycle:=3.4; if enemyType[i]==2 || enemyType[i]==3 {cycle=4.6}; if difficulty==0 {cycle+=0.8}; if i==10 && bossStage==1 {cycle-=1.3}
-   t:=enemyClock[i]; tell:=cycle-1.6; fireAt:=cycle-0.8; kind:=enemyType[i]
-   if t<tell {enemyState[i]=0} else if t<fireAt {enemyState[i]=1} else {enemyState[i]=2}
-   if t>=tell && t-dt<tell {
-    enemyAimX[i]=Hero.px; enemyAimY[i]=Hero.py+28
-    enemyMode[i]=enemyCycle[i]%2
-    if kind==4 {enemyMode[i]=0; if lastMove==10 || lastMove==7 {enemyMode[i]=1}}
-    enemyEvent("tell",i)
-   }
-   if t>=fireAt && t-dt<fireAt {
-    enemyAttackHealth[i]=health
-    if enemyMode[i]==0 {
-     if kind==4 {enemyHazard[i]=0.4; enemyEvent("mimicslash",i)} else {fire(i,0); if kind>=1 {fire(i,0.28); fire(i,-0.28)}; if kind==3 {fire(i,0.65); fire(i,-0.65)}; enemyEvent("volley",i)}
-    } else {
-     if kind==0 || kind==4 {
-      dx:=enemyAimX[i]-enemyX[i]; dy:=enemyAimY[i]-enemyY[i]; d:=math.Max(1,dist(dx,dy))
-      enemyVX[i]=dx/d*540; enemyVY[i]=dy/d*540; enemyHazard[i]=0.4; enemyEvent("lunge",i)
-     }
-     if kind==1 {enemyHazard[i]=1.15; enemyEvent("web",i)}
-     if kind==2 || kind==3 {enemyHazard[i]=0.9; enemyEvent("wave",i); event("bell")}
-    }
-   }
-   if enemyHazard[i]>0 {
-    enemyHazard[i]-=dt
-    if kind==1 {
-     d:=lineDistance(Hero.px,Hero.py+30,enemyX[i],enemyY[i],enemyAimX[i],enemyAimY[i])
-     if Hero.attackTime>0 && d<125 {enemyHazard[i]=0; energy+=8; if energy>100 {energy=100}; enemyStun[i]=0.55; event("webcut"); enemyEvent("webcut",i); burst(Hero.px,Hero.py+30,9,1,180)} else if d<20 && enemyHazard[i]>0.12 {hurt(1)}
-    }
-    if kind==2 || kind==3 {
-     radius:=(0.9-enemyHazard[i])*360
-     if abs(dist(Hero.px-enemyX[i],Hero.py+28-enemyY[i])-radius)<23 {hurt(1)}
-     for j:=0;j<len(enemyHP);j++ {if enemyType[j]==1 && enemyHazard[j]>0 && dist(enemyX[i]-enemyX[j],enemyY[i]-enemyY[j])<radius {enemyHazard[j]=0; enemyEvent("webcut",j)}}
-    }
-    if kind==4 && enemyMode[i]==0 && dist(Hero.px-enemyX[i],Hero.py+28-enemyY[i])<125 {hurt(1)}
-    if kind==4 && enemyHazard[i]<=0 && health==enemyAttackHealth[i] {enemyEvent("mimic_missed",i)}
-   }
-   if t>cycle+1.1 {enemyClock[i]=0; enemyCycle[i]++; enemyHazard[i]=0}
-   radius:=35.0; if kind==3 {radius=76}
-   if dist(Hero.px-enemyX[i],Hero.py+28-enemyY[i])<radius && Hero.attackTime<=0 && Hero.dashTime<=0 && !Hero.plunging {hurt(1)}
-   }
-  }
-  }
- }
-}
 func updateWorld(dt float64) {
  worldTime+=dt; elapsed+=dt
+ for i:=0;i<len(enemyMark);i++ {enemyMark[i]=math.Max(0,enemyMark[i]-dt)}
  if comboTime>0 {comboTime-=dt} else {combo=0}
  if shock>0 {shock=math.Max(0,shock-dt*30)}
  if practice==1 {updateEnemies(dt); return}
@@ -261,38 +235,60 @@ func updateWorld(dt float64) {
   if Hero.py>=-15 && Hero.px>150 && Hero.px<370 {phase=2; score+=1000+int(math.Max(0,150-returnTime))*10; event("finish")}
  }
  for i:=0;i<len(echoX);i++ {
-  if echoTaken[i]==0 && dist(Hero.px-echoX[i],Hero.py+24-echoY[i])<50 {echoTaken[i]=1; echoes++; score+=500; energy=100; ring(echoX[i],echoY[i],1.6,1); event("echo")}
+  if echoTaken[i]==0 && dist(Hero.px-echoX[i],Hero.py+24-echoY[i])<50 {echoTaken[i]=1; echoes++; score+=500; energy=100; embers=2; emberHits=0; ring(echoX[i],echoY[i],1.6,1); event("echo")}
  }
  updateEnemies(dt)
 }
 onKey KeyT, => {if phase==0 || phase==4 || phase==2 || phase==3 {startPractice()}}
-onKey Key1, => {if phase==0 {difficulty=0; event("difficulty")}}
-onKey Key2, => {if phase==0 {difficulty=1; event("difficulty")}}
+onKey Key1, => {if practice==1 {practiceEncounter(0)} else if phase==0 {difficulty=0; event("difficulty")}}
+onKey Key2, => {if practice==1 {practiceEncounter(1)} else if phase==0 {difficulty=1; event("difficulty")}}
+onKey Key3, => {if practice==1 {practiceEncounter(2)}}
+onKey Key4, => {if practice==1 {practiceEncounter(3)}}
+onKey Key5, => {if practice==1 {practiceEncounter(4)}}
+onKey Key6, => {if practice==1 {practiceEncounter(5)}}
+onKey KeyF1, => {resolveWord(1)}
+onKey KeyF2, => {resolveWord(2)}
+onKey KeyF3, => {resolveWord(3)}
+onKey KeyF4, => {if phase==0 || phase==2 || phase==3 || phase==4 {wordMode=1-wordMode; event("wordmode")}}
+onKey KeyF5, => {
+ if phase==0 && hostCheckpoint>=0 {
+  startRun(); checkpoint=hostCheckpoint; segment=hostSegment; elapsed=hostElapsed; score=hostScore
+  if checkpoint>=2 {enemyHP[2]=0}; if checkpoint>=3 {enemyHP[6]=0}
+  if segment==2 {enemyHP[10]=0; bossHP=0; bossShield=0; for j:=11;j<len(enemyHP);j++ {enemyHP[j]=enemyMaxHP(enemyType[j])}}
+  retryCheckpoint(); event("restored")
+ }
+}
+onKey KeyF, => {if phase==1 && chainOwner>=0 {requestWord(5)}}
+
+onKey KeyM, => {if phase==4 {resetInscription(); Hero.cancelAttack(); phase=0; event("menu")}}
+
 onKey KeyR, => {if phase!=0 {startRun()}}
 onKey KeyEnter, => {if phase==4 {phase=1} else if phase==3 {retryCheckpoint()} else if phase==0 || phase==2 {startRun()}}
 onKey KeyEscape, => {if phase==1 {phase=4} else if phase==4 {phase=1}}
 onStart => {
- initLevel()
+ initLevel(); bindEnemy=-1; chainOwner=-1; hostCheckpoint=-1
  difficulty=0; maxHealth=8; health=8; fxSeed=137; cameraX=480; cameraY=-120; riseY=-4020; attempts=0
+ // HOST_CONFIGURATION
  resetEnemies(); Hero.resetHero(230,0)
  for i:=0;i<len(floorX);i++ {Ledge.clone i}
  for i:=0;i<len(anchorX);i++ {Anchor.clone i}
- for i:=0;i<len(enemyHP);i++ {Enemy.clone i; EnemyTell.clone i; Hazard.clone i}
+ for i:=0;i<len(enemyHP);i++ {Enemy.clone i; 裂印.clone i; EnemyTell.clone i; Hazard.clone i; if enemyType[i]==2 {Niche.clone i}}
  for i:=0;i<len(echoX);i++ {Echo.clone i}
  for i:=0;i<24;i++ {Rope.clone i}
  for i:=0;i<28;i++ {SealCable.clone i}
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
   if phase==1 {
-   if hitStop>0 {hitStop-=dt} else {Hero.update(dt); if phase==1 {updateWorld(dt)}}
+   Hero.captureAttack()
+   if hitStop>0 {hitStop-=dt} else {Hero.update(dt); if phase==1 {updateWorld(dt)}; beginWord()}
   }
   if phase==0 {worldTime+=dt}
   if phase==0 || phase==1 {Hero.render(dt)}
   if float64(timer)-lastState>0.07 {
    lastState=float64(timer)
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}
-   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[10],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge
-   for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i]}}
+   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[10],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink
+   for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i],enemyFacing[i],enemyStep[i],enemyMark[i]}}
   }
  }
 }

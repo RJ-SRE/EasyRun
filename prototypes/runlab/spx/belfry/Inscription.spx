@@ -1,0 +1,49 @@
+// The browser owns word content and input; the simulation owns every effect.
+// phase 5 freezes the same clocks as pause. Internal F1-F3 replies are sent
+// only by the host adapter after checking the run/serial pair and its epoch.
+func resetInscription() {wordWanted=0; wordPending=0; wordOwner=-1; wordSegment=segment}
+func requestWord(kind int) {
+ if wordMode==0 || practice==1 || phase!=1 || wordPending>0 || wordWanted>0 {return}
+ wordWanted=kind; wordOwner=-1; wordSegment=segment
+ if kind==5 {wordOwner=chainOwner}; if kind==6 {wordOwner=bindEnemy}
+}
+func beginWord() {
+ if wordWanted<=0 {return}
+ kind:=wordWanted; wordWanted=0
+ if phase!=1 || health<=0 {return}
+ if kind==1 && !Hero.bowCharging {return}
+ if kind==2 && !Hero.charging {return}
+ if kind==3 && Hero.healTime<=0 {return}
+ if kind==4 && (Hero.ultimateTime<=0 || segment!=wordSegment) {Hero.ultimateGated=true; return}
+ if kind==5 && (chainOwner<0 || chainOwner!=wordOwner) {return}
+ if kind==6 && (bindEnemy<0 || bindEnemy!=wordOwner) {return}
+ wordPending=kind; wordSerial++; phase=5; hitStop=0
+ Hero.attackBuffer=0; Hero.attackPressed=false; Hero.buffer=0
+ println "@word",attempts,wordSerial,kind
+}
+func resolveWord(result int) {
+ if phase!=5 || wordPending<=0 {return}
+ kind:=wordPending; wordPending=0; wordWanted=0; phase=1
+ success:=result==1
+ // The host releases held keys before replying. Never replay typing intent.
+ Hero.prevJump=false; Hero.prevHook=false; Hero.prevAttack=false; Hero.prevHeavy=false; Hero.prevBow=false; Hero.prevHeal=false; Hero.prevDash=false; Hero.prevBurst=false
+ Hero.attackPressed=false; Hero.attackBuffer=0; Hero.bufferTime=0; Hero.buffer=0
+ Hero.invulnerable=math.Max(Hero.invulnerable,0.4); controlGrace=math.Max(controlGrace,0.4)
+ if kind==1 {if !success {Hero.bowCharge=0}; Hero.shootBow()}
+ if kind==2 {Hero.releaseBlade(success)}
+ if kind==3 {
+  Hero.healGated=true
+  if !success {Hero.healTime=0; if embers<2 {embers++}; event("healrefund")}
+ }
+ if kind==4 {Hero.ultimateGated=true; if !success {Hero.ultimateStep=5; Hero.ultimateTime=math.Min(Hero.ultimateTime,0.16); event("chainmiss")}}
+ if kind==5 {
+  i:=chainOwner; breakChain("wordescape")
+  if i>=0 {recovery:=0.25; if success {recovery=0.9}; enemyRecoverFor(i,recovery)}
+ }
+ if kind==6 {
+  i:=bindEnemy; releaseBind(); controlImmune=10
+  if i>=0 {recovery:=0.25; if success {recovery=1.05}; enemyRecoverFor(i,recovery)}
+ }
+ println "@wordResolved",attempts,wordSerial,kind,result
+ if success {event("wordok"); ring(Hero.px,Hero.py+30,0.7,1)} else {event("wordmiss")}
+}

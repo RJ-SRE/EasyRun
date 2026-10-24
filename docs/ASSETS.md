@@ -52,3 +52,31 @@ bash scripts/with-env.sh node prototypes/runlab/extract-frames.mjs --run
 按用户要求停用角色语音与对白。运行目录 `public/audio/sfx/` 只有 56 个原创程序化动作/材质采样，包含刀风、衣料、钩索、瓷裂、铜壳和危险预警；不是演员录音。生成器为 `scripts/render-belfry-foley.py`，母版及来源清单保留在 `production/audio-v06/`。两条 Qwen 原创主角试音仅作制作资料保留，未启用于当前游戏；旧系统样音和废弃运行包归档到忽略目录 `.cache/disabled-audio/`。
 
 制作目录的当前用途、归档边界与可重建命令见 [音频制作资料](../production/audio-v06/README.md)。旧 44 条系统样音已停用，不作为当前游戏资产交付。
+
+
+## 2026-10-25 · 五类刺客图集
+
+使用内置 image_gen 生成原创透明 PNG，已复制到 `prototypes/runlab/art/belfry/`：`assassin-hover-source.png`、`assassin-fighter-source.png`、`assassin-archer-source.png`、`assassin-chain-source.png`、`assassin-binder-source.png`。每套六个关键姿势；原图不改写，导入切片与注册可复现。完整提示词与输出来源见同目录 `assassin-prompts.json`。旧 sentinel/mimic 原图保留为历史制作资料，不再进入当前敌人图集。
+
+武器轨迹、箭矢、壁龛与提示继续使用仓库原有 SVG 绘制流程；游戏没有新增运行时美术或语音服务依赖。
+
+短锋另外补充 `assassin-elbow-source.png` 两个专用肘击姿势，避免肘击复用刀劈动作；对应提示词 `assassin-elbow-prompt.txt`，使用内置 image_gen 参考短锋原图生成。
+
+## 2026-10-25：忍者进阶姿势
+
+通过内置 imagegen 编辑既有角色图集生成，透明背景、继承角色服装与轮廓：
+
+- `prototypes/runlab/art/belfry/ninja-fighter-source.png`：六帧，撤步、架势、起跳、飞踢、落地、复位。
+- `prototypes/runlab/art/belfry/ninja-archer-source.png`：两帧，蹬墙、空中射箭。
+- `prototypes/runlab/art/belfry/ninja-chain-source.png`：两帧，低扫蓄势、低位甩链。
+- 完整提示词、参考原图、生成原件路径与工程输出：`prototypes/runlab/art/belfry/ninja-prompts.json`。
+
+沿用 alpha 连通区域裁帧和同图集统一尺度，不使用独立姿势各自拉满画布的缩放。实体链节、格挡标记由仓库 SVG 定义生成。游戏里不加载生成服务；资源均在本地包内。
+
+## 2026-10-25：铭文远征与四技能整合
+
+- 保留五类刺客及三张 ninja 图集，共 42 个敌人姿势；不重新生成或替换其身份。
+- `prototypes/runlab/art/belfry/skills-source.png` 与 `skills-prompt.txt` 来自技能工作树；蓄弓、放箭、回息三帧，配合仓库生成的刀光/箭矢/裂印。
+- 新增 26 个技能采样及来源母版在 `production/skills-v06/`；`public/audio/sfx/manifest.json` 合并为 82 条，原 56 条哈希保持一致。
+- 铭文界面使用仓库原生 CSS/文字，沿用深墨、冷灰与暗铜；没有下载他人游戏 UI 或恢复人声资源。
+- CET-4 成员出处、许可与义项编写边界见 WORD_BANK.md；词条不是图片或付费字典内容的复制。

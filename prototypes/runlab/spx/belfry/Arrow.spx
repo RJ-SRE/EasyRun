@@ -1,0 +1,27 @@
+onCloned data => {
+ p:=data.([]float64); age:=0.0; x:=p[0]; y:=p[1]; dx:=p[2]; dy:=p[3]; full:=p[4]>0; speed:=1050.0; damage:=1; remaining:=1
+ if full {speed=1500; damage=2; remaining=2}
+ seen:=make([]int,len(enemyHP)); setHeading angle(dx,dy); setCostume 0; if full {setCostume 1}; setSize 0.8; setXYpos x,y; show
+ for age<0.85 && remaining>0 && int(p[5])==attempts && phase!=2 && phase!=3 {
+  dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
+  if phase==1 && hitStop<=0 {
+   age+=dt; ox:=x; oy:=y; x+=dx*speed*dt; y+=dy*speed*dt
+   // Closest enemy first, with swept segment collision to avoid fast-arrow tunnelling.
+   for n:=0;n<2;n++ {
+    nearest:=-1; best:=100000.0
+    for i:=0;i<len(enemyHP);i++ {
+     radius:=29.0; if enemyType[i]==3 {radius=65}
+     d:=lineDistance(enemyX[i],enemyY[i],ox,oy,x,y); along:=(enemyX[i]-ox)*dx+(enemyY[i]-oy)*dy
+     if remaining>0 && seen[i]==0 && enemyHP[i]>0 && d<radius && along>=-radius && along<best && !blockedLine(ox,oy,enemyX[i],enemyY[i]) {nearest=i; best=along}
+    }
+    if nearest>=0 {
+     seen[nearest]=1; remaining--
+     if hitEnemy(nearest,damage) {if full {enemyMark[nearest]=3; event("marked")}; skillFX(enemyX[nearest],enemyY[nearest],angle(dx,dy),0,0.8); event("arrowhit")}
+    }
+   }
+   if blockedLine(ox,oy,x,y) || x<85 || x>875 {remaining=0; burst(x,y,5,3,90)}
+   setXYpos x,y
+  }
+ }
+ die
+}

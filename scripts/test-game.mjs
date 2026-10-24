@@ -49,8 +49,14 @@ try {
   const checks = process.argv.includes("--legacy")
     ? [{ file: "playtest.mjs" }]
     : [
+        { file: "test-inscription-core.mjs" },
         { file: "test-belfry-combat.mjs" },
         { file: "test-belfry-enemies.mjs" },
+        { file: "test-belfry-ninja.mjs" },
+        { file: "test-belfry-skills.mjs" },
+        { file: "test-belfry-bow.mjs" },
+        { file: "test-belfry-inscription.mjs", words: true },
+        { file: "test-belfry-inscription-resilience.mjs", words: true },
         { file: "test-belfry.mjs" },
         {
           file: "test-belfry-route.mjs",
@@ -58,17 +64,27 @@ try {
         },
         {
           file: "test-belfry-route.mjs",
+          words: true,
           env: { MODE: "1", RETURN_FAILURE: "0" },
         },
         { file: "test-rupture.mjs" },
         { file: "test-motion-lifecycle.mjs" },
       ];
-  for (const { file, env = {} } of checks) {
+  const from = process.argv.find((arg) => arg.startsWith("--from="))?.slice(7);
+  const startAt = from ? checks.findIndex((check) => check.file === from) : 0;
+  if (startAt < 0) throw new Error(`Unknown test entry: ${from}`);
+  for (const { file, env = {}, words = false } of checks.slice(startAt)) {
     console.log(`Checking ${file} at isolated server ${url}`);
     const code = await new Promise((resolve, reject) => {
       child = spawn(process.execPath, [`prototypes/runlab/${file}`], {
         cwd: root,
-        env: { ...process.env, RUNLAB_URL: url, ...env },
+        env: {
+          ...process.env,
+          RUNLAB_URL: file.startsWith("test-belfry")
+            ? `${url}/?words=${words ? "on" : "off"}`
+            : url,
+          ...env,
+        },
         stdio: "inherit",
       });
       child.once("error", reject);
