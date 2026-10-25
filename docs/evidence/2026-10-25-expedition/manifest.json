@@ -1,0 +1,15 @@
+{
+  "status": "historical-pre-scene-streaming",
+  "currentBuildEvidence": false,
+  "limitation": "This snapshot predates the scene clone-budget fix, optional quest refinements and coupled-weight/hunter encounters. It demonstrates the isolated rules recorded then, not complete rendering, current projectile availability, final-route success or natural vocabulary capacity. Current results must be exported separately with their source hashes.",
+  "roomTests": 12,
+  "dataTests": 7,
+  "scope": "Room fixtures verify actual simulation input, moving geometry, escort failure, circuit collision, persistence and old-save migration. Route-basic-initial is a no-fixture whole-main-route proof from before the optional moving courier/guard refinements. Neither proves natural word coverage or human fun/duration.",
+  "hashes": {
+    "prototypes/runlab/spx/belfry/Expedition.spx": "2cf8442d858a7ff1b24aa541f599dc075219174a38ab7dd858399afb1b968264",
+    "prototypes/runlab/belfry-expedition.mjs": "925c97d8f609172fb947b460d469e1c7b5b928f43803d2708cdce5d00b8df704",
+    "prototypes/runlab/public/expedition-progress.js": "bb7b657166a2f49f689a7fec7fd19fa61c6b03f042e741e3b6f25fdf5b38447e",
+    "prototypes/runlab/test-belfry-expedition.mjs": "85996d03463d22e34238e7b8b5de676458333b0dd6281be30ab250d94ef409e8",
+    "prototypes/runlab/test-expedition-data.mjs": "6dd640750456dfcb7eaf8d0eb02ea396a1075335f14a455e934a80860ccfdce8"
+  }
+}

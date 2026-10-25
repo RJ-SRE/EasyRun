@@ -1,0 +1,18 @@
+onCloned data => {
+ slot:=data.(int)
+ for {
+  waitNextFrame()
+  i:=sceneNodes[slot]; if i<0 {hide
+   continue
+  }
+  if practice==1 || abs(nodeY[i]-cameraY)>700 {hide} else {
+   show; k:=nodeKind[i]; shape:=0
+   if k>=4 && k<=9 {shape=1}; if k==10 || k==11 || k>=15 && k<=17 || k==29 {shape=2}
+   if k>=18 && k<=26 || k==30 {shape=3}; if k>=12 && k<=14 || k==31 {shape=4}; if k==27 || k==28 {shape=5}
+   if k==28 && nodeStep[i]==1 {shape=6}
+   state:=0; if nodeDone(i) {state=1} else if expPrompt==i {state=2}
+   setCostume shape*3+state; setXYpos nodeX[i],nodeY[i]+32; setSize 0.75
+   if nodeSide[i]>=0 {setGraphicEffect ColorEffect,12} else {setGraphicEffect ColorEffect,0}
+  }
+ }
+}

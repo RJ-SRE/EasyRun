@@ -2,6 +2,33 @@ export const ACHIEVEMENT_KEY = "easyrun-belfry-achievements-v1";
 export const GROUPS = { journey: "行旅", craft: "技艺", inscription: "铭文" };
 export const ACHIEVEMENTS = [
   {
+    id: "hunter-trial",
+    group: "craft",
+    title: "看破倒影",
+    goal: 1,
+    rule: "接受旧猎手试炼后，不落地或受击换过三个不同锚点，并抵达交付台。",
+    lore: "猎手没有留下答案，只留下了可以抵达的下一步。",
+    icon: "M4 25 12 8l12 20 8-19M8 8h8m4 20h8M28 9h7",
+  },
+  {
+    id: "city-index",
+    group: "journey",
+    title: "替城记住",
+    goal: 1,
+    rule: "取得并核对无名者索引的两份记录。",
+    lore: "编号七，是送信的苇。编号十一，是修路的栖。",
+    icon: "M5 8h11v22H5zM20 8h11v22H20zM9 14h3m12 0h3M16 21h4",
+  },
+  {
+    id: "repaired-way",
+    group: "journey",
+    title: "接住坠落",
+    goal: 1,
+    rule: "修好支撑后，在携心返程中实际踏上这处支撑。",
+    lore: "你替它找回扣件，它替你留下落脚的地方。",
+    icon: "M4 21h28M8 21v10m20-10v10M18 3v12m-5-5 5 5 5-5",
+  },
+  {
     id: "first-sling",
     group: "journey",
     title: "借风起身",
@@ -265,6 +292,9 @@ export class AchievementBook {
       this.mark("air-chain", r.targets.size);
     }
     if (e.name === "guardian") this.mark("keeper");
+    if (e.name === "trialcomplete") this.mark("hunter-trial");
+    if (e.name === "indexcomplete") this.mark("city-index");
+    if (e.name === "repairroute") this.mark("repaired-way");
     if (e.name === "core") r.core = true;
     if (e.name === "echo") this.mark("echoes", e.echoes);
     if (e.name === "parry")

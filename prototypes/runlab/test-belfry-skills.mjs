@@ -19,11 +19,22 @@ const report = {
 page.on("pageerror", (e) => report.errors.push(e.message));
 page.on("console", (m) => {
   if (m.type() === "error") report.errors.push(m.text());
+  if (m.text().includes("@arrow")) console.log(m.text());
 });
 // Inject deterministic scene arrangements into the test response only. These
 // handlers are never written to the project or exported game.
 await page.route("**/belfry.json", async (route) => {
   const data = await (await route.fetch()).json();
+  if (process.env.DEBUG_ARROWS)
+    data["Arrow.spx"] = data["Arrow.spx"].replace(
+      "// Closest enemy first",
+      'println "@arrowTrace",x,y,dx,dy,enemyX[0],enemyY[0],enemyHP[0],attempts,int(p[5]),blockedLine(ox,oy,enemyX[0],enemyY[0])\n   // Closest enemy first',
+    );
+  if (process.env.DEBUG_ARROWS)
+    data["Arrow.spx"] = data["Arrow.spx"].replace(
+      "seen:=make",
+      'println "@arrowBorn",p,attempts,phase\n seen:=make',
+    );
   data["main.spx"] = data["main.spx"].replace(
     "onKey KeyT",
     `\nfunc skillFixture() {
@@ -348,6 +359,7 @@ try {
   await page.screenshot({ path: fileURLToPath(new URL("error.png", out)) });
 } finally {
   report.finalState = await state();
+  report.foes = await page.evaluate(() => foes);
   report.events = await events();
   report.sound = await page.evaluate(() => soundDiagnostics);
   await writeFile(new URL("skills.json", out), JSON.stringify(report, null, 2));

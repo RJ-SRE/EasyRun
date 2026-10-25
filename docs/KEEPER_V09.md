@@ -1,6 +1,6 @@
 # 守心者三形态 · 开发实现
 
-2026-10-25，`feat/expedition-boss-v2`。这是完整远征开发中的 Boss 重构部分；十五房主线、五支线和变形返程尚未交付。完整范围与验收账本见 [开发清单](planning/thirty-word-expedition/IMPLEMENTATION.md)。
+2026-10-25，`feat/expedition-boss-v2`。这是完整远征开发中的 Boss 重构部分；十五房主线、五支线和变形返程已接入开发分支，仍在完整回归，尚未作为完整版本交付。完整范围与验收账本见 [开发清单](planning/thirty-word-expedition/IMPLEMENTATION.md)。
 
 ## 行为与形态
 

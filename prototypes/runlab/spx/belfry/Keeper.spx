@@ -136,7 +136,7 @@ func keeperProjectile(spread float64) {
  i:=keeperIndex; dx:=enemyAimX[i]-enemyX[i]; dy:=enemyAimY[i]-enemyY[i]; d:=math.Max(1,dist(dx,dy))
  speed:=390.0; if difficulty==1 {speed=470}
  vx:=dx/d*speed; vy:=dy/d*speed
- Bolt.clone []float64{enemyX[i],enemyY[i],vx-spread*vy,vy+spread*vx,float64(attempts),2,float64(keeperEpoch)}
+ projectileCount++; boltMade++; Bolt.clone []float64{enemyX[i],enemyY[i],vx-spread*vy,vy+spread*vx,float64(attempts),2,float64(keeperEpoch)}
 }
 func keeperContact(i int,ox,oy float64) {
  if enemySpent[i]>0 {return}

@@ -1,3 +1,9 @@
+import {
+  expeditionDevice,
+  EXPEDITION,
+  questRecord,
+  expeditionAfterword,
+} from "./belfry-expedition.js";
 export const DISTRICTS = [
   {
     id: "wind",
@@ -78,6 +84,34 @@ export const DEVICES = [
   },
 ];
 const STORIES = {
+  couriercomplete: [
+    "迟到的投递",
+    "运输匣终于抵达。上层旧货梯重新亮起，你可以在返程使用它。",
+  ],
+  repaircomplete: [
+    "缺口被接住了",
+    "修补机把扣件送回支架。中央的新落脚点已经可以使用。",
+  ],
+  indexcomplete: [
+    "编号之后的名字",
+    "送信的苇，修路的栖。两份索引终于拼出了它们的名字。",
+  ],
+  trialcomplete: [
+    "旧猎手的认可",
+    "连续换钩已完成。「看破倒影」可在成就册中佩戴。",
+  ],
+  lanterncomplete: [
+    "留给归途的光",
+    "备用灯芯已经安放。带回钟心后，这处路标与落脚点会再次亮起。",
+  ],
+  repairblocked: [
+    "维修位置仍有危险",
+    "先处理机器附近的巡守，再把受力扣交给它。",
+  ],
+  trialincomplete: [
+    "这一段还没有连起来",
+    "不落地连续换过三个不同锚点，再回来交付。受击或提前落地会重计。",
+  ],
   citywind: [
     "风找到了出口",
     "风阀重新呼吸。沿右侧的细长风迹跳入气流；返回这里时，它仍会接住你。",
@@ -112,6 +146,13 @@ const STORIES = {
   ],
 };
 const STORY_DISTRICTS = {
+  couriercomplete: 0,
+  repaircomplete: 1,
+  indexcomplete: 2,
+  trialcomplete: 3,
+  lanterncomplete: 4,
+  repairblocked: 1,
+  trialincomplete: 3,
   citywind: 0,
   cityforge: 1,
   cityarchive: 2,
@@ -132,7 +173,7 @@ function returnStory(s, d) {
         "镜桥仍是倒影。认准铜链锚点，别把虚影当成落脚处。",
       ][s.cityDistrict];
 }
-export function endingFor(s) {
+function baseEndingFor(s) {
   if (s.cityChoice === 1)
     return {
       title: "让城记得。",
@@ -146,6 +187,11 @@ export function endingFor(s) {
       ? "城里的钟声终于停了。那些名字没有消失——\n你带着它们离开，成为这座城最后一位记述者。"
       : "任务完成了：钟心在你手里，旧城沉入深处。\n那半句被刮去的委托，仍留在水下的档案里。",
   };
+}
+export function endingFor(s) {
+  const ending = baseEndingFor(s),
+    afterword = expeditionAfterword(s.expedition);
+  return { ...ending, text: ending.text + (afterword ? "\n" + afterword : "") };
 }
 const $ = (q) => document.querySelector(q);
 export class CityUI {
@@ -278,9 +324,10 @@ export class CityUI {
         s.cityDistrict,
       );
     }
-    this.prompt.hidden = !(playable && s.cityPrompt >= 0);
+    const expDevice = expeditionDevice(s);
+    this.prompt.hidden = !(playable && (expDevice || s.cityPrompt >= 0));
     if (!this.prompt.hidden) {
-      const device = DEVICES[s.cityPrompt];
+      const device = expDevice || DEVICES[s.cityPrompt];
       this.prompt.querySelector("h3").textContent = device.title;
       this.prompt.querySelector("p").textContent = device.detail;
       $("#city-use").textContent = device.action;
@@ -289,7 +336,7 @@ export class CityUI {
     }
     const dt = Math.max(0, Math.min(0.15, s.elapsed - this.lastElapsed));
     this.lastElapsed = s.elapsed;
-    if (playable && s.cityPrompt < 0) {
+    if (playable && this.prompt.hidden) {
       if (!this.current) {
         this.current = this.queue.shift();
         this.age = 0;
@@ -301,7 +348,7 @@ export class CityUI {
         if (this.age > 7.5) this.current = null;
       }
     }
-    this.notice.hidden = !(playable && s.cityPrompt < 0 && this.current);
+    this.notice.hidden = !(playable && this.prompt.hidden && this.current);
   }
   open() {
     if (!this.state || this.button.disabled || this.dialog.open) return;
@@ -340,7 +387,9 @@ export class CityUI {
       ];
     $("#city-entries").replaceChildren();
     for (const [i, d] of DISTRICTS.entries()) {
-      const visited = (s.cityDepth || 0) >= d.threshold,
+      const visited = s.expedition
+          ? (s.cityDepth || 0) >= -EXPEDITION.rooms[i * 3].top
+          : (s.cityDepth || 0) >= d.threshold,
         row = document.createElement("article");
       row.dataset.visited = String(visited);
       row.innerHTML = `<img src="/art/city/${d.id}.png" alt="" loading="lazy"><div><small>${d.mark}</small><h3>${d.name}<span>${flags[i] ? "已改变此地" : visited ? "已抵达" : "尚未抵达"}</span></h3><p></p></div>`;
@@ -357,6 +406,16 @@ export class CityUI {
       }
       $("#city-entries").append(row);
     }
+    if (s.expedition) {
+      for (const [i, q] of EXPEDITION.sides.entries()) {
+        if (!s.expedition.sides[i]) continue;
+        const row = document.createElement("article");
+        const text = document.createElement("p");
+        text.textContent = `${q.name} · ${s.expedition.sides[i] === 2 ? "已完成" : "进行中"}\n${questRecord(i, s.expedition.sides[i])}`;
+        row.append(text);
+        $("#city-entries").append(row);
+      }
+    }
     const choice =
       s.cityChoice === 1
         ? "留灯：夺心恢复时少一格生命；返程黑潮慢 15%。"
@@ -364,6 +423,12 @@ export class CityUI {
           ? "携心：夺心余烬充满；黑潮原速。"
           : "尚未决定供能线的去向。机枢前厅可选留灯或携心；略过则沿用携心任务。";
     $("#city-choice-record").textContent =
-      (s.cityArchive ? STORIES.cityarchive[1] + "\n\n" : "") + choice;
+      (s.cityArchive ? STORIES.cityarchive[1] + "\n\n" : "") +
+      choice +
+      (s.expedition?.recordChoice === 1
+        ? "\n\n档案选择：已带走原件，保留完整的委托证据。"
+        : s.expedition?.recordChoice === 2
+          ? "\n\n档案选择：已复制目录，返程时永久锚点旁会出现额外指引。"
+          : "");
   }
 }

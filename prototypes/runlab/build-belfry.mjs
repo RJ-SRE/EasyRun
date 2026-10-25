@@ -3,13 +3,13 @@ import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
 import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
-import {
-  platforms,
-  anchors,
-  enemies,
-  echoes,
-  checkpoints,
-} from "./belfry-level.mjs";
+import { buildExpeditionLayout } from "./belfry-expedition.mjs";
+import { expeditionInit } from "./expedition-init.mjs";
+import { addExpeditionArt } from "./belfry-expedition-art.mjs";
+import { sceneInit, SCENE_SPRITES } from "./belfry-scene.mjs";
+const layout = buildExpeditionLayout();
+const { platforms, anchors, echoes, checkpoints } = layout;
+const enemies = layout.enemies.map((e) => [e.x, e.y, e.kind, +e.returnOnly]);
 const root = new URL("./", import.meta.url),
   files = {},
   zorder = [];
@@ -53,7 +53,9 @@ function sprite(name, images, config = {}, source = "") {
     costumeIndex: 0,
     ...config,
   });
-  files[name + ".spx"] = source;
+  files[name + ".spx"] = SCENE_SPRITES.has(name)
+    ? source.replace("onCloned data => {", "onCloned data => {\n sceneBorn++\n")
+    : source;
   zorder.push(name);
 }
 await mkdir(new URL("public/art/", root), { recursive: true });
@@ -390,7 +392,7 @@ for (const name of ["wind", "forge", "archive", "mirror", "heart"])
     new URL(`art/belfry/city/${name}.png`, root),
     new URL(`public/art/city/${name}.png`, root),
   );
-await addCityArt({ sprite, png, vector });
+await addCityArt({ sprite, png, vector, layout });
 // Depth grading remains subtle so silhouettes, brass anchors and warnings read.
 sprite(
   "Depth",
@@ -417,7 +419,7 @@ function clockArt(r = 210) {
 sprite(
   "DialCore",
   { dial: clockArt() },
-  { x: 480, y: -3460, rotationStyle: "normal" },
+  { x: 480, y: layout.keeperY + 96, rotationStyle: "normal" },
   "onStart => {for {waitNextFrame(); setHeading 90+visualTime*0.8; setGraphicEffect GhostEffect,76}}",
 );
 // Foreground buttresses frame the vertical play field without obscuring routes.
@@ -430,7 +432,7 @@ for (let side = 0; side < 2; side++) {
     "Buttress" + side,
     { wall: vector(70, 4000, c) },
     { x: side ? 912 : 48, y: -1760 },
-    "onStart => {setGraphicEffect GhostEffect,45; setGraphicEffect BrightnessEffect,-15}",
+    "onStart => {setGraphicEffect GhostEffect,45; setGraphicEffect BrightnessEffect,-15; for {waitNextFrame(); setYpos cameraY}}",
   );
 }
 // One texture shared by all ledges; clones scale the drawing, while collision
@@ -439,12 +441,27 @@ const ledge = await png("art/belfry/ledge.png", 1983);
 ledge.pivotY = 315;
 sprite(
   "Ledge",
-  { deck: ledge },
+  {
+    deck: ledge,
+    weight: {
+      ...vector(
+        240,
+        100,
+        '<defs><linearGradient id="w" x2="0" y2="1"><stop stop-color="#736953"/><stop offset=".22" stop-color="#30393a"/><stop offset="1" stop-color="#131f25"/></linearGradient></defs><path d="M0 10h240v16H0zM15 26h210l-14 53H29Z" fill="url(#w)" stroke="#a99670" stroke-width="2"/><path d="M31 34h178M37 46h166M41 59h158M55 27v48m43-48v48m43-48v48m43-48v48" stroke="#8b7859" opacity=".5"/><path d="M6 10V0m228 10V0M8 18h224" stroke="#d0ba89" stroke-width="3"/><circle cx="23" cy="19" r="3" fill="#d7be8a"/><circle cx="217" cy="19" r="3" fill="#d7be8a"/>',
+      ),
+      pivotY: 10,
+    },
+  },
   { visible: false, rotationStyle: "normal" },
   `onCloned data => {
- i:=data.(int); opening:=0.0; setSize floorW[i]/1983; show
+ slot:=data.(int); opening:=0.0; view:=-1
  for {
-  dt:=float64(waitNextFrame()); x:=floorX[i]+floorW[i]/2; y:=floorY[i]; heading:=90.0; ghost:=0.0
+  dt:=float64(waitNextFrame()); i:=sceneFloors[slot]
+  if i<0 {hide
+   continue
+  }
+  if view!=i {view=i; opening=0}
+  show; x:=floorX[i]+floorW[i]/2; y:=floorY[i]; heading:=90.0; ghost:=0.0
   if floorKind[i]==1 && segment==2 {y-=clamp(returnTime*180,0,700); heading+=clamp(returnTime*10,0,35); ghost=clamp(returnTime*20,0,100)}
   if floorKind[i]==2 || floorKind[i]==3 {
    guard:=2; if floorKind[i]==3 {guard=6}
@@ -453,12 +470,15 @@ sprite(
   }
   if !floorActive(i) && floorKind[i]>=4 {ghost=100}
   if floorKind[i]==4 {setGraphicEffect ColorEffect,18} else if floorKind[i]==5 {setGraphicEffect BrightnessEffect,18}
-  if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {setSize floorW[i]/1983}
+  setCostume 0
+  if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {
+   if floorKind[i]==23 || floorKind[i]==43 {setCostume 1; setSize floorW[i]/240} else {setSize floorW[i]/1983}
+  }
   setXYpos x,y; setHeading heading; setGraphicEffect GhostEffect,ghost
  }
 }`,
 );
-for (let i = 0; i < 4; i++) {
+for (let i = 0; i < checkpoints.length; i++) {
   const [x, y] = checkpoints[i];
   sprite(
     "Sanctuary" + i,
@@ -466,11 +486,11 @@ for (let i = 0; i < 4; i++) {
       beacon: vector(
         130,
         160,
-        '<defs><radialGradient id="g"><stop stop-color="#f0d89f" stop-opacity=".30"/><stop offset="1" stop-color="#deb16e" stop-opacity="0"/></radialGradient></defs><ellipse cx="65" cy="90" rx="65" ry="70" fill="url(#g)"/><path d="M47 158V78l18-19 18 19v80" fill="#151e24" stroke="#a29675" stroke-width="2"/><path d="M65 18v49M58 23h14M52 78h26M65 80v53" stroke="#f0cf89" stroke-width="2"/><circle cx="65" cy="49" r="7" fill="#f3d68b"/><path d="M40 159h50" stroke="#c5bd9e" stroke-width="3"/>',
+        '<defs><radialGradient id="g"><stop stop-color="#f0d89f" stop-opacity=".32"/><stop offset="1" stop-color="#deb16e" stop-opacity="0"/></radialGradient></defs><ellipse cx="65" cy="67" rx="54" ry="62" fill="url(#g)"/><path d="M36 158h58l-7-9H43ZM51 149l7-35h14l7 35M61 115V88h8v27" fill="#263131" stroke="#8b8068" stroke-width="2"/><path d="M45 43 65 24 85 43v32L65 95 45 75ZM51 47v24l14 15 14-15V47L65 33Z" fill="#192525" stroke="#c2aa78" stroke-width="2"/><path d="m65 41 8 21-8 15-8-15Z" fill="#edcf8d"/><path d="M65 10v15M57 18h16M42 38l-8-8m54 8 8-8M47 138h36M51 145h28M57 102h16" stroke="#ad9465" stroke-width="1.5"/>',
       ),
     },
-    { x, y: y + 80 },
-    `onStart => {for {waitNextFrame(); if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(visualTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
+    { x, y: y + 46, size: 0.58 },
+    `onStart => {for {waitNextFrame(); if abs(cameraY-(${y}))>700 || (practice==1 && ${i}>0) {hide} else {show}; if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(visualTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
   );
 }
 sprite(
@@ -519,7 +539,7 @@ sprite(
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onCloned data => {i:=data.(int); side:=i/14; j:=i%14; for {waitNextFrame(); active:=segment==1 && bossShield>0; if side==0 && sealLeft || side==1 && sealRight {active=false}; if active {show; ax:=anchorX[14+side]; ay:=anchorY[14+side]; dx:=enemyX[10]-ax; dy:=enemyY[10]+60-ay; t:=(float64(j)+0.5)/14; setXYpos ax+dx*t,ay+dy*t; setHeading angle(dx,dy); setSize dist(dx,dy)/14/24+0.05} else {hide}}}",
+  "onCloned data => {i:=data.(int); side:=i/14; j:=i%14; for {waitNextFrame(); active:=segment==1 && bossShield>0; if side==0 && sealLeft || side==1 && sealRight {active=false}; if active {show; ax:=anchorX[sealA+side]; ay:=anchorY[sealA+side]; dx:=enemyX[keeperIndex]-ax; dy:=enemyY[keeperIndex]+60-ay; t:=(float64(j)+0.5)/14; setXYpos ax+dx*t,ay+dy*t; setHeading angle(dx,dy); setSize dist(dx,dy)/14/24+0.05} else {hide}}}",
 );
 sprite(
   "BossWard",
@@ -531,7 +551,7 @@ sprite(
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[10],enemyY[10]; setHeading 90+visualTime*10} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[keeperIndex],enemyY[keeperIndex]; setHeading 90+visualTime*10} else {hide}}}",
 );
 sprite(
   "Niche",
@@ -543,7 +563,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyType[i]==2 && enemyBaseY[i]>-6000 {show; setSize 0.82; setXYpos enemyBaseX[i],enemyBaseY[i]+15} else {hide}}}",
+  "onCloned data => {slot:=data.(int); for {waitNextFrame(); i:=sceneNiches[slot]; if i>=0 {show; setSize 0.82; setXYpos enemyBaseX[i],enemyBaseY[i]+15} else {hide}}}",
 );
 const enemyImages = {};
 for (const name of assassinKinds)
@@ -818,7 +838,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyMark[i]>0 && enemyHP[i]>0 {show; setXYpos enemyX[i],enemyY[i]+58; setSize 0.45; setGraphicEffect GhostEffect,15+sin(visualTime*7)*12} else {hide}}}",
+  "onCloned data => {slot:=data.(int); for {waitNextFrame(); i:=sceneEnemies[slot]; if i>=0 && enemyMark[i]>0 && enemyHP[i]>0 {show; setXYpos enemyX[i],enemyY[i]+58; setSize 0.45; setGraphicEffect GhostEffect,15+sin(visualTime*7)*12} else {hide}}}",
 );
 sprite(
   "Arrow",
@@ -1026,11 +1046,16 @@ sprite(
   { visible: false },
   "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos 480,riseY-395} else {hide}}}",
 );
+await addExpeditionArt({ sprite, vector, code, layout });
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
-const initialization = `func initLevel() {
+const initialization =
+  sceneInit(layout) +
+  expeditionInit(layout) +
+  `func initLevel() {
+ initExpeditionData()
  keeperIndex=${enemies.findIndex((enemy) => enemy[2] === 3)}
- cityNodeX=[]float64{315,230,720,770,230}; cityNodeY=[]float64{0,-1050,-2100,-2630,-3150}
+ cityNodeX=${floats([315, 230, 155, 160, 180])}; cityNodeY=${floats([0, layout.rooms[3].top - 620, layout.rooms[6].top - 620, layout.rooms[11].top - 370, layout.rooms[12].top - 630])}
  anchorX=${floats(anchors.map((a) => a[0]))}; anchorY=${floats(anchors.map((a) => a[1]))}
  floorX=${floats(platforms.map((a) => a[0]))}; floorW=${floats(platforms.map((a) => a[1]))}; floorY=${floats(platforms.map((a) => a[2]))}; floorKind=${ints(platforms.map((a) => a[3]))}
  enemyBaseX=${floats(enemies.map((a) => a[0]))}; enemyBaseY=${floats(enemies.map((a) => a[1]))}; enemyX=${floats(enemies.map((a) => a[0]))}; enemyY=${floats(enemies.map((a) => a[1]))}; enemyType=${ints(enemies.map((a) => a[2]))}
@@ -1050,10 +1075,12 @@ files["main.spx"] = (await code("main")).replace(
     (await code("Keeper")) +
     (await code("Inscription")) +
     (await code("City")) +
+    (await code("Expedition")) +
+    (await code("Scene")) +
     "\nfunc dist(",
 );
 files["assets/index.json"] = JSON.stringify({
-  map: { width: 4000, height: 12000 },
+  map: { width: 4000, height: Math.max(12000, layout.depth * 2 + 3000) },
   run: { width: 960, height: 600 },
   maxFPS: 60,
   physics: false,
@@ -1069,6 +1096,12 @@ for (const [p, data] of Object.entries(files)) {
   );
 }
 await writeFile(new URL("public/belfry.json", root), JSON.stringify(files));
+await writeFile(
+  new URL("public/expedition-data.js", root),
+  "// Generated from belfry-expedition.mjs; rebuild to update.\nexport const EXPEDITION = " +
+    JSON.stringify(layout) +
+    ";\n",
+);
 console.log(
   `Built Belfry: ${Object.keys(files).length} files / ${zorder.length} sprites`,
 );

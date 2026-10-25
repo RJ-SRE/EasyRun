@@ -190,7 +190,11 @@ try {
     () => foes[6]?.state === 1 && foes[6]?.mode === 1 && foes[6]?.clock > 0.6,
   );
   const beforeJump = (await read()).state.health;
-  await tap("Space");
+  // Hold through anticipation to make a full-height jump. A 25 ms tap uses
+  // production short-hop gravity and can land before the final sweep frames.
+  await page.keyboard.down("Space");
+  await wait(() => foes[6]?.state === 3 && foes[6]?.clock >= 0.12);
+  await page.keyboard.up("Space");
   await wait(() => foes[6]?.state === 1 && foes[6]?.mode === 2);
   assert.equal((await read()).state.health, beforeJump);
   await save("jumping the low chain sweep avoids damage");

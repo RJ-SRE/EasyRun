@@ -2,6 +2,9 @@ import { chromium } from "@playwright/test";
 import { writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
+import { buildExpeditionLayout } from "./belfry-expedition.mjs";
+const layout = buildExpeditionLayout(),
+  firstGate = layout.platforms[layout.rooms[1].gate][2];
 const out = new URL("./test-results/belfry/", import.meta.url);
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, channel: "chromium" }),
@@ -15,6 +18,16 @@ const report = {
 page.on("pageerror", (e) => report.errors.push(e.message));
 page.on("console", (m) => {
   if (m.type() === "error") report.errors.push(m.text());
+});
+// Gate traversal uses ordinary input. This one position-only fixture brings
+// the player to a live guard after checking the gate; all damage remains real.
+await page.route("**/belfry.json", async (route) => {
+  const data = await (await route.fetch()).json();
+  data["main.spx"] = data["main.spx"].replace(
+    "onKey KeyT",
+    `onKey KeyF7, => {i:=${layout.rooms[1].foeStart + 2}; Hero.resetHero(enemyX[i]-45,enemyY[i]-34)}\nonKey KeyT`,
+  );
+  await route.fulfill({ json: data });
 });
 const state = () => page.evaluate(() => latestState);
 async function shot(n) {
@@ -100,7 +113,7 @@ try {
   for (let i = 0; i < 160; i++) {
     const s = await state();
     if (s.phase !== 1) break;
-    if (s.y <= -1119) break;
+    if (s.y <= firstGate + 1) break;
     const keys = [];
     if (s.x < 470) keys.push("d");
     if (s.x > 490) keys.push("a");
@@ -113,19 +126,20 @@ try {
   await hold([]);
   const gate = await state();
   assert.equal(gate.phase, 1);
-  assert.ok(gate.y <= -1100 && gate.y >= -1120, JSON.stringify(gate));
-  assert.equal(gate.gateOne, 4);
+  assert.ok(Math.abs(gate.y - firstGate) < 2, JSON.stringify(gate));
+  assert.equal(gate.expedition.done[1], 0);
   assert.equal(gate.checkpoint, 1);
   for (let i = 0; i < 5; i++) {
     await page.keyboard.down("s");
     await tap("Space");
     await page.keyboard.up("s");
     const s = await state();
-    assert.ok(s.y >= -1120, "Locked gate cannot be dropped through");
+    assert.ok(s.y >= firstGate, "Locked task gate cannot be dropped through");
   }
   await shot("locked-gate");
   await save("locked gate blocks drop-through and checkpoint activates");
-  // Wait for real aimed enemy bolts. No state writes or artificial damage.
+  // Position at a live guard; neither health nor damage is changed by fixture.
+  await tap("F7");
   await wait(() => latestState.phase === 3, 45000);
   const failed = await state();
   assert.equal(failed.health, 0);
@@ -138,8 +152,8 @@ try {
   assert.equal(retried.checkpoint, 1);
   assert.equal(retried.health, 5);
   assert.equal(retried.deaths, 1);
-  assert.ok(retried.y > -1100 && retried.y < -1000);
-  assert.equal(retried.gateOne, 4);
+  assert.ok(Math.abs(retried.y - layout.checkpoints[1][1]) < 2);
+  assert.equal(retried.expedition.done[1], 0);
   await save("checkpoint retry retains gate and death state");
   await tap("r");
   await page.waitForTimeout(1100);

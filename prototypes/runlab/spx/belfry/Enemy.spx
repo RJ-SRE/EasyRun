@@ -1,8 +1,12 @@
 onCloned data => {
- i:=data.(int); previous:=-1; blend:=0.0; lastAttempt:=-1; trailAt:=0.0
+ slot:=data.(int); previous:=-1; blend:=0.0; lastAttempt:=-1; trailAt:=0.0; view:=-1
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
-  if enemyHP[i]>0 {
+  i:=sceneEnemies[slot]; if i<0 {hide
+   continue
+  }
+  if view!=i {view=i; previous=-1; blend=0; lastAttempt=-1; trailAt=0}
+  if enemyHP[i]>0 && enemyType[i]!=6 && abs(enemyY[i]-cameraY)<700 {
    show; kind:=enemyType[i]; atlas:=kind; if kind==3 {atlas=1}; if kind>3 {atlas=kind-1}
    pose:=0; state:=enemyState[i]; t:=enemyClock[i]
    if state==0 && abs(enemyVX[i])>22 {pose=int(enemyStride[i]/16)%2}
@@ -31,7 +35,7 @@ onCloned data => {
    }
    if lastAttempt!=attempts {previous=costume; lastAttempt=attempts; blend=0; trailAt=0}
    if costume!=previous {
-    if fxCount<70 {fxCount++; EnemyBlend.clone []float64{float64(i),float64(previous),enemyFacing[i]*90,size,float64(attempts)}}
+    if previous>=0 && takeFX(80) { EnemyBlend.clone []float64{float64(i),float64(previous),enemyFacing[i]*90,size,float64(attempts)}}
     previous=costume; blend=0.065; setCostume costume
    }
    setCostume costume; setHeading enemyFacing[i]*90
@@ -40,8 +44,8 @@ onCloned data => {
    // Stationary silhouettes mark actual past positions; they never hit or hide
    // the body. The same pool and attempt/pause lifetime rules bound the cost.
    fast:=state==5 || (state==3 && enemyMode[i]==1 && (kind==1 || kind==2)) || (kind==3 && state==3 && (bossMove==1 || bossMove==4 || bossMove==5))
-   if fast && enemyStun[i]<=0 && abs(enemyVX[i])>130 && phase==1 && elapsed-trailAt>0.065 && fxCount<70 {
-    trailAt=elapsed; fxCount++; EnemyBlend.clone []float64{float64(i),float64(costume),enemyFacing[i]*90,size,float64(attempts),enemyX[i],enemyY[i]-34,0.18}
+   if fast && enemyStun[i]<=0 && abs(enemyVX[i])>130 && phase==1 && elapsed-trailAt>0.065 && takeFX(70) {
+    trailAt=elapsed; EnemyBlend.clone []float64{float64(i),float64(costume),enemyFacing[i]*90,size,float64(attempts),enemyX[i],enemyY[i]-34,0.18}
    }
    ghost:=0.0; if phase==1 || phase==5 {blend=clamp(blend-presentationDelta(dt),0,0.065)}; if blend>0 {ghost=blend/0.065*35}
    if kind==2 && state==0 {ghost=25}

@@ -1,7 +1,10 @@
 onCloned data => {
- i:=data.(int)
+ slot:=data.(int)
  for {
   waitNextFrame()
+  i:=sceneEnemies[slot]; if i<0 {hide
+   continue
+  }
   if enemyHP[i]>0 && (enemyState[i]==1 || enemyState[i]==5) {
    show; setXYpos enemyX[i],enemyY[i]+12; setSize 0.50
    setCostume 0; setGraphicEffect GhostEffect,0

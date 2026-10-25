@@ -4,5 +4,5 @@ onCloned data => {
  for age<0.22 && int(p[4])==attempts {
   dt:=float64(waitNextFrame()); if phase!=4 {dt=presentationDelta(dt); age+=dt; setGraphicEffect GhostEffect,65+clamp(age/0.22,0,1)*35}
  }
- die
+ fxCount--; die
 }

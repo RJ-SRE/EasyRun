@@ -1,4 +1,5 @@
 onCloned data => {
+ arrowBorn++
  p:=data.([]float64); age:=0.0; x:=p[0]; y:=p[1]; dx:=p[2]; dy:=p[3]; full:=p[4]>0; speed:=1050.0; damage:=1; remaining:=1
  if full {speed=1500; damage=2; remaining=2}
  seen:=make([]int,len(enemyHP)); setHeading angle(dx,dy); setCostume 0; if full {setCostume 1}; setSize 0.8; setXYpos x,y; show
@@ -16,12 +17,12 @@ onCloned data => {
     }
     if nearest>=0 {
      seen[nearest]=1; remaining--
-     if hitEnemy(nearest,damage) {if full {enemyMark[nearest]=3; event("marked")}; skillFX(enemyX[nearest],enemyY[nearest],angle(dx,dy),0,0.8); event("arrowhit")}
+     if hitEnemy(nearest,damage) {if len(p)>6 {skillImpact(int(p[6]),1,nearest)}; if full {enemyMark[nearest]=3; event("marked")}; skillFX(enemyX[nearest],enemyY[nearest],angle(dx,dy),0,0.8); event("arrowhit")}
     }
    }
    if blockedLine(ox,oy,x,y) || x<85 || x>875 {remaining=0; burst(x,y,5,3,90)}
    setXYpos x,y
   }
  }
- die
+ projectileCount--; die
 }

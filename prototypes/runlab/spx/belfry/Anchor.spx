@@ -1,9 +1,13 @@
 onCloned data => {
- i:=data.(int); setXYpos anchorX[i],anchorY[i]; show
+ slot:=data.(int)
  for {
   waitNextFrame()
+  i:=sceneAnchors[slot]; if i<0 {hide
+   continue
+  }
+  setXYpos anchorX[i],anchorY[i]; show
   if Hero.target==i {setCostume "chosen"; setSize 1.12+sin(visualTime*6)*0.05} else {setCostume "idle"; setSize 1}
-  if segment==1 && bossShield>0 {if i==14 && !sealLeft || i==15 && !sealRight {setCostume "seal"; setSize 1.3+sin(visualTime*5)*0.06}}
+  if segment==1 && bossShield>0 {if i==sealA && !sealLeft || i==sealB && !sealRight {setCostume "seal"; setSize 1.3+sin(visualTime*5)*0.06}}
   setHeading 90+sin(visualTime+float64(i))*4
  }
 }

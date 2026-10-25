@@ -1,44 +1,58 @@
-// Persistent environmental decisions. Only the simulation may alter routes.
+// City systems share the authored expedition coordinates.
 func resetCity() {
  cityWind=0; cityForge=0; cityArchive=0; cityMirror=0; cityChoice=0
- cityDistrict=0; cityPrompt=-1; cityClock=0; cityDepth=0
+ cityDistrict=0; cityPrompt=-1; cityClock=0; cityDepth=0; weightClock=0; weightRange=0.45
 }
 func districtAt(y float64) int {
- if y > -740 {return 0}; if y > -1530 {return 1}; if y > -2340 {return 2}; if y > -3070 {return 3}; return 4
+ for i:=0;i<len(districtEdges);i++ {if y>districtEdges[i] {return i}}
+ return 4
 }
 func floorActive(i int) bool {
  kind:=floorKind[i]
  if kind==1 && segment==2 {return false}
- if kind==2 && enemyHP[2]<=0 || kind==3 && enemyHP[6]<=0 {return false}
- if kind==4 && cityMirror==0 || kind==5 && cityForge==0 || kind==6 && cityArchive==0 {return false}
+ if kind>=100 {return segment!=2 && roomDone[kind-100]==0}
+ if kind==61 {return sideProgress[1]>=2}
+ if kind>=60 && kind<65 {return segment==2 && sideProgress[kind-60]>=2}
+ if kind==70 {return segment==2 && sideProgress[0]>=2}
+ if kind==42 {return roomHas(6,1)}
+ if kind==43 {return roomHas(3,1) || roomHas(3,2)}
+ if kind==40 || kind==41 {return mirrorChoice==kind-39}
+ if kind>=20 && kind<40 {
+  r:=kind-20
+  if r==2 {return roomHas(r,1)}
+  if r==3 {return roomHas(r,1) || roomHas(r,2)}
+ }
  return true
 }
-func cityCandidate() int {
- if phase!=1 || practice==1 || !Hero.grounded || bindTime>0 || chainOwner>=0 || Hero.attackTime>0 || Hero.charging || Hero.bowCharging || Hero.healTime>0 || Hero.ultimateTime>0 {return -1}
- for i:=0;i<5;i++ {
-  if abs(Hero.px-cityNodeX[i])<108 && abs(Hero.py-cityNodeY[i])<42 {
-   if i==0 && cityWind==0 || i==1 && cityForge==0 || i==2 && cityArchive==0 || i==3 && cityMirror==0 || i==4 && cityChoice==0 && segment==0 {return i}
-  }
- }
- return -1
-}
-func interactCity(option int) {
- i:=cityCandidate(); if i<0 || option==2 && i!=4 {return}
- if i==0 {cityWind=1; event("citywind")}
- if i==1 {cityForge=1; event("cityforge")}
- if i==2 {cityArchive=1; event("cityarchive")}
- if i==3 {cityMirror=1; event("citymirror")}
- if i==4 {cityChoice=option; if option==1 {event("cityshare")} else {event("citycarry")}}
- ring(cityNodeX[i],cityNodeY[i]+45,1.2,1); burst(cityNodeX[i],cityNodeY[i]+45,12,1,180)
- cityPrompt=-1
-}
+func cityCandidate() int {return -1}
+func interactCity(option int) {interactExpedition(option)}
 func updateCity(dt float64) {
  if practice==1 {cityDistrict=0; cityPrompt=-1; return}
  cityClock+=dt
- // Lift uses combat time, not the visual clock. A standing passenger is carried
- // before Hero.update records its previous position for one-way collision.
- old:=floorY[17]
- floorY[17]=-1360+(1-cos(cityClock*0.8))*160
- if cityForge==1 && Hero.grounded && abs(Hero.py-old)<2 && Hero.px+12>floorX[17] && Hero.px-12<floorX[17]+floorW[17] {Hero.py+=floorY[17]-old}
+ if sideProgress[0]==0 {
+  i:=courierFloor; oldX:=floorX[i]; center:=220+sin(cityClock*0.8)*95
+  floorX[i]=center-90; nodeX[courierNode]=center
+  if Hero.grounded && abs(Hero.py-floorY[i])<2 && Hero.px+12>oldX && Hero.px-12<oldX+floorW[i] {Hero.px+=floorX[i]-oldX}
+ }
+ for j:=0;j<len(liftFloor);j++ {
+  i:=liftFloor[j]; old:=floorY[i]; oldX:=floorX[i]
+  if liftRoom[j]==2 {floorX[i]=420; if segment==2 && cargoChoice>0 {floorX[i]=180; if cargoChoice==2 {floorX[i]=570}}}
+  if floorActive(i) {
+   clock:=cityClock
+   if liftRoom[j]==3 {
+    weightClock+=dt; clock=weightClock; extent:=0.45
+    if roomHas(3,1) && roomHas(3,2) {extent=1}
+    weightRange+=clamp(extent-weightRange,-dt*0.6,dt*0.6)
+   }
+   travel:=(1-cos(clock*6.283/liftPeriod[j]))/2
+   if liftRoom[j]==3 {travel*=weightRange}
+   floorY[i]=liftLow[j]+travel*(liftHigh[j]-liftLow[j])
+   if Hero.grounded && abs(Hero.py-old)<2 && Hero.px+12>floorX[i] && Hero.px-12<floorX[i]+floorW[i] {Hero.py+=floorY[i]-old; Hero.px+=floorX[i]-oldX}
+   if liftRoom[j]==3 {
+    c:=counterweightFloor; before:=floorY[c]; floorY[c]=liftLow[j]+liftHigh[j]-floorY[i]
+    if Hero.grounded && abs(Hero.py-before)<2 && Hero.px+12>floorX[c] && Hero.px-12<floorX[c]+floorW[c] {Hero.py+=floorY[c]-before}
+   }
+  }
+ }
  cityDistrict=districtAt(Hero.py)
 }

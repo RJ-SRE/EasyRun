@@ -22,7 +22,7 @@ await page.route("**/belfry.json", async (route) => {
     "onKey KeyT",
     `
 func keeperFixture(stage,move int) {
- startRun(); segment=1; checkpoint=4; bossShield=0; sealLeft=true; sealRight=true; bossStage=stage
+ startRun(); segment=1; checkpoint=14; bossShield=0; sealLeft=true; sealRight=true; bossStage=stage
  for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0}
  i:=keeperIndex; clearEnemyMotion(i); enemyHP[i]=bossMaxHP-stage*(bossMaxHP/3); bossHP=enemyHP[i]
  enemyState[i]=0; enemyClock[i]=0; enemyX[i]=600; enemyY[i]=enemyBaseY[i]
@@ -51,7 +51,7 @@ const state = () => page.evaluate(() => latestState);
 const snapshot = () =>
   page.evaluate(() => ({
     state: latestState,
-    boss: foes[10],
+    boss: Object.values(foes).find((f) => f.kind === 3),
     lines: keeperLines,
   }));
 const pass = async (name) => {
@@ -125,7 +125,11 @@ try {
   );
 
   await fixture("F11");
-  await wait(() => latestState.bossState === 3 && foes[10]?.clock > 0.18);
+  await wait(
+    () =>
+      latestState.bossState === 3 &&
+      Object.values(foes).find((f) => f.kind === 3)?.clock > 0.18,
+  );
   await page.keyboard.down("Space");
   await wait(() => latestState.bossState === 2);
   await page.keyboard.up("Space");

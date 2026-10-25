@@ -1,3 +1,5 @@
+import { parseExpedition } from "./expedition-progress.js";
+import { expeditionHint, EXPEDITION } from "./belfry-expedition.js";
 import { BelfryAudio } from "./belfry-audio.js";
 import { CityUI, DISTRICTS, endingFor } from "./belfry-city.js";
 import { keeperStatus } from "./belfry-keeper.js";
@@ -91,6 +93,7 @@ const fields = [
   "keeperEpoch",
 ];
 window.latestState = null;
+window.renderState = null;
 window.runtimeErrors = [];
 window.runEvents = [];
 let frame,
@@ -103,6 +106,7 @@ let frame,
 let soundOn = true;
 window.foes = {};
 window.keeperLines = {};
+window.expeditionState = null;
 const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
@@ -322,9 +326,9 @@ function onEvent(name, t, x, y) {
     seal: "钟锁断开 · 两侧吊环牵制着守心者",
     exposed: "守心者失去钟锁 · 现在进攻",
     sealed: "钟锁保护中 · 钩住两侧悬环，拉断钟锁",
-    enrage: "守心者重新封锁 · 再次拉断两侧钟锁",
+    enrage: "守心者正在变形 · 调整站位，留意新的追击轨迹",
     gate: "钟锁已解 · 通往更深处",
-    hook: "牵引 · 松开 E 甩出",
+    hook: "牵引 · 松开 E 上甩 / 按住 S 松开 E 下甩",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
     marked: "裂印 · 满蓄断潮可引爆",
     markbreak: "裂印破碎 · 断潮追加伤害",
@@ -338,7 +342,9 @@ function onEvent(name, t, x, y) {
     chainstart: "连环剑刀 · W 上挑 / S 下压收势",
     armor: "护刃格挡 · 重击破防，或等待收招",
     echo: "失落回声 +500 · 余烬充满",
-    checkpoint: "休整灯已点亮 · 生命恢复",
+    checkpoint: "行路灯已点亮 · 进度已保存",
+    restored: "抵达休整灯 · 生命恢复",
+    huntersplit: "双卫掩护已断 · 抓住重新配合前的空档",
     parry: "弹幕已斩断",
 
     retry: "从休整灯重新出发",
@@ -377,6 +383,7 @@ function hint(s) {
       "封脉 · 会绕到另一侧再锁定突进方向；跳开或打断，落空后反击。",
       "组合遭遇 · 最多两人同时起手；先拆远程，再处理近身控制。",
     ][s.practiceKind];
+  if (s.expedition && s.segment !== 1) return expeditionHint(s);
   if (s.segment === 2) {
     if (s.y > -430) return "回到左上方的休整灯。最后一段，借锚点跃出井口。";
     return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
@@ -396,6 +403,7 @@ function hint(s) {
   return "钟声来自更深处。S + 空格穿过脚下的平台。";
 }
 function receive(s) {
+  s.expedition = window.expeditionState;
   window.latestState = s;
   soundscape.stateChanged(s);
   const music = soundscape.music?.diagnostics();
@@ -495,9 +503,10 @@ function receive(s) {
         ? s.bossShield > 0
           ? "守心机枢 · 解开钟锁"
           : "守心机枢 · 守心者"
-        : DISTRICTS[s.cityDistrict].name;
+        : EXPEDITION.rooms[s.expedition?.room]?.name ||
+          DISTRICTS[s.cityDistrict].name;
   $("#depth-marker").style.top =
-    `${Math.max(0, Math.min(100, (-s.y / 3590) * 100))}%`;
+    `${Math.max(0, Math.min(100, (-s.y / Math.abs(EXPEDITION.platforms[EXPEDITION.keeperFloor][2])) * 100))}%`;
   $("#hint").textContent = hint(s);
   $("#relics").textContent = `◈ ${s.echoes} / 3`;
   $("#combo").innerHTML =
@@ -517,7 +526,7 @@ function receive(s) {
   $("#status").textContent =
     s.segment === 2
       ? `钟城下沉中 · 距黑潮 ${Math.max(0, Math.round((s.y - s.riseY) / 10))} m`
-      : `${s.difficulty === 0 ? "旅人" : "无畏"} · 第 ${s.checkpoint + 1} 座休整灯 · ${s.kills} 次击破`;
+      : `${s.difficulty === 0 ? "旅人" : "无畏"} · 第 ${s.checkpoint + 1} 处行路灯 · ${s.kills} 次击破`;
   $("#pause").disabled = ![1, 4].includes(s.phase);
   $("#pause").textContent = s.phase === 4 ? "继续 Esc" : "暂停 Esc";
   document.querySelectorAll("[data-mode]").forEach((b) => {
@@ -624,6 +633,7 @@ async function load() {
   fault = false;
   previousPhase = -1;
   window.latestState = null;
+  window.renderState = null;
   window.runtimeErrors = [];
   frame?.remove();
   frame = document.createElement("iframe");
@@ -644,6 +654,30 @@ async function load() {
           original = w.console.log.bind(w.console);
         w.console.log = (...args) => {
           const text = args.map(String).join(" ");
+          const renderMatch = text.match(/@render\s+(.+)/);
+          if (renderMatch) {
+            const keys = [
+              "sceneClones",
+              "sceneBorn",
+              "missing",
+              "effects",
+              "projectiles",
+              "arrowsRequested",
+              "arrowsBorn",
+              "boltsRequested",
+              "boltsBorn",
+            ];
+            const values = renderMatch[1].trim().split(/\s+/).map(Number);
+            if (values.length === keys.length && values.every(Number.isFinite))
+              window.renderState = Object.fromEntries(
+                keys.map((key, i) => [key, values[i]]),
+              );
+          }
+          const expeditionMatch = text.match(/@expedition\s+(.+)/);
+          if (expeditionMatch)
+            window.expeditionState = parseExpedition(
+              expeditionMatch[1].trim().split(/\s+/).map(Number),
+            );
           let m = text.match(/@state\s+(.+)/);
           if (m) {
             const a = m[1].trim().split(/\s+/).map(Number);
@@ -739,6 +773,7 @@ async function load() {
           }
           if (
             !text.includes("@state") &&
+            !text.includes("@render") &&
             !text.includes("@foe") &&
             !text.includes("@keeperLine")
           )

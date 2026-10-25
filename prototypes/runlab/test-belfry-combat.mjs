@@ -63,7 +63,7 @@ async function practice() {
 }
 async function approach() {
   await page.keyboard.down("d");
-  await page.waitForTimeout(480);
+  await wait(() => latestState.x >= 365);
   await page.keyboard.up("d");
   await page.waitForTimeout(90);
 }
@@ -120,7 +120,7 @@ try {
   await practice();
   await approach();
   await page.keyboard.down("l");
-  await page.waitForTimeout(650);
+  await wait(() => latestState.chargeTime >= 0.6);
   assert.ok((await state()).chargeTime > 0.5);
   await tap("Escape");
   await wait(() => latestState.phase === 4);
@@ -257,6 +257,8 @@ try {
   process.exitCode = 1;
   await page.screenshot({ path: fileURLToPath(new URL("error.png", out)) });
 } finally {
+  report.finalState = await state();
+  report.finalEvents = await events();
   report.sound = await page.evaluate(() => window.soundDiagnostics);
   await writeFile(new URL("combat.json", out), JSON.stringify(report, null, 2));
   await browser.close();
