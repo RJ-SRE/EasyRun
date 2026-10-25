@@ -239,7 +239,17 @@ try {
       events.slice(splitAt).some((e) => e.startsWith("@event huntersplit ")),
     10000,
   );
-  assert(samples.some((s) => s.time > coordinated.at(-1).time && s.gap > 0.7));
+  const splitTime = Number(
+    events
+      .slice(splitAt)
+      .find((e) => e.startsWith("@event huntersplit "))
+      .split(/\s+/)[2],
+  );
+  // Events are emitted in the simulation step; telemetry is sampled every
+  // 70 ms. Wait for the corresponding sample instead of asserting against
+  // the last sample, which can still predate the actual split.
+  await until(() => current.time >= splitTime && current.gap > 0.7);
+  assert(samples.some((s) => s.time >= splitTime && s.gap > 0.7));
   await pass(
     "real movement pulls the hunters apart and exposes a measurable regrouping window",
     "05-hunters-separated",
