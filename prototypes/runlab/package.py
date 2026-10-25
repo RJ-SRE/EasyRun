@@ -17,15 +17,29 @@ for game, (name, description) in GAMES.items():
         "type": "game",
         "displayName": name + " · 玩法原型",
         "description": description,
-        "instructions": "本 XBuilder 包默认纯动作。1/2 选择难度；Enter 开始或续关；A/D 移动；空格二段跳；E 牵引后松开甩出；J 三连，W+J 挑空，S+J 坠星；U 蓄箭，L 蓄刀，I 回息，Q 五段连环剑刀（U/L/I 冷却 3 秒，Q 冷却 5 秒；释放后按有效战斗时间计时，仍需完成动作收势）；K/Shift 冲刺；S+空格下平台；F 被缚索牵引时可选解链（铭文需网页宿主）；R 重开；Esc 暂停；T 排练，1–5 原有敌人，6 组合，7 裂甲卫，8 猎兽，9 缝魂师。配套网页另提供铭文拼写/辨义、30 词菜单、浏览器存档和音频混音，这些不包含在单个 xbp 内。角色语音与对白关闭。" if game == "belfry" else "Enter 开始；A/D 移动；空格跳跃；E 特殊动作；S 滑行；R 重来；Esc 暂停。推荐使用配套本地试玩页面查看中文提示、分数与结算。",
+        "instructions": "本包为舞台简化版，不等于网页截图。1/2 旅人/无畏；F4 铭文开关；N 声音开关；Enter 开始；C 续关（本局检查点）。铭文开启后技能会出题：拼写按字母，辨义按1/2/3。A/D 移动；空格二段跳；E 牵引后松开甩出；J 三连，W+J 挑空，S+J 坠星；U 蓄箭，L 蓄刀，I 回息，Q 五段连环剑刀（U/L/I 冷却 3 秒，Q 冷却 5 秒；释放后按有效战斗时间计时，仍需完成动作收势）；K/Shift 冲刺；S+空格下平台；Esc 暂停；M 回菜单；R 重开。30 词面板、浏览器存档和混音滑杆仍在网页宿主。角色语音与对白关闭。" if game == "belfry" else "Enter 开始；A/D 移动；空格跳跃；E 特殊动作；S 滑行；R 重来；Esc 暂停。推荐使用配套本地试玩页面查看中文提示、分数与结算。",
     }
     target = DEST / (game + ".xbp")
     with ZipFile(target, "w", ZIP_DEFLATED) as z:
         z.writestr("builder-meta.json", json.dumps(metadata, ensure_ascii=False, indent=2))
         manifest = json.loads((ROOT / "public" / (game + ".json")).read_text())
         for relative in sorted(manifest):
-            z.write(ROOT / "projects" / game / relative, relative)
+            source = ROOT / "projects" / game / relative
+            if game == "belfry" and relative == "main.spx":
+                text = source.read_text()
+                text = text.replace("// HOST_CONFIGURATION", "stageHost=1; wordMode=1")
+                z.writestr(relative, text)
+            else:
+                z.write(source, relative)
     with ZipFile(target) as z:
         assert z.testzip() is None
-        assert {"main.spx", "Hero.spx", "assets/index.json", "builder-meta.json"}.issubset(z.namelist())
+        required = {"main.spx", "Hero.spx", "assets/index.json", "builder-meta.json"}
+        if game == "belfry":
+            required.add("StageHud.spx")
+            packed = z.read("main.spx").decode("utf-8")
+            assert "stageHost=1" in packed
+            assert "wordMode=1" in packed
+            assert "wordText=[]string{" in packed
+            assert "// HOST_CONFIGURATION" not in packed
+        assert required.issubset(z.namelist())
     print(f"Packaged {target.name}: {target.stat().st_size:,} bytes")
