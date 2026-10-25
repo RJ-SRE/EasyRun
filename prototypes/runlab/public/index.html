@@ -82,7 +82,10 @@
             ><button data-spar="2">3 壁弓</button
             ><button data-spar="3">4 缚索</button
             ><button data-spar="4">5 封脉</button
-            ><button data-spar="5">6 组合</button><button data-spar="6">7 裂甲</button><button data-spar="7">8 猎兽</button><button data-spar="8">9 缝魂</button>
+            ><button data-spar="5">6 组合</button
+            ><button data-spar="6">7 裂甲</button
+            ><button data-spar="7">8 猎兽</button
+            ><button data-spar="8">9 缝魂</button>
           </div>
           <div id="restraint" class="restraint" hidden role="status">
             <span>封脉 · 暂时无法行动</span><b id="restraint-time"></b>
@@ -99,7 +102,11 @@
               ><small id="air-budget">J 普攻 · 0.28s</small>
             </div>
             <div class="skill-slots">
-              <div class="skill-slot" id="skill-bow" title="无冷却 · 答对放箭">
+              <div
+                class="skill-slot"
+                id="skill-bow"
+                title="冷却 3 秒 · 答对放箭"
+              >
                 <kbd>U</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
                   <path d="M7 4Q29 18 7 32L15 18Z M5 18H31m-6-4 6 4-6 4" />
@@ -109,7 +116,7 @@
               <div
                 class="skill-slot"
                 id="skill-blade"
-                title="无冷却 · 答对挥斩"
+                title="冷却 3 秒 · 答对挥斩"
               >
                 <kbd>L</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
@@ -117,7 +124,11 @@
                 </svg>
                 <div><b>断潮</b><span class="skill-time">就绪</span></div>
               </div>
-              <div class="skill-slot" id="skill-heal" title="无冷却 · 辨义回血">
+              <div
+                class="skill-slot"
+                id="skill-heal"
+                title="冷却 3 秒 · 辨义回血"
+              >
                 <kbd>I</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
                   <path
@@ -129,7 +140,7 @@
               <div
                 class="skill-slot"
                 id="skill-ultimate"
-                title="无冷却 · 答对授权五击；斩击间隙与收势可受伤，请找破绽释放"
+                title="冷却 5 秒 · 答对授权五击；斩击间隙与收势可受伤，请找破绽释放"
               >
                 <kbd>Q</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
@@ -206,32 +217,37 @@
                 <dt>空格</dt>
                 <dd>跳跃 / 二段跳；贴墙可蹬墙跳</dd>
                 <dt>按住 E → 松开</dt>
-                <dd>牵引锚点/重敌 → 松开甩出；按住 S 下甩；轻敌会被钩近并斩击</dd>
+                <dd>
+                  牵引锚点/重敌 → 松开甩出；按住 S 下甩；轻敌会被钩近并斩击
+                </dd>
                 <dt>方向 + E</dt>
                 <dd>偏向该方向选目标；S + E 可钩向下方</dd>
                 <dt>读懂敌人</dt>
-                <dd>裂甲看背面，猎兽跳低扑，细线找缝魂师。右上角猎手手记可查看八类敌人的反制方式。</dd>
+                <dd>
+                  裂甲看背面，猎兽跳低扑，细线找缝魂师。右上角猎手手记可查看八类敌人的反制方式。
+                </dd>
                 <dt>J → J → J</dt>
                 <dd>地面三连；间隔 ≥0.28 秒。每次腾空限两击，空挥不能滞空</dd>
                 <dt>W + J / S + J</dt>
                 <dd>地面挑空 / 空中坠星；落地或接上钩索恢复追击额度</dd>
                 <dt>按住 U → 松开</dt>
                 <dd>
-                  贯夜 · 无冷却；自动锁定附近可命中的敌人，方向键偏向选敌。0.55
+                  贯夜 · 冷却 3
+                  秒；自动锁定附近可命中的敌人，方向键偏向选敌。0.55
                   秒满蓄，穿透两敌并留下裂印
                 </dd>
                 <dt>按住 L → 松开</dt>
-                <dd>断潮 · 无冷却；方向挥刀，满蓄引爆裂印并击退敌人</dd>
+                <dd>断潮 · 冷却 3 秒；方向挥刀，满蓄引爆裂印并击退敌人</dd>
                 <dt>K 或 Shift</dt>
                 <dd>冲刺；W + K 向上，S + K 向下</dd>
                 <dt>I</dt>
                 <dd>
-                  回息 · 无冷却；消耗 1 余烬，地面静止 0.8
+                  回息 · 冷却 3 秒；消耗 1 余烬，地面静止 0.8
                   秒回血。移动或受击会打断
                 </dd>
                 <dt>Q</dt>
                 <dd>
-                  连环剑刀 · 无冷却；第一击前答题，答对释放五段，W 上挑 / S
+                  连环剑刀 · 冷却 5 秒；第一击前答题，答对释放五段，W 上挑 / S
                   下压收势
                 </dd>
                 <dt>S + 空格</dt>
@@ -243,8 +259,9 @@
                 铭文模式：U/L 每次松键都答题；I 辨义回血；Q 答对后出招；F
                 可解链。选错、拼错或超时均取消本次技能；短蓄和裂印不免题。普攻与移动不弹题。金铜环是永久锚点。击杀恢复二段跳和冲刺。悬刃投刀、短锋连招、壁弓伏击、缚索牵引、封脉擒拿；观察起手，利用收招。封脉命中后锁身
                 0.7 秒；铭文模式随后辨义脱身，纯动作模式自动释放。 每 4
-                次有效伤害获得 1 余烬，上限
-                2。冲刺可取消蓄力；四个技能无冷却，动作收势后可再次施放。金铜环是永久锚点。
+                次有效伤害获得 1 余烬，上限 2。冲刺可取消蓄力；U / L / I 冷却 3
+                秒，Q 冷却 5
+                秒；释放后开始计时，暂停与答题不计时，失败取消不扣冷却。金铜环是永久锚点。
               </p>
               <button id="close-guide" class="primary">
                 明白了 <span>↗</span>

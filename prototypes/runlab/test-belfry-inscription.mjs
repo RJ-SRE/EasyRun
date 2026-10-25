@@ -162,7 +162,7 @@ try {
   await answer();
   await wait(() => runEvents.some((e) => e.name === "marked"));
   assert.equal((await diag()).count, 1);
-  assert.equal((await state()).bowCool, 0);
+  assert.ok((await state()).bowCool > 0 && (await state()).bowCool <= 3);
   pass(
     "typing isolation, escape pause, full arrow and single progress settlement",
   );
@@ -170,6 +170,10 @@ try {
   await charge("l");
   await focus(2);
   assert.equal((await state()).wordSerial, serial + 1);
+  const bowDuringBladeQuestion = (await state()).bowCool;
+  assert.ok(bowDuringBladeQuestion > 0);
+  await p.waitForTimeout(450);
+  assert.equal((await state()).bowCool, bowDuringBladeQuestion);
   await answer();
   await wait(() => runEvents.some((e) => e.name === "markbreak"));
   assert.equal((await diag()).count, 2);
@@ -225,13 +229,18 @@ try {
   await wait(() => runEvents.filter((e) => e.name === "chainhit").length === 5);
   assert.equal((await state()).wordSerial, ultSerial);
   await wait(() => latestState.ultimateTime === 0);
-  assert.equal((await state()).ultimateCool, 0);
+  assert.ok((await state()).ultimateCool > 0);
+  await p.keyboard.press("q");
+  await p.waitForTimeout(250);
+  assert.equal((await state()).phase, 1);
+  assert.equal((await state()).wordSerial, ultSerial);
+  await wait(() => latestState.ultimateCool === 0);
   await p.keyboard.press("q");
   await focus(4);
   assert.equal((await state()).wordSerial, ultSerial + 1);
   await answer(false);
   pass(
-    "ultimate asks before any hit, releases all five on success, and can be requested again without cooldown",
+    "ultimate asks before any hit, releases all five and suppresses repeat questions during cooldown",
   );
   await fixture();
   await p.keyboard.press("q", { delay: 50 });

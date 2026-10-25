@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-25T16:00:15.894080+00:00",
+  "version": "0.10.1",
+  "branch": "feat/skill-cooldowns",
+  "base": "c2fd02abaf7544c68e77e78dd1e616af5ba129b7",
+  "cooldownSeconds": {
+    "U": 3,
+    "L": 3,
+    "I": 3,
+    "Q": 5
+  },
+  "contract": [
+    "Starts on arrow launch, heavy-swing commitment, heal completion, or ultimate authorization.",
+    "Independent timers use effective simulation time. Pause, questions and hit stop freeze timers.",
+    "Wrong answers, timeout, abandonment and cancelled windups do not start cooldown.",
+    "Cooling skills cannot start a new windup or prompt. Restart/retry clears cooldowns."
+  ],
+  "browserChecks": 80,
+  "fullRoutes": 2,
+  "suites": [
+    {
+      "report": "skills.json",
+      "date": "2026-10-25T15:26:21.277Z",
+      "cases": 19,
+      "errors": [],
+      "sha256": "578df5a46e1c02c32616fd34c447906f7af96e0d901c1ed08d1dc04494ef436f"
+    },
+    {
+      "report": "inscription.json",
+      "date": "2026-10-25T15:27:25.909Z",
+      "cases": 24,
+      "errors": [],
+      "sha256": "e5bd04bf9b066dda6c0bae1b9cdeaf48f502210ec5abd4563a7215f2fce4c0c4"
+    },
+    {
+      "report": "inscription-motion.json",
+      "date": "2026-10-25T15:28:44.699Z",
+      "cases": 9,
+      "errors": [],
+      "sha256": "6251b7755867c6f5f39a2d1a70fa3656bcd81c3e0469cf7caaaeb8f12b2e884d"
+    },
+    {
+      "report": "bow-autoaim.json",
+      "date": "2026-10-25T15:29:12.351Z",
+      "cases": 9,
+      "errors": [],
+      "sha256": "6a1b2cbf6284bf17f8da17b0fd77df4aa9a9df49f6e11274d14868c95e0b7aa1"
+    },
+    {
+      "report": "hunt.json",
+      "date": "2026-10-25T15:29:28.125Z",
+      "cases": 19,
+      "errors": [],
+      "sha256": "2b11aa909aa06f5858c930fe6e189c7333ed88e595018f84250a0ce75c64b3f3"
+    },
+    {
+      "report": "hunt-route-0.json",
+      "date": "2026-10-25T15:50:09.494Z",
+      "cases": 0,
+      "errors": [],
+      "sha256": "d3330862dcde038b2b5d1787a8189ae9218eee3849303d0058a74fb10e8f613c"
+    },
+    {
+      "report": "hunt-route-1-burst.json",
+      "date": "2026-10-25T16:05:23.850Z",
+      "cases": 0,
+      "errors": [],
+      "sha256": "5b957463375a76b5a4693582a8e9243e52bf98ca646b3f63d3e7189a13a287d5"
+    }
+  ],
+  "checks": [
+    "build-belfry.mjs",
+    "targeted ESLint (6 modified JavaScript files), zero warnings",
+    "git diff --check",
+    "package.py: four archives, ZIP CRC and required entry checks",
+    "belfry.xbp: all 445 generated entries byte-identical"
+  ],
+  "sourceSha256": {
+    "prototypes/runlab/spx/belfry/Hero.spx": "f50c2ee92521181f3da89651f3a7477ca233ed7e18a0b8567ed7e5e2db15e8e5",
+    "prototypes/runlab/public/belfry.js": "0f4fde02388d449e4621c2d5d17b82abf6fd6e1a184a35af26eb39510e15cc37",
+    "prototypes/runlab/public/belfry.html": "9ad30bb3f19f115b882998b1ebc0890b9b3137d16f8159f060fcdad46387cf58",
+    "prototypes/runlab/package.py": "927f15da99a042f72a21e0d5abd71bd9d3a14bf6de974c66754b5b7f6d4396e2"
+  },
+  "package": {
+    "entries": 446,
+    "bytes": 45714942,
+    "sha256": "99881a2ae0dcf694a58ed657b7ed0cc44b317c5b5b3498df5c1285a4b2b00cdf"
+  },
+  "limitations": [
+    "Specialized tests use response-only deterministic encounter arrangements; the full route uses normal keyboard input and automated answers.",
+    "No claim of human playability study, new performance benchmark, remote CI pass or XBuilder online visual validation.",
+    "XBuilder viewport clipping remains unverified. The standalone xbp has core cooldown logic but excludes the web HUD, inscriptions, browser saves and web audio."
+  ],
+  "routes": [
+    {
+      "difficulty": "traveler",
+      "wordMode": 1,
+      "phase": 2,
+      "kills": 21,
+      "deaths": 0,
+      "elapsedSimulationSeconds": 199.163853442259,
+      "bossStage": 2,
+      "missingViews": 0
+    },
+    {
+      "difficulty": "fearless",
+      "style": "burst",
+      "wordMode": 1,
+      "phase": 2,
+      "kills": 24,
+      "deaths": 0,
+      "elapsedSimulationSeconds": 170.6772208715602,
+      "bossStage": 2,
+      "missingViews": 0
+    }
+  ]
+}

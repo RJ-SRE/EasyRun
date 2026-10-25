@@ -323,7 +323,8 @@ function onEvent(name, t, x, y) {
     launchhit: "挑空 → J 空中追击 → E 接钩索",
     charged: "蓄力破甲 · 可将轻敌撞向其他敌人",
     collision: "借敌破敌",
-    practice: "排练场 · 1–5 刺客 / 6 组合 / 7 裂甲 / 8 猎兽 / 9 缝魂；R 开始冒险",
+    practice:
+      "排练场 · 1–5 刺客 / 6 组合 / 7 裂甲 / 8 猎兽 / 9 缝魂；R 开始冒险",
     enrage: "守心者正在变形 · 调整站位，留意新的追击轨迹",
     hook: "牵引 · 松开 E 上甩 / 按住 S 松开 E 下甩",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
@@ -443,36 +444,45 @@ function receive(s) {
   $("#ember-progress").textContent =
     s.embers === 2 ? "已满" : `${s.emberHits}/4 命中`;
   $("#embers").setAttribute("aria-label", `余烬 ${s.embers} / 2`);
-  for (const [id, kind, charging, unavailable] of [
-    ["bow", 1, s.bowCharge, false],
-    ["blade", 2, s.chargeTime, false],
+  for (const [id, kind, charging, unavailable, cooldown, duration] of [
+    ["bow", 1, s.bowCharge, false, s.bowCool, 3],
+    ["blade", 2, s.chargeTime, false, s.bladeCool, 3],
     [
       "heal",
       3,
       s.healTime > 0 ? 0.8 - s.healTime : 0,
       s.embers === 0 || s.health === s.maxHealth,
+      s.healCool,
+      3,
     ],
-    ["ultimate", 4, s.ultimateTime, false],
+    ["ultimate", 4, s.ultimateTime, false, s.ultimateCool, 5],
   ]) {
     const el = $(`#skill-${id}`);
     el.classList.toggle("casting", charging > 0);
+    el.classList.toggle("cooling", cooldown > 0);
+    el.style.setProperty(
+      "--cooldown",
+      `${Math.min(100, Math.max(0, (cooldown / duration) * 100))}%`,
+    );
     el.classList.toggle("unavailable", unavailable);
     el.querySelector(".skill-time").textContent =
       s.phase === 5 && s.wordPending === kind
         ? "待刻印"
-        : charging > 0
-          ? id === "heal"
-            ? "回息中"
-            : id === "ultimate"
-              ? "连斩中"
-              : charging >= 0.55
-                ? "满蓄"
-                : "蓄力"
-          : unavailable
-            ? s.health === s.maxHealth
-              ? "生命满"
-              : "缺余烬"
-            : "就绪";
+        : cooldown > 0
+          ? `${(Math.ceil(cooldown * 10) / 10).toFixed(1)}s`
+          : charging > 0
+            ? id === "heal"
+              ? "回息中"
+              : id === "ultimate"
+                ? "连斩中"
+                : charging >= 0.55
+                  ? "满蓄"
+                  : "蓄力"
+            : unavailable
+              ? s.health === s.maxHealth
+                ? "生命满"
+                : "缺余烬"
+              : "就绪";
   }
   const bowEnemy = window.foes[s.bowTarget];
   $("#combat-focus").textContent =
@@ -672,8 +682,14 @@ async function load() {
                 keys.map((key, i) => [key, values[i]]),
               );
           }
-          const huntMatch=text.match(/@hunt\s+(.+)/);
-          if(huntMatch){const [id,armor,ward,pressure,elite]=huntMatch[1].trim().split(/\s+/).map(Number);window.huntFoes[id]={id,armor,ward,pressure,elite};}
+          const huntMatch = text.match(/@hunt\s+(.+)/);
+          if (huntMatch) {
+            const [id, armor, ward, pressure, elite] = huntMatch[1]
+              .trim()
+              .split(/\s+/)
+              .map(Number);
+            window.huntFoes[id] = { id, armor, ward, pressure, elite };
+          }
           const expeditionMatch = text.match(/@expedition\s+(.+)/);
           if (expeditionMatch)
             window.expeditionState = parseExpedition(
