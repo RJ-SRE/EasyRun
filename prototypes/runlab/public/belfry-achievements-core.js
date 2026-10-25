@@ -15,7 +15,7 @@ export const ACHIEVEMENTS = [
     group: "craft",
     title: "断线者",
     goal: 1,
-    rule: "在冒险中破除缝魂师对守卫的支援。",
+    rule: "用断潮斩断支援，或击杀正在维系支援的缝魂师。",
     lore: "最后一根线落下，它们终于各自面对刀锋。",
     icon: "M5 9l26 18M5 27 31 9M18 3v30",
   },

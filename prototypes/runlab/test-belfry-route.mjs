@@ -156,6 +156,11 @@ try {
       s.checkpoint,
       s.kills,
       s.bossHP,
+      visibleFoes
+        .filter(
+          (f) => expeditionLayout.enemies[f.id]?.room === s.expedition.room,
+        )
+        .map((f) => [f.id, f.hp]),
       s.expedition.flags,
       s.expedition.done,
       s.expedition.lampStep,
@@ -360,7 +365,20 @@ try {
       }
       targetX = goal.x;
       const rangedFight = combat && [0, 2, 9].includes(fight.kind);
-      const rising = targetY > s.y + 65 && !rangedFight;
+      const blockedAbove =
+        rangedFight &&
+        expeditionLayout.platforms.some(([x, w, y, kind]) => {
+          if (kind >= 100 && (s.segment === 2 || e.done[kind - 100]))
+            return false;
+          const from = s.y + 32,
+            dy = fight.y - from;
+          if (dy <= 0 || y <= from || y >= fight.y) return false;
+          const crossingX = s.x + ((fight.x - s.x) * (y - from)) / dy;
+          return crossingX >= x && crossingX <= x + w;
+        });
+      // A lower exit ledge can put a solid combat floor above the hero. Climb
+      // around it before shooting; real arrows correctly collide with floors.
+      const rising = targetY > s.y + 65 && (!rangedFight || blockedAbove);
       if (rising && targetY - s.y < 160) {
         if (tick % 6 === 0) keys.push("Space");
       } else if (rising) {
@@ -418,6 +436,13 @@ try {
             keys.push("l");
           else if (near && tick % 5 === 0) keys.push("j");
           else keys.push("u");
+        }
+        // Approach/retreat keys can leave the hero facing away from the foe.
+        // Aim committed melee inputs at the actual target, using normal keys.
+        if (keys.some((k) => ["j", "l", "q"].includes(k)) || s.chargeTime > 0) {
+          for (let i = keys.length - 1; i >= 0; i--)
+            if (["a", "d"].includes(keys[i])) keys.splice(i, 1);
+          keys.push(fight.x >= s.x ? "d" : "a");
         }
         // A jump cancels a charging skill. Do not let the controller endlessly
         // restart windups while appearing to fight. Dodge between commitments.
@@ -596,7 +621,7 @@ try {
         routeEvents.filter((e) => e.name === name).length,
       ]),
     ),
-    note: "Answers are automated. These are actual requests and distinct recorded words for this input policy, not natural human coverage or learning evidence. Effective casts are deduplicated by question ID; main-route impacts exclude healing, optional guards and return-only enemies. Death/retry may still repeat an encounter. Raw impact events can include multiple hits per cast.",
+    note: "Answers are automated. These are actual requests and distinct recorded words for this input policy, not natural human coverage or learning evidence. Effective casts are deduplicated by question ID; main-route impacts include downward patrols (which may be bypassed) and exclude healing and return-only enemies. Death/retry may still repeat an encounter. Raw impact events can include multiple hits per cast.",
   };
   result.style = process.env.STYLE || "mixed";
   result.browser = browser.version();

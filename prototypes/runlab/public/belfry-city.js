@@ -32,7 +32,7 @@ export const DISTRICTS = [
     id: "heart",
     name: "守心机枢",
     mark: "V · THE HEARTKEEPER",
-    story: "没有钟锁替他挡刀。三种形态，三种距离，读懂每一次起手。",
+    story: "空荡的王座前，守心者仍未放下武器。三种形态，三种距离，读懂每一次起手。",
     returning: "钟心已经醒来。沿永久锚点离开深处。",
   },
 ];
