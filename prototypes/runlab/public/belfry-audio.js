@@ -1,4 +1,4 @@
-// Gameplay audio only. Character speech and dialogue are intentionally disabled.
+// Gameplay audio only. No character speech, bell tones or drum layers.
 const defaults = { sfx: 0.8, music: 0.35 };
 const counts = {
   bowdraw: 2,
@@ -38,7 +38,7 @@ export class BelfryAudio {
     this.variants = new Map();
     this.fxHistory = [];
     this.errors = [];
-    this.nextNote = 0;
+    this.nextAmbient = 0;
     try {
       const saved = JSON.parse(localStorage.getItem("belfry-audio-v2"));
       for (const k of Object.keys(defaults))
@@ -143,7 +143,7 @@ export class BelfryAudio {
       }
     }
     this.sources.clear();
-    this.nextNote = 0;
+    this.nextAmbient = 0;
     if (this.buses)
       for (const k of ["sfx", "music", "danger"]) {
         this.buses[k].gain.cancelScheduledValues(this.ctx.currentTime);
@@ -177,7 +177,7 @@ export class BelfryAudio {
     this.nextFocus = 0;
     this.focusProgress = 0;
     this.focusEvents = [];
-    this.focusTone(180, 70, 0.32, 0.025);
+    this.air(0.45, 0.025, "sfx", true);
   }
   pauseFocus(paused) {
     this.focusPaused = paused;
@@ -190,39 +190,9 @@ export class BelfryAudio {
     this.focusEvents = [];
     this.stopCue("focus");
   }
-  focusTone(freq, end, duration, volume) {
-    if (
-      !this.focusMode ||
-      this.focusPaused ||
-      !this.enabled ||
-      document.hidden ||
-      this.ctx?.state !== "running"
-    )
-      return;
-    const a = this.ctx,
-      t = a.currentTime,
-      source = a.createOscillator(),
-      gain = a.createGain();
-    source.frequency.setValueAtTime(freq, t);
-    source.frequency.exponentialRampToValueAtTime(end, t + duration);
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(volume, t + 0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
-    source.connect(gain);
-    gain.connect(this.buses.sfx);
-    const h = { source, gain, cue: "focus" };
-    this.sources.add(h);
-    source.onended = () => {
-      this.sources.delete(h);
-      source.disconnect();
-      gain.disconnect();
-    };
-    source.start();
-    source.stop(t + duration);
-  }
   inscribe(progress) {
     this.focusProgress = progress;
-    this.focusTone(220 + progress * 220, 330 + progress * 330, 0.11, 0.024);
+    this.air(0.11, 0.04, "sfx", true);
   }
   allowed() {
     return (
@@ -271,33 +241,50 @@ export class BelfryAudio {
       this.error(e);
     }
   }
-  tone(freq, duration, volume, bus = "music") {
-    if (!this.allowed()) return;
+  // Broad-band air has no pitched resonance or percussive bass sweep.
+  air(duration, volume, bus = "music", focus = false) {
+    if (focus) {
+      if (
+        !this.focusMode ||
+        this.focusPaused ||
+        !this.enabled ||
+        document.hidden ||
+        this.ctx?.state !== "running"
+      )
+        return;
+    } else if (!this.allowed()) return;
     const a = this.ctx,
       t = a.currentTime;
-    for (const [r, v] of [
-      [1, 1],
-      [1.498, 0.18],
-      [2.003, 0.1],
-    ]) {
-      const o = a.createOscillator(),
-        g = a.createGain();
-      o.frequency.value = freq * r;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(volume * v, t + 0.15);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + duration);
-      o.connect(g);
-      g.connect(this.buses[bus]);
-      const h = { source: o, gain: g };
-      this.sources.add(h);
-      o.onended = () => {
-        this.sources.delete(h);
-        o.disconnect();
-        g.disconnect();
-      };
-      o.start();
-      o.stop(t + duration);
+    if (!this.airBuffer) {
+      this.airBuffer = a.createBuffer(1, a.sampleRate * 2, a.sampleRate);
+      const samples = this.airBuffer.getChannelData(0);
+      for (let i = 0; i < samples.length; i++)
+        samples[i] = Math.random() * 2 - 1;
     }
+    const source = a.createBufferSource(),
+      filter = a.createBiquadFilter(),
+      gain = a.createGain();
+    source.buffer = this.airBuffer;
+    source.loop = true;
+    filter.type = "bandpass";
+    filter.frequency.value = focus ? 1400 : 700;
+    filter.Q.value = 0.4;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(volume, t + duration * 0.35);
+    gain.gain.linearRampToValueAtTime(0.0001, t + duration);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.buses[bus]);
+    const h = { source, gain, cue: focus ? "focus" : "ambience" };
+    this.sources.add(h);
+    source.onended = () => {
+      this.sources.delete(h);
+      source.disconnect();
+      filter.disconnect();
+      gain.disconnect();
+    };
+    source.start();
+    source.stop(t + duration);
   }
   stopCue(...cues) {
     for (const h of this.sources)
@@ -341,7 +328,7 @@ export class BelfryAudio {
       hardland: "land",
       jump: "cloth",
       chaincut: "brass",
-      wordok: "brass",
+      wordok: "cloth",
       wordmiss: "cloth",
       chainfree: "cloth",
       bind: "heavy",
@@ -363,8 +350,6 @@ export class BelfryAudio {
       )
     )
       this.sample("cloth", { pan, volume: 0.25 });
-    if (["checkpoint", "echo", "core", "finish"].includes(name))
-      this.tone(name === "finish" ? 220 : 146.8, 2.8, 0.045, "music");
     if (name === "chainstart" && this.buses) {
       const t = this.ctx.currentTime;
       this.buses.music.gain.setTargetAtTime(0.02, t, 0.01);
@@ -462,13 +447,12 @@ export class BelfryAudio {
       return;
     }
     if (focused && now > this.nextFocus) {
-      const tension = this.focusProgress || 0;
-      this.focusTone(110 + tension * 55, 82.4 + tension * 42, 1.3, 0.018);
-      this.nextFocus = now + 1.05 - tension * 0.25;
+      this.air(3.6, 0.025, "sfx", true);
+      this.nextFocus = now + 3.2;
     }
-    if (active && this.allowed() && now > this.nextNote) {
-      this.tone(s.segment === 1 ? 55 : 73.4, 5, 0.022);
-      this.nextNote = now + 5.5;
+    if (active && this.allowed() && now > this.nextAmbient) {
+      this.air(6, 0.05);
+      this.nextAmbient = now + 5.5;
     }
   }
   diagnostics() {

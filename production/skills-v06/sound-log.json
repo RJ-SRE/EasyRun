@@ -115,10 +115,10 @@
     "file": "/audio/sfx/heavycut-1.m4a",
     "duration": 0.58,
     "seed": 1346950889,
-    "peak": 0.66296,
-    "rms": 0.07615,
+    "peak": 0.66679,
+    "rms": 0.0758,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "bdbf50580adfb8e87d519608e23cba4ba21f296427bde3a7d293ec0080a2b69e"
+    "sha256": "ee0150bfc406af03fef5557ea62ba120a725a368aaaffe2116704b4f06b61f1c"
   },
   {
     "id": "heavycut-2",
@@ -126,10 +126,10 @@
     "file": "/audio/sfx/heavycut-2.m4a",
     "duration": 0.58,
     "seed": 304413081,
-    "peak": 0.64513,
-    "rms": 0.07197,
+    "peak": 0.64874,
+    "rms": 0.06794,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "f19d8878f35c2d6f82e4d970180f47e794d2fbf9b6ecfec5eb3b0dbbdfbe26c3"
+    "sha256": "b05bbbc6a21e1c0640fc838bea6a22be50239c3fd2f4f09daf4ea85bf082c3a1"
   },
   {
     "id": "heavycut-3",
@@ -137,10 +137,10 @@
     "file": "/audio/sfx/heavycut-3.m4a",
     "duration": 0.58,
     "seed": 2798091911,
-    "peak": 0.65189,
-    "rms": 0.07077,
+    "peak": 0.64958,
+    "rms": 0.06639,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "52e73653d54edb8ca680013d51bf7df54f2961cada185b5581faeeadbc03a9e5"
+    "sha256": "10bf2d091bf4e554a575db80ed19a391185b789199dff305a30816ab4e306d3b"
   },
   {
     "id": "markbreak-1",
@@ -149,9 +149,9 @@
     "duration": 0.55,
     "seed": 291063889,
     "peak": 0.64,
-    "rms": 0.06711,
+    "rms": 0.06744,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "42769c5c59741af8d4d06aeabd4e6a790406c354ac27f792f948d7230827b11b"
+    "sha256": "717f7bcb4950ea03c90d8c459a3caa5673393791ccbaeb004c63cbcc81fdd16e"
   },
   {
     "id": "markbreak-2",
@@ -160,9 +160,9 @@
     "duration": 0.55,
     "seed": 1604869887,
     "peak": 0.64,
-    "rms": 0.06114,
+    "rms": 0.04858,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "06de2e1c9d1dec27cca87cfdcc579d5e4eee57a7b0b82356f48f358d704f344e"
+    "sha256": "0326a4efe58bef0a49b3788ea360e9205998b39b7609cd3f67827f7282f69994"
   },
   {
     "id": "healstart-1",
@@ -192,10 +192,10 @@
     "file": "/audio/sfx/healcomplete-1.m4a",
     "duration": 0.65,
     "seed": 937378237,
-    "peak": 0.64,
-    "rms": 0.10707,
+    "peak": 0.67454,
+    "rms": 0.11883,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "fa2f062194fee1bdbb48370fa49706d7b42afe61d009adcb75614ec13c51b304"
+    "sha256": "31fa1a530ddeabc005a3c44e95a0af3ab5d4091fb08307565f0cf831fafeefc3"
   },
   {
     "id": "healcomplete-2",
@@ -203,10 +203,10 @@
     "file": "/audio/sfx/healcomplete-2.m4a",
     "duration": 0.65,
     "seed": 2647323437,
-    "peak": 0.64,
-    "rms": 0.10406,
+    "peak": 0.64374,
+    "rms": 0.1054,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "7cf2df1274e276f1972d10c2452ca11ee30fcd1a69a9f47af224283011e224f9"
+    "sha256": "6bcc99d196b35195c78231c4858f2ccf1d9150eec821a6aee9cd393cb6bfb0a7"
   },
   {
     "id": "chaincut-1",
@@ -258,10 +258,10 @@
     "file": "/audio/sfx/chainfinish-1.m4a",
     "duration": 0.72,
     "seed": 729506519,
-    "peak": 0.63347,
-    "rms": 0.06206,
+    "peak": 0.63783,
+    "rms": 0.06093,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "2a4827b2b4438378f16f645d422fba3499b85f66001bf26c3720c9b378f2d97c"
+    "sha256": "039157f77388fb7d1a6cac36bf9770fe0d8c84d9b1a17bbbd2a4fdfef914cbae"
   },
   {
     "id": "chainfinish-2",
@@ -269,10 +269,10 @@
     "file": "/audio/sfx/chainfinish-2.m4a",
     "duration": 0.72,
     "seed": 3817553395,
-    "peak": 0.66679,
-    "rms": 0.06428,
+    "peak": 0.67124,
+    "rms": 0.06518,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "4d48c731295a95eb5517b51574652b47b733ac0730eeb5cbb44d300b0916526a"
+    "sha256": "b7f2e1f4ebc619050b123c6f87affed03d4916cac7bc33059c0392a035837267"
   },
   {
     "id": "chainfinish-3",
@@ -280,9 +280,9 @@
     "file": "/audio/sfx/chainfinish-3.m4a",
     "duration": 0.72,
     "seed": 2532857114,
-    "peak": 0.66691,
-    "rms": 0.07624,
+    "peak": 0.68471,
+    "rms": 0.07225,
     "source": "original layered skill synthesis; no speech",
-    "sha256": "990a9222305fade1fb228d76304c5a094c22a38bba2a7feb4d6033eb04580d78"
+    "sha256": "9a4fa41352a393b4ab9d8d1b0cd602ae4494fefd255aa2bdfcf0eb00093919a1"
   }
 ]

@@ -42,7 +42,7 @@ for cue,count in COUNTS.items():
    width={'heavycut':.085,'chaincut':.035,'chainfinish':.07}[cue]
    y=airy*np.exp(-((t-peak)/width)**2)*.65+body*np.exp(-((t-peak)/width*1.4)**2)*.6
    if cue!='chaincut':
-    y+=np.sin(2*np.pi*(90*t-30*t*t))*np.exp(-t/.13)*.24
+    # Sword weight comes from air/grain, without a pitched bass-drum layer.
     y+=grain*np.exp(-((t-peak-.07)/.035)**2)*.15
    if cue=='chainfinish':
     y+=band(90,3000)*np.exp(-t/.06)*.32
@@ -51,14 +51,14 @@ for cue,count in COUNTS.items():
    y=grain*.35*np.exp(-t/.025)+body*.4*np.exp(-t/.04)
    for at in [.025,.06,.10,.16,.24]:
     y+=mode(rng.uniform(1800,5000),.022,at)*.12
-   y+=mode(115,.09)*.2
+   # No low tonal strike beneath the breaking material.
   elif cue=='healstart':
    env=np.sin(np.pi*t/dur)**1.7
    y=band(300,2200)*env*.14
    for f,a in [(146.8,.13),(220,.09),(440,.03)]:y+=np.sin(2*np.pi*f*t)*env*a
   elif cue=='healcomplete':
-   for f,a in [(293.7,.18),(440,.12),(880,.04)]:y+=mode(f,.16)*a
-   y+=grain*.07*np.exp(-t/.06)
+   # Healing resolves with soft air instead of a chiming chord.
+   y=band(500,3200)*np.sin(np.pi*t/dur)**2*.2
   # Dry center with two soft side reflections; no long combat-masking reverb.
   y*=np.minimum(1,t/.003)*np.minimum(1,(dur-t)/.03)
   y*=.64/max(np.max(np.abs(y)),.001)

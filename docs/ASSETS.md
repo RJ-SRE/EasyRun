@@ -90,3 +90,9 @@ bash scripts/with-env.sh node prototypes/runlab/extract-frames.mjs --run
 本轮使用内置 imagegen 文生图模式，生成五张原创区域背景，均为不透明 PNG、1536×1024，无参考图编辑与外部素材下载：wind.png、forge.png、archive.png、mirror.png、heart.png。源文件在 prototypes/runlab/art/belfry/city/，完整英文提示词在同目录 prompts.json。
 
 belfry-city-art.mjs 将五图作为引擎精灵打包，按镜头深度渐变并作低幅视差；网页纪事使用同图缩略图。水面、风迹、镜片、配重架和机关道具由仓库 SVG 生成。背景不是碰撞地图，机关实体判定在 City.spx / Hero.spx。当前构建为 401 个项目文件、58 类精灵；生成清单不重复纳管。新图增加资源量，低端设备和首次下载性能仍待测。
+
+## 2026-10-25 · 移除钟鼓成分
+
+保留 82 个采样 ID，其中重制 25 个：brass / heavy / land / nova 的共鸣与低鼓、heavycut / chainfinish 的低鼓层、markbreak 的低音敲击，以及 healcomplete 的铃音和弦。刀风、弓弦、钩索等其他 57 个文件保持原哈希。两份离线生成器、对应 WAV 母版、AAC 运行文件与来源清单同步更新；旧音频可从 Git 历史恢复。
+
+网页环境 / 关键事件不再生成钟鸣，聚焦不再循环低音鼓感脉冲或逐字泛音；环境与聚焦只保留无音高的低音量气流。动作事件、危险预警、音量、静音、暂停和存档约定保持。

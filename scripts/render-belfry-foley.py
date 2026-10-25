@@ -42,17 +42,19 @@ for cue,count in COUNTS.items():
   elif cue in ['porcelain','brass','tell']:
    base={'porcelain':1350,'brass':310,'tell':780}[cue]*(.92+rng.random()*.16)
    y+=noise(100,6000)*np.exp(-t/.015)*.6
-   for r,a,d in [(1,.32,.19),(2.71,.14,.13),(4.07,.07,.07),(5.43,.03,.04)]:y+=modal(base*r,d)*a
+   # Brass is a dry contact sound; no bell-like resonant partials.
+   if cue!='brass':
+    for r,a,d in [(1,.32,.19),(2.71,.14,.13),(4.07,.07,.07),(5.43,.03,.04)]:y+=modal(base*r,d)*a
+   else:y+=noise(450,3600)*np.exp(-t/.045)*.35
    if cue=='porcelain':
     for at in sorted(rng.uniform(.05,.35,6)):y+=modal(rng.uniform(2200,6500),.012,at)*.1
    if cue=='tell':y*=np.sin(np.pi*np.minimum(1,t/.35))**.5;y+=noise(500,2200)*np.exp(-((t-.12)/.045)**2)*.2
   elif cue in ['heavy','land','nova']:
    y+=noise(70,1900)*np.exp(-t/.06)*.6
-   y+=np.sin(2*np.pi*(85*t-18*t*t))*np.exp(-t/.11)*.4
-   for r in [1,2.47,3.91]: y+=modal(235*r,.15)*.06
+   # Keep physical friction/impact; remove the bass-drum sweep and ring.
    if cue=='nova':
     y+=noise(600,6500)*np.exp(-t/.18)*.4
-    for at in [.09,.14,.27,.45]:y+=modal(rng.uniform(800,2100),.16,at)*.07
+    y+=noise(1200,4800)*np.exp(-((t-.18)/.11)**2)*.15
   y[:120]*=np.linspace(0,1,120);y[-300:]*=np.linspace(1,0,300)
   y*=.6/max(np.max(np.abs(y)),.001)
   master=MASTERS/(ident+'.wav')
