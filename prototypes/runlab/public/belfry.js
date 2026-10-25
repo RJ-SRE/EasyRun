@@ -107,6 +107,7 @@ let soundOn = true;
 window.foes = {};
 window.keeperLines = {};
 window.expeditionState = null;
+window.huntFoes = {};
 const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
@@ -322,12 +323,8 @@ function onEvent(name, t, x, y) {
     launchhit: "挑空 → J 空中追击 → E 接钩索",
     charged: "蓄力破甲 · 可将轻敌撞向其他敌人",
     collision: "借敌破敌",
-    practice: "排练场 · 1–5 单独练习刺客 / 6 组合遭遇；R 开始冒险",
-    seal: "钟锁断开 · 两侧吊环牵制着守心者",
-    exposed: "守心者失去钟锁 · 现在进攻",
-    sealed: "钟锁保护中 · 钩住两侧悬环，拉断钟锁",
+    practice: "排练场 · 1–5 刺客 / 6 组合 / 7 裂甲 / 8 猎兽 / 9 缝魂；R 开始冒险",
     enrage: "守心者正在变形 · 调整站位，留意新的追击轨迹",
-    gate: "钟锁已解 · 通往更深处",
     hook: "牵引 · 松开 E 上甩 / 按住 S 松开 E 下甩",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
     marked: "裂印 · 满蓄断潮可引爆",
@@ -340,7 +337,10 @@ function onEvent(name, t, x, y) {
     healcomplete: "回息 · 生命 +1",
     embergain: "余烬 +1",
     chainstart: "连环剑刀 · W 上挑 / S 下压收势",
-    armor: "护刃格挡 · 重击破防，或等待收招",
+    armor: "护架挡住了攻击 · 绕背、重斩破架或先处理缝魂师",
+    guardbreak: "护架已碎 · 追击窗口",
+    wardbreak: "牵线已断 · 守卫失去掩护",
+    elitekill: "精英已倒下 · 猎场出口开放",
     echo: "失落回声 +500 · 余烬充满",
     checkpoint: "行路灯已点亮 · 进度已保存",
     restored: "抵达休整灯 · 生命恢复",
@@ -381,7 +381,10 @@ function hint(s) {
       "壁弓 · 除了定点射击，还会蹬墙腾空放箭；J 可击落箭矢。",
       "缚索 · 跳过低位横扫，再防追锁；被牵引时 J 斩链 / E 抓锚。",
       "封脉 · 会绕到另一侧再锁定突进方向；跳开或打断，落空后反击。",
-      "组合遭遇 · 最多两人同时起手；先拆远程，再处理近身控制。",
+      "组合遭遇 · 先处理缝魂师，再拆开空地夹击。",
+      "裂甲卫 · 正面护架，L 重斩破架；也可跳过或绕背攻击。",
+      "棘背猎兽 · 低扑可跳过，跃袭先锁定落点；抓住滑行收势。",
+      "缝魂师 · 细线保护一名同伴；远射施法者，或拉开距离、隔断视线。",
     ][s.practiceKind];
   if (s.expedition && s.segment !== 1) return expeditionHint(s);
   if (s.segment === 2) {
@@ -389,10 +392,6 @@ function hint(s) {
     return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
   }
   if (s.segment === 1) return keeperStatus(s).hint;
-  if (s.gateOne > 0 && s.y < -850 && s.y > -1300)
-    return "第一钟锁 · 击破右侧短锋，开启下方闸门。按住 E 回钩斩。";
-  if (s.gateTwo > 0 && s.y < -1950 && s.y > -2400)
-    return "第二钟锁 · 击破左侧缚索。回钩斩或 S + J 坠星可破甲。";
   if (s.hook >= 0) return "松开 E 甩出 → 空格二段跳 → 再次抓住锚点。";
   if (s.y > -230)
     return "D 向右跃入井中 · 按住 E 抓住高亮锚点；松开时借力起飞。";
@@ -501,7 +500,7 @@ function receive(s) {
       ? `归途 · ${DISTRICTS[s.cityDistrict].name}`
       : s.segment === 1
         ? s.bossShield > 0
-          ? "守心机枢 · 解开钟锁"
+          ? "守心机枢 · 抓住破绽"
           : "守心机枢 · 守心者"
         : EXPEDITION.rooms[s.expedition?.room]?.name ||
           DISTRICTS[s.cityDistrict].name;
@@ -545,7 +544,7 @@ function receive(s) {
     );
     $("#difficulty").hidden = false;
     $("#overlay-foot").textContent =
-      "五区下潜 · 机关改变归途 · 机枢前厅选择留灯或携心";
+      "八类守卫 · 三场精英猎战 · 三形态守心者 · 夺心上返";
   }
   if (s.phase === 1) {
     $("#overlay").hidden = true;
@@ -673,6 +672,8 @@ async function load() {
                 keys.map((key, i) => [key, values[i]]),
               );
           }
+          const huntMatch=text.match(/@hunt\s+(.+)/);
+          if(huntMatch){const [id,armor,ward,pressure,elite]=huntMatch[1].trim().split(/\s+/).map(Number);window.huntFoes[id]={id,armor,ward,pressure,elite};}
           const expeditionMatch = text.match(/@expedition\s+(.+)/);
           if (expeditionMatch)
             window.expeditionState = parseExpedition(

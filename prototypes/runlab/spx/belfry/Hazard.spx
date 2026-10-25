@@ -29,6 +29,16 @@ onCloned data => {
     visible=true; setCostume 1; setXYpos Hero.px,Hero.py+32; setSize 0.26; setHeading 90+sin(worldTime*12)*8; setGraphicEffect GhostEffect,35
    }
   }
+  if enemyHP[i]>0 && kind==9 {
+   for j:=0;j<len(enemyWard);j++ {if enemyWard[j]==i && enemyHP[j]>0 {
+    dx:=enemyX[j]-enemyX[i]; dy:=enemyY[j]-enemyY[i]; visible=true; setCostume 0
+    setXYpos enemyX[i]+dx/2,enemyY[i]+dy/2; setHeading angle(dx,dy); setSize dist(dx,dy)/400; setGraphicEffect GhostEffect,50
+   }}
+  }
+  if enemyHP[i]>0 && (kind==7 || kind==8) && state==3 {
+   visible=true; setCostume 2; setHeading enemyFacing[i]*90; setXYpos enemyX[i]+enemyFacing[i]*35,enemyY[i]-12; setSize 0.45
+   if t>0.48 {visible=false}
+  }
   if visible {show} else {hide}
  }
 }

@@ -1,6 +1,12 @@
 import "math"
 
 var (
+ enemyTurn []float64
+ enemyArmor []float64
+ enemyPressure []int
+ enemyEscape []float64
+ enemyWard []int
+ enemyWardDelay []float64
  sceneFloors []int
  sceneAnchors []int
  sceneEnemies []int
@@ -245,7 +251,7 @@ func event(name string) {
  if (name=="touchdown" || name=="hurt") && trialStarted==1 && trialHooks<3 {trialHooks=0; for a:=0;a<len(trialVisited);a++ {trialVisited[a]=0}}
  println "@event",name,elapsed,Hero.px,Hero.py
  // Snapshot at the actual event, independent of the 70 ms HUD sample.
- if name=="start" || name=="practice" || name=="retry" || name=="restored" || name=="menu" || name=="hurt" || name=="fail" || name=="finish" || name=="sling" || name=="hookattach" || name=="touchdown" || name=="guardian" || name=="core" || name=="echo" || name=="parry" || name=="markbreak" || name=="collision" || name=="healcomplete" || name=="trialcomplete" || name=="indexcomplete" || name=="repairroute" {
+ if name=="start" || name=="practice" || name=="retry" || name=="restored" || name=="menu" || name=="hurt" || name=="fail" || name=="finish" || name=="sling" || name=="hookattach" || name=="touchdown" || name=="guardian" || name=="core" || name=="echo" || name=="parry" || name=="markbreak" || name=="collision" || name=="healcomplete" || name=="trialcomplete" || name=="indexcomplete" || name=="repairroute" || name=="guardbreak" || name=="wardbreak" || name=="elitekill" {
   deedSerial++
   println "@deed",deedSerial,name,attempts,phase,practice,health,difficulty,deaths,echoes,Hero.hook
  }
@@ -286,10 +292,12 @@ func lineDistance(px,py,ax,ay,bx,by float64) float64 {
  t:=clamp(((px-ax)*dx+(py-ay)*dy)/length,0,1)
  return dist(px-ax-dx*t,py-ay-dy*t)
 }
-func hitEnemy(i,damage int) bool {
+func hitEnemy(i,damage int) bool {return strikeEnemy(i,damage,0)}
+func strikeEnemy(i,damage,style int) bool {
  if enemyHP[i]<=0 {return false}
  if enemyType[i]==6 {if enemyNode[i]>=0 {setExpNode(enemyNode[i]); if roomFlags[13]==7 {finishRoom(13)}}; return true}
  if enemyFlash[i]>0 {return false}
+ if huntBlocksHit(i,damage,style) {return false}
  if i==keeperIndex && bossShield>0 {enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],5,1,110); event("sealed"); return false}
  // A visible, scheduled stance can parry ONE frontal light hit. It never
  // reads input, blocks a heavy strike, or protects the assassin's back.
@@ -300,7 +308,9 @@ func hitEnemy(i,damage int) bool {
   enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],6,1,110); event("armor"); return false
  }
  if embers<2 {emberHits++; if emberHits>=4 {embers++; emberHits=0; event("embergain")}}
- enemyHP[i]-=damage; enemyFlash[i]=0.14; enemyStun[i]=0.16; if enemyType[i]!=3 {if chainOwner==i {breakChain("chaincut")}; enemyRecoverFor(i,0.65)}; energy+=5; if energy>100 {energy=100}; enemyEvent("impact",i); shock=3; hitStop=0.035
+ enemyHP[i]-=damage; enemyFlash[i]=0.14; enemyStun[i]=0
+ if huntCanStagger(i,style) {enemyStun[i]=0.16; if chainOwner==i {breakChain("chaincut")}; enemyRecoverFor(i,0.34); if style==7 {enemyRecoverFor(i,0.95)}}
+ huntAfterHit(i,style); energy+=5; if energy>100 {energy=100}; enemyEvent("impact",i); shock=3; hitStop=0.035
  if i==keeperIndex {enemyStun[i]=0; keeperAfterHit(damage)}
  burst(enemyX[i],enemyY[i],12,1,250); event("hit")
  if enemyHP[i]<=0 {
@@ -309,7 +319,8 @@ func hitEnemy(i,damage int) bool {
   ring(enemyX[i],enemyY[i],1.1,0); burst(enemyX[i],enemyY[i],12,2,230)
   Hero.dashCool=0; Hero.airJump=true; Hero.vy=math.Max(Hero.vy,510)
   hitStop=0.065; event("kill"); enemyEvent("collapse",i)
-  if i==foremanIndex {finishRoom(5)}
+  if enemyElite[i]>0 {event("elitekill")}
+  if enemyType[i]==9 {for j:=0;j<len(enemyWard);j++ {if enemyWard[j]==i {enemyWard[j]=-1; event("wardbreak")}}}
   if enemyType[i]==3 {clearKeeperDanger(); expeditionReturn()}
  }
  bossHP=enemyHP[keeperIndex]; if bossHP<0 {bossHP=0}
@@ -327,7 +338,7 @@ func startRun() {
  attempts++; embers=1; emberHits=0; phase=1; segment=0; score=0; combo=0; bestCombo=0; kills=0; echoes=0; checkpoint=0; hookCount=0; deaths=0
  maxHealth=5; if difficulty==0 {maxHealth=8}; health=maxHealth; energy=50
  elapsed=0; worldTime=0; returnTime=0; riseY=worldBottom-430; shock=0; hitStop=0; comboTime=0; failReason=0
- bossShield=2; bossStage=0; sealLeft=false; sealRight=false
+ bossShield=0; bossStage=0; sealLeft=true; sealRight=true
  for i:=0;i<len(echoTaken);i++ {echoTaken[i]=0}; resetEnemies(); Hero.resetHero(230,0); event("start")
 }
 func practiceEncounter(kind int) {
@@ -338,10 +349,14 @@ func practiceEncounter(kind int) {
  enemyType[3]=2; enemyBaseX[3]=848; enemyBaseY[3]=150
  enemyType[6]=4; enemyBaseX[6]=730; enemyBaseY[6]=34
  enemyType[4]=5; enemyBaseX[4]=650; enemyBaseY[4]=34
+ enemyType[7]=7; enemyBaseX[7]=580; enemyBaseY[7]=34
+ enemyType[8]=8; enemyBaseX[8]=650; enemyBaseY[8]=34
+ enemyType[9]=9; enemyBaseX[9]=750; enemyBaseY[9]=89
+ for i:=0;i<len(enemyElite);i++ {enemyElite[i]=0}
  for i:=0;i<len(enemyHP);i++ {
   enabled:=false
-  if kind==5 {enabled=i==0 || i==1 || i==3 || i==6 || i==4} else {
-   if kind==0 {enabled=i==0}; if kind==1 {enabled=i==1}; if kind==2 {enabled=i==3}; if kind==3 {enabled=i==6}; if kind==4 {enabled=i==4}
+  if kind==5 {enabled=i==0 || i==7 || i==8 || i==9} else {
+   if kind==0 {enabled=i==0}; if kind==1 {enabled=i==1}; if kind==2 {enabled=i==3}; if kind==3 {enabled=i==6}; if kind==4 {enabled=i==4}; if kind==6 {enabled=i==7}; if kind==7 {enabled=i==8}; if kind==8 {enabled=i==9 || i==1}
   }
   if enabled {enemyHP[i]=20; clearEnemyMotion(i); enemyState[i]=0; enemyClock[i]=0} else {enemyBaseY[i]=-7000; enemyY[i]=-7000}
  }
@@ -354,7 +369,7 @@ func retryCheckpoint() {
  attempts++; embers=1; emberHits=0; bindEnemy=-1; bindTime=0; controlImmune=0; controlGrace=0; chainOwner=-1; chainTime=0; phase=1; health=maxHealth; energy=50; combo=0; shock=0; hitStop=0; failReason=0
  score-=100; if score<0 {score=0}
  resetKeeper()
- if segment==1 {enemyHP[keeperIndex]=bossMaxHP; bossHP=enemyHP[keeperIndex]; bossShield=2; bossStage=0; sealLeft=false; sealRight=false}
+ if segment==1 {enemyHP[keeperIndex]=bossMaxHP; bossHP=enemyHP[keeperIndex]; bossShield=0; bossStage=0; sealLeft=true; sealRight=true}
  if segment==2 {returnTime=0; riseY=worldBottom-430}
  if lampMoving==1 {lampMoving=0; lampStep=lampSafe; lampX=nodeX[lampStart+lampSafe]; lampY=nodeY[lampStart+lampSafe]+58; bit:=int(math.Pow(2,float64(lampStep))); if roomHas(7,bit) {roomFlags[7]-=bit}}
  for i:=0;i<len(enemyClock);i++ {clearEnemyMotion(i); enemyClock[i]=0; enemyState[i]=0; enemyFlash[i]=0}
@@ -385,6 +400,9 @@ onKey Key3, => {if practice==1 {practiceEncounter(2)}}
 onKey Key4, => {if practice==1 {practiceEncounter(3)}}
 onKey Key5, => {if practice==1 {practiceEncounter(4)}}
 onKey Key6, => {if practice==1 {practiceEncounter(5)}}
+onKey Key7, => {if practice==1 {practiceEncounter(6)}}
+onKey Key8, => {if practice==1 {practiceEncounter(7)}}
+onKey Key9, => {if practice==1 {practiceEncounter(8)}}
 onKey KeyF1, => {resolveWord(1)}
 onKey KeyF2, => {resolveWord(2)}
 onKey KeyF3, => {resolveWord(3)}
@@ -419,11 +437,7 @@ onStart => {
  for i:=0;i<len(sceneNiches);i++ {Niche.clone i}
  for i:=0;i<len(echoX);i++ {Echo.clone i}
  for i:=0;i<24;i++ {Rope.clone i}
- for i:=0;i<28;i++ {SealCable.clone i}
  for i:=0;i<8;i++ {KeeperLine.clone i}
- for i:=0;i<len(sceneNodes);i++ {ExpeditionNode.clone i}
- for i:=0;i<len(sceneHeats);i++ {HeatVent.clone i}
- for i:=0;i<len(sceneGuides);i++ {DirectoryGuide.clone i}
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
   if phase==1 {
@@ -447,8 +461,8 @@ onStart => {
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}
    emitExpedition()
    println "@render",sceneClones,sceneBorn,sceneMissing,fxCount,projectileCount,arrowMade,arrowBorn,boltMade,boltBorn
-   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[keeperIndex],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordVisualRate,visualTime,cityDistrict,cityPrompt,cityWind,cityForge,cityArchive,cityMirror,cityChoice,floorY[liftFloor[0]],cityDepth,bossMove,bossMaxHP,bossLocked,bossChain,bossWindup,keeperEpoch
-   for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i],enemyFacing[i],enemyStep[i],enemyMark[i]}}
+   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[keeperIndex],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordVisualRate,visualTime,cityDistrict,cityPrompt,cityWind,cityForge,cityArchive,cityMirror,cityChoice,0.0,cityDepth,bossMove,bossMaxHP,bossLocked,bossChain,bossWindup,keeperEpoch
+   for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@hunt",i,enemyArmor[i],enemyWard[i],enemyPressure[i],enemyElite[i]; println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i],enemyFacing[i],enemyStep[i],enemyMark[i]}}
    if segment==1 {for i:=0;i<len(keeperLife);i++ {println "@keeperLine",i,keeperAX[i],keeperAY[i],keeperBX[i],keeperBY[i],keeperAge[i],keeperDelay[i],keeperLife[i],keeperWidth[i],keeperStyle[i]}}
   }
  }

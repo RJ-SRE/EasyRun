@@ -50,7 +50,7 @@ try {
     ? [{ file: "playtest.mjs" }]
     : [
         { file: "test-inscription-core.mjs" },
-        { file: "test-expedition-data.mjs" },
+        { file: "test-hunt-data.mjs" },
         { file: "test-belfry-achievements-core.mjs" },
         { file: "test-belfry-combat.mjs" },
         { file: "test-belfry-scene.mjs" },
@@ -64,19 +64,21 @@ try {
         { file: "test-belfry-inscription-resilience.mjs", words: true },
         { file: "test-belfry-inscription-motion.mjs", words: true },
         { file: "test-belfry-achievements.mjs", words: true },
-        { file: "test-belfry-city.mjs", words: true },
-        { file: "test-belfry-expedition.mjs", words: true },
-        { file: "test-belfry-encounters.mjs", words: true },
-        { file: "test-belfry-quests.mjs" },
+        { file: "test-belfry-hunt.mjs" },
         { file: "test-belfry.mjs" },
         {
           file: "test-belfry-route.mjs",
-          env: { MODE: "0", STYLE: "basic", RETURN_FAILURE: "1" },
+          env: { MODE: "0", STYLE: "mixed", RETURN_FAILURE: "1" },
         },
         {
           file: "test-belfry-route.mjs",
           words: true,
           env: { MODE: "1", RETURN_FAILURE: "0" },
+        },
+        {
+          file: "test-belfry-route.mjs",
+          words: true,
+          env: { MODE: "1", STYLE: "burst", RETURN_FAILURE: "0" },
         },
         { file: "test-rupture.mjs" },
         { file: "test-motion-lifecycle.mjs" },

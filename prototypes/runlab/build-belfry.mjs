@@ -3,11 +3,10 @@ import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
 import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
-import { buildExpeditionLayout } from "./belfry-expedition.mjs";
-import { expeditionInit } from "./expedition-init.mjs";
-import { addExpeditionArt } from "./belfry-expedition-art.mjs";
+import { buildHuntLayout } from "./belfry-hunt.mjs";
+import { huntInit } from "./hunt-init.mjs";
 import { sceneInit, SCENE_SPRITES } from "./belfry-scene.mjs";
-const layout = buildExpeditionLayout();
+const layout = buildHuntLayout();
 const { platforms, anchors, echoes, checkpoints } = layout;
 const enemies = layout.enemies.map((e) => [e.x, e.y, e.kind, +e.returnOnly]);
 const root = new URL("./", import.meta.url),
@@ -350,6 +349,8 @@ try {
     true,
     true,
   );
+  for (const name of ["warden", "hound", "weaver"])
+    assassinFrames[name] = await importAtlas(`art/belfry/hunt-${name}-source.png`,3,2,384,330,true,true);
   assassinFrames.keeper = await importAtlas(
     "art/belfry/keeper-v2-source.png",
     6,
@@ -478,33 +479,7 @@ sprite(
  }
 }`,
 );
-for (let i = 0; i < checkpoints.length; i++) {
-  const [x, y] = checkpoints[i];
-  sprite(
-    "Sanctuary" + i,
-    {
-      beacon: vector(
-        130,
-        160,
-        '<defs><radialGradient id="g"><stop stop-color="#f0d89f" stop-opacity=".32"/><stop offset="1" stop-color="#deb16e" stop-opacity="0"/></radialGradient></defs><ellipse cx="65" cy="67" rx="54" ry="62" fill="url(#g)"/><path d="M36 158h58l-7-9H43ZM51 149l7-35h14l7 35M61 115V88h8v27" fill="#263131" stroke="#8b8068" stroke-width="2"/><path d="M45 43 65 24 85 43v32L65 95 45 75ZM51 47v24l14 15 14-15V47L65 33Z" fill="#192525" stroke="#c2aa78" stroke-width="2"/><path d="m65 41 8 21-8 15-8-15Z" fill="#edcf8d"/><path d="M65 10v15M57 18h16M42 38l-8-8m54 8 8-8M47 138h36M51 145h28M57 102h16" stroke="#ad9465" stroke-width="1.5"/>',
-      ),
-    },
-    { x, y: y + 46, size: 0.58 },
-    `onStart => {for {waitNextFrame(); if abs(cameraY-(${y}))>700 || (practice==1 && ${i}>0) {hide} else {show}; if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(visualTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
-  );
-}
-sprite(
-  "AbandonedPost",
-  {
-    post: vector(
-      100,
-      150,
-      '<path d="M15 147h70M30 140V75h40v65M24 75h52" fill="#171e23" stroke="#80745d" stroke-width="3"/><path d="M23 65V34Q50 2 77 34v31l-27 13Z" fill="#293034" stroke="#a28d65" stroke-width="2"/><path d="M30 43h40M39 53h22" stroke="#080f15" stroke-width="5"/><path d="M50 19V5M49 78l-9 35 23 19" stroke="#586560" stroke-width="2"/>',
-    ),
-  },
-  { x: 805, y: -2025 },
-  "onStart => {for {waitNextFrame(); if practice==1 {hide} else {show}}}",
-);
+// Checkpoints are automatic; no pedestal or abandoned console is drawn.
 const anchorBase =
   '<circle cx="28" cy="28" r="20" fill="#111d24" stroke="#af956b" stroke-width="3"/><circle cx="28" cy="28" r="12" fill="none" stroke="#e9d9aa" stroke-width="1.5"/><path d="M28 1v13m0 28v13M1 28h13m28 0h13" stroke="#7e725c" stroke-width="4"/><path d="M28 20l8 8-8 8-8-8z" fill="#c9f0db"/>';
 sprite(
@@ -528,30 +503,6 @@ sprite(
   },
   { visible: false, rotationStyle: "normal" },
   await code("Anchor"),
-);
-sprite(
-  "SealCable",
-  {
-    wire: vector(
-      24,
-      6,
-      '<path d="M0 3h24" stroke="#e9a26f" stroke-width="3"/><path d="M0 2h24" stroke="#fff0c0" stroke-width=".8"/>',
-    ),
-  },
-  { visible: false, rotationStyle: "normal" },
-  "onCloned data => {i:=data.(int); side:=i/14; j:=i%14; for {waitNextFrame(); active:=segment==1 && bossShield>0; if side==0 && sealLeft || side==1 && sealRight {active=false}; if active {show; ax:=anchorX[sealA+side]; ay:=anchorY[sealA+side]; dx:=enemyX[keeperIndex]-ax; dy:=enemyY[keeperIndex]+60-ay; t:=(float64(j)+0.5)/14; setXYpos ax+dx*t,ay+dy*t; setHeading angle(dx,dy); setSize dist(dx,dy)/14/24+0.05} else {hide}}}",
-);
-sprite(
-  "BossWard",
-  {
-    ward: vector(
-      340,
-      340,
-      '<circle cx="170" cy="170" r="155" fill="#c7924c" fill-opacity=".04" stroke="#e9bd7e" stroke-opacity=".6" stroke-width="1.5"/><path d="M170 12l137 79v158l-137 79-137-79V91z" fill="none" stroke="#e7b273" stroke-opacity=".35"/><circle cx="170" cy="170" r="144" fill="none" stroke="#b9c0a4" stroke-opacity=".3" stroke-dasharray="3 13"/>',
-    ),
-  },
-  { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[keeperIndex],enemyY[keeperIndex]; setHeading 90+visualTime*10} else {hide}}}",
 );
 sprite(
   "Niche",
@@ -598,6 +549,8 @@ for (let i = 0; i < 18; i++)
     pivotX: 192,
     pivotY: 366,
   };
+for (const name of ["warden", "hound", "weaver"])
+  for(let i=0;i<6;i++) enemyImages[`hunt-${name}-${i}`]={binary:Buffer.from(assassinFrames[name][i],"base64"),w:384,h:384,pivotX:192,pivotY:366};
 sprite(
   "EnemyBlend",
   enemyImages,
@@ -1046,12 +999,12 @@ sprite(
   { visible: false },
   "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos 480,riseY-395} else {hide}}}",
 );
-await addExpeditionArt({ sprite, vector, code, layout });
+// Device art intentionally omitted in the hunt edition.
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
 const initialization =
   sceneInit(layout) +
-  expeditionInit(layout) +
+  huntInit(layout) +
   `func initLevel() {
  initExpeditionData()
  keeperIndex=${enemies.findIndex((enemy) => enemy[2] === 3)}
@@ -1060,6 +1013,7 @@ const initialization =
  floorX=${floats(platforms.map((a) => a[0]))}; floorW=${floats(platforms.map((a) => a[1]))}; floorY=${floats(platforms.map((a) => a[2]))}; floorKind=${ints(platforms.map((a) => a[3]))}
  enemyBaseX=${floats(enemies.map((a) => a[0]))}; enemyBaseY=${floats(enemies.map((a) => a[1]))}; enemyX=${floats(enemies.map((a) => a[0]))}; enemyY=${floats(enemies.map((a) => a[1]))}; enemyType=${ints(enemies.map((a) => a[2]))}
  enemyMark=${floats(enemies.map(() => 0))};
+ enemyTurn=${floats(enemies.map(() => 0))}; enemyArmor=${floats(enemies.map(() => 0))}; enemyPressure=${ints(enemies.map(() => 0))}; enemyEscape=${floats(enemies.map(() => 0))}; enemyWard=${ints(enemies.map(() => -1))}; enemyWardDelay=${floats(enemies.map(() => 0))};
  enemyFacing=${floats(enemies.map(() => -1))}; enemyStride=${floats(enemies.map(() => 0))}; enemyFloor=${ints(enemies.map(() => -1))}; enemyStep=${ints(enemies.map(() => 0))}; enemySpent=${ints(enemies.map(() => 0))}; enemyRecover=${floats(enemies.map(() => 0))}
  enemyFromX=${floats(enemies.map(() => 0))}; enemyFromY=${floats(enemies.map(() => 0))}; enemyMoveX=${floats(enemies.map(() => 0))}; enemyMoveY=${floats(enemies.map(() => 0))}; enemyMoveTime=${floats(enemies.map(() => 0))}; enemyMoveArc=${floats(enemies.map(() => 0))}
  enemyHP=${ints(enemies.map(() => 0))}; enemyState=${ints(enemies.map(() => 0))}; enemyClock=${floats(enemies.map(() => 0))}; enemyFlash=${floats(enemies.map(() => 0))}
@@ -1074,8 +1028,8 @@ files["main.spx"] = (await code("main")).replace(
     (await code("Assassins")) +
     (await code("Keeper")) +
     (await code("Inscription")) +
-    (await code("City")) +
-    (await code("Expedition")) +
+    (await code("HuntCombat")) +
+    (await code("HuntExpedition")) +
     (await code("Scene")) +
     "\nfunc dist(",
 );
@@ -1098,10 +1052,12 @@ for (const [p, data] of Object.entries(files)) {
 await writeFile(new URL("public/belfry.json", root), JSON.stringify(files));
 await writeFile(
   new URL("public/expedition-data.js", root),
-  "// Generated from belfry-expedition.mjs; rebuild to update.\nexport const EXPEDITION = " +
+  "// Generated from belfry-hunt.mjs; rebuild to update.\nexport const EXPEDITION = " +
     JSON.stringify(layout) +
     ";\n",
 );
 console.log(
   `Built Belfry: ${Object.keys(files).length} files / ${zorder.length} sprites`,
 );
+
+await copyFile(new URL("public/belfry.html",root),new URL("public/index.html",root));

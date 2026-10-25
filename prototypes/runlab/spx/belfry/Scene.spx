@@ -25,7 +25,7 @@ func updateScene() {
  sceneMissing=0
  fillScene(sceneFloors,0,floorY); fillScene(sceneAnchors,1,anchorY)
  fillScene(sceneEnemies,2,enemyY); fillScene(sceneNiches,6,enemyBaseY)
- fillScene(sceneNodes,3,nodeY); fillScene(sceneHeats,4,heatY); fillScene(sceneGuides,5,guideY)
+ // Retired device and guide arrays never allocate views in the hunt route.
 }
 // Decorative effects yield first. The remaining 60 engine slots are reserved
 // for live arrows/bolts, so visual bursts cannot eat a released attack.

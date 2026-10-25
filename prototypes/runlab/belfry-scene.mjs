@@ -5,9 +5,9 @@ export const SCENE_POOLS = {
   sceneAnchors: 14,
   sceneEnemies: 12,
   sceneNiches: 6,
-  sceneNodes: 12,
-  sceneHeats: 2,
-  sceneGuides: 4,
+  sceneNodes: 0,
+  sceneHeats: 0,
+  sceneGuides: 0,
 };
 export const SCENE_SPRITES = new Set([
   "Ledge",
@@ -31,7 +31,6 @@ export function sceneCloneCount(layout) {
     SCENE_POOLS.sceneEnemies * 3 +
     layout.echoes.length +
     24 +
-    28 +
     8
   );
 }

@@ -1,0 +1,47 @@
+// v3 hunt route: no devices, escort, lift or external boss lock.
+func roomAt(y float64) int {for r:=0;r<len(roomBottom);r++ {if y>=roomBottom[r] {return r}}; return len(roomBottom)-1}
+func roomHas(r,bit int) bool {return roomFlags[r]/bit%2==1}
+func nodeDone(i int) bool {return true}
+func setExpNode(i int) {}
+func finishRoom(r int) {if roomDone[r]==0 {roomDone[r]=1; event("roomcomplete")}}
+func resetExpedition() {
+ expRoom=0; expPrompt=-1; decoyTime=0; decoyNode=-1; cargoChoice=0; mirrorChoice=0; recordChoice=0
+ lampStep=0; lampMoving=0; lampClock=0; lampSafe=0; lampX=0; lampY=0
+ trialHooks=0; trialStarted=0; trialAt=0; lastExpHook=-1; repairRouteUsed=false
+ for r:=0;r<len(roomFlags);r++ {roomFlags[r]=0; roomDone[r]=0}
+ for i:=0;i<len(sideProgress);i++ {sideProgress[i]=0}
+}
+func expeditionCandidate() int {return -1}
+func interactExpedition(option int) {}
+func updateExpedition(dt float64) {
+ if practice==1 {expPrompt=-1; return}
+ expRoom=roomAt(Hero.py); expPrompt=-1
+ if segment==0 {
+  if expRoom>checkpoint {checkpoint=expRoom; event("checkpoint"); if expRoom%3==0 || expRoom==14 {health=maxHealth; event("restored")}}
+  for r:=0;r<14;r++ {
+   alive:=false
+   for i:=0;i<len(enemyHP);i++ {if enemyRoom[i]==r && enemyReturnOnly[i]==0 && enemyHP[i]>0 {alive=true}}
+   if !alive && expRoom>=r {finishRoom(r)}
+  }
+  if expRoom==14 && Hero.py<roomTop[14]-130 {segment=1; event("guardian")}
+ }
+}
+func expeditionReturn() {
+ roomDone[14]=1; segment=2; checkpoint=14; health=maxHealth; returnTime=0; riseY=worldBottom-430; energy=100; embers=2; emberHits=0
+ for j:=0;j<len(enemyHP);j++ {
+  // Disperse all old patrols. Only three authored pursuers join the climb.
+  enemyHP[j]=0
+  if enemyReturnOnly[j]==1 {clearEnemyMotion(j); enemyHP[j]=enemyMaxHP(enemyType[j]); enemyState[j]=0; enemyClock[j]=0}
+ }
+ event("core")
+}
+func restoreExpedition() {
+ for i:=0;i<len(roomFlags);i++ {roomFlags[i]=0; roomDone[i]=hostRoomDone[i]}
+ for i:=0;i<len(enemyHP);i++ {if enemyReturnOnly[i]==0 && (enemyRoom[i]<checkpoint || roomDone[enemyRoom[i]]==1) {enemyHP[i]=0}}
+}
+func resetCity() {cityWind=0; cityForge=0; cityArchive=0; cityMirror=0; cityChoice=0; cityDistrict=0; cityPrompt=-1; cityClock=0; cityDepth=0}
+func districtAt(y float64) int {for i:=0;i<len(districtEdges);i++ {if y>districtEdges[i] {return i}}; return 4}
+func floorActive(i int) bool {kind:=floorKind[i]; if kind>=100 {return segment!=2 && roomDone[kind-100]==0}; return true}
+func cityCandidate() int {return -1}
+func interactCity(option int) {}
+func updateCity(dt float64) {cityClock+=dt; cityPrompt=-1; cityDistrict=districtAt(Hero.py)}

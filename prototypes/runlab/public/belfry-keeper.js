@@ -17,12 +17,6 @@ export function keeperStatus(s) {
       label: "形态转化 · 旧攻击已消散",
       hint: "外甲正在改变 · 调整站位，准备新的追击方式。",
     };
-  if (s.bossShield > 0)
-    return {
-      name: `守心者 · ${form}`,
-      label: `钟锁 ${s.bossShield} / 2 · 拉断两侧吊环`,
-      hint: `钩住${!s.sealLeft && !s.sealRight ? "左右两侧" : !s.sealLeft ? "左侧" : "右侧"}红色吊环，抵达时拉断钟锁。`,
-    };
   if (s.bossState === 2)
     return {
       name: `守心者 · ${form}`,

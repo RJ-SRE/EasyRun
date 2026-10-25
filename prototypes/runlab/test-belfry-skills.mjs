@@ -48,8 +48,8 @@ onKey KeyF9, => {skillFixture(); enemyHP[0]=0; Hero.resetHero(480,500); Hero.gro
 onKey KeyF10, => {skillFixture(); enemyHP[0]=0; Hero.invulnerable=0}
 onKey KeyF11, => {hurt(1)}
 onKey KeyF6, => {skillFixture(); Hero.resetHero(480,250); Hero.grounded=false; Hero.invulnerable=0; enemyBaseX[0]=480; enemyBaseY[0]=60; floorX[0]=80; floorW[0]=800; floorY[0]=120; floorKind[0]=0}
-// Opposite bob phases align these three foes at arrow height around full charge.
-onKey KeyF7, => {skillFixture(); enemyBaseY[0]=19; enemyBaseX[3]=560; enemyBaseY[3]=45; enemyHP[3]=40; enemyClock[3]=-100; enemyBaseX[6]=680; enemyBaseY[6]=19; enemyType[6]=0; enemyHP[6]=40; enemyClock[6]=-100}
+// Explicitly reset all enabled foes; public mixed rehearsal no longer spawns archers.
+onKey KeyF7, => {skillFixture(); enemyBaseY[0]=45; enemyBaseX[3]=560; enemyBaseY[3]=45; enemyHP[3]=40; enemyBaseX[6]=680; enemyBaseY[6]=45; enemyType[6]=0; enemyHP[6]=40; for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 {clearEnemyMotion(i); enemyState[i]=2; enemyRecover[i]=100; enemyClock[i]=0}}}
 onKey KeyT`,
   );
   await route.fulfill({ json: data });

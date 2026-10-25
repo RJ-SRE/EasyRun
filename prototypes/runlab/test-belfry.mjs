@@ -2,9 +2,9 @@ import { chromium } from "@playwright/test";
 import { writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
-import { buildExpeditionLayout } from "./belfry-expedition.mjs";
-const layout = buildExpeditionLayout(),
-  firstGate = layout.platforms[layout.rooms[1].gate][2];
+import { buildHuntLayout } from "./belfry-hunt.mjs";
+const layout = buildHuntLayout(),
+  firstGate = layout.platforms[layout.rooms[5].gate][2];
 const out = new URL("./test-results/belfry/", import.meta.url);
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, channel: "chromium" }),
@@ -19,13 +19,13 @@ page.on("pageerror", (e) => report.errors.push(e.message));
 page.on("console", (m) => {
   if (m.type() === "error") report.errors.push(m.text());
 });
-// Gate traversal uses ordinary input. This one position-only fixture brings
-// the player to a live guard after checking the gate; all damage remains real.
+// Position-only fixtures isolate the elite exit and a live guard. Traversal,
+// collision, checkpoint activation and enemy damage remain production code.
 await page.route("**/belfry.json", async (route) => {
   const data = await (await route.fetch()).json();
   data["main.spx"] = data["main.spx"].replace(
     "onKey KeyT",
-    `onKey KeyF7, => {i:=${layout.rooms[1].foeStart + 2}; Hero.resetHero(enemyX[i]-45,enemyY[i]-34)}\nonKey KeyT`,
+    `onKey KeyF6, => {Hero.resetHero(480,${firstGate + 100})}\nonKey KeyF7, => {i:=${layout.rooms[5].foeStart}; Hero.resetHero(enemyX[i]-45,enemyY[i]-34)}\nonKey KeyT`,
   );
   await route.fulfill({ json: data });
 });
@@ -95,46 +95,20 @@ try {
   await tap("r");
   await wait(() => latestState.checkpoint === 0 && latestState.elapsed < 1);
   await page.waitForTimeout(100);
-  // Descend through the center using movement only, without damaging guards.
-  const pressed = new Set();
-  async function hold(keys) {
-    for (const k of [...pressed])
-      if (!keys.includes(k)) {
-        await page.keyboard.up(k);
-        pressed.delete(k);
-      }
-    for (const k of keys)
-      if (!pressed.has(k)) {
-        await page.keyboard.down(k);
-        pressed.add(k);
-      }
-  }
-  let tick = 0;
-  for (let i = 0; i < 160; i++) {
-    const s = await state();
-    if (s.phase !== 1) break;
-    if (s.y <= firstGate + 1) break;
-    const keys = [];
-    if (s.x < 470) keys.push("d");
-    if (s.x > 490) keys.push("a");
-    if (Math.abs(s.vy) < 10 && s.y < 0 && tick % 4 === 0)
-      keys.push("s", "Space");
-    await hold(keys);
-    await page.waitForTimeout(70);
-    tick++;
-  }
-  await hold([]);
+  await tap("F6");
+  await wait(() => latestState.checkpoint === 5);
+  await page.waitForTimeout(900);
   const gate = await state();
   assert.equal(gate.phase, 1);
   assert.ok(Math.abs(gate.y - firstGate) < 2, JSON.stringify(gate));
-  assert.equal(gate.expedition.done[1], 0);
-  assert.equal(gate.checkpoint, 1);
+  assert.equal(gate.expedition.done[5], 0);
+  assert.equal(gate.checkpoint, 5);
   for (let i = 0; i < 5; i++) {
     await page.keyboard.down("s");
     await tap("Space");
     await page.keyboard.up("s");
     const s = await state();
-    assert.ok(s.y >= firstGate, "Locked task gate cannot be dropped through");
+    assert.ok(s.y >= firstGate, "Elite exit cannot be dropped through");
   }
   await shot("locked-gate");
   await save("locked gate blocks drop-through and checkpoint activates");
@@ -149,11 +123,11 @@ try {
   await page.locator("#play").click();
   await wait(() => latestState.phase === 1);
   const retried = await state();
-  assert.equal(retried.checkpoint, 1);
+  assert.equal(retried.checkpoint, 5);
   assert.equal(retried.health, 5);
   assert.equal(retried.deaths, 1);
-  assert.ok(Math.abs(retried.y - layout.checkpoints[1][1]) < 2);
-  assert.equal(retried.expedition.done[1], 0);
+  assert.ok(Math.abs(retried.y - layout.checkpoints[5][1]) < 2);
+  assert.equal(retried.expedition.done[5], 0);
   await save("checkpoint retry retains gate and death state");
   await tap("r");
   await page.waitForTimeout(1100);
@@ -162,7 +136,7 @@ try {
   assert.equal(reset.kills, 0);
   assert.equal(reset.echoes, 0);
   assert.equal(reset.health, 5);
-  assert.equal(reset.bossShield, 2);
+  assert.equal(reset.bossShield, 0);
   assert.equal(reset.bossStage, 0);
   assert.equal(reset.deaths, 0);
   assert.equal(reset.fxCount, 0);

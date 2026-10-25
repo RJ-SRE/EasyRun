@@ -1,5 +1,5 @@
-import { buildExpeditionLayout } from "./belfry-expedition.mjs";
-const expeditionLayout = buildExpeditionLayout();
+import { buildHuntLayout } from "./belfry-hunt.mjs";
+const expeditionLayout = buildHuntLayout();
 import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -111,11 +111,13 @@ try {
   while (Date.now() - start < 600000) {
     const {
       s,
+      hunts,
       render,
       activeWord,
       foes: visibleFoes,
     } = await page.evaluate(() => ({
       s: latestState,
+      hunts: window.huntFoes,
       render: window.renderState,
       activeWord: window.inscriptionDiagnostics.active,
       foes: Object.values(foes).filter(
@@ -131,6 +133,18 @@ try {
       lastWordSerial = s.wordSerial;
     }
     if (render) renderSamples.push(render);
+    // A hit cancels charging, but a physically held key must be released before
+    // a new edge can start the next charge. Never fake a queued retry in game.
+    if (
+      s.phase === 1 &&
+      s.attackTime <= 0 &&
+      ((held.has("l") && s.chargeTime <= 0) ||
+        (held.has("u") && s.bowCharge <= 0))
+    ) {
+      await hold([...held].filter((k) => k !== "l" && k !== "u"));
+      await page.waitForTimeout(90);
+      continue;
+    }
     if (s.segment !== progressSegment) {
       progressSegment = s.segment;
       furthestY = s.y;
@@ -312,19 +326,7 @@ try {
     if (s.segment === 0) {
       const e = s.expedition,
         r = expeditionLayout.rooms[e.room];
-      let goal = null;
-      if (!e.done[e.room]) {
-        const unfinished = expeditionLayout.nodes.filter(
-          (n) =>
-            n.room === e.room &&
-            n.side < 0 &&
-            !(e.flags[e.room] & (1 << n.step)),
-        );
-        if (e.room === 7)
-          goal = expeditionLayout.nodes[r.nodeStart + e.lampStep];
-        else if (e.room !== 5) goal = unfinished[0];
-      }
-      if (!goal) goal = { x: 480, y: r.bottom - 60 };
+      let goal = { x: 480, y: r.bottom - 60 };
       // Commit only to threats near the route or to the two authored elites;
       // there is no invulnerability, teleport, HP modification or forced gate.
       const fight = visibleFoes
@@ -337,13 +339,18 @@ try {
         )
         .sort(
           (a, b) =>
-            Math.hypot(a.x - s.x, a.y - s.y) - Math.hypot(b.x - s.x, b.y - s.y),
+            Math.hypot(a.x - s.x, a.y - s.y) -
+            (a.kind === 9 ? 160 : 0) -
+            (Math.hypot(b.x - s.x, b.y - s.y) - (b.kind === 9 ? 160 : 0)),
         )[0];
       let targetY = goal.y;
       const combat =
         fight &&
         !e.done[e.room] &&
-        (Math.abs(fight.y - 34 - s.y) < 105 || e.room === 5 || e.room === 10);
+        ((Math.abs(fight.y - 34 - s.y) < 105 && fight.y - 34 < s.y + 40) ||
+          e.room === 5 ||
+          e.room === 10 ||
+          e.room === 11);
       if (combat) {
         goal = {
           x: Math.max(115, Math.min(845, fight.x + (s.x < fight.x ? -90 : 90))),
@@ -352,8 +359,11 @@ try {
         targetY = goal.y;
       }
       targetX = goal.x;
-      const rising = targetY > s.y + 65;
-      if (rising) {
+      const rangedFight = combat && [0, 2, 9].includes(fight.kind);
+      const rising = targetY > s.y + 65 && !rangedFight;
+      if (rising && targetY - s.y < 160) {
+        if (tick % 6 === 0) keys.push("Space");
+      } else if (rising) {
         const candidate = expeditionLayout.anchors
           .filter((a) => a[1] > s.y + 70 && a[1] < s.y + 450)
           .sort(
@@ -371,16 +381,29 @@ try {
         keys.push("s");
         if (Math.abs(s.vy) < 10 && tick % 3 === 0) keys.push("Space");
       }
-      if (combat && Math.abs(fight.y - s.y - 30) < 100) {
+      if (
+        combat &&
+        !rising &&
+        s.hook < 0 &&
+        Math.abs(fight.y - s.y - 30) < (rangedFight ? 450 : 100)
+      ) {
         const near = Math.abs(fight.x - s.x) < 150;
         if (process.env.STYLE === "basic") {
           if (tick % 4 === 0) keys.push("j");
+        } else if (s.chargeTime > 0 && process.env.STYLE === "burst") {
+          if (s.chargeTime < 0.58) keys.push("l");
         } else if (process.env.STYLE === "burst") {
           // An efficient Q-first route tests the no-cooldown skill's real
           // opportunity cost. Use ordinary attacks between commitments and
           // keep navigation identical; do not add a fictitious energy fee.
           if (s.ultimateTime <= 0 && s.attackTime <= 0) {
-            if (Math.abs(fight.x - s.x) < 235) keys.push("q");
+            if (
+              near &&
+              ((fight.kind === 7 && hunts[fight.id]?.armor <= 0) ||
+                hunts[fight.id]?.ward >= 0)
+            )
+              keys.push("l");
+            else if (Math.abs(fight.x - s.x) < 235) keys.push("q");
             else if (tick % 4 === 0) keys.push("j");
           }
         } else if (s.bowCharge > 0) {
@@ -388,7 +411,11 @@ try {
         } else if (s.chargeTime > 0) {
           if (s.chargeTime < 0.58) keys.push("l");
         } else if (s.attackTime <= 0 && s.ultimateTime <= 0) {
-          if (fight.mark > 0 && near) keys.push("l");
+          if (
+            near &&
+            (fight.mark > 0 || fight.kind === 7 || hunts[fight.id]?.ward >= 0)
+          )
+            keys.push("l");
           else if (near && tick % 5 === 0) keys.push("j");
           else keys.push("u");
         }
@@ -486,7 +513,7 @@ try {
   }
   await hold([]);
   await page.screenshot({
-    path: fileURLToPath(new URL(`final-${routeLabel}.png`, out)),
+    path: fileURLToPath(new URL(`hunt-final-${routeLabel}.png`, out)),
   });
   const result = await page.evaluate(() => ({
     state: latestState,
@@ -594,7 +621,7 @@ try {
     note: "Production birth counters and allocated transient objects; camera fixtures are not used in this route.",
   };
   await writeFile(
-    new URL(`route-${routeLabel}.json`, out),
+    new URL(`hunt-route-${routeLabel}.json`, out),
     JSON.stringify(result, null, 2),
   );
   console.log("RESULT", JSON.stringify(result.state), result.errors);
@@ -607,8 +634,8 @@ try {
   assert.equal(result.render.arrowsBorn, result.render.arrowsRequested);
   assert.equal(result.render.boltsBorn, result.render.boltsRequested);
   assert.ok(
-    result.state.expedition.done.every((v) => v === 1),
-    "every main room reached its actual completion condition",
+    [5, 10, 11, 14].every((r) => result.state.expedition.done[r] === 1),
+    "all mandatory elite encounters and the Boss were actually defeated",
   );
   const attemptEvents = [[]];
   for (const event of result.events) {
@@ -619,7 +646,7 @@ try {
     events.some((e) => e.name === "core"),
   );
   assert(winningBossAttempt, "a real Boss defeat starts the return");
-  assert.equal(winningBossAttempt.filter((e) => e.name === "seal").length, 2);
+  assert.equal(winningBossAttempt.filter((e) => e.name === "seal").length, 0);
   assert.equal(winningBossAttempt.filter((e) => e.name === "enrage").length, 2);
   assert.ok(result.state.hookCount > 8);
   if (process.env.RETURN_FAILURE === "1") assert.equal(voidVerified, true);

@@ -33,6 +33,12 @@ onCloned data => {
     if state==6 {pose=2; if t>0.40 {pose=4}; if t>0.85 {pose=5}}
     costume=42+bossStage*6+pose; size=0.38
    }
+   if kind>=7 {
+    pose=0; if state==0 && abs(enemyVX[i])>20 {pose=1}; if state==1 {pose=2}; if state==3 {pose=3}; if state==2 {pose=4}; if enemyStun[i]>0 {pose=5}
+    costume=60+(kind-7)*6+pose; size=0.34; if kind==8 {size=0.43}; if kind==9 {size=0.30}
+    if enemyElite[i]>0 {size*=1.18}
+   }
+   if kind<7 && kind!=3 && enemyElite[i]>0 {size*=1.16}
    if lastAttempt!=attempts {previous=costume; lastAttempt=attempts; blend=0; trailAt=0}
    if costume!=previous {
     if previous>=0 && takeFX(80) { EnemyBlend.clone []float64{float64(i),float64(previous),enemyFacing[i]*90,size,float64(attempts)}}

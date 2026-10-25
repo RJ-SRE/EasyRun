@@ -222,28 +222,9 @@ test("invalid saves recover without fabricated unlocks or equipped titles", () =
   assert.deepEqual(book.data.words, ["create"]);
   assert.equal(book.data.equipped, "");
 });
-test("quest titles require completed challenges and an actually used repair", () => {
-  const a = adventure();
-  for (const name of [
-    "sideprogress",
-    "mechanism",
-    "repaircomplete",
-    "couriercomplete",
-  ])
-    a.deed(name);
-  assert.equal(a.book.count, 0);
-  a.deed("trialcomplete");
-  a.deed("indexcomplete");
-  assert.equal(a.book.data.unlocked["repaired-way"], undefined);
-  a.deed("repairroute");
-  assert.equal(a.book.count, 3);
-  assert.equal(a.book.equip("hunter-trial"), true);
-  const restored = new AchievementBook(a.book.serialize());
-  assert.equal(restored.data.equipped, "hunter-trial");
-  assert.equal(restored.count, 3);
-  assert.deepEqual(restored.pending, []);
-  const practice = adventure();
-  practice.deed("practice", { practice: 1 });
-  practice.deed("trialcomplete");
-  assert.equal(practice.book.count, 0);
+test("combat awards replace retired quests without migrating false unlocks", () => {
+ const a=adventure();for(const name of ["trialcomplete","indexcomplete","repairroute"])a.deed(name);assert.equal(a.book.count,0);
+ a.deed("guardbreak");a.deed("wardbreak");for(let i=0;i<3;i++)a.deed("elitekill");assert.equal(a.book.count,2);a.deed("elitekill");assert.equal(a.book.count,3);
+ assert.equal(a.book.equip("plate-break"),true);const restored=new AchievementBook(a.book.serialize());assert.equal(restored.count,3);assert.deepEqual(restored.pending,[]);
+ const p=adventure();p.deed("practice",{practice:1});p.deed("guardbreak");assert.equal(p.book.count,0);
 });

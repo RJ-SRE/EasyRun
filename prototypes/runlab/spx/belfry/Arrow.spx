@@ -17,7 +17,7 @@ onCloned data => {
     }
     if nearest>=0 {
      seen[nearest]=1; remaining--
-     if hitEnemy(nearest,damage) {if len(p)>6 {skillImpact(int(p[6]),1,nearest)}; if full {enemyMark[nearest]=3; event("marked")}; skillFX(enemyX[nearest],enemyY[nearest],angle(dx,dy),0,0.8); event("arrowhit")}
+     if strikeEnemy(nearest,damage,9) {if len(p)>6 {skillImpact(int(p[6]),1,nearest)}; if full {enemyMark[nearest]=3; event("marked")}; skillFX(enemyX[nearest],enemyY[nearest],angle(dx,dy),0,0.8); event("arrowhit")}
     }
    }
    if blockedLine(ox,oy,x,y) || x<85 || x>875 {remaining=0; burst(x,y,5,3,90)}

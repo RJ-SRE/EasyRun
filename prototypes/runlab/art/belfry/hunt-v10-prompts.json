@@ -1,0 +1,19 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-25",
+  "transparent": true,
+  "subjects": [
+    [
+      "warden",
+      "Cracked Armor Warden: hulking nonhuman hollow armor, chipped ivory ceramic mask without visible human face, massive asymmetric oxidized bronze left shoulder and long dark shield-blade, exposed ribs on back, ragged charcoal cloak. Broad heavy silhouette. Six poses: 1 ready guard shield ahead, 2 heavy stepping walk, 3 overhead windup, 4 committed sweeping heavy strike, 5 armor broken stagger with lowered guard, 6 recoiling hurt."
+    ],
+    [
+      "hound",
+      "Spine Hound: nonhuman four-legged hunting creature made of ivory ceramic bones, black tendon and sparse tarnished bronze vertebra plates, long hooked bony muzzle, high spiny back and thin whip tail. Low horizontal animal silhouette, no rider. Six poses: 1 standing stalking, 2 low running with legs extended, 3 crouch gathering for leap, 4 airborne pouncing with front claws out, 5 skid landing head low, 6 side recoil hurt."
+    ],
+    [
+      "weaver",
+      "Soul Stitcher: nonhuman tall floating empty charcoal and desaturated plum robes with thin ivory ceramic mask and two extraordinarily long articulated bronze arms, dangling threads of muted pale gold from fingers. No human skin, no feet, sharply vertical silhouette. Six poses: 1 floating idle, 2 drifting with robes trailing, 3 both hands gather threads windup, 4 arm extends whipping threads toward right, 5 hands lowered recovering, 6 recoils with torn threads."
+    ]
+  ]
+}

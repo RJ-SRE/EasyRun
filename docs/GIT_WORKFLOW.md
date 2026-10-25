@@ -2,6 +2,8 @@
 
 仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。更新：2026-10-25。
 
+本轮猎战重构位于 `feat/hunt-combat-v10`，从当前集成工作树的 `5575f20` 派生。保留既有提交、文档与证据，不重写主分支历史；该分支使用现有 Git 身份与 SSH。当前功能与验证入口为 [猎战说明](HUNT_V10.md)。
+
 当前新增远征工作位于 `feat/expedition-boss-v2`，基线为 `main` 的 `6825943`。它包含三形态守心者、十五房与五支线的开发；完整路线和词汇容量尚在验证。下文第一节记录的是此前 v0.8.1 合入，不表示这次开发分支已经合入。功能分支提交用于保存可审查的开发进展，未完成项见 [开发清单](planning/thirty-word-expedition/IMPLEMENTATION.md)。
 
 ## 1. 当前分支与交付事实

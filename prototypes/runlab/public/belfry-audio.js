@@ -434,6 +434,9 @@ export class BelfryAudio {
       keeperfollow: "tension",
       keeperform: "chaincut",
       keeperstrike: "blade",
+      huntstrike: kind === 7 ? "heavy" : kind === 8 ? "dash" : "blade",
+      armor: "brass",
+      wardbreak: "chaincut",
     };
     if (attacks[name]) this.sample(attacks[name], { pan, volume: 0.7 });
     if (name === "impact") {

@@ -1,0 +1,173 @@
+// Damage and interruption are separate. These clocks only advance in updateWorld.
+func huntReset(i int) {enemyTurn[i]=0;enemyArmor[i]=0; enemyPressure[i]=0; enemyEscape[i]=0; enemyWard[i]=-1; enemyWardDelay[i]=0}
+func huntRanged(kind int) bool {return kind==0 || kind==2 || kind==9}
+func huntGuarding(i int) bool {
+ if enemyType[i]!=7 || enemyArmor[i]>0 || enemyState[i]==2 || enemyState[i]==3 {return false}
+ return (Hero.px-enemyX[i])*enemyFacing[i]>-8 && abs(Hero.py+28-enemyY[i])<80
+}
+func huntBlocksHit(i,damage,style int) bool {
+ heavy:=style==7
+ guarded:=huntGuarding(i) || enemyWard[i]>=0
+ if !guarded {return false}
+ if heavy {
+  enemyArmor[i]=2.6; owner:=enemyWard[i]; enemyWard[i]=-1
+  if owner>=0 {enemyWardDelay[owner]=2.6; enemyEvent("wardbreak",owner); event("wardbreak")}
+  enemyRecoverFor(i,1.10); enemyEvent("guardbreak",i); event("guardbreak"); return false
+ }
+ // Protection is directional on plate armor, visible and single-target on wards.
+ enemyFlash[i]=0.10; burst(enemyX[i]+enemyFacing[i]*24,enemyY[i],5,1,100)
+ enemyEvent("armor",i); event("armor"); return true
+}
+func huntCanStagger(i,style int) bool {
+ if enemyType[i]==3 {return false}
+ if style==7 {return true}
+ if enemyType[i]==7 && enemyArmor[i]<=0 && (enemyState[i]==1 || enemyState[i]==3) {return false}
+ if enemyType[i]==8 && enemyState[i]==3 {return false}
+ // A duelist's clearly raised guard/committed pursuit cannot be reset by taps.
+ if enemyType[i]==1 && enemyPressure[i]>=2 && (enemyState[i]==1 || enemyState[i]==3 || enemyState[i]==5) {return false}
+ return true
+}
+func huntAfterHit(i,style int) {
+ if enemyType[i]==1 || enemyType[i]==5 {
+  enemyPressure[i]++
+  if enemyPressure[i]>=2 && enemyState[i]==2 {enemyEscape[i]=0.22}
+ }
+ if enemyType[i]==9 {enemyWardDelay[i]=1.6}
+}
+func updateHuntLinks(dt float64) {
+ for i:=0;i<len(enemyHP);i++ {
+  enemyWard[i]=-1
+  enemyArmor[i]=math.Max(0,enemyArmor[i]-dt); enemyWardDelay[i]=math.Max(0,enemyWardDelay[i]-dt)
+ }
+ for i:=0;i<len(enemyHP);i++ {
+  if enemyHP[i]<=0 || enemyType[i]!=9 || enemyWardDelay[i]>0 || enemyStun[i]>0 || abs(enemyY[i]-cameraY)>300 {
+ continue
+}
+  best:=-1; nearest:=300.0
+  for j:=0;j<len(enemyHP);j++ {
+   d:=dist(enemyX[j]-enemyX[i],enemyY[j]-enemyY[i])
+   if j!=i && enemyHP[j]>0 && enemyType[j]!=9 && enemyType[j]!=3 && enemyWard[j]<0 && enemyArmor[j]<=0 && d<nearest && !blockedLine(enemyX[i],enemyY[i],enemyX[j],enemyY[j]) {nearest=d; best=j}
+  }
+  if best>=0 {enemyWard[best]=i}
+ }
+}
+func huntBraceEscape(i int,dt float64) bool {
+ if enemyEscape[i]<=0 || enemyHP[i]<=0 {return false}
+ enemyEscape[i]-=dt
+ if enemyEscape[i]<=0 && enemyState[i]==2 && canEnemyAttack(i) {
+  enemyStun[i]=0; enemyMode[i]=1
+  startEnemyMove(i,enemyX[i]-enemyFacing[i]*110,enemyY[i],0.34,18)
+  enemyEvent("backstep",i)
+ }
+ return false
+}
+func huntNewMotion(i int,dt float64) {
+ kind:=enemyType[i]; oldX:=enemyX[i]
+ if enemyState[i]==5 {updateEnemyMove(i,dt); return}
+ if enemyState[i]==3 {return}
+ if enemyStun[i]>0 {
+  enemyVX[i]*=math.Max(0,1-dt*5); enemyVY[i]-=800*dt
+  enemyX[i]=enemyGroundLimit(i,enemyX[i]+enemyVX[i]*dt); enemyY[i]+=enemyVY[i]*dt
+ } else if enemyState[i]==0 {
+  dx:=Hero.px-enemyX[i]; speed:=48.0; target:=0.0
+  if kind==8 {speed=135}
+  if abs(Hero.py+30-enemyY[i])<170 && abs(dx)>90 {target=enemyFacing[i]*speed}
+  if kind==9 {target=0; if abs(dx)<230 {target=-enemyFacing[i]*60}}
+  enemyVX[i]+=(target-enemyVX[i])*math.Min(1,dt*7)
+  enemyX[i]=enemyGroundLimit(i,enemyX[i]+enemyVX[i]*dt)
+ }
+ floor:=enemyFloor[i]; if floor>=0 {
+  base:=floorY[floor]+34; if practice==1 {base=34}; if kind==9 {base+=55}
+  if enemyY[i]>base {enemyVY[i]-=800*dt; enemyY[i]=math.Max(base,enemyY[i]+enemyVY[i]*dt)} else {enemyY[i]=base; enemyVY[i]=0}
+ }
+ enemyStride[i]+=abs(enemyX[i]-oldX)
+}
+func updateHuntEnemy(i int,dt float64) {
+ kind:=enemyType[i]; state:=enemyState[i]; t:=enemyClock[i]
+ if enemyStun[i]>0 {enemyStun[i]=math.Max(0,enemyStun[i]-dt); huntNewMotion(i,dt); return}
+ huntNewMotion(i,dt); enemyClock[i]+=dt; t=enemyClock[i]
+ dx:=Hero.px-enemyX[i]; dy:=Hero.py+28-enemyY[i]
+ if state==0 {
+  if abs(dx)>8 {
+   desired:=1.0; if dx<0 {desired=-1}
+   if desired!=enemyFacing[i] {enemyTurn[i]+=dt} else {enemyTurn[i]=0}
+   if kind!=7 || enemyTurn[i]>0.55 {enemyFacing[i]=desired; enemyTurn[i]=0}
+  }
+  reach:=225.0; if kind==8 {reach=380}; if kind==9 {reach=460}
+  delay:=0.75; if difficulty==0 {delay=1.05}
+  if t>delay && abs(dx)<reach && abs(dy)<180 && canEnemyAttack(i) {
+   aimEnemy(i); enemyMode[i]=enemyCycle[i]%2; enemyCycle[i]++; enemySpent[i]=0
+   enterEnemyState(i,1); enemyEvent("tell",i)
+  }
+ } else if state==1 {
+  tell:=0.78; if kind==8 {tell=0.62}; if kind==9 {tell=0.95}; if difficulty==0 {tell+=0.12}
+  if t<tell-0.25 {aimEnemy(i)}
+  if t>=tell {
+   enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]; enemyMoveX[i]=enemyGroundLimit(i,enemyAimX[i]+enemyFacing[i]*55); enemyMoveY[i]=enemyY[i]
+   enterEnemyState(i,3); enemySpent[i]=0; enemyEvent("huntstrike",i)
+   if kind==9 {throwProjectile(i,0,0); if enemyElite[i]>0 {throwProjectile(i,0.22,0)}}
+  }
+ } else if state==3 {
+  ox:=enemyX[i]; oy:=enemyY[i]
+  if kind==7 {
+   if enemyMode[i]==0 {
+    enemyX[i]=enemyGroundLimit(i,enemyFromX[i]+enemyFacing[i]*clamp(t/0.36,0,1)*75)
+    if t>0.18 && t<0.40 && enemySpent[i]==0 && dx*enemyFacing[i]>-20 && abs(dx)<160 && abs(dy)<68 {hurt(1); enemySpent[i]=1}
+    if t>0.66 {enemyRecoverFor(i,1.2)}
+   } else {
+    u:=clamp(t/0.60,0,1); enemyX[i]=enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*u; enemyY[i]=enemyFromY[i]+sin(u*math.Pi)*90
+    if t>=0.60 && t<0.81 && enemySpent[i]==0 && abs(Hero.px-enemyX[i])<155 && abs(Hero.py+20-enemyY[i])<48 {hurt(1); enemySpent[i]=1}
+    if t>0.86 {enemyRecoverFor(i,1.4)}
+   }
+   // The executioner sheds guard at half health, gains a shorter recovery;
+   // it never restores HP or silently cancels a committed strike.
+   if enemyElite[i]==1 && enemyHP[i]<=8 {enemyArmor[i]=10; if enemyState[i]==2 {enemyRecover[i]=0.9}}
+  }
+  if kind==8 {
+   u:=clamp(t/0.48,0,1); enemyX[i]=enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*u
+   arc:=18.0; if enemyMode[i]==1 {arc=120}; enemyY[i]=enemyFromY[i]+sin(u*math.Pi)*arc
+   if t>0.06 && t<0.50 && enemySpent[i]==0 && lineDistance(Hero.px,Hero.py+22,ox,oy-8,enemyX[i],enemyY[i]-8)<37 {hurt(1); enemySpent[i]=1}
+   if t>0.70 {enemyY[i]=enemyFromY[i]; enemyRecoverFor(i,0.90); enemyEvent("land",i)}
+  }
+  if kind==9 && t>0.30 {enemyWardDelay[i]=0.8; enemyRecoverFor(i,1.05)}
+  enemyVX[i]=(enemyX[i]-ox)/math.Max(dt,0.001); enemyVY[i]=(enemyY[i]-oy)/math.Max(dt,0.001)
+ } else if state==2 {
+  if t>=enemyRecover[i] {enterEnemyState(i,0); enemyPressure[i]=0; enemyVX[i]=0; enemyVY[i]=0}
+ }
+}
+// The wing judge uses real swept dives and a separately warned second pass.
+func updateHuntJudge(i int,dt float64) {
+ if enemyStun[i]>0 {enemyStun[i]=math.Max(0,enemyStun[i]-dt); return}
+ enemyClock[i]+=dt; t:=enemyClock[i]; state:=enemyState[i]
+ if state==0 {
+  targetY:=clamp(Hero.py+150,enemyBaseY[i]-90,enemyBaseY[i]+250)
+  enemyY[i]+=(targetY-enemyY[i])*math.Min(1,dt*2)
+  if t>0.85 && canEnemyAttack(i) {enemyMode[i]=enemyCycle[i]%3; enemyCycle[i]++; enemyStep[i]=0; aimEnemy(i); enterEnemyState(i,1); enemyEvent("tell",i)}
+ } else if state==1 {
+  tell:=0.85; if enemyStep[i]>0 {tell=0.76}
+  if t<tell-0.28 {aimEnemy(i)}
+  if t>=tell {
+   enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]; enemyMoveX[i]=clamp(enemyAimX[i]+enemyFacing[i]*80,140,820); enemyMoveY[i]=enemyAimY[i]
+   enemySpent[i]=0; enterEnemyState(i,3); enemyEvent("huntstrike",i)
+   if enemyMode[i]==1 {throwProjectile(i,0,0); throwProjectile(i,0.24,0); throwProjectile(i,-0.24,0)}
+  }
+ } else if state==3 {
+  if enemyMode[i]!=1 {
+   ox:=enemyX[i]; oy:=enemyY[i]; u:=clamp(t/0.5,0,1)
+   enemyX[i]=enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*u; enemyY[i]=enemyFromY[i]+(enemyMoveY[i]-enemyFromY[i])*u+sin(u*math.Pi)*28
+   enemyVX[i]=(enemyX[i]-ox)/math.Max(dt,0.001); enemyVY[i]=(enemyY[i]-oy)/math.Max(dt,0.001)
+   if t>0.07 && t<0.52 && enemySpent[i]==0 && lineDistance(Hero.px,Hero.py+28,ox,oy,enemyX[i],enemyY[i])<40 {hurt(1); enemySpent[i]=1}
+  }
+  if t>0.68 {
+   if enemyMode[i]==2 && enemyStep[i]==0 {enemyStep[i]=1; aimEnemy(i); enterEnemyState(i,1); enemyEvent("tell",i)} else {enemyRecoverFor(i,1.25)}
+  }
+ } else if state==2 {
+  if t>enemyRecover[i] {
+   targetX:=190.0; if Hero.px<480 {targetX=770}
+   startEnemyMove(i,targetX,enemyBaseY[i]+140,0.7,80); enemyEvent("aircross",i)
+  }
+ } else if state==5 {
+  updateEnemyMove(i,dt)
+  if t>=enemyMoveTime[i] {enemyVX[i]=0; enemyVY[i]=0; enterEnemyState(i,0)}
+ }
+}

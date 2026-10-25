@@ -2,9 +2,9 @@ import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { buildExpeditionLayout } from "./belfry-expedition.mjs";
+import { buildHuntLayout } from "./belfry-hunt.mjs";
 import { sceneCloneCount } from "./belfry-scene.mjs";
-const layout = buildExpeditionLayout();
+const layout = buildHuntLayout();
 const out = new URL("./test-results/scene/", import.meta.url);
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
@@ -25,7 +25,7 @@ await page.route("**/belfry.json", async (route) => {
       "onKey KeyT",
       `
 onKey KeyF7, => {phase=4; sceneTestRoom=(sceneTestRoom+1)%15; Hero.resetHero(checkpointX[sceneTestRoom],checkpointY[sceneTestRoom]); cameraY=roomTop[sceneTestRoom]-420; Camera.setXYpos 480,cameraY}
-onKey KeyF8, => {segment=2; recordChoice=2; for i:=0;i<len(sideProgress);i++ {sideProgress[i]=2}; for i:=0;i<len(enemyHP);i++ {if enemyReturnOnly[i]==1 {enemyHP[i]=4}}}
+onKey KeyF8, => {expeditionReturn()}
 onKey KeyF9, => {startPractice(); for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0; enemyBaseY[i]=-7000}; enemyHP[0]=400; enemyBaseX[0]=600; enemyBaseY[0]=45; enemyClock[0]=-1000; clearEnemyMotion(0); Hero.resetHero(310,0)}
 onKey KeyF10, => {burst(Hero.px,Hero.py+30,240,1,300)}
 onKey KeyT`,
@@ -58,10 +58,11 @@ try {
   await page.locator("#play").click();
   await wait(
     () =>
-      window.latestState.phase === 1 && window.renderState?.sceneBorn === 167,
+      window.latestState.phase === 1 &&
+      window.renderState?.sceneBorn === window.renderState?.sceneClones,
   );
   await check(
-    "all scene clones start, including late-created mechanisms and telegraphs",
+    "all scene views and combat telegraphs start without device clones",
   );
   for (let direction = 0; direction < 2; direction++) {
     if (direction) await tap("F8");

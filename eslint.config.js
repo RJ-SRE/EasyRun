@@ -26,6 +26,9 @@ export default tseslint.config(
     files: [
       "prototypes/runlab/build-belfry.mjs",
       "prototypes/runlab/belfry-level.mjs",
+      "prototypes/runlab/belfry-hunt.mjs",
+      "prototypes/runlab/hunt-init.mjs",
+      "prototypes/runlab/test-hunt-data.mjs",
       "prototypes/runlab/belfry-city-art.mjs",
       "prototypes/runlab/belfry-keeper-art.mjs",
       "prototypes/runlab/belfry-expedition*.mjs",
@@ -53,6 +56,8 @@ export default tseslint.config(
         fetch: "readonly",
         AudioContext: "readonly",
         foes: "readonly",
+        huntFoes: "readonly",
+        renderState: "readonly",
         keeperLines: "readonly",
         inscriptionDiagnostics: "readonly",
         sessionStorage: "readonly",

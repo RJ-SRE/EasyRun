@@ -1,5 +1,7 @@
 # 倒悬钟城技术设计
 
+> v0.10 当前构建入口使用 `belfry-hunt.mjs` / `hunt-init.mjs`，拼接 `HuntCombat.spx` 与 `HuntExpedition.spx`。旧 City/Expedition 机关文件不参与主游戏构建。地图存储 revision 3；8 种敌人、121 常驻克隆；新增护架、压力撤步、单体支援、扑击与审判者 AI。详细协议与调参见 [猎战设计](HUNT_V10.md)。下方旧版机关字段仅用于兼容读写，不代表现行玩法。
+
 v0.8.1，2026-10-25，当前交付包括五区、城市修复、供能选择、铭文与成就。铭文事务见 [实现说明](INSCRIPTION_V07.md)，成就规则见 [钟城铭录](ACHIEVEMENTS_V07.md)，可执行命令见 [运行手册](RUNBOOK.md)。基础关卡参数参见 [v0.4 技术设计](TECHNICAL_DESIGN-v0.4.md)。Node 24.22.1 / pnpm 11.9.0 / spx 3.3.0 / Playwright 1.64.1 保持锁定，无新增运行库。
 
 ## 架构与入口

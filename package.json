@@ -1,6 +1,6 @@
 {
   "name": "easyrun-rupture",
-  "version": "0.8.1",
+  "version": "0.10.0",
   "private": true,
   "type": "module",
   "description": "EasyRun / 裂隙 · 倒悬钟城：spx 纵向钩索动作冒险与可复现开发流程",
@@ -25,7 +25,7 @@
     "game:test": "node scripts/test-game.mjs",
     "game:test:legacy": "node scripts/test-game.mjs --legacy",
     "game:package": "python3 prototypes/runlab/package.py",
-    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/belfry-scene.mjs prototypes/runlab/belfry-city-art.mjs prototypes/runlab/belfry-keeper-art.mjs prototypes/runlab/belfry-expedition*.mjs prototypes/runlab/expedition-init.mjs prototypes/runlab/test-expedition*.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js prototypes/runlab/public/inscription*.js prototypes/runlab/public/expedition*.js prototypes/runlab/public/cet4-words.js --max-warnings 0",
+    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-hunt.mjs prototypes/runlab/hunt-init.mjs prototypes/runlab/test-hunt-data.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/belfry-scene.mjs prototypes/runlab/belfry-city-art.mjs prototypes/runlab/belfry-keeper-art.mjs prototypes/runlab/belfry-expedition*.mjs prototypes/runlab/expedition-init.mjs prototypes/runlab/test-expedition*.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js prototypes/runlab/public/inscription*.js prototypes/runlab/public/expedition*.js prototypes/runlab/public/cet4-words.js --max-warnings 0",
     "game:test:words": "node --test prototypes/runlab/test-inscription-core.mjs && node prototypes/runlab/test-belfry-inscription.mjs",
     "game:test:achievements": "node --test prototypes/runlab/test-belfry-achievements-core.mjs && node prototypes/runlab/test-belfry-achievements.mjs",
     "level:build": "node prototypes/runlab/build-passages.mjs",
@@ -33,9 +33,10 @@
     "level:test": "node scripts/test-passages.mjs",
     "level:package": "python3 prototypes/runlab/passages-package.py",
     "level:lint": "eslint -c prototypes/runlab/eslint-passages.config.mjs prototypes/runlab/*passages*.mjs prototypes/runlab/public/passages*.js scripts/test-passages.mjs --max-warnings 0",
-    "game:test:city": "node prototypes/runlab/test-belfry-city.mjs",
-    "game:test:expedition": "node --test prototypes/runlab/test-expedition-data.mjs && node prototypes/runlab/test-belfry-expedition.mjs && node prototypes/runlab/test-belfry-quests.mjs",
-    "game:test:scene": "node --test prototypes/runlab/test-expedition-data.mjs && node prototypes/runlab/test-belfry-scene.mjs"
+    "game:test:city": "node prototypes/runlab/test-belfry-scene.mjs",
+    "game:test:expedition": "node --test prototypes/runlab/test-hunt-data.mjs && node prototypes/runlab/test-belfry-route.mjs",
+    "game:test:scene": "node --test prototypes/runlab/test-hunt-data.mjs && node prototypes/runlab/test-belfry-scene.mjs",
+    "game:test:hunt": "node --test prototypes/runlab/test-hunt-data.mjs && node prototypes/runlab/test-belfry-hunt.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -2,31 +2,31 @@ export const ACHIEVEMENT_KEY = "easyrun-belfry-achievements-v1";
 export const GROUPS = { journey: "行旅", craft: "技艺", inscription: "铭文" };
 export const ACHIEVEMENTS = [
   {
-    id: "hunter-trial",
+    id: "plate-break",
     group: "craft",
-    title: "看破倒影",
+    title: "裂甲之刃",
     goal: 1,
-    rule: "接受旧猎手试炼后，不落地或受击换过三个不同锚点，并抵达交付台。",
-    lore: "猎手没有留下答案，只留下了可以抵达的下一步。",
-    icon: "M4 25 12 8l12 20 8-19M8 8h8m4 20h8M28 9h7",
+    rule: "在冒险中用断潮打破一名敌人的护架。",
+    lore: "重刃落在它无法承受的位置。",
+    icon: "M5 5l26 26M8 30 28 7M10 7h17v18",
   },
   {
-    id: "city-index",
-    group: "journey",
-    title: "替城记住",
+    id: "ward-cut",
+    group: "craft",
+    title: "断线者",
     goal: 1,
-    rule: "取得并核对无名者索引的两份记录。",
-    lore: "编号七，是送信的苇。编号十一，是修路的栖。",
-    icon: "M5 8h11v22H5zM20 8h11v22H20zM9 14h3m12 0h3M16 21h4",
+    rule: "在冒险中破除缝魂师对守卫的支援。",
+    lore: "最后一根线落下，它们终于各自面对刀锋。",
+    icon: "M5 9l26 18M5 27 31 9M18 3v30",
   },
   {
-    id: "repaired-way",
+    id: "elite-hunt",
     group: "journey",
-    title: "接住坠落",
-    goal: 1,
-    rule: "修好支撑后，在携心返程中实际踏上这处支撑。",
-    lore: "你替它找回扣件，它替你留下落脚的地方。",
-    icon: "M4 21h28M8 21v10m20-10v10M18 3v12m-5-5 5 5 5-5",
+    title: "猎场终结者",
+    goal: 4,
+    rule: "累计击败四名精英守卫（双生猎手分别计数）。",
+    lore: "每一道伤痕，都有不同的来历。",
+    icon: "M18 3 5 11l4 16 9 6 9-6 4-16z",
   },
   {
     id: "first-sling",
@@ -292,9 +292,10 @@ export class AchievementBook {
       this.mark("air-chain", r.targets.size);
     }
     if (e.name === "guardian") this.mark("keeper");
-    if (e.name === "trialcomplete") this.mark("hunter-trial");
-    if (e.name === "indexcomplete") this.mark("city-index");
-    if (e.name === "repairroute") this.mark("repaired-way");
+    if (e.name === "guardbreak") this.mark("plate-break");
+    if (e.name === "wardbreak") this.mark("ward-cut");
+    if (e.name === "elitekill")
+      this.mark("elite-hunt", (this.data.progress["elite-hunt"] || 0) + 1);
     if (e.name === "core") r.core = true;
     if (e.name === "echo") this.mark("echoes", e.echoes);
     if (e.name === "parry")

@@ -161,10 +161,10 @@ func strike() {
   if dist(dx,dy)<r && inArc && !blockedLine(px,py+28,enemyX[i],enemyY[i]) {
    dealt:=damage; marked:=kind==7 && charged && enemyMark[i]>0
    if marked {dealt+=2}
-   if hitEnemy(i,dealt) {
+   if strikeEnemy(i,dealt,kind) {
     if kind==7 {skillImpact(skillWord,2,i)}
     if marked {enemyMark[i]=0; skillFX(enemyX[i],enemyY[i],angle(bladeX,bladeY),3,0.85); event("markbreak")}
-    if enemyType[i]!=3 {
+    if enemyType[i]!=3 && enemyStun[i]>0 {
      push:=95.0; lift:=70.0; stun:=0.18
      if kind==4 {push=65; lift=590; stun=0.85; event("launchhit")}
      if kind==5 || kind==6 {push=90; lift=310; stun=0.55; if !airHitSlow && vy<0 {vy*=0.4; airHitSlow=true}}
@@ -276,7 +276,7 @@ func updateSkills(dt float64) {
    for i:=0;i<len(enemyHP);i++ {
     if dist(enemyX[i]-strikeX,enemyY[i]-strikeY)<115 && dist(enemyX[i]-px,enemyY[i]-py-32)<285 && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {
      damage:=1; if final {damage=3}
-     if hitEnemy(i,damage) {skillImpact(skillWord,4,i); if enemyType[i]!=3 {enemyStun[i]=0.4; if final {enemyVX[i]=facing/90*270; enemyVY[i]=ultimateDir*420+80}}; if final {hitStop=0.07; shock=6}; event("chainhit")}
+     if strikeEnemy(i,damage,10) {skillImpact(skillWord,4,i); if enemyType[i]!=3 && enemyStun[i]>0 {enemyStun[i]=0.4; if final {enemyVX[i]=facing/90*270; enemyVY[i]=ultimateDir*420+80}}; if final {hitStop=0.07; shock=6}; event("chainhit")}
     }
    }
    if final {event("chainfinish"); burst(strikeX,strikeY,18,3,330); if ultimateDir>0 {vy=480; grounded=false}; if ultimateDir<0 {vy=-680; grounded=false}} else {event("swordcut")}
@@ -374,7 +374,7 @@ func update(dt float64) {
   if hook<len(anchorX) {hookX=anchorX[hook]; hookY=anchorY[hook]} else {j:=hook-len(anchorX); hookX=enemyX[j]; hookY=enemyY[j]; valid=enemyHP[j]>0}
   dx:=hookX-px; dy:=hookY-py-28; d:=dist(dx,dy)
   lightTarget:=-1
-  if hook>=len(anchorX) {j:=hook-len(anchorX); if enemyType[j]!=3 && enemyType[j]!=4 {lightTarget=j}}
+  if hook>=len(anchorX) {j:=hook-len(anchorX); if enemyType[j]!=3 && enemyType[j]!=4 && enemyType[j]!=7 && enemyWard[j]<0 && !(enemyType[j]==8 && enemyState[j]==3) {lightTarget=j}}
   if lightTarget>=0 && valid && d>=80 {
    enemyStun[lightTarget]=0.35; enemyX[lightTarget]-=dx/d*650*dt; enemyY[lightTarget]-=dy/d*650*dt; enemyRecoverFor(lightTarget,0.6); enemyVX[lightTarget]=0; enemyVY[lightTarget]=0
    vy=math.Max(vy,-70); ropeLength=d
@@ -382,7 +382,7 @@ func update(dt float64) {
   closeRange:=64.0; if lightTarget>=0 {closeRange=85}
   if !valid {releaseHook(true)} else if d<closeRange {
    if hook<len(anchorX) {cutSeal(hook)}
-   if hook>=len(anchorX) {j:=hook-len(anchorX); hitEnemy(j,2); if enemyType[j]!=3 {enemyStun[j]=0.65; enemyVY[j]=400}; event("hookcut"); if takeFX(90) {Slash.clone []float64{px,py+32,facing,5,float64(attempts)}}}
+   if hook>=len(anchorX) {j:=hook-len(anchorX); landed:=hitEnemy(j,2); if landed && enemyType[j]!=3 && enemyStun[j]>0 {enemyStun[j]=0.65; enemyVY[j]=400}; if landed {event("hookcut")}; if takeFX(90) {Slash.clone []float64{px,py+32,facing,5,float64(attempts)}}}
    releaseHook(true)
   } else if lightTarget<0 {
    vx+=dx/d*2500*dt; vy+=dy/d*2500*dt

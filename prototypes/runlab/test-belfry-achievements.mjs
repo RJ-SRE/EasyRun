@@ -62,7 +62,9 @@ try {
   await open();
   assert.equal(await p.locator("[data-achievement]").count(), 18);
   await p.locator('[data-group="craft"]').click();
-  assert.equal(await p.locator("[data-achievement]").count(), 6);
+  assert.equal(await p.locator("[data-achievement]").count(), 7);
+  assert.equal(await p.locator('[data-achievement="plate-break"]').count(), 1);
+  assert.equal(await p.locator('[data-achievement="ward-cut"]').count(), 1);
   assert.equal(await p.locator("#achievement-equip").isDisabled(), true);
   await close();
   assert.equal((await read()).state.phase, 0);

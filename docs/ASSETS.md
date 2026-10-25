@@ -100,3 +100,9 @@ belfry-city-art.mjs 将五图作为引擎精灵打包，按镜头深度渐变并
 ## 三阶段音乐 · 2026-10-25
 
 按用户指定从本地桌面复制三份 Sea Power MP3：Melancholy Of The Boot、Cleaning out the Rooms (Wandering Horn)、Strange Sports。运行副本位于 `prototypes/runlab/public/audio/music/`，原文件未修改、未转码。共 34,043,869 字节，各自文件名、时长、大小和 SHA-256 见 [清单](../prototypes/runlab/public/audio/music/manifest.json)。这三首是用户提供的第三方录音，不属于程序化原创采样；曲目映射与维护方法见 [场景音乐](SCENE_MUSIC.md)。
+
+## 2026-10-25 猎战敌人图集
+
+通过内置 `image_gen.imagegen` 生成三张独立透明 3×2 六姿态图集，分别为裂甲卫、棘背猎兽、缝魂师。源图位于 `prototypes/runlab/art/belfry/hunt-warden-source.png`、`hunt-hound-source.png`、`hunt-weaver-source.png`；记录见同目录 `hunt-v10-prompts.json`。
+
+构建沿用图集连通区域裁切与落脚线注册，产物可重建，不将拆帧目录入库。图像生成结果用于当前原型美术，不表示来自任何商业游戏或已完成人工逐帧动画。

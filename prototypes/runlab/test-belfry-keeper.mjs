@@ -40,7 +40,7 @@ onKey KeyO, => {keeperFixture(2,6)}
 onKey KeyB, => {keeperFixture(0,-1); enemyHP[keeperIndex]=bossMaxHP*2/3+2; bossHP=enemyHP[keeperIndex]; Hero.px=530; keeperRest(8)}
 onKey KeyN, => {keeperFixture(1,-1); enemyHP[keeperIndex]=bossMaxHP/3+2; bossHP=enemyHP[keeperIndex]; Hero.px=530; keeperRest(8)}
 onKey KeyP, => {keeperFixture(2,-1); enemyHP[keeperIndex]=3; bossHP=3; Hero.px=530; keeperRest(8)}
-onKey KeyZ, => {keeperFixture(0,-1); bossShield=2; sealLeft=false; sealRight=false; Hero.px=530; keeperRest(8)}
+onKey KeyZ, => {keeperFixture(0,-1); Hero.px=530; keeperRest(8)}
 onKey KeyX, => {keeperFixture(2,-1); Hero.invulnerable=40}
 onKey KeyT`,
   );
@@ -220,8 +220,9 @@ try {
   const shieldHP = (await state()).bossHP;
   await heavy();
   await page.waitForTimeout(400);
-  assert.equal((await state()).bossHP, shieldHP);
-  await pass("initial two-seal ward still blocks damage");
+  assert.equal((await state()).bossShield, 0);
+  assert.ok((await state()).bossHP < shieldHP);
+  await pass("first form is directly vulnerable in recovery without exterior seals");
 
   await fixture("F8");
   const pressureStart = (await state()).elapsed;
