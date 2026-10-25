@@ -2,6 +2,6 @@ onCloned data => {
  i:=data.(int)
  for {
   waitNextFrame()
-  if echoTaken[i]>0 {hide} else {show; setXYpos echoX[i],echoY[i]+sin(worldTime*2+float64(i))*6; setHeading 90+sin(worldTime)*12}
+  if echoTaken[i]>0 {hide} else {show; setXYpos echoX[i],echoY[i]+sin(visualTime*2+float64(i))*6; setHeading 90+sin(visualTime)*12}
  }
 }

@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-24T18:53:55.930043+00:00",
+  "version": "0.7.0",
+  "base": "47942dd",
+  "retainedPassagesCommit": "22983b3",
+  "environment": {
+    "os": "macOS arm64",
+    "node": "24.22.1",
+    "spx": "3.3.0",
+    "playwright": "1.64.1"
+  },
+  "core": {
+    "checks": 9,
+    "seedCases": 3000,
+    "result": "passed",
+    "log": "regression-initial.log"
+  },
+  "browserChecks": [
+    {
+      "report": "combat.json",
+      "checks": 13,
+      "date": "2026-10-24T18:40:02.508Z",
+      "result": "passed"
+    },
+    {
+      "report": "enemies.json",
+      "checks": 12,
+      "date": "2026-10-24T18:40:30.807Z",
+      "result": "passed"
+    },
+    {
+      "report": "ninja.json",
+      "checks": 10,
+      "date": "2026-10-24T18:46:39.362Z",
+      "result": "passed"
+    },
+    {
+      "report": "skills.json",
+      "checks": 17,
+      "date": "2026-10-24T18:48:11.944Z",
+      "result": "passed"
+    },
+    {
+      "report": "bow-autoaim.json",
+      "checks": 9,
+      "date": "2026-10-24T18:48:46.545Z",
+      "result": "passed"
+    },
+    {
+      "report": "inscription.json",
+      "checks": 18,
+      "date": "2026-10-24T18:49:00.059Z",
+      "result": "passed"
+    },
+    {
+      "report": "resilience.json",
+      "checks": 5,
+      "date": "2026-10-24T18:49:47.511Z",
+      "result": "passed"
+    },
+    {
+      "report": "lifecycle.json",
+      "checks": 12,
+      "date": "2026-10-24T18:50:07.955Z",
+      "result": "passed"
+    },
+    {
+      "report": "passages-grapple.json",
+      "checks": 6,
+      "date": "2026-10-24T18:24:47.910Z",
+      "result": "passed"
+    }
+  ],
+  "fullRoutes": [
+    {
+      "report": "route-0.json",
+      "result": "passed",
+      "date": "2026-10-24T18:52:01.094Z",
+      "difficulty": 0,
+      "wordMode": false,
+      "elapsedSimulationSeconds": 73.84888897221533,
+      "deaths": 1,
+      "resolvedChallenges": 0,
+      "peakFX": 53,
+      "browser": "156.0.8078.4",
+      "hostFrameCadence": {
+        "samples": 4519,
+        "medianMs": 16.665000000000873,
+        "p95Ms": 16.67000000000189,
+        "note": "Host browser rAF intervals during play, not an engine FPS or device compatibility guarantee."
+      }
+    },
+    {
+      "report": "route-1.json",
+      "result": "passed",
+      "date": "2026-10-24T18:53:11.186Z",
+      "difficulty": 1,
+      "wordMode": true,
+      "elapsedSimulationSeconds": 61.1309373618476,
+      "deaths": 0,
+      "resolvedChallenges": 1,
+      "peakFX": 51,
+      "browser": "156.0.8078.4",
+      "hostFrameCadence": {
+        "samples": 3737,
+        "medianMs": 16.665000000000873,
+        "p95Ms": 16.67000000000189,
+        "note": "Host browser rAF intervals during play, not an engine FPS or device compatibility guarantee."
+      }
+    }
+  ],
+  "legacy": {
+    "ruptureChecks": 4,
+    "motionLifecycleChecks": 3,
+    "log": "regression-resumed.log",
+    "result": "passed"
+  },
+  "build": {
+    "files": 359,
+    "sprites": 44,
+    "xbpPackages": 4,
+    "audioSamples": 82,
+    "result": "passed"
+  },
+  "qualityChecks": [
+    "game and script ESLint",
+    "passages ESLint",
+    "configured Prettier check",
+    "git diff --check",
+    "audio manifest SHA-256"
+  ],
+  "testRepair": "Archer assertions formerly used the first and last airborne telemetry samples as takeoff and landing. At 70 ms telemetry intervals these are not those events. The final test measures from observed anticipation to observed recovery; movement thresholds are retained. The failed initial run is preserved, then regression resumed at ninja tests.",
+  "scope": [
+    "Local automated correctness and visual layout checks; no claim of player learning, retention or enjoyment.",
+    "Host rAF cadence is not engine FPS, input latency or a hardware compatibility guarantee.",
+    "Full routes use real keyboard input without changing game state. Skill and word integration cases use response-only deterministic arena fixtures.",
+    "Separate passages module kept independent; newer enemy VFX work in another chat is outside this frozen integration.",
+    "Remote CI has not been asserted as passed."
+  ],
+  "sha256": {
+    "ECDICT-LICENSE.txt": "f8552dd246f61a4e064569eae6194a01c6b3d63b03bf27c6ca863593c549ed0f",
+    "bow-autoaim.json": "ebfdaebab184e0974da4225740730c4b5e689e78e1b058a61aeb3e08028d03fc",
+    "build.log": "f4d5c64e9d327e3442171d1bf79cd8c132061ab7e17187b2a70f3b12b98c6ee2",
+    "combat.json": "ea10e2d90ad2fe9913e6eb53b0a85b86c0896b7e665797873f5938167e86359d",
+    "enemies.json": "29ea9a2a947a5d1e60dc85e42b838d38d3d21dfc22cb2617b2828b5693b47d63",
+    "enemy-integration-snapshot.json": "6e466551ca1614d7b879767f8b1b1bf673411bfe94b1c5e0c8de17bec4a5ad23",
+    "flying-kick.png": "13d058d74891392f364981a253eb6a7958f9153620f870264ff025883dde2cb7",
+    "focus-1280.png": "ef2a9fe432252e085115329dc8d479880e32cf4ac0292da8c5adcfa1de9c7408",
+    "focus-1440.png": "4f29874f842f1d2b2478a0e8d80b7ddb16a6e3c98bcca6a0ace63fd7c3dac609",
+    "inscription.json": "f779b0904ca3341737425133f6a6308ccfef0b4bee0a0f0c4667f65220bffbac",
+    "ledger.png": "f31a8abbd18afaf4da742a2d45d9494e0feffe6f0e4f71e6b288574d192bf980",
+    "lifecycle.json": "8f41ff4dbe66c55ebf436412b7534a0ce882e99c330cca325ddd6f27c24c7324",
+    "meaning.png": "d959f871807239cd928cf04dc0c30281f53beed41dd6f2cb25f91fef3806ad24",
+    "menu.png": "a55d603038c80e75379526d0d878ceb0be87d611d9363d9905c9f84faf0fa330",
+    "motion-lifecycle.json": "2fac5d7b9d4e9b98957b441917832eb53a0c23a7955f808f49e83524693385e8",
+    "ninja.json": "af6c4cf61e73448c3192dc0221abf6ea7286b8d5cfce72a986b116f31f57d477",
+    "package.log": "0608845edea4c257629e9c3083064104063ef0ff515b1df33d9c8da395c981f2",
+    "passages-grapple.json": "ed9f8c00a6ffa691a41c9cc569e946fce9e03aa3c776b78b2d311829ad5b2689",
+    "passages-grapple.log": "25d0517a6956275479023f046b5099c8cf3a1a86f50063ce8c946e6719a08be4",
+    "regression-initial.log": "41c249ac5e3de3232951fd9052a85b0d54a5d50e1a4314c08b64733fae3fd1a7",
+    "regression-resumed.log": "87e3adf79a26e158e992ebba29aba63c26db3753413a5e5b9bf1a23dd49d2f2c",
+    "resilience.json": "b0835374ba40f6d295a8765cc16f23f39c3855d25cd3eaf6ac89a4b288021a5d",
+    "route-0.json": "fefb20ee84886181c6f1522b6317180aa69d32ed23ed948eda76fc8f5bea9acb",
+    "route-1.json": "e07d31cd00b732dc9179a5e23cf3f506271e50068b801998cf4716f9be7a9f11",
+    "rupture-tests.json": "1cf62c9ce434b29f9d42f61efd044f898bad4ed5e86c957321fd8639dfa64660",
+    "skills.json": "d858a284684c7fa288ff2e93f8b6aad499c213575598ad9d6f6c4e2e5b5522f2",
+    "source-sha256.json": "14069baf31ce0d81c484e994bc475d2fc75ce8f31757d75f8681c17e1b9daa7f",
+    "wall-kick-shot.png": "ba463c851b4035f5dbc72b78e37ea2cad3031d49a5f41477e16192d2b347e797",
+    "word-membership.json": "18c84f12fa274c4cfc89067a5d73a3832bc88e653e611249a33ba66f314e11de"
+  }
+}

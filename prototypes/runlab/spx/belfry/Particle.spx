@@ -3,7 +3,8 @@ onCloned data => {
  setCostume int(p[6]); setSize p[5]; setGraphicEffect GhostEffect,0; setXYpos x,y; show
  for age<p[4] && int(p[7])==attempts {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
-  if phase==1 {
+  if phase==1 || phase==5 {
+   dt=presentationDelta(dt);
    age+=dt; x+=vx*dt; y+=vy*dt; vx*=1-dt*1.6; vy-=220*dt
    setXYpos x,y; setHeading angle(vx,vy)
    t:=clamp(age/p[4],0,1); setGraphicEffect GhostEffect,t*t*100; setSize p[5]*(1-t*0.7)

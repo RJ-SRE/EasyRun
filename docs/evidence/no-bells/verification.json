@@ -1,0 +1,68 @@
+{
+  "recordedAt": "2026-10-25T04:16:11.002154+00:00",
+  "baseCommit": "a8fabb53557e65e092f3cb34d1c4d334df11ee85",
+  "reports": {
+    "combat": {
+      "passed": 13,
+      "cases": [
+        "three-step buffered chain causes damage at strike frames",
+        "holding light attack does not auto-repeat",
+        "launcher lifts enemy and player into aerial follow-up",
+        "charge freezes during pause, releases into heavy strike on resume",
+        "heavy strike throws an enemy into another enemy",
+        "light recovery cancels into dash",
+        "five-hit ultimate active window expires without another input",
+        "full restart clears charge, combo and practice",
+        "sound settings retain only effects and music; former voice controls are absent",
+        "blade effects play and global mute clears active sources",
+        "all 82 retained effects decode without loading any voice pack",
+        "reload preserves music/effects preferences and never fetches dialogue or speech",
+        "failed effects decoding leaves gameplay operational and cannot create dialogue"
+      ],
+      "errors": [],
+      "date": "2026-10-25T04:13:44.726Z"
+    },
+    "motion": {
+      "passed": 9,
+      "cases": [
+        "live focus motion and tension audio while damage, physics and cooldowns remain frozen",
+        "correct letters charge the hero effect without advancing combat",
+        "mute clears focus sources and unmute preserves the pending challenge",
+        "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final E",
+        "a successful arrow does not bypass the next charged sword challenge; only its own answer releases the blade",
+        "the following full bow charge also requires its own answer and records exactly one new settlement",
+        "wrong meaning cancels the arrow, immediately restores movement and leaves passive feedback",
+        "reduced motion removes zoom and particles; restart clears motion, audio and old results",
+        "after restart, success never auto-opens a question; the next deliberate full charge asks normally"
+      ],
+      "errors": [],
+      "date": "2026-10-25T04:14:19.387Z"
+    }
+  },
+  "audioFilesDecoded": 82,
+  "assets": {
+    "updated": 25,
+    "unchanged": 57,
+    "report": "assets.json"
+  },
+  "checks": [
+    "JS ESLint",
+    "Python syntax",
+    "SHA-256 matches all 82 manifest entries",
+    "25 updated PCM masters: finite samples, nonzero RMS, peak below 0.8",
+    "Changed source/doc formatting",
+    "Git whitespace"
+  ],
+  "sourceSha256": {
+    "prototypes/runlab/public/belfry-audio.js": "3660682e0e9f50b63c9ecc1dcc70afa15b07ffbf250984a29a892538460d2f61",
+    "prototypes/runlab/public/audio/sfx/manifest.json": "98cf12e6a5f5f280aaf217db72421627b87f1e3e5afe99be9ef2279bd4af20e0",
+    "scripts/render-belfry-foley.py": "475cbd7d904f96b44f9ff2100a804da077aaed91aff5bf5863fcb42df85e6101",
+    "scripts/render-belfry-skills.py": "4bb4b3b30ce4e5ed980f56674054500ea0552fcb4a3f6c83bd387cf12d752dba",
+    "prototypes/runlab/test-belfry-combat.mjs": "1b9846831cad5765c725023fc3cf9f00274b751e9bd121d6062fd69f7c877913",
+    "prototypes/runlab/test-belfry-inscription-motion.mjs": "747a801b5c35ae2a13b445423c8f947cfc0662f7b14b6c034f7ab3df11a20676"
+  },
+  "limits": [
+    "Local Chromium playback/decoding/lifecycle checks, not a subjective listening-panel evaluation.",
+    "No combat/word logic changes, no full route rerun in this audio-only revision."
+  ]
+}

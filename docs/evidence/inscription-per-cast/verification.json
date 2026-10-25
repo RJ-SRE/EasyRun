@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-25T03:01:42.082207+00:00",
+  "baseCommit": "2f084ca5d9bec1e6be8ccf00e84765738dddc609",
+  "branch": "feat/inscription-v1",
+  "change": "Remove the 12-action-second/two-cast inscription bypass, HUD and dependent resonance achievement; retain direct marked-target sword linking, ultimate gate and presentation flow.",
+  "unitCounts": {
+    "achievements": 9,
+    "inscription": 9
+  },
+  "totalUnitCases": 18,
+  "browserCounts": {
+    "motion": 9,
+    "flow": 18,
+    "achievements": 12,
+    "resilience": 5
+  },
+  "totalBrowserCases": 44,
+  "sourceSha256": {
+    "package.json": "4b4ab720d34d8382e541e09071df03d933a02f9ec0ec29b9442b905168f7452c",
+    "prototypes/runlab/build-belfry.mjs": "f3d1cf437988400dfde014d0afd47a24d480ec591b914b24be9824642bf168f6",
+    "prototypes/runlab/public/belfry.js": "8fc3375e0bf41d1ff258103ca9c6ab9e913bf43b6692112333789e90ceea07e9",
+    "prototypes/runlab/public/inscription-ui.js": "9660e0f942ff6b024d96401f417ddc3913159bd3dc94ec065a49cec499a5e2df",
+    "prototypes/runlab/public/inscription.css": "c5a9fa9621df601c13351b5d05827daf041f94b24c408f54a38e371a9cb17645",
+    "prototypes/runlab/public/inscription-core.js": "e065be39a474c75c26060f3e34de47bd809a6e5cb86fb811a2c363e3a28a7219",
+    "prototypes/runlab/public/inscription-motion.js": "e9d8954d71f7d34a93352c46ba73b85ebab77c59754beb6be11476d9bb27a8cd",
+    "prototypes/runlab/public/belfry-achievements-core.js": "36e33a2800502ddb130da20cb549b3db71e77f1238eb710e4b8c516fde7ccfd5",
+    "prototypes/runlab/public/belfry-achievements.js": "70ae15b4bc89413c707639fa9db108a7b45a54d91453eb579df4b1976e7108f7",
+    "prototypes/runlab/spx/belfry/main.spx": "93d3ce6e0b68f9f18f05148c15fe4c99dd2a10f4be274412aa6c93425dc7c336",
+    "prototypes/runlab/spx/belfry/Inscription.spx": "1f35a80b4948c8b08c4c0f192c826736c8d55c54947cf8a4ed9ce46198597eac",
+    "prototypes/runlab/spx/belfry/Hero.spx": "4df9b39e3930e1f68bce412c4b595ab79eef594023a9c8972a80bdd1167a735f",
+    "prototypes/runlab/test-belfry-achievements-core.mjs": "355194fc5f6b023d21af0309ad759d8f48ca28f05ff0360da904e9d5949960a0",
+    "prototypes/runlab/test-inscription-core.mjs": "8608919abe558db637a244193d006199bcb5ba1a83eefcb833a39ebb7052359e",
+    "prototypes/runlab/test-belfry-achievements.mjs": "0ce56f2b625cffeddafae2c263c8e52868b9e770a725068b7bc3d4486882102e",
+    "prototypes/runlab/test-belfry-inscription-motion.mjs": "352cce245240dd37c1f348000cca0643256376550e22fe1919baeb3b261b52d3",
+    "prototypes/runlab/test-belfry-inscription.mjs": "0d78614b79821a9c620e529d33bfcc424464797fbe2bc30698a5fecd89e92524",
+    "prototypes/runlab/test-belfry-inscription-resilience.mjs": "4bf08906d1c7d76f361e82ddba9e3d22ec109a9cf064fe4a14d7ebacb05b6e24"
+  },
+  "build": {
+    "files": 359,
+    "sprites": 44,
+    "manifestSha256": "cc9a177faa790318b8658c3c4c11d59d22a4ff6bf3f18963d861bf3184c6e577"
+  },
+  "checks": {
+    "build": "passed",
+    "gameEslint": "passed via direct Node CLI",
+    "userBrowser": "Existing 4184 tab refreshed, 0/15 achievement ledger confirmed, returned to title. No player storage cleared.",
+    "prettierChangedFiles": "passed",
+    "gitDiffWhitespace": "passed",
+    "markdownLinks": {
+      "files": 49,
+      "localFileLinks": 283,
+      "missing": 0
+    },
+    "sourceHashes": "all 18 match tested sources"
+  },
+  "limits": [
+    "No full-route replay, no CI run, no clean-system installation in this revision.",
+    "Motion and achievement browser suites use real opening-platform keyboard input with seeded vocabulary. No player coordinates or health injected.",
+    "Inscription flow suite retains its documented deterministic encounter fixtures; it does not represent an unmodified full-route completion.",
+    "Retired achievement save compatibility tested with the pure record model: preserve other unlocks, words and equipped titles; ignore retired resonance ID and reset it only when equipped.",
+    "Rare complete no-damage achievements covered by rule tests, not a fresh real-keyboard no-damage full route.",
+    "Local headless timing samples do not establish a stable FPS or cross-device performance guarantee."
+  ]
+}

@@ -1,0 +1,335 @@
+{
+  "source": "https://github.com/skywind3000/ECDICT",
+  "commit": "ab22ad36302cafc6349a050e2b60894855208055",
+  "sha256": "d1ecbdf9ee2b920afb6f430ca6b6bb9f559588cf0dff86e04bd255f9390843cc",
+  "entries": [
+    {
+      "word": "advice",
+      "tag": "zk gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "allow",
+      "tag": "zk gk cet4 ky"
+    },
+    {
+      "word": "brave",
+      "tag": "zk gk cet4 ky"
+    },
+    {
+      "word": "choice",
+      "tag": "zk gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "climb",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "danger",
+      "tag": "zk gk cet4 ky ielts"
+    },
+    {
+      "word": "dream",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "escape",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "follow",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "forest",
+      "tag": "zk gk cet4 cet6 ky ielts"
+    },
+    {
+      "word": "gentle",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "guard",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "honest",
+      "tag": "zk gk cet4 ky"
+    },
+    {
+      "word": "journey",
+      "tag": "gk cet4 cet6 ky"
+    },
+    {
+      "word": "lucky",
+      "tag": "zk gk cet4 ky"
+    },
+    {
+      "word": "narrow",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "notice",
+      "tag": "zk gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "protect",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "reach",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "repair",
+      "tag": "zk gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "search",
+      "tag": "zk gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "accept",
+      "tag": "zk gk cet4 ky"
+    },
+    {
+      "word": "adapt",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "ancient",
+      "tag": "zk gk cet4 cet6 ky ielts"
+    },
+    {
+      "word": "attempt",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "balance",
+      "tag": "gk cet4 ky toefl ielts"
+    },
+    {
+      "word": "belief",
+      "tag": "gk cet4 ky toefl"
+    },
+    {
+      "word": "calm",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "claim",
+      "tag": "cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "courage",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "create",
+      "tag": "zk gk cet4 cet6 ky ielts"
+    },
+    {
+      "word": "defeat",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "deserve",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "doubt",
+      "tag": "zk gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "effort",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "enable",
+      "tag": "cet4 cet6 ky toefl"
+    },
+    {
+      "word": "energy",
+      "tag": "zk cet4 cet6 ky ielts"
+    },
+    {
+      "word": "evidence",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "failure",
+      "tag": "gk cet4 ky ielts"
+    },
+    {
+      "word": "focus",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "freedom",
+      "tag": "gk cet4 cet6 ky ielts"
+    },
+    {
+      "word": "gather",
+      "tag": "gk cet4 cet6 ky"
+    },
+    {
+      "word": "ignore",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "improve",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "limit",
+      "tag": "gk cet4 cet6 ky"
+    },
+    {
+      "word": "memory",
+      "tag": "zk gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "patient",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "purpose",
+      "tag": "zk gk cet4 cet6 ky ielts"
+    },
+    {
+      "word": "resist",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "reward",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "risk",
+      "tag": "zk gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "trust",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "achieve",
+      "tag": "zk gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "anxiety",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "approach",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "assume",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "aware",
+      "tag": "gk cet4 ky toefl ielts"
+    },
+    {
+      "word": "benefit",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "brief",
+      "tag": "gk cet4 ky toefl"
+    },
+    {
+      "word": "burden",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "complex",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "concept",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "conduct",
+      "tag": "gk cet4 cet6 ky toefl gre"
+    },
+    {
+      "word": "conflict",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "conscious",
+      "tag": "cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "consequence",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "constant",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "contrast",
+      "tag": "cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "critical",
+      "tag": "cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "decline",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "depend",
+      "tag": "zk gk cet4 cet6 ky"
+    },
+    {
+      "word": "determine",
+      "tag": "gk cet4 cet6 ky toefl"
+    },
+    {
+      "word": "efficient",
+      "tag": "cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "essential",
+      "tag": "cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "eventually",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "expand",
+      "tag": "gk cet4 cet6 ky toefl ielts gre"
+    },
+    {
+      "word": "faith",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "grant",
+      "tag": "cet4 cet6 ky ielts gre"
+    },
+    {
+      "word": "inspire",
+      "tag": "gk cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "persist",
+      "tag": "cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "resolve",
+      "tag": "cet4 cet6 ky toefl ielts"
+    },
+    {
+      "word": "reveal",
+      "tag": "cet4 cet6 ky toefl"
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+// Five assassin roles. Attack clocks advance only in the game simulation.
+// States: 0 observe/reposition, 1 anticipation, 2 recovery, 3 committed strike,
+// 4 holding a captured player, 5 committed footwork. All damaging moves reserve
+// the same two attack slots, including preparation and repositioning.
+func enemyMaxHP(kind int) int {
+ if kind==0 || kind==2 {return 3}; if kind==4 {return 5}; if kind==3 {if difficulty==0 {return 16}; return 20}; return 4
+}
+func enemySupport(i int) int {
+ best:=-1; distance:=100000.0
+ for j:=0;j<len(floorX);j++ {
+  d:=abs(enemyBaseY[i]-34-floorY[j])
+  if enemyBaseX[i]>=floorX[j] && enemyBaseX[i]<=floorX[j]+floorW[j] && d<distance {distance=d; best=j}
+ }
+ return best
+}
+func clearEnemyMotion(i int) {
+ enemyMark[i]=0;
+ enemyOffX[i]=0; enemyOffY[i]=0; enemyVX[i]=0; enemyVY[i]=0; enemyStun[i]=0; enemyThrown[i]=0; enemyHazard[i]=0; enemyMode[i]=0; enemyCycle[i]=0; enemyGreeted[i]=0
+ enemyX[i]=enemyBaseX[i]; enemyY[i]=enemyBaseY[i]; enemyFacing[i]=-1; enemyStride[i]=0; enemyFloor[i]=enemySupport(i); enemyStep[i]=0; enemySpent[i]=0; enemyRecover[i]=0.8; enemyAimX[i]=enemyX[i]; enemyAimY[i]=enemyY[i]
+ enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]; enemyMoveX[i]=enemyX[i]; enemyMoveY[i]=enemyY[i]; enemyMoveTime[i]=0; enemyMoveArc[i]=0
+}
+func resetEnemies() {
+ for i:=0;i<len(enemyHP);i++ {
+  hp:=enemyMaxHP(enemyType[i]); if i>=11 {hp=0}
+  clearEnemyMotion(i); enemyHP[i]=hp; enemyState[i]=0; enemyClock[i]=0.25+float64(i%4)*0.17; enemyFlash[i]=0
+ }
+ bossHP=enemyHP[10]
+}
+func enterEnemyState(i,state int) {enemyState[i]=state; enemyClock[i]=0}
+func enemyRecoverFor(i int,duration float64) {
+ enemyRecover[i]=duration; enemyHazard[i]=0; enemyVX[i]*=0.3; enterEnemyState(i,2)
+}
+func breakChain(reason string) {
+ if chainOwner<0 {return}
+ i:=chainOwner; chainOwner=-1; chainTime=0; enemyRecoverFor(i,0.95); enemyEvent("chainbreak",i); event(reason); ring(Hero.px,Hero.py+30,0.65,0)
+}
+func releaseBind() {
+ if bindEnemy<0 {return}
+ i:=bindEnemy; bindEnemy=-1; bindTime=0; controlImmune=2.0; controlGrace=0.40; Hero.invulnerable=math.Max(Hero.invulnerable,0.4)
+ Hero.vx=0; Hero.vy=0; Hero.buffer=0; Hero.cancelAttack(); enemyRecoverFor(i,1.05); enemyEvent("release",i); event("bindrelease")
+}
+func captureHero(i int) {
+ if bindTime>0 || controlImmune>0 || controlGrace>0 || Hero.invulnerable>0 || !Hero.grounded || abs(Hero.py+34-enemyY[i])>20 {return}
+ // Grip only on supported ground; no teleport or forced push over an edge.
+ bindEnemy=i; bindTime=0.7; bindX=Hero.px; bindY=Hero.py; chainOwner=-1; chainTime=0
+ Hero.cancelAttack(); Hero.hook=-1; Hero.dashTime=0; Hero.plunging=false; Hero.buffer=0; Hero.vx=0; Hero.vy=0
+ enemyVX[i]=0; enemyHazard[i]=0; enterEnemyState(i,4); event("bind"); enemyEvent("grip",i); ring(Hero.px,Hero.py+35,0.55,2)
+}
+func canEnemyAttack(i int) bool {
+ if bindTime>0 || controlGrace>0 || enemyStun[i]>0 {return false}
+ if abs(enemyY[i]-cameraY)>245 || abs(Hero.py+30-enemyY[i])>430 {return false}
+ active:=0; melee:=0
+ for j:=0;j<len(enemyHP);j++ {
+  if j!=i && enemyHP[j]>0 && (enemyState[j]==1 || enemyState[j]==3 || enemyState[j]==4 || enemyState[j]==5) {
+   active++; if enemyType[j]!=0 && enemyType[j]!=2 {melee++}
+  }
+ }
+ if active>=2 {return false}
+ if enemyType[i]!=0 && enemyType[i]!=2 && melee>0 {return false}
+ return true
+}
+func aimEnemy(i int) {
+ enemyAimX[i]=Hero.px; enemyAimY[i]=Hero.py+30
+ if enemyType[i]==2 {enemyAimX[i]=clamp(Hero.px+Hero.vx*0.18,100,860)}
+ enemyFacing[i]=1; if enemyAimX[i]<enemyX[i] {enemyFacing[i]=-1}
+}
+func throwProjectile(i int,spread float64,kind int) {
+ dx:=enemyAimX[i]-enemyX[i]; dy:=enemyAimY[i]-enemyY[i]; d:=math.Max(1,dist(dx,dy))
+ speed:=310.0; if kind==1 {speed=460}; if kind==2 {speed=540}; if difficulty==0 {speed*=0.82}
+ vx:=dx/d*speed; vy:=dy/d*speed
+ Bolt.clone []float64{enemyX[i],enemyY[i],vx-spread*vy,vy+spread*vx,float64(attempts),float64(kind)}
+}
+func beginEnemyAttack(i int) {
+ aimEnemy(i); enemyMode[i]=enemyCycle[i]%2; enemyCycle[i]++; enemyStep[i]=0; enemySpent[i]=0
+ // These decisions use the player's position at commitment, not future inputs.
+ if enemyMode[i]==1 && (enemyType[i]==1 || enemyType[i]==3) {
+  startEnemyMove(i,enemyX[i]-enemyFacing[i]*88,enemyY[i],0.28,22); enemyEvent("backstep",i); return
+ }
+ if enemyMode[i]==1 && enemyType[i]==5 {
+  startEnemyMove(i,Hero.px+enemyFacing[i]*90,enemyY[i],0.42,24); enemyEvent("shadowstep",i); return
+ }
+ enterEnemyState(i,1); enemyEvent("tell",i)
+}
+func enemyGroundLimit(i int,x float64) float64 {
+ lo:=115.0; hi:=845.0; floor:=enemyFloor[i]
+ if practice==0 && floor>=0 {lo=floorX[floor]+32; hi=floorX[floor]+floorW[floor]-32}
+ return clamp(x,lo,hi)
+}
+func startEnemyMove(i int,x,y,duration,arc float64) {
+ if enemyType[i]!=0 && enemyType[i]!=2 {x=enemyGroundLimit(i,x)} else {x=clamp(x,150,810)}
+ enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]; enemyMoveX[i]=x; enemyMoveY[i]=y; enemyMoveTime[i]=duration; enemyMoveArc[i]=arc
+ enemyVX[i]=0; enemyVY[i]=0; enemyHazard[i]=0; enterEnemyState(i,5)
+}
+func updateEnemyMove(i int,dt float64) {
+ oldX:=enemyX[i]; oldY:=enemyY[i]
+ u:=clamp((enemyClock[i]+dt)/enemyMoveTime[i],0,1); ease:=u*u*(3-2*u)
+ enemyX[i]=enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease
+ enemyY[i]=enemyFromY[i]+(enemyMoveY[i]-enemyFromY[i])*ease+sin(u*math.Pi)*enemyMoveArc[i]
+ enemyVX[i]=(enemyX[i]-oldX)/math.Max(dt,0.001); enemyVY[i]=(enemyY[i]-oldY)/math.Max(dt,0.001)
+ enemyStride[i]+=abs(enemyX[i]-oldX); enemyOffX[i]=enemyX[i]-enemyBaseX[i]; enemyOffY[i]=enemyY[i]-enemyBaseY[i]
+}
+func enemyMotion(i int,dt float64) {
+ kind:=enemyType[i]; oldY:=enemyY[i]; oldX:=enemyX[i]
+ if enemyState[i]==5 && enemyStun[i]<=0 {updateEnemyMove(i,dt); return}
+ if enemyState[i]==3 && enemyMode[i]==1 && enemyStun[i]<=0 && (kind==1 || kind==3 || kind==2) {
+  t:=enemyClock[i]+dt
+  if kind==2 {
+   // Wall kick, airborne shot, then a visible return to the same foothold.
+   u:=clamp(t/0.88,0,1); arc:=sin(u*math.Pi)
+   enemyX[i]=clamp(enemyFromX[i]+enemyFacing[i]*arc*145,100,860); enemyY[i]=enemyFromY[i]+arc*82
+  } else if t<=0.42 {
+   u:=clamp(t/0.42,0,1); ease:=u*u*(3-2*u)
+   enemyX[i]=enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease; enemyY[i]=enemyFromY[i]+sin(u*math.Pi)*60
+  } else {enemyY[i]=enemyFromY[i]; enemyX[i]=enemyMoveX[i]}
+  enemyVX[i]=(enemyX[i]-oldX)/math.Max(dt,0.001); enemyVY[i]=(enemyY[i]-oldY)/math.Max(dt,0.001)
+ } else if kind==0 {
+  if enemyStun[i]>0 {enemyVY[i]-=800*dt; enemyVX[i]*=math.Max(0,1-dt*2)} else {
+   targetX:=enemyBaseX[i]; if abs(Hero.py+30-enemyY[i])<270 {targetX=clamp(Hero.px+enemyFacing[i]*-185,180,780)}
+   if enemyState[i]!=0 {targetX=enemyX[i]}
+   enemyVX[i]+=(clamp((targetX-enemyX[i])*2,-100,100)-enemyVX[i])*dt*4
+   targetY:=enemyBaseY[i]+sin(worldTime*1.4+float64(i))*5
+   enemyVY[i]+=((targetY-enemyY[i])*9-enemyVY[i]*5)*dt
+  }
+  enemyX[i]+=enemyVX[i]*dt; enemyY[i]+=enemyVY[i]*dt
+ } else if kind==2 {
+  if enemyStun[i]>0 {enemyVX[i]*=math.Max(0,1-dt*5); enemyVY[i]-=650*dt; enemyX[i]+=enemyVX[i]*dt; enemyY[i]+=enemyVY[i]*dt} else {
+   // The archer withdraws through the same visible niche, never teleports.
+   targetX:=enemyBaseX[i]; if enemyState[i]==1 || enemyState[i]==3 {targetX+=enemyFacing[i]*22}
+   enemyX[i]+=(targetX-enemyX[i])*math.Min(1,dt*5); enemyY[i]+=(enemyBaseY[i]-enemyY[i])*math.Min(1,dt*4)
+  }
+ } else {
+  floor:=enemyFloor[i]; lo:=115.0; hi:=845.0; top:=0.0
+  if practice==0 && floor>=0 {lo=floorX[floor]+32; hi=floorX[floor]+floorW[floor]-32; top=floorY[floor]}
+  supported:=enemyY[i]<=top+35 && enemyVY[i]<=0
+  if supported {enemyY[i]=top+34; enemyVY[i]=0}
+  if enemyStun[i]<=0 && supported && enemyState[i]==0 {
+   dx:=Hero.px-enemyX[i]; requested:=0.0
+   if abs(Hero.py-top)<110 && abs(dx)>80 {
+    requested=enemyFacing[i]*85; if kind==4 {requested=0; if abs(dx)<140 {requested=-enemyFacing[i]*45}}; if kind==5 {requested=enemyFacing[i]*125}
+   }
+   enemyVX[i]+=(requested-enemyVX[i])*math.Min(1,dt*8)
+  } else if enemyState[i]!=3 {enemyVX[i]*=math.Max(0,1-dt*6)}
+  if !supported {enemyVY[i]-=1050*dt}
+  enemyX[i]=clamp(enemyX[i]+enemyVX[i]*dt,lo,hi); enemyY[i]+=enemyVY[i]*dt
+  if oldY>=top+34 && enemyY[i]<top+34 {enemyY[i]=top+34; enemyVY[i]=0}
+ }
+ enemyX[i]=clamp(enemyX[i],100,860); enemyStride[i]+=abs(enemyX[i]-oldX)
+ enemyOffX[i]=enemyX[i]-enemyBaseX[i]; enemyOffY[i]=enemyY[i]-enemyBaseY[i]
+}
+func updateEnemies(dt float64) {
+ threatCount=0; attackSlots=0
+ for i:=0;i<len(enemyHP);i++ {
+  if enemyFlash[i]>0 {enemyFlash[i]-=dt}
+  if enemyHP[i]<=0 {
+   if chainOwner==i {breakChain("chaincut")}
+   enemyHazard[i]=0
+   if practice==1 && enemyBaseY[i]>-6000 {enemyClock[i]+=dt; if enemyClock[i]>3 {enemyHP[i]=20; clearEnemyMotion(i); enemyState[i]=0; enemyClock[i]=0}}
+   continue
+  }
+  if enemyStun[i]>0 {enemyStun[i]=math.Max(0,enemyStun[i]-dt)}
+  if enemyThrown[i]>0 {enemyThrown[i]-=dt}
+  kind:=enemyType[i]; dx:=Hero.px-enemyX[i]; dy:=Hero.py+30-enemyY[i]; distance:=dist(dx,dy)
+  if distance<480 {threatCount++}
+  if enemyState[i]==0 && abs(dx)>10 {enemyFacing[i]=1; if dx<0 {enemyFacing[i]=-1}}
+  enemyMotion(i,dt)
+  if enemyThrown[i]>0 {
+   for j:=0;j<len(enemyHP);j++ {if j!=i && enemyHP[j]>0 && dist(enemyX[i]-enemyX[j],enemyY[i]-enemyY[j])<68 {if hitEnemy(j,2) {enemyThrown[i]=0; enemyVX[i]*=-0.25; enemyStun[j]=0.55; event("collision")}}}
+  }
+  if enemyState[i]==4 {if bindEnemy!=i {enemyRecoverFor(i,1.0)};
+ continue
+}
+  if enemyStun[i]>0 {
+ continue
+}
+  enemyClock[i]+=dt; t:=enemyClock[i]
+  if enemyState[i]==5 {
+   if t>=enemyMoveTime[i] {enemyVX[i]=0; enemyVY[i]=0; aimEnemy(i); enterEnemyState(i,1); enemyEvent("tell",i)}
+  } else if enemyState[i]==0 {
+   cooldown:=1.0+float64(i%3)*0.22; if difficulty==0 {cooldown+=0.35}
+   inRange:=distance<420
+   if kind==1 || kind==3 {inRange=abs(dy)<58 && abs(dx)<165}
+   if kind==4 {inRange=distance>85 && distance<410}
+   if kind==5 {inRange=Hero.grounded && abs(dy)<25 && abs(dx)<165 && controlImmune<=0}
+   if t>cooldown && inRange && canEnemyAttack(i) {beginEnemyAttack(i)}
+  } else if enemyState[i]==1 {
+   windup:=0.58; if kind==2 {windup=0.82}; if kind==4 {windup=0.72}; if kind==5 {windup=0.50}; if kind==3 {windup=0.72}
+   if kind==0 && enemyMode[i]==2 {windup=0.34}
+   if (kind==1 || kind==3) && enemyMode[i]==1 {windup=0.62}
+   if kind==4 && enemyMode[i]==1 {windup=0.82}
+   if kind==5 && enemyMode[i]==1 {windup=0.62}
+   if difficulty==0 {windup+=0.10}
+   // Aim tracks only early preparation; final 220 ms are a committed direction.
+   if t<windup-0.22 {aimEnemy(i)}
+   if t>=windup {
+    if bindTime>0 || controlGrace>0 {enemyRecoverFor(i,0.8);
+ continue
+}
+    enterEnemyState(i,3); enemyStep[i]=0; enemySpent[i]=0; enemyAttackHealth[i]=health
+    if kind==0 {throwProjectile(i,0,0); enemyVX[i]=-enemyFacing[i]*45; enemyVY[i]=-45; enemyEvent("knife",i)}
+    enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]
+    if kind==2 {if enemyMode[i]==0 {throwProjectile(i,0,1); enemyEvent("arrow",i)} else {enemyEvent("wallkick",i)}}
+    if kind==1 || kind==3 {if enemyMode[i]==0 {enemyVX[i]=enemyFacing[i]*260; enemyEvent("cut",i)} else {enemyMoveX[i]=enemyGroundLimit(i,enemyX[i]+enemyFacing[i]*180); enemyEvent("flyingkick",i)}}
+    if kind==4 {enemyHazard[i]=0.85; if enemyMode[i]==1 {enemyEvent("chainsweep",i)} else {enemyEvent("chaincast",i)}}
+    if kind==5 {enemyVX[i]=enemyFacing[i]*480; enemyEvent("grabattempt",i)}
+   }
+  } else if enemyState[i]==3 {
+   if kind==0 {
+    if t>=0.12 && enemyMode[i]==1 {
+     enemyMode[i]=2; startEnemyMove(i,enemyX[i]+enemyFacing[i]*155,enemyY[i]+28,0.32,46); enemyEvent("aircross",i)
+    } else if t>0.42 {enemyRecoverFor(i,0.95)}
+   }
+   if kind==2 {
+    if enemyMode[i]==1 && t>=0.30 && enemyStep[i]==0 {enemyStep[i]=1; throwProjectile(i,0,2); enemyEvent("arrow",i); enemyEvent("airshot",i)}
+    finish:=0.18; if enemyMode[i]==1 {finish=0.90}
+    if t>finish {enemyRecoverFor(i,1.15)}
+   }
+   if kind==1 || kind==3 {
+    // Short cut, shoulder/elbow follow-through, then a low sweep. Each has an
+    // actual active interval and a gap; a missed opening strike ends the combo.
+    if enemyMode[i]==1 {
+     active:=t>=0.14 && t<0.36; low:=t>=0.70 && t<0.87
+     if t>=0.58 && enemyStep[i]==0 {enemyStep[i]=1; enemySpent[i]=0; enemyEvent("sweep",i)}
+     dx=Hero.px-enemyX[i]; dy=Hero.py+30-enemyY[i]
+     if enemySpent[i]==0 && abs(dx)<110 && dx*enemyFacing[i]>-22 && ((active && abs(dy)<70) || (low && abs(dy)<55 && Hero.py<enemyY[i]-6)) {hurt(1); enemySpent[i]=1}
+     enemyHazard[i]=0; if active || low {enemyHazard[i]=0.1}
+     if t>0.96 {enemyRecoverFor(i,1.15); enemyEvent("land",i)}
+    } else {
+    if t>0.18 {enemyVX[i]*=math.Max(0,1-dt*14)}
+    active:=t<0.13; reach:=90.0; low:=false
+    if enemyStep[i]>=1 && t>0.37 && t<0.49 {active=true; reach=80}
+    if enemyStep[i]>=2 && t>0.77 && t<0.94 {active=true; reach=135; low=true}
+    if t>0.25 && enemyStep[i]==0 {if abs(Hero.px-enemyX[i])<145 && abs(Hero.py+30-enemyY[i])<75 {enemyStep[i]=1; enemySpent[i]=0; enemyEvent("elbow",i)} else {enemyRecoverFor(i,0.85)}}
+    if t>0.60 && enemyStep[i]==1 {enemyStep[i]=2; enemySpent[i]=0; enemyEvent("sweep",i)}
+    dy=Hero.py+30-enemyY[i]; dx=Hero.px-enemyX[i]
+    if active && enemySpent[i]==0 && abs(dx)<reach && dx*enemyFacing[i]>-25 && abs(dy)<55 {
+     if !low || Hero.py<enemyY[i]-6 {hurt(1); enemySpent[i]=1}
+    }
+    enemyHazard[i]=0; if active {enemyHazard[i]=0.1}
+    if t>1.02 {enemyRecoverFor(i,0.95)}
+    }
+   }
+   if kind==4 {
+    if enemyMode[i]==1 {
+     enemyHazard[i]=0; if t>=0.12 && t<0.34 {enemyHazard[i]=0.1}
+     dx=(Hero.px-enemyX[i])*enemyFacing[i]; dy=Hero.py-(enemyY[i]-34)
+     if enemyHazard[i]>0 && enemySpent[i]==0 && dx>0 && dx<220 && dy>-25 && dy<22 {hurt(1); enemySpent[i]=1}
+     if t>0.64 {enemyMode[i]=2; enemyStep[i]=0; enemySpent[i]=0; aimEnemy(i); enterEnemyState(i,1); enemyEvent("tell",i)}
+    } else if chainOwner==i {
+     enemyAimX[i]=Hero.px; enemyAimY[i]=Hero.py+30; enemyHazard[i]=chainTime
+     if chainTime<=0 {breakChain("chainfree")}
+    } else {
+     progress:=clamp(t/0.34,0,1); tx:=enemyX[i]+(enemyAimX[i]-enemyX[i])*progress; ty:=enemyY[i]+(enemyAimY[i]-enemyY[i])*progress
+     enemyHazard[i]=math.Max(0,0.85-t)
+     if t<0.44 && enemySpent[i]==0 && dist(Hero.px-tx,Hero.py+30-ty)<32 && Hero.invulnerable<=0 && bindTime<=0 && controlGrace<=0 && chainOwner<0 {
+      chainOwner=i; chainTime=1.25; enemySpent[i]=1; Hero.hook=-1; enemyEvent("tether",i); event("tether")
+     }
+     if t>0.85 {enemyRecoverFor(i,1.1)}
+    }
+   }
+   if kind==5 {
+    if t<0.22 && abs(Hero.px-enemyX[i])<42 {captureHero(i)}
+    if t>0.24 && enemyState[i]==3 {enemyRecoverFor(i,1.25); enemyEvent("grabmiss",i)}
+   }
+  } else if enemyState[i]==2 {
+   if t>enemyRecover[i] {enterEnemyState(i,0)}
+  }
+ }
+ for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && (enemyState[i]==1 || enemyState[i]==3 || enemyState[i]==4 || enemyState[i]==5) {attackSlots++}}
+}

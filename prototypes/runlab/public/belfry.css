@@ -590,7 +590,7 @@ kbd {
 .controls kbd {
   margin-right: 4px;
 }
-footer {
+main > footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -601,12 +601,12 @@ footer {
   padding: 4px 0 12px;
   letter-spacing: 1px;
 }
-footer div {
+main > footer div {
   display: flex;
   align-items: center;
   gap: 20px;
 }
-footer button {
+main > footer button {
   padding: 4px;
   border: 0;
   font-size: 9px;
@@ -886,5 +886,218 @@ footer button {
 @media (max-height: 750px) {
   .settings-panel label {
     margin: 11px 0;
+  }
+}
+
+/* The practice selector and restraint timer stay in the existing game frame. */
+.practice-controls {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  top: 17%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 10px;
+  border: 1px solid #bca77645;
+  background: #0c1219e8;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.practice-controls > span {
+  color: #9d997f;
+  margin-right: 8px;
+  letter-spacing: 2px;
+}
+.practice-controls button {
+  font-size: 11px;
+  padding: 6px 8px;
+  color: #b7b8aa;
+  border: 1px solid transparent;
+}
+.practice-controls button.selected {
+  color: #f0d7a8;
+  border-color: #b59b6766;
+  background: #b59b6715;
+}
+.restraint {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  bottom: 20%;
+  transform: translateX(-50%);
+  width: 220px;
+  padding: 10px 12px;
+  background: #16101ce8;
+  border: 1px solid #aa8cbb80;
+  font-size: 12px;
+  color: #eadcf3;
+}
+.restraint b {
+  float: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+.restraint > div {
+  height: 3px;
+  margin-top: 9px;
+  background: #71617744;
+}
+.restraint i {
+  display: block;
+  height: 100%;
+  background: #d0afd9;
+}
+@media (max-width: 800px) {
+  .practice-controls {
+    gap: 0;
+    padding: 3px 4px;
+    font-size: 9px;
+  }
+  .practice-controls > span {
+    display: none;
+  }
+  .practice-controls button {
+    font-size: 9px;
+    padding: 4px;
+  }
+  .restraint {
+    font-size: 10px;
+    width: 180px;
+  }
+}
+/* Compact combat deck: readable timing without covering the landing corridor. */
+.skill-dock {
+  position: absolute;
+  bottom: 57px;
+  left: 27px;
+  pointer-events: none;
+  opacity: 0;
+  width: 416px;
+}
+body.playing .skill-dock {
+  opacity: 1;
+}
+.skill-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  font-size: 9px;
+  color: #b69688;
+  letter-spacing: 2px;
+}
+.skill-meta small {
+  font:
+    9px ui-monospace,
+    monospace;
+  color: #b8b7aa;
+  letter-spacing: 0;
+}
+.skill-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.skill-slot {
+  --cooldown: 0%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+  padding: 6px 5px;
+  border: 1px solid #af89734d;
+  background: #0b111ce8;
+  overflow: hidden;
+}
+.skill-slot::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: var(--cooldown);
+  background: #71504d44;
+  border-top: 1px solid #c78b7360;
+  transition: height 0.07s linear;
+}
+.skill-slot kbd {
+  position: absolute;
+  right: 3px;
+  top: 2px;
+  font-size: 8px;
+  padding: 0 3px;
+  opacity: 0.7;
+}
+.skill-slot svg {
+  width: 29px;
+  height: 29px;
+  flex: none;
+  stroke: #d7bba5;
+  stroke-width: 1.4;
+  fill: none;
+  position: relative;
+}
+.skill-slot b {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  position: relative;
+}
+.skill-time {
+  display: block;
+  font:
+    9px ui-monospace,
+    monospace;
+  color: #a9c3b0;
+  margin-top: 3px;
+  position: relative;
+}
+.skill-slot.cooling .skill-time {
+  color: #bd9e92;
+}
+.skill-slot.casting {
+  border-color: #f4b59f;
+  box-shadow: inset 0 0 16px #bc484524;
+}
+.skill-slot.casting svg {
+  stroke: #ffe7c9;
+}
+.skill-slot.unavailable:not(.casting) {
+  opacity: 0.55;
+}
+#embers {
+  letter-spacing: 4px;
+  color: #dcc48e;
+  font-size: 13px;
+  font-weight: 400;
+}
+#ember-progress {
+  font-size: 8px;
+  color: #aab5a9;
+}
+@media (max-width: 1000px) {
+  .skill-dock {
+    left: 20px;
+    bottom: 53px;
+    width: 390px;
+  }
+}
+@media (max-height: 760px) {
+  .skill-dock {
+    transform: scale(0.82);
+    transform-origin: bottom left;
+    bottom: 50px;
+  }
+}
+@media (max-width: 700px) {
+  .skill-dock {
+    transform: scale(0.68);
+    transform-origin: bottom left;
+    bottom: 44px;
+    left: 20px;
+  }
+  .skill-meta {
+    font-size: 10px;
   }
 }

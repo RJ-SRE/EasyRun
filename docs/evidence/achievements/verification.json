@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-24T20:17:03.628999+00:00",
+  "baseCommit": "ea7e1064882888f14b04905f00ca5951385bd875",
+  "branch": "feat/inscription-v1",
+  "unitCases": 9,
+  "browserCounts": {
+    "achievements": 13,
+    "flow": 18,
+    "motion": 9,
+    "resilience": 5
+  },
+  "totalBrowserCases": 45,
+  "sourceSha256": {
+    "package.json": "4b4ab720d34d8382e541e09071df03d933a02f9ec0ec29b9442b905168f7452c",
+    "scripts/test-game.mjs": "65ff5ed4a586bacb14f91ae11dffbe04b7de65ae9dfacac1fc95d3153f12ca33",
+    "prototypes/runlab/build-belfry.mjs": "f3d1cf437988400dfde014d0afd47a24d480ec591b914b24be9824642bf168f6",
+    "prototypes/runlab/public/belfry.js": "1ed9f4577016fa47fcccbf1f26ac9c2b1515a04590263435d5ed29c97043be29",
+    "prototypes/runlab/public/belfry.html": "43664536df038dbe15194f9b9a8f9399480ebee8f21430a777fd05eb1ad2806d",
+    "prototypes/runlab/public/index.html": "43664536df038dbe15194f9b9a8f9399480ebee8f21430a777fd05eb1ad2806d",
+    "prototypes/runlab/public/belfry-achievements-core.js": "bbf719f6a4b82510e11ba5bbbead47413ce21f328eadad36122fc79cd8923f2a",
+    "prototypes/runlab/public/belfry-achievements.js": "70ae15b4bc89413c707639fa9db108a7b45a54d91453eb579df4b1976e7108f7",
+    "prototypes/runlab/public/belfry-achievements.css": "e0d9e51b62ab0e624ced0856dc83d1183e33011d70187e7987033110cfbbf0ce",
+    "prototypes/runlab/public/inscription-ui.js": "b72a64eed0846cd5071e68244a1dc043d8ae347d320fa83d3117fa09f66b619f",
+    "prototypes/runlab/spx/belfry/main.spx": "c0c8ecac942c1a3a745b5d41544490a23b324293e467d53418429b82be395ba5",
+    "prototypes/runlab/spx/belfry/Hero.spx": "4df9b39e3930e1f68bce412c4b595ab79eef594023a9c8972a80bdd1167a735f",
+    "prototypes/runlab/test-belfry-achievements-core.mjs": "97708f84bb2db92097a5f3a4f5a08e850116ed2cdeb2c7c84eec3b0e2e0b9356",
+    "prototypes/runlab/test-belfry-achievements.mjs": "e100231a73175139805597bfcd035c2cc72835e74fc6457abd3ee14c3a7e0f79"
+  },
+  "build": {
+    "files": 359,
+    "sprites": 44,
+    "manifestSha256": "7ebef8e19da4b659e259160be9155384220fda3cae737c1a1d28df55fa9750a9"
+  },
+  "checks": {
+    "build": "passed",
+    "gameEslint": "passed via direct Node CLI",
+    "prettierChangedFiles": "passed",
+    "gitDiffWhitespace": "passed"
+  },
+  "limits": [
+    "Rare full-route achievements covered by event-rule unit tests; no fresh real-keyboard no-damage full-route replay.",
+    "Actual browser unlocks: first-word, resonance, first-sling; vocabulary seed fixed but no world coordinates or health injected in achievement suite.",
+    "Existing inscription flow regression uses its documented encounter fixtures.",
+    "Responsive ledger checked at 1280x800, 1280x720 and 390x844; touch controls remain unsupported.",
+    "No new performance benchmark or stable-60-FPS claim.",
+    "Local browser storage only, no retroactive awards, cross-device sync or account integration."
+  ]
+}

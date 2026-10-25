@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-25T03:29:41.739Z",
+  "cases": [
+    "30-word menu, independent difficulty and no preview credit",
+    "full charge requests exactly one challenge; physics, cooldown and air budget freeze",
+    "typing isolation, escape pause, full arrow and single progress settlement",
+    "arrow mark links directly into charged sword without second question",
+    "unlinked sword failure releases basic heavy attack and cooldown",
+    "heal failure refunds once, no healing, cooldown retained",
+    "correct heal completes remaining channel and restores one HP",
+    "one meaning question releases ultimate hits four and five",
+    "failed ultimate retains first three hits and skips two finishers",
+    "empty ultimate does not summon a pointless question",
+    "optional F chain release restores movement",
+    "binder preserves hard control then guarantees bounded release with immunity",
+    "IME composition pauses timer without injecting game actions",
+    "restart cancels pending action without late release or credit",
+    "timeout is bounded, refunds heal and returns control",
+    "checkpoint death retry preserves word group",
+    "saved progress resumes after a full browser reload",
+    "victory never requires all 30 words"
+  ],
+  "errors": [],
+  "fixture": "Response-only fixed arena and lifecycle events; production Hero, physics, QTE host, keyboard and result processing."
+}

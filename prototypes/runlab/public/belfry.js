@@ -1,4 +1,5 @@
 import { BelfryAudio } from "./belfry-audio.js";
+import { CityUI, DISTRICTS, endingFor } from "./belfry-city.js";
 const $ = (s) => document.querySelector(s);
 const fields = [
   "phase",
@@ -45,6 +46,42 @@ const fields = [
   "practice",
   "attackTime",
   "attackAge",
+  "bindTime",
+  "controlImmune",
+  "controlGrace",
+  "chainOwner",
+  "chainTime",
+  "attackSlots",
+  "practiceKind",
+  "basicCool",
+  "airAttacks",
+  "bowCool",
+  "bladeCool",
+  "healCool",
+  "ultimateCool",
+  "bowCharge",
+  "healTime",
+  "ultimateTime",
+  "embers",
+  "emberHits",
+  "aimX",
+  "aimY",
+  "bowTarget",
+  "wordMode",
+  "wordPending",
+  "wordSerial",
+  "bladeLink",
+  "wordVisualRate",
+  "visualTime",
+  "cityDistrict",
+  "cityPrompt",
+  "cityWind",
+  "cityForge",
+  "cityArchive",
+  "cityMirror",
+  "cityChoice",
+  "cityLiftY",
+  "cityDepth",
 ];
 window.latestState = null;
 window.runtimeErrors = [];
@@ -54,7 +91,6 @@ let frame,
   loading = true,
   fault = false,
   toastTimer,
-  chapterTimer,
   guidePaused = false,
   recordedAttempt = -1;
 let soundOn = true;
@@ -62,6 +98,105 @@ window.foes = {};
 const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
+});
+let inscription, achievements;
+try {
+  const { InscriptionUI } = await import("./inscription-ui.js");
+  inscription = new InscriptionUI({
+    send: key,
+    focus: focusGame,
+    toast,
+    audio: soundscape,
+    onSettle: (s) => achievements?.word(s),
+  });
+} catch {
+  const notice = document.createElement("span");
+  notice.id = "word-load-error";
+  notice.textContent = "词库未能加载 · 当前可玩纯动作模式";
+  notice.setAttribute("role", "status");
+  document.querySelector(".controls").prepend(notice);
+  const noop = () => {};
+  const held = new Map(),
+    quarantine = new Set();
+  let engine;
+  const capture = (w) => {
+    w.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.inscriptionTransport) return;
+        if (/^F[1-5]$/.test(e.code) || quarantine.has(e.code)) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
+        held.set(e.code, {
+          code: e.code,
+          key: e.key,
+          keyCode: e.keyCode,
+          which: e.which,
+          bubbles: true,
+        });
+      },
+      true,
+    );
+    w.addEventListener(
+      "keyup",
+      (e) => {
+        if (e.inscriptionTransport) return;
+        held.delete(e.code);
+        quarantine.delete(e.code);
+      },
+      true,
+    );
+  };
+  capture(window);
+  inscription = {
+    onEvent: noop,
+    receive: noop,
+    onWord: noop,
+    onResolved: noop,
+    configure: (data) => {
+      data["main.spx"] = data["main.spx"].replace(
+        "// HOST_CONFIGURATION",
+        "wordMode=0",
+      );
+    },
+    attach: (w) => {
+      engine = w;
+      held.clear();
+      quarantine.clear();
+      capture(w);
+    },
+    lockHeld: () => {
+      const canvas = engine?.document.querySelector("#game-canvas");
+      for (const [code, opts] of held) {
+        quarantine.add(code);
+        if (!canvas) continue;
+        const e = new engine.KeyboardEvent("keyup", opts);
+        Object.defineProperty(e, "inscriptionTransport", { value: true });
+        canvas.dispatchEvent(e);
+      }
+      held.clear();
+    },
+  };
+}
+try {
+  const { AchievementUI } = await import("./belfry-achievements.js");
+  achievements = new AchievementUI({
+    send: (code, value) => key(code, value, true),
+    focus: focusGame,
+    lockInput: () => inscription.lockHeld?.(),
+  });
+} catch {
+  const notice = document.createElement("span");
+  notice.id = "achievement-load-error";
+  notice.textContent = "成就册暂不可用";
+  document.querySelector(".controls").append(notice);
+}
+const city = new CityUI({
+  send: (code, value) => key(code, value, true),
+  focus: focusGame,
+  lockInput: () => inscription.lockHeld?.(),
 });
 let records = [];
 try {
@@ -93,7 +228,7 @@ function formatTime(t) {
 function focusGame() {
   frame?.contentWindow?.document.querySelector("#game-canvas")?.focus();
 }
-function key(code, key = code) {
+function key(code, key = code, transport = false) {
   const w = frame?.contentWindow,
     c = w?.document.querySelector("#game-canvas");
   if (!c) return;
@@ -103,15 +238,25 @@ function key(code, key = code) {
     Escape: 27,
     KeyR: 82,
     KeyT: 84,
+    KeyM: 77,
+    KeyF: 70,
+    KeyV: 86,
     Digit1: 49,
     Digit2: 50,
+    Digit3: 51,
+    Digit4: 52,
+    Digit5: 53,
+    Digit6: 54,
   }[code];
   const opts = { code, key, keyCode, which: keyCode, bubbles: true };
-  c.dispatchEvent(new w.KeyboardEvent("keydown", opts));
-  setTimeout(
-    () => c.isConnected && c.dispatchEvent(new w.KeyboardEvent("keyup", opts)),
-    65,
-  );
+  const dispatch = (type) => {
+    const e = new w.KeyboardEvent(type, opts);
+    if (transport)
+      Object.defineProperty(e, "inscriptionTransport", { value: true });
+    c.dispatchEvent(e);
+  };
+  dispatch("keydown");
+  setTimeout(() => c.isConnected && dispatch("keyup"), 65);
 }
 function overlay(kicker, title, body, button) {
   $("#overlay").hidden = false;
@@ -131,43 +276,63 @@ function toast(t) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $("#toast").classList.remove("visible"), 2100);
 }
-function chapter(n, title, copy) {
-  $("#chapter-num").textContent = n;
-  $("#chapter-title").textContent = title;
-  $("#chapter-copy").textContent = copy;
-  $("#chapter").classList.add("visible");
-  clearTimeout(chapterTimer);
-  chapterTimer = setTimeout(
-    () => $("#chapter").classList.remove("visible"),
-    3300,
-  );
-}
 function initAudio() {
   soundscape.init();
 }
+// Unlock title-screen music on a deliberate gesture without starting a run.
+function unlockAudio(event) {
+  if (
+    event.isTrusted &&
+    soundOn &&
+    (!soundscape.music?.unlocked || soundscape.music?.blocked)
+  )
+    initAudio();
+}
+document.addEventListener("pointerdown", unlockAudio, { capture: true });
+document.addEventListener("keydown", unlockAudio, { capture: true });
+$("#music-start").onclick = initAudio;
+
 function onEvent(name, t, x, y) {
+  inscription.onEvent(name);
+  city.onEvent(name);
   window.runEvents.push({ name, time: Number(t), x: Number(x), y: Number(y) });
   if (window.runEvents.length > 800) window.runEvents.shift();
-  soundscape.onEvent(name, Number(x));
+  soundscape.onEvent(name.startsWith("city") ? "checkpoint" : name, Number(x));
   const labels = {
-    webcut: "绊索已斩断 · 织缆者露出破绽",
+    skillcancel: "刻印失败 · 技能已取消",
+    healrefund: "回息已取消 · 余烬已返还",
+    wordescape: "锁链已解 · 夺回主动",
+    chaincut: "锁链已斩断 · 缚索正在收势",
+    chainfree: "已脱离锁链",
+    tether: "被锁链牵引 · J 斩链 / E 抓锚点 / 冲向链手",
+    bind: "封脉 · 暂时无法行动",
+    bindrelease: "已脱离封脉 · 抓住收招破绽",
     launchhit: "挑空 → J 空中追击 → E 接钩索",
     charged: "蓄力破甲 · 可将轻敌撞向其他敌人",
     collision: "借敌破敌",
-    practice: "排练场 · 四种守卫会重生；Esc 后按 R 开始冒险",
-    seal: "钟锁断开 · 两侧吊环牵制着钟卫",
-    exposed: "钟卫失去钟锁 · 现在进攻",
+    practice: "排练场 · 1–5 单独练习刺客 / 6 组合遭遇；R 开始冒险",
+    seal: "钟锁断开 · 两侧吊环牵制着守心者",
+    exposed: "守心者失去钟锁 · 现在进攻",
     sealed: "钟锁保护中 · 钩住两侧悬环，拉断钟锁",
-    enrage: "钟卫重新封锁 · 再次拉断两侧钟锁",
+    enrage: "守心者重新封锁 · 再次拉断两侧钟锁",
     gate: "钟锁已解 · 通往更深处",
     hook: "牵引 · 松开 E 甩出",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
-    empty: "弦能不足 · 击杀敌人或拾取回声",
-    armor: "重甲闭合 · 坠星、回钩斩或等待破绽",
-    echo: "失落回声 +500 · 弦能充满",
+    marked: "裂印 · 满蓄断潮可引爆",
+    markbreak: "裂印破碎 · 断潮追加伤害",
+    healground: "回息需要站稳地面",
+    healfull: "生命已满",
+    healempty: "余烬不足 · 4 次有效命中凝成 1 颗",
+    healstart: "回息 · 稳住 0.8 秒；移动或受击会打断",
+    healbreak: "回息中断",
+    healcomplete: "回息 · 生命 +1",
+    embergain: "余烬 +1",
+    chainstart: "连环剑刀 · W 上挑 / S 下压收势",
+    armor: "护刃格挡 · 重击破防，或等待收招",
+    echo: "失落回声 +500 · 余烬充满",
     checkpoint: "休整灯已点亮 · 生命恢复",
-    parry: "断开弹幕 · 弦能 +4",
-    nova: "断弦",
+    parry: "弹幕已斩断",
+
     retry: "从休整灯重新出发",
   };
   if (labels[name]) toast(labels[name]);
@@ -175,28 +340,7 @@ function onEvent(name, t, x, y) {
     window.runEvents = window.runEvents.slice(-1);
     window.foes = {};
     recordedAttempt = -1;
-    chapter(
-      "ACT I · DESCENT",
-      "落入钟城",
-      "金铜圆环是你的路。按住 E，松开后甩出。",
-    );
   }
-  if (name === "practice") {
-    $("#chapter").classList.remove("visible");
-    clearTimeout(chapterTimer);
-  }
-  if (name === "guardian")
-    chapter(
-      "ACT II · THE KEEPER",
-      "末代钟卫",
-      "它仍在守护，最后一颗尚未停止的心。",
-    );
-  if (name === "core")
-    chapter(
-      "ACT III · ASCENT",
-      "带它回到光里",
-      "失去钟心的城开始下沉。向上，别停下。",
-    );
   if (name === "hurt") {
     $("#damage").classList.add("flash");
     setTimeout(() => $("#damage").classList.remove("flash"), 100);
@@ -208,8 +352,23 @@ function onEvent(name, t, x, y) {
 }
 function hint(s) {
   if (s.phase !== 1) return "";
+  if (s.bindTime > 0)
+    return s.wordMode
+      ? "封脉锁身 · 0.7 秒后辨义脱身。"
+      : "封脉锁身 · 控制结束后恢复行动。";
+  if (s.chainOwner >= 0)
+    return s.wordMode
+      ? "缚索牵引中 · J 斩链 / E 抓锚 / F 铭文解链。"
+      : "缚索牵引中 · J 斩链 / E 抓锚 / 冲向链手。";
   if (s.practice)
-    return "排练场 · J 三连 / W+J 挑空 / L 蓄力 / E 钩近 · 守卫会重生 · Esc 后 R 进入冒险";
+    return [
+      "悬刃 · 首刀后可能空中换位再追刀；看清第二次起手，再钩索追击。",
+      "短锋 · 撤步架势可挡一次正面轻击；L 重斩破架，闪过飞踢后反击。",
+      "壁弓 · 除了定点射击，还会蹬墙腾空放箭；J 可击落箭矢。",
+      "缚索 · 跳过低位横扫，再防追锁；被牵引时 J 斩链 / E 抓锚。",
+      "封脉 · 会绕到另一侧再锁定突进方向；跳开或打断，落空后反击。",
+      "组合遭遇 · 最多两人同时起手；先拆远程，再处理近身控制。",
+    ][s.practiceKind];
   if (s.segment === 2) {
     if (s.y > -430) return "回到左上方的休整灯。最后一段，借锚点跃出井口。";
     return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
@@ -218,25 +377,47 @@ function hint(s) {
     return `钩住${!s.sealLeft && !s.sealRight ? "左右两侧" : !s.sealLeft ? "左侧" : "右侧"}红色吊环，抵达吊环时拉断钟锁。`;
   if (s.segment === 1)
     return s.bossState === 2
-      ? "钟卫已露出破绽 · J 三连 / L 蓄力破甲 / S + J 坠星"
-      : "钟卫重甲闭合 · 回钩斩与坠星可破甲，注意橙色预警。";
+      ? "守心者已露出破绽 · J 三连 / L 蓄力破甲 / S + J 坠星"
+      : "守心者护刃格挡 · 重击与回钩斩可破防，注意橙色预警。";
   if (s.gateOne > 0 && s.y < -850 && s.y > -1300)
-    return "第一钟锁 · 击破右侧织缆者，开启下方闸门。按住 E 回钩斩。";
+    return "第一钟锁 · 击破右侧短锋，开启下方闸门。按住 E 回钩斩。";
   if (s.gateTwo > 0 && s.y < -1950 && s.y > -2400)
-    return "第二钟锁 · 击破左侧钟卫。回钩斩或 S + J 坠星可破甲。";
+    return "第二钟锁 · 击破左侧缚索。回钩斩或 S + J 坠星可破甲。";
   if (s.hook >= 0) return "松开 E 甩出 → 空格二段跳 → 再次抓住锚点。";
   if (s.y > -230)
     return "D 向右跃入井中 · 按住 E 抓住高亮锚点；松开时借力起飞。";
   if (s.y > -900) return "接近敌人按 J；钩住敌人也能回钩斩。S + J 向下坠星。";
-  if (s.y > -1850)
-    return "织缆者交替扇射与绊索。J 可切断绊索，K 冲刺穿过危险。";
+  if (s.y > -1850) return "墙中弓手会先搭箭；缚索抛链后，J 可斩断连接。";
   if (s.y > -2900)
-    return "Q 释放断弦，消耗 60 弦能。侧翼的金色回声可补满弦能。";
+    return "U 满蓄贯夜留下裂印，L 满蓄断潮引爆；金色回声补充余烬。";
   return "钟声来自更深处。S + 空格穿过脚下的平台。";
 }
 function receive(s) {
   window.latestState = s;
   soundscape.stateChanged(s);
+  const music = soundscape.music?.diagnostics();
+  $("#music-start").hidden =
+    !soundOn || (!!music?.unlocked && !music.blocked && !music.failed);
+  $("#music-start").textContent = music?.failed ? "重试音乐" : "播放音乐";
+  $("#music-track").textContent = music?.failed
+    ? "音乐暂不可用，动作音效与游戏仍可继续。"
+    : music?.title
+      ? `Sea Power · ${music.title} · 单曲循环`
+      : "点击「播放音乐」启用背景音乐。";
+  inscription.receive(s);
+  city.receive(s);
+  achievements?.receive(s);
+  $("#practice-controls").hidden = !(s.practice && s.phase === 1);
+  document.querySelectorAll("[data-spar]").forEach((b) => {
+    const selected = Number(b.dataset.spar) === s.practiceKind;
+    b.classList.toggle("selected", selected);
+    b.setAttribute("aria-pressed", String(selected));
+  });
+  const locked = s.bindTime > 0;
+  $("#restraint").hidden = !locked;
+  $("#restraint-time").textContent = `${Math.max(0, s.bindTime).toFixed(1)} s`;
+  $("#restraint-fill").style.width =
+    `${Math.min(100, (s.bindTime / 0.7) * 100)}%`;
   for (const [id, foe] of Object.entries(window.foes))
     if (s.elapsed - foe.seen > 0.4) delete window.foes[id];
   if (fault) return;
@@ -247,8 +428,52 @@ function receive(s) {
     (_, i) => `<i${i >= s.health ? ' class="empty"' : ""}></i>`,
   ).join("");
   $("#health").setAttribute("aria-label", `生命 ${s.health} / ${s.maxHealth}`);
-  $("#energy").style.width = `${s.energy}%`;
-  $("#energy").style.background = s.energy >= 60 ? "#ddcf9c" : "#86b5a8";
+  $("#embers").textContent =
+    `${"◆".repeat(s.embers)}${"◇".repeat(2 - s.embers)}`;
+  $("#ember-progress").textContent =
+    s.embers === 2 ? "已满" : `${s.emberHits}/4 命中`;
+  $("#embers").setAttribute("aria-label", `余烬 ${s.embers} / 2`);
+  for (const [id, kind, charging, unavailable] of [
+    ["bow", 1, s.bowCharge, false],
+    ["blade", 2, s.chargeTime, false],
+    [
+      "heal",
+      3,
+      s.healTime > 0 ? 0.8 - s.healTime : 0,
+      s.embers === 0 || s.health === s.maxHealth,
+    ],
+    ["ultimate", 4, s.ultimateTime, false],
+  ]) {
+    const el = $(`#skill-${id}`);
+    el.classList.toggle("casting", charging > 0);
+    el.classList.toggle("unavailable", unavailable);
+    el.querySelector(".skill-time").textContent =
+      s.phase === 5 && s.wordPending === kind
+        ? "待刻印"
+        : charging > 0
+          ? id === "heal"
+            ? "回息中"
+            : id === "ultimate"
+              ? "连斩中"
+              : charging >= 0.55
+                ? "满蓄"
+                : "蓄力"
+          : unavailable
+            ? s.health === s.maxHealth
+              ? "生命满"
+              : "缺余烬"
+            : "就绪";
+  }
+  const bowEnemy = window.foes[s.bowTarget];
+  $("#combat-focus").textContent =
+    s.bowCharge > 0
+      ? s.bowTarget >= 0
+        ? `锁定 · ${{ 0: "悬刃", 1: "短锋", 2: "壁弓", 3: "守心者", 4: "缚索", 5: "封脉" }[bowEnemy?.kind] || "敌人"}`
+        : "贯夜 · 自由瞄准"
+      : "赤弦 · 墨刃";
+  $("#air-budget").textContent = s.airAttacks
+    ? `空中追击 ${Math.max(0, 2 - s.airAttacks)} / 2`
+    : "J 普攻 · 0.28s";
   $("#time").textContent = formatTime(s.elapsed);
   $("#score").textContent = String(s.score).padStart(6, "0");
   $("#depth").textContent = `${Math.max(0, Math.round(-s.y / 10))
@@ -261,18 +486,24 @@ function receive(s) {
   ][s.segment];
   $("#objective").textContent = s.practice
     ? "排练场 · 自由组合"
-    : ["寻找钟心", "打破守卫", "携心归来"][s.segment];
+    : s.segment === 2
+      ? `归途 · ${DISTRICTS[s.cityDistrict].name}`
+      : s.segment === 1
+        ? "守心机枢 · 解开钟锁"
+        : DISTRICTS[s.cityDistrict].name;
   $("#depth-marker").style.top =
     `${Math.max(0, Math.min(100, (-s.y / 3590) * 100))}%`;
   $("#hint").textContent = hint(s);
   $("#relics").textContent = `◈ ${s.echoes} / 3`;
   $("#combo").innerHTML =
-    s.attackKind > 0
-      ? `<small>${{ 1: "一式 · 切线", 2: "二式 · 返刃", 3: "三式 · 断环", 4: "挑空", 5: "空中追击", 6: "空中返刃", 7: "蓄力破甲" }[s.attackKind] || ""}</small>`
-      : s.combo >= 2
-        ? `${s.combo} <small>AIR CHAIN</small>`
-        : "";
-  $("#boss").hidden = !(s.segment === 1 && s.phase === 1);
+    s.ultimateTime > 0
+      ? `<small>连环剑刀 · ${s.ultimateTime > 0.2 ? "交错斩" : "终式"}</small>`
+      : s.attackKind > 0
+        ? `<small>${{ 1: "一式 · 切线", 2: "二式 · 返刃", 3: "三式 · 断环", 4: "挑空", 5: "空中追击", 6: "空中返刃", 7: "蓄力破甲" }[s.attackKind] || ""}</small>`
+        : s.combo >= 2
+          ? `${s.combo} <small>AIR CHAIN</small>`
+          : "";
+  $("#boss").hidden = !(s.segment === 1 && [1, 5].includes(s.phase));
   $("#boss-health").style.width =
     `${(s.bossHP / (s.difficulty === 0 ? 16 : 20)) * 100}%`;
   $("#boss-state").textContent =
@@ -281,8 +512,8 @@ function receive(s) {
       : s.bossState === 2
         ? "破绽 · 现在攻击"
         : s.bossState === 1
-          ? "钟鸣预警 · 准备闪避"
-          : "重甲 · 坠星与回钩斩可破甲";
+          ? "突进预警 · 准备闪避"
+          : "护刃 · 等待收招或重击破防";
   $("#status").textContent =
     s.segment === 2
       ? `钟城下沉中 · 距黑潮 ${Math.max(0, Math.round((s.y - s.riseY) / 10))} m`
@@ -300,12 +531,12 @@ function receive(s) {
     overlay(
       "THE HOLLOW BELFRY",
       "倒悬钟城",
-      "钟城悬在深渊上方，已为无人之地守夜千年。\n你要潜入最深处，带走仍在跳动的钟心。",
+      "一份未写完的委托：穿过五个城区，带回仍在跳动的钟心。\n但那声求救，已经在空城里重复了千年。",
       "进入钟城",
     );
     $("#difficulty").hidden = false;
     $("#overlay-foot").textContent =
-      "电脑键盘操作 · 失败可从休整灯继续 · 按 1 / 2 切换难度";
+      "五区下潜 · 机关改变归途 · 机枢前厅选择留灯或携心";
   }
   if (s.phase === 1) {
     $("#overlay").hidden = true;
@@ -325,14 +556,8 @@ function receive(s) {
   if (s.phase === 2 || s.phase === 3) {
     const win = s.phase === 2;
     if (win) {
-      overlay(
-        "SOME HEARTS STILL BEAT",
-        "最后一声，为你。",
-        s.echoes === 3
-          ? "你带回钟心，也找回了三段失落的记忆。\n城里的灯，终于可以为自己亮一次。"
-          : "你带着钟心回到了光里。\n钟城深处，仍有尚未拾起的回声。",
-        "再入钟城",
-      );
+      const ending = endingFor(s);
+      overlay("WHAT WE LEAVE BEHIND", ending.title, ending.text, "再入钟城");
       $("#results").innerHTML =
         `<div><b>${formatTime(s.elapsed)}</b><span>旅程用时</span></div><div><b>${s.score}</b><span>总分</span></div><div><b>${s.bestCombo}</b><span>最高连击</span></div>`;
       $("#results").hidden = false;
@@ -362,6 +587,9 @@ function receive(s) {
         kills: s.kills,
         bestCombo: s.bestCombo,
         deaths: s.deaths,
+        cityChoice: s.cityChoice,
+        cityArchive: s.cityArchive,
+        cityRepairs: s.cityWind + s.cityForge + s.cityArchive + s.cityMirror,
       });
       records = records.slice(-50);
       try {
@@ -390,6 +618,8 @@ function resize() {
     frame.style.transform = `scale(${$("#viewport").clientWidth / 960})`;
 }
 async function load() {
+  achievements?.resetSession();
+  city.resetSession();
   loading = true;
   fault = false;
   previousPhase = -1;
@@ -422,6 +652,30 @@ async function load() {
           }
           m = text.match(/@event\s+(\w+)\s+(\S+)\s+(\S+)\s+(\S+)/);
           if (m) onEvent(m[1], m[2], m[3], m[4]);
+          m = text.match(/@deed\s+(\d+)\s+(\w+)\s+(.+)/);
+          if (m) {
+            const values = m[3].trim().split(/\s+/).map(Number);
+            const keys = [
+              "attempt",
+              "phase",
+              "practice",
+              "health",
+              "difficulty",
+              "deaths",
+              "echoes",
+              "hook",
+            ];
+            if (values.length === keys.length && values.every(Number.isFinite))
+              achievements?.deed({
+                serial: Number(m[1]),
+                name: m[2],
+                ...Object.fromEntries(keys.map((k, i) => [k, values[i]])),
+              });
+          }
+          m = text.match(/@wordResolved\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
+          if (m) inscription.onResolved(...m.slice(1).map(Number));
+          m = text.match(/@word\s+(\d+)\s+(\d+)\s+(\d+)/);
+          if (m) inscription.onWord(...m.slice(1).map(Number));
           m = text.match(/@foe\s+(.+)/);
           if (m) {
             const a = m[1].trim().split(/\s+/).map(Number);
@@ -438,6 +692,9 @@ async function load() {
               "clock",
               "aimX",
               "aimY",
+              "facing",
+              "step",
+              "mark",
             ];
             if (a.length === keys.length && a.every(Number.isFinite)) {
               const foe = Object.fromEntries(keys.map((k, i) => [k, a[i]]));
@@ -458,6 +715,7 @@ async function load() {
           if (!text.includes("@state") && !text.includes("@foe"))
             original(...args);
         };
+        inscription.attach(w);
         w.onGameError(fail);
         w.onEngineCrash(fail);
         w.addEventListener("keydown", (e) => {
@@ -486,6 +744,7 @@ async function load() {
         if (!res.ok)
           throw new Error("关卡文件未生成，请运行 pnpm game:build。");
         const data = await res.json();
+        inscription.configure(data);
         await w.initGame(
           Object.fromEntries(
             Object.entries(data).map(([p, s]) => [
@@ -582,14 +841,27 @@ window.addEventListener("keydown", (e) => {
   if (["Enter", "KeyT"].includes(e.code)) initAudio();
   if (loading || e.repeat || e.target.closest("button")) return;
   if (
-    ["Enter", "Escape", "KeyR", "KeyT", "Digit1", "Digit2"].includes(e.code)
+    [
+      "Enter",
+      "Escape",
+      "KeyR",
+      "KeyT",
+      "Digit1",
+      "Digit2",
+      "Digit3",
+      "Digit4",
+      "Digit5",
+      "Digit6",
+    ].includes(e.code)
   ) {
     e.preventDefault();
     if (["Enter", "KeyT"].includes(e.code)) initAudio();
     key(e.code, e.key);
   }
 });
+window.addEventListener("pagehide", () => soundscape.music?.audio.pause());
 document.addEventListener("visibilitychange", () => {
+  soundscape.syncMusic();
   if (document.hidden) {
     soundscape.stopAll();
   }
@@ -621,3 +893,10 @@ for (const k of ["sfx", "music"]) {
 }
 best();
 load();
+
+for (const button of document.querySelectorAll("[data-spar]")) {
+  button.onclick = () => {
+    const n = Number(button.dataset.spar) + 1;
+    key("Digit" + n, String(n));
+  };
+}

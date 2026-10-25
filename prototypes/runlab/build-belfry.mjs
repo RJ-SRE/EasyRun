@@ -1,5 +1,6 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
+import { addCityArt } from "./belfry-city-art.mjs";
 import { chromium } from "@playwright/test";
 import {
   platforms,
@@ -59,58 +60,13 @@ await copyFile(
   new URL("art/belfry/clockwell.png", root),
   new URL("public/art/clockwell.png", root),
 );
-// Import the original transparent atlas. Crop each column to its alpha bounds,
-// fit it to a common texture size, preserve its alpha and leave the source intact.
-const source = await readFile(new URL("art/belfry/sentinels-source.png", root));
+// Source atlases remain untouched. Build imports alpha-isolated, registered cells.
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
-let enemyFrames, actionFrames, combatFrames, mimicFrames;
+let actionFrames, combatFrames, skillFrames;
+const assassinFrames = {};
+const assassinKinds = ["hover", "fighter", "archer", "chain", "binder"];
 try {
   const page = await browser.newPage();
-  enemyFrames = await page.evaluate(
-    async (uri) => {
-      const im = new Image();
-      im.src = uri;
-      await im.decode();
-      const output = [];
-      for (let k = 0; k < 3; k++) {
-        const c = document.createElement("canvas");
-        c.width = im.width / 3;
-        c.height = im.height;
-        const ctx = c.getContext("2d");
-        ctx.drawImage(im, -k * c.width, 0);
-        const d = ctx.getImageData(0, 0, c.width, c.height).data;
-        let l = c.width,
-          t = c.height,
-          r = 0,
-          b = 0;
-        for (let y = 0; y < c.height; y++)
-          for (let x = 0; x < c.width; x++)
-            if (d[(y * c.width + x) * 4 + 3] > 80) {
-              l = Math.min(l, x);
-              t = Math.min(t, y);
-              r = Math.max(r, x);
-              b = Math.max(b, y);
-            }
-        const o = document.createElement("canvas");
-        o.width = o.height = 512;
-        const s = Math.min(480 / (r - l + 1), 480 / (b - t + 1));
-        o.getContext("2d").drawImage(
-          c,
-          l,
-          t,
-          r - l + 1,
-          b - t + 1,
-          256 - ((r - l + 1) * s) / 2,
-          256 - ((b - t + 1) * s) / 2,
-          (r - l + 1) * s,
-          (b - t + 1) * s,
-        );
-        output.push(o.toDataURL("image/png").split(",")[1]);
-      }
-      return output;
-    },
-    "data:image/png;base64," + source.toString("base64"),
-  );
   const actions = await readFile(
     new URL("art/belfry/actions-source.png", root),
   );
@@ -147,10 +103,28 @@ try {
     },
     "data:image/png;base64," + actions.toString("base64"),
   );
-  async function importAtlas(path, cols, rows, size, maxH, separate = false) {
+  async function importAtlas(
+    path,
+    cols,
+    rows,
+    size,
+    maxH,
+    separate = false,
+    constant = false,
+    fixedScale = 0,
+  ) {
     const source = await readFile(new URL(path, root));
     return page.evaluate(
-      async ({ uri, cols, rows, size, maxH, separate }) => {
+      async ({
+        uri,
+        cols,
+        rows,
+        size,
+        maxH,
+        separate,
+        constant,
+        fixedScale,
+      }) => {
         const im = new Image();
         im.src = uri;
         await im.decode();
@@ -273,7 +247,15 @@ try {
           }
           const o = document.createElement("canvas");
           o.width = o.height = size;
-          const scale = Math.min((size - 20) / (r - l + 1), maxH / (b - t + 1));
+          const scale =
+            fixedScale ||
+            (constant
+              ? Math.min(
+                  (size - 20) /
+                    Math.max(...principal.map((p) => p.r - p.l + 1)),
+                  maxH / Math.max(...principal.map((p) => p.b - p.t + 1)),
+                )
+              : Math.min((size - 20) / (r - l + 1), maxH / (b - t + 1)));
           o.getContext("2d").drawImage(
             c,
             l,
@@ -296,6 +278,8 @@ try {
         size,
         maxH,
         separate,
+        constant,
+        fixedScale,
       },
     );
   }
@@ -307,12 +291,61 @@ try {
     330,
     true,
   );
-  mimicFrames = await importAtlas(
-    "art/belfry/mimic-source.png",
+  skillFrames = await importAtlas(
+    "art/belfry/skills-source.png",
+    3,
+    1,
+    418,
+    330,
+    true,
+    false,
+    0.48,
+  );
+  for (const name of assassinKinds)
+    assassinFrames[name] = await importAtlas(
+      `art/belfry/assassin-${name}-source.png`,
+      3,
+      2,
+      384,
+      330,
+      true,
+      true,
+    );
+  assassinFrames.elbow = await importAtlas(
+    "art/belfry/assassin-elbow-source.png",
     2,
+    1,
+    384,
+    300,
+    true,
+    true,
+  );
+  assassinFrames.ninjaFighter = await importAtlas(
+    "art/belfry/ninja-fighter-source.png",
+    3,
     2,
-    512,
-    470,
+    384,
+    300,
+    true,
+    true,
+  );
+  assassinFrames.ninjaArcher = await importAtlas(
+    "art/belfry/ninja-archer-source.png",
+    2,
+    1,
+    384,
+    320,
+    true,
+    true,
+  );
+  assassinFrames.ninjaChain = await importAtlas(
+    "art/belfry/ninja-chain-source.png",
+    2,
+    1,
+    384,
+    330,
+    true,
+    true,
   );
 } finally {
   await browser.close();
@@ -320,8 +353,8 @@ try {
 await mkdir(new URL("art/belfry/frames/", root), { recursive: true });
 for (let i = 0; i < 3; i++)
   await writeFile(
-    new URL(`art/belfry/frames/${i}.png`, root),
-    Buffer.from(enemyFrames[i], "base64"),
+    new URL(`art/belfry/frames/skill-${i}.png`, root),
+    Buffer.from(skillFrames[i], "base64"),
   );
 for (let i = 0; i < 8; i++)
   await writeFile(
@@ -330,20 +363,24 @@ for (let i = 0; i < 8; i++)
   );
 for (const [prefix, frames] of [
   ["combat", combatFrames],
-  ["mimic", mimicFrames],
+  ...assassinKinds.map((name) => ["assassin-" + name, assassinFrames[name]]),
+  ["assassin-elbow", assassinFrames.elbow],
+  ["ninja-fighter", assassinFrames.ninjaFighter],
+  ["ninja-archer", assassinFrames.ninjaArcher],
+  ["ninja-chain", assassinFrames.ninjaChain],
 ])
   for (let i = 0; i < frames.length; i++)
     await writeFile(
       new URL(`art/belfry/frames/${prefix}-${i}.png`, root),
       Buffer.from(frames[i], "base64"),
     );
-const bg = await png("art/belfry/clockwell.png", 1510);
-sprite(
-  "Cathedral",
-  { scene: bg },
-  { x: 480, y: -120 },
-  "onStart => {for {waitNextFrame(); setXYpos 480,cameraY*0.96-80}}",
-);
+await mkdir(new URL("public/art/city/", root), { recursive: true });
+for (const name of ["wind", "forge", "archive", "mirror", "heart"])
+  await copyFile(
+    new URL(`art/belfry/city/${name}.png`, root),
+    new URL(`public/art/city/${name}.png`, root),
+  );
+await addCityArt({ sprite, png, vector });
 // Depth grading remains subtle so silhouettes, brass anchors and warnings read.
 sprite(
   "Depth",
@@ -367,13 +404,12 @@ function clockArt(r = 210) {
   s += `<path d="M${r} 36v${r - 36}l${r / 2} ${r / 3}" fill="none" stroke="#968567" stroke-width="5"/><circle cx="${r}" cy="${r}" r="12" fill="#18222a" stroke="#b4a381"/>`;
   return vector(r * 2, r * 2, s);
 }
-for (let i = 0; i < 5; i++)
-  sprite(
-    "Dial" + i,
-    { dial: clockArt() },
-    { x: i % 2 ? 750 : 195, y: -430 - i * 760, rotationStyle: "normal" },
-    `onStart => {for {waitNextFrame(); setHeading 90+worldTime*${i % 2 ? 0.8 : -0.8}; setGraphicEffect GhostEffect,68}}`,
-  );
+sprite(
+  "DialCore",
+  { dial: clockArt() },
+  { x: 480, y: -3460, rotationStyle: "normal" },
+  "onStart => {for {waitNextFrame(); setHeading 90+visualTime*0.8; setGraphicEffect GhostEffect,76}}",
+);
 // Foreground buttresses frame the vertical play field without obscuring routes.
 for (let side = 0; side < 2; side++) {
   let c =
@@ -384,6 +420,7 @@ for (let side = 0; side < 2; side++) {
     "Buttress" + side,
     { wall: vector(70, 4000, c) },
     { x: side ? 912 : 48, y: -1760 },
+    "onStart => {setGraphicEffect GhostEffect,45; setGraphicEffect BrightnessEffect,-15}",
   );
 }
 // One texture shared by all ledges; clones scale the drawing, while collision
@@ -399,12 +436,14 @@ sprite(
  for {
   dt:=float64(waitNextFrame()); x:=floorX[i]+floorW[i]/2; y:=floorY[i]; heading:=90.0; ghost:=0.0
   if floorKind[i]==1 && segment==2 {y-=clamp(returnTime*180,0,700); heading+=clamp(returnTime*10,0,35); ghost=clamp(returnTime*20,0,100)}
-  if floorKind[i]>=2 {
+  if floorKind[i]==2 || floorKind[i]==3 {
    guard:=2; if floorKind[i]==3 {guard=6}
    if phase==1 {if enemyHP[guard]<=0 {opening=clamp(opening+dt*1.3,0,1)} else {opening=0}}
    x+=opening*900; ghost=opening*70
   }
-  if practice==1 {if i==0 {setSize 800/1983; x=480; y=0; ghost=0} else {ghost=100}} else {setSize floorW[i]/1983}
+  if !floorActive(i) && floorKind[i]>=4 {ghost=100}
+  if floorKind[i]==4 {setGraphicEffect ColorEffect,18} else if floorKind[i]==5 {setGraphicEffect BrightnessEffect,18}
+  if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {setSize floorW[i]/1983}
   setXYpos x,y; setHeading heading; setGraphicEffect GhostEffect,ghost
  }
 }`,
@@ -421,7 +460,7 @@ for (let i = 0; i < 4; i++) {
       ),
     },
     { x, y: y + 80 },
-    `onStart => {for {waitNextFrame(); if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(worldTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
+    `onStart => {for {waitNextFrame(); if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(visualTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
   );
 }
 sprite(
@@ -482,17 +521,55 @@ sprite(
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[10],enemyY[10]; setHeading 90+worldTime*10} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[10],enemyY[10]; setHeading 90+visualTime*10} else {hide}}}",
+);
+sprite(
+  "Niche",
+  {
+    stone: vector(
+      112,
+      144,
+      '<path d="M10 140V46Q56-22 102 46v94" fill="#080e12" stroke="#565850" stroke-width="2"/><path d="M22 138V48Q56 0 90 48v90" fill="#060a0e" stroke="#303736" stroke-width="2"/><path d="M3 140h106M17 68h14m50 0h14M17 100h14m50 0h14" stroke="#807760" stroke-width="1.5"/><path d="M50 22h12v9H50z" fill="#bea473"/>',
+    ),
+  },
+  { visible: false },
+  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyType[i]==2 && enemyBaseY[i]>-6000 {show; setSize 0.82; setXYpos enemyBaseX[i],enemyBaseY[i]+15} else {hide}}}",
 );
 const enemyImages = {};
-for (let i = 0; i < 3; i++)
-  enemyImages["kind" + i] = await png(`art/belfry/frames/${i}.png`, 512);
-for (let i = 0; i < 4; i++)
-  enemyImages["mimic" + i] = await png(`art/belfry/frames/mimic-${i}.png`, 512);
+for (const name of assassinKinds)
+  for (let i = 0; i < 6; i++)
+    enemyImages[`${name}${i}`] = {
+      ...(await png(`art/belfry/frames/assassin-${name}-${i}.png`, 384)),
+      pivotX: 192,
+      pivotY: 366,
+    };
+for (let i = 0; i < 2; i++)
+  enemyImages["elbow" + i] = {
+    ...(await png(`art/belfry/frames/assassin-elbow-${i}.png`, 384)),
+    pivotX: 192,
+    pivotY: 366,
+  };
+for (const [name, count] of [
+  ["fighter", 6],
+  ["archer", 2],
+  ["chain", 2],
+])
+  for (let i = 0; i < count; i++)
+    enemyImages[`ninja-${name}${i}`] = {
+      ...(await png(`art/belfry/frames/ninja-${name}-${i}.png`, 384)),
+      pivotX: 192,
+      pivotY: 366,
+    };
+sprite(
+  "EnemyBlend",
+  enemyImages,
+  { visible: false, rotationStyle: "left-right" },
+  await code("EnemyBlend"),
+);
 sprite(
   "Enemy",
   enemyImages,
-  { visible: false, rotationStyle: "normal" },
+  { visible: false, rotationStyle: "left-right" },
   await code("Enemy"),
 );
 sprite(
@@ -502,6 +579,11 @@ sprite(
       180,
       180,
       '<defs><radialGradient id="t"><stop stop-color="#f78046" stop-opacity=".04"/><stop offset=".8" stop-color="#f78046" stop-opacity=".16"/><stop offset="1" stop-color="#f78046" stop-opacity="0"/></radialGradient></defs><circle cx="90" cy="90" r="80" fill="url(#t)"/><path d="M90 22l13 24H77z" fill="#f4a170"/><circle cx="90" cy="90" r="65" fill="none" stroke="#e6a371" stroke-width="1" stroke-dasharray="12 10"/>',
+    ),
+    guard: vector(
+      180,
+      180,
+      '<path d="M42 30l96 96M138 30l-96 96" stroke="#b4e5df" stroke-width="4"/><path d="M28 80q0 78 62 88q62-10 62-88" fill="none" stroke="#7cbab8" stroke-width="2"/>',
     ),
   },
   { visible: false },
@@ -525,6 +607,11 @@ sprite(
       260,
       '<path d="M25 20Q270 40 225 240" fill="none" stroke="#eba78b" stroke-width="12"/><path d="M35 25Q260 50 220 230" fill="none" stroke="#ffeccc" stroke-width="2"/>',
     ),
+    chain: vector(
+      400,
+      20,
+      '<defs><pattern id="links" width="16" height="20" patternUnits="userSpaceOnUse"><rect x="1" y="6" width="12" height="7" rx="3.5" fill="none" stroke="#292b29" stroke-width="4"/><rect x="1" y="6" width="12" height="7" rx="3.5" fill="none" stroke="#c2a882" stroke-width="1.4"/><path d="M9 9h10" stroke="#777a71" stroke-width="2"/></pattern></defs><path d="M0 0h385v20H0z" fill="url(#links)"/><path d="M381 9l18-7-6 16-7-3 7-8-12 7" fill="#cfc7a6" stroke="#4b4e44" stroke-width="1"/>',
+    ),
   },
   { visible: false, rotationStyle: "normal" },
   await code("Hazard"),
@@ -535,11 +622,11 @@ sprite(
     ring: vector(
       110,
       110,
-      '<circle cx="55" cy="55" r="47" fill="none" stroke="#dfbb76" stroke-width="1.5" stroke-dasharray="18 12"/><path d="M55 2v16m53 37H92M55 108V92M2 55h16" stroke="#fff0b9" stroke-width="2"/>',
+      '<circle cx="55" cy="55" r="47" fill="none" stroke="#c65859" stroke-width="1.5" stroke-dasharray="18 12"/><path d="M55 2v16m53 37H92M55 108V92M2 55h16" stroke="#ffe9d4" stroke-width="2"/>',
     ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if Hero.charging && phase==1 {show; setXYpos Hero.px,Hero.py+30; setHeading 90+worldTime*120; setSize 0.45+Hero.chargeTime*0.4; setGraphicEffect BrightnessEffect,Hero.chargeTime*30} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if Hero.charging && (phase==1 || phase==5) {show; setXYpos Hero.px,Hero.py+30; setHeading 90+visualTime*120; setSize 0.45+Hero.chargeTime*0.4; setGraphicEffect BrightnessEffect,Hero.chargeTime*30} else {hide}}}",
 );
 sprite(
   "Echo",
@@ -563,7 +650,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos Hero.px-35,Hero.py+62+sin(worldTime*3)*7; setSize 0.36} else {hide}}}",
+  "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos Hero.px-35,Hero.py+62+sin(visualTime*3)*7; setSize 0.36} else {hide}}}",
 );
 sprite(
   "Rope",
@@ -640,6 +727,12 @@ for (let i = 0; i < 12; i++)
     pivotX: 209,
     pivotY: 400,
   };
+for (let i = 0; i < 3; i++)
+  hero["skill" + i] = {
+    ...(await png(`art/belfry/frames/skill-${i}.png`, 82)),
+    pivotX: [190, 209, 199][i],
+    pivotY: 400,
+  };
 sprite(
   "Trail",
   hero,
@@ -658,6 +751,105 @@ sprite(
   { x: 230, y: 0, rotationStyle: "left-right" },
   await code("Hero"),
 );
+// Skill visuals remain native spx sprites (no host-only VFX overlay).
+const bowCostumes = {};
+for (let i = 0; i < 3; i++)
+  bowCostumes["draw" + i] = vector(
+    180,
+    100,
+    `<path d="M60 50H160m-16-8 16 8-16 8" fill="none" stroke="${i === 2 ? "#fff0d7" : "#ce7f72"}" stroke-width="1" stroke-dasharray="${i === 2 ? "25 5" : "5 8"}"/><path d="M160 30v8m0 24v8" stroke="#ba6560" stroke-width="1"/>`,
+  );
+sprite(
+  "SpiritBow",
+  bowCostumes,
+  { visible: false, rotationStyle: "normal" },
+  "onStart => {for {waitNextFrame(); if Hero.bowCharging && phase!=2 && phase!=3 {show; setCostume int(clamp(Hero.bowCharge/0.27,0,2)); setXYpos Hero.px+Hero.aimX*40,Hero.py+32+Hero.aimY*40; setHeading angle(Hero.aimX,Hero.aimY); setSize 0.8} else {hide}}}",
+);
+sprite(
+  "BowLock",
+  {
+    lock: vector(
+      110,
+      110,
+      '<path d="M14 34V14h20m42 0h20v20m0 42v20H76m-42 0H14V76" fill="none" stroke="#edb59e" stroke-width="2"/><circle cx="55" cy="55" r="35" fill="none" stroke="#ca6563" stroke-width="1" stroke-dasharray="18 10"/><path d="M55 4v14m0 74v14M4 55h14m74 0h14" stroke="#fff0d4" stroke-width="1.5"/>',
+    ),
+  },
+  { visible: false, rotationStyle: "normal" },
+  "onStart => {for {waitNextFrame(); i:=Hero.bowTarget; if Hero.bowCharging && i>=0 && phase!=2 && phase!=3 {show; setXYpos enemyX[i],enemyY[i]; setSize 0.75+clamp(Hero.bowCharge,0,0.55)*0.25; if enemyType[i]==3 {setSize 1.6}; setHeading 90; setGraphicEffect GhostEffect,15} else {hide}}}",
+);
+sprite(
+  "HealingWeave",
+  {
+    weave: vector(
+      160,
+      160,
+      '<path d="M80 9L97 58l49 22-49 22-17 49-17-49L14 80l49-22Z" fill="none" stroke="#b9c8af" stroke-opacity=".5"/><circle cx="80" cy="80" r="57" fill="none" stroke="#e4cb8f" stroke-width="1" stroke-dasharray="19 10"/><path d="M80 35v90M35 80h90" stroke="#e7d7ad" stroke-width="1"/>',
+    ),
+  },
+  { visible: false, rotationStyle: "normal" },
+  "onStart => {for {waitNextFrame(); if Hero.healTime>0 && phase!=2 && phase!=3 {show; setXYpos Hero.px,Hero.py+30; setSize 0.35+Hero.healTime*0.65; setHeading 90+visualTime*80; setGraphicEffect GhostEffect,Hero.healTime*40} else {hide}}}",
+);
+sprite(
+  "裂印",
+  {
+    mark: vector(
+      70,
+      90,
+      '<path d="M35 5L13 39l22 46 22-46Z" fill="#441f29" fill-opacity=".25" stroke="#de796d" stroke-width="1"/><path d="M39 13L26 44h18L31 77" fill="none" stroke="#ffe7d5" stroke-width="3"/><path d="M35 0v9m0 72v9" stroke="#dc7064"/>',
+    ),
+  },
+  { visible: false },
+  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyMark[i]>0 && enemyHP[i]>0 {show; setXYpos enemyX[i],enemyY[i]+58; setSize 0.45; setGraphicEffect GhostEffect,15+sin(visualTime*7)*12} else {hide}}}",
+);
+sprite(
+  "Arrow",
+  {
+    quick: vector(
+      130,
+      30,
+      '<path d="M0 15h105" stroke="#872f36" stroke-width="5"/><path d="M15 15h103l-15-6 24 6-24 6 15-6" fill="none" stroke="#fce5d4" stroke-width="2"/>',
+    ),
+    full: vector(
+      180,
+      40,
+      '<path d="M0 20l150-9 27 9-27 9Z" fill="#912e39" fill-opacity=".5"/><path d="M20 20h135" stroke="#dc5d53" stroke-width="7"/><path d="M45 20h117l-20-7 34 7-34 7 20-7" fill="none" stroke="#fff1d9" stroke-width="2"/>',
+    ),
+  },
+  { visible: false, rotationStyle: "normal" },
+  await code("Arrow"),
+);
+sprite(
+  "SkillFX",
+  {
+    needle: vector(
+      250,
+      100,
+      '<path d="M5 50Q80 12 220 50Q80 87 5 50" fill="#1a1720" fill-opacity=".8"/><path d="M10 50H241M210 35l32 15-32 15" fill="none" stroke="#de615b" stroke-width="3"/><path d="M70 50h170" stroke="#fff5df" stroke-width="2"/><path d="M90 30l70 8m-45 33 82-7" stroke="#b64545" stroke-width="2"/>',
+    ),
+    cleave: vector(
+      390,
+      300,
+      '<path d="M20 256Q360 263 330 8Q440 220 20 256Z" fill="#080d17" fill-opacity=".85"/><path d="M20 251Q341 241 330 8Q400 211 20 251" fill="#b62f42" fill-opacity=".85"/><path d="M30 245Q340 224 331 17Q365 209 30 245" fill="#f9e5d1"/><path d="M56 253Q339 250 346 45M43 268Q295 279 359 126" fill="none" stroke="#e25e5e" stroke-width="3"/><path d="M10 242l58-6m273-199 9-28M300 225l42 8" stroke="#f3ad8b" stroke-width="2"/>',
+    ),
+    restore: vector(
+      220,
+      220,
+      '<circle cx="110" cy="110" r="81" fill="none" stroke="#d8bd81" stroke-width="2"/><circle cx="110" cy="110" r="92" fill="none" stroke="#acc7b3" stroke-width="1" stroke-dasharray="30 16"/><path d="M110 14v58m0 76v58M14 110h58m76 0h58" stroke="#f5e4b3" stroke-width="2"/><path d="M110 45l18 47 47 18-47 18-18 47-18-47-47-18 47-18Z" fill="#b6c8ac" fill-opacity=".15"/>',
+    ),
+    rupture: vector(
+      280,
+      280,
+      '<path d="M140 10l12 100 65-67-48 84 101 13-99 12 65 65-84-48-12 101-12-99-65 65 48-84-101-12 100-12-67-65 84 48Z" fill="#dd5c56" fill-opacity=".7"/><path d="M22 22l236 236M258 22L22 258" stroke="#fff3da" stroke-width="3"/><circle cx="140" cy="140" r="50" fill="none" stroke="#eeaea0" stroke-width="2"/>',
+    ),
+    gather: vector(
+      330,
+      330,
+      '<circle cx="165" cy="165" r="136" fill="none" stroke="#b34c50" stroke-width="1" stroke-dasharray="55 22"/><path d="M165 18l15 110 110 37-110 15-15 110-15-110-110-15 110-37Z" fill="#080d17" fill-opacity=".65" stroke="#edc2af" stroke-width="1"/><circle cx="165" cy="165" r="48" fill="none" stroke="#f2d7b7" stroke-width="2"/>',
+    ),
+  },
+  { visible: false, rotationStyle: "normal" },
+  await code("SkillFX"),
+);
 sprite(
   "Target",
   {
@@ -668,7 +860,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onStart => {for {waitNextFrame(); i:=Hero.target; if phase==1 && i>=0 && Hero.hook<0 {show; if i<len(anchorX) {setXYpos anchorX[i],anchorY[i]} else {j:=i-len(anchorX); setXYpos enemyX[j],enemyY[j]}; setSize 0.85+sin(worldTime*5)*0.04} else {hide}}}",
+  "onStart => {for {waitNextFrame(); i:=Hero.target; if phase==1 && i>=0 && Hero.hook<0 && !Hero.bowCharging {show; if i<len(anchorX) {setXYpos anchorX[i],anchorY[i]} else {j:=i-len(anchorX); setXYpos enemyX[j],enemyY[j]}; setSize 0.85+sin(visualTime*5)*0.04} else {hide}}}",
 );
 sprite(
   "Slash",
@@ -765,6 +957,16 @@ sprite(
       22,
       '<defs><radialGradient id="b"><stop stop-color="#ffdeac" stop-opacity=".8"/><stop offset="1" stop-color="#ea7d46" stop-opacity="0"/></radialGradient></defs><ellipse cx="20" cy="11" rx="20" ry="11" fill="url(#b)"/><path d="M3 11l28-4 6 4-6 4z" fill="#f1b57d"/><path d="M19 11h15" stroke="#fff1c6" stroke-width="2"/>',
     ),
+    arrow: vector(
+      62,
+      12,
+      '<path d="M2 6h48" stroke="#bca782" stroke-width="2"/><path d="M48 2l12 4-12 4z" fill="#f6dfad"/><path d="M3 6l-2-5 12 5-12 5z" fill="#abb4a1"/>',
+    ),
+    heavyarrow: vector(
+      78,
+      16,
+      '<path d="M2 8h60" stroke="#a79679" stroke-width="3"/><path d="M58 2l18 6-18 6 4-6z" fill="#e4bb77"/><path d="M3 8l-1-6 17 6-17 6z" fill="#8d9a8f"/>',
+    ),
   },
   { visible: false, rotationStyle: "normal" },
   await code("Bolt"),
@@ -779,7 +981,7 @@ sprite(
   "Motes",
   { dust: vector(1400, 1000, dust) },
   {},
-  "onStart => {for {waitNextFrame(); setXYpos 480+sin(worldTime*0.07)*30,cameraY+sin(worldTime*0.11)*50}}",
+  "onStart => {for {waitNextFrame(); setXYpos 480+sin(visualTime*0.07)*30,cameraY+sin(visualTime*0.11)*50}}",
 );
 sprite(
   "Mist",
@@ -791,7 +993,7 @@ sprite(
     ),
   },
   {},
-  "onStart => {for {waitNextFrame(); setXYpos 480+sin(worldTime*0.1)*85,cameraY+sin(worldTime*0.18)*28}}",
+  "onStart => {for {waitNextFrame(); setXYpos 480+sin(visualTime*0.1)*85,cameraY+sin(visualTime*0.18)*28}}",
 );
 sprite(
   "RisingVoid",
@@ -808,9 +1010,13 @@ sprite(
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
 const initialization = `func initLevel() {
+ cityNodeX=[]float64{315,230,720,770,230}; cityNodeY=[]float64{0,-1050,-2100,-2630,-3150}
  anchorX=${floats(anchors.map((a) => a[0]))}; anchorY=${floats(anchors.map((a) => a[1]))}
  floorX=${floats(platforms.map((a) => a[0]))}; floorW=${floats(platforms.map((a) => a[1]))}; floorY=${floats(platforms.map((a) => a[2]))}; floorKind=${ints(platforms.map((a) => a[3]))}
  enemyBaseX=${floats(enemies.map((a) => a[0]))}; enemyBaseY=${floats(enemies.map((a) => a[1]))}; enemyX=${floats(enemies.map((a) => a[0]))}; enemyY=${floats(enemies.map((a) => a[1]))}; enemyType=${ints(enemies.map((a) => a[2]))}
+ enemyMark=${floats(enemies.map(() => 0))};
+ enemyFacing=${floats(enemies.map(() => -1))}; enemyStride=${floats(enemies.map(() => 0))}; enemyFloor=${ints(enemies.map(() => -1))}; enemyStep=${ints(enemies.map(() => 0))}; enemySpent=${ints(enemies.map(() => 0))}; enemyRecover=${floats(enemies.map(() => 0))}
+ enemyFromX=${floats(enemies.map(() => 0))}; enemyFromY=${floats(enemies.map(() => 0))}; enemyMoveX=${floats(enemies.map(() => 0))}; enemyMoveY=${floats(enemies.map(() => 0))}; enemyMoveTime=${floats(enemies.map(() => 0))}; enemyMoveArc=${floats(enemies.map(() => 0))}
  enemyHP=${ints(enemies.map(() => 0))}; enemyState=${ints(enemies.map(() => 0))}; enemyClock=${floats(enemies.map(() => 0))}; enemyFlash=${floats(enemies.map(() => 0))}
  enemyAttackHealth=${ints(enemies.map(() => 0))}; enemyMode=${ints(enemies.map(() => 0))}; enemyCycle=${ints(enemies.map(() => 0))}; enemyGreeted=${ints(enemies.map(() => 0))}; enemyOffX=${floats(enemies.map(() => 0))}; enemyOffY=${floats(enemies.map(() => 0))}; enemyVX=${floats(enemies.map(() => 0))}; enemyVY=${floats(enemies.map(() => 0))}; enemyStun=${floats(enemies.map(() => 0))}; enemyThrown=${floats(enemies.map(() => 0))}; enemyAimX=${floats(enemies.map(() => 0))}; enemyAimY=${floats(enemies.map(() => 0))}; enemyHazard=${floats(enemies.map(() => 0))};
  echoX=${floats(echoes.map((a) => a[0]))}; echoY=${floats(echoes.map((a) => a[1]))}; echoTaken=${ints(echoes.map(() => 0))}
@@ -819,7 +1025,11 @@ const initialization = `func initLevel() {
 `;
 files["main.spx"] = (await code("main")).replace(
   "func dist(",
-  initialization + "func dist(",
+  initialization +
+    (await code("Assassins")) +
+    (await code("Inscription")) +
+    (await code("City")) +
+    "\nfunc dist(",
 );
 files["assets/index.json"] = JSON.stringify({
   map: { width: 4000, height: 12000 },

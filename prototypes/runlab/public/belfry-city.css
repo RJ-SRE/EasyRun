@@ -1,0 +1,237 @@
+/* Readable brass annotations; never cover the player with a dialogue modal. */
+#city-book-fullscreen {
+  display: none;
+}
+:fullscreen #city-book-fullscreen {
+  display: block;
+  position: absolute;
+  right: 26px;
+  bottom: 60px;
+  z-index: 7;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #d9bf8d;
+  background: #101b20de;
+  border-color: #b7a16d66;
+}
+#city-narrative {
+  position: absolute;
+  left: 26px;
+  bottom: 98px;
+  max-width: 310px;
+  z-index: 5;
+  pointer-events: none;
+  padding: 12px 16px;
+  border-left: 1px solid #c5ae7b88;
+  background: linear-gradient(90deg, #09141be8, #09141b9c 85%, transparent);
+}
+#city-narrative small {
+  font:
+    9px/1.6 ui-monospace,
+    monospace;
+  letter-spacing: 1.2px;
+  color: #d9bf8d;
+}
+#city-narrative p {
+  font:
+    12px/1.85 "Songti SC",
+    serif;
+  margin: 6px 0 0;
+  color: #e0ddcf;
+}
+#city-interaction {
+  position: absolute;
+  right: 28px;
+  bottom: 112px;
+  width: 270px;
+  z-index: 7;
+  background: linear-gradient(125deg, #111c20f5, #172021e8);
+  border: 1px solid #b7a16d77;
+  border-top: 2px solid #c3ab78;
+  padding: 14px 16px;
+  box-shadow: 0 12px 36px #0005;
+}
+#city-interaction small {
+  font:
+    9px/1.4 ui-monospace,
+    monospace;
+  color: #a79b7d;
+  letter-spacing: 3px;
+}
+#city-interaction h3 {
+  font:
+    20px/1.4 "Songti SC",
+    serif;
+  margin: 8px 0;
+  color: #eadfc4;
+  letter-spacing: 2px;
+}
+#city-interaction p {
+  font-size: 11px;
+  line-height: 1.8;
+  white-space: pre-line;
+  color: #bcc4be;
+  margin: 8px 0 12px;
+}
+#city-interaction div {
+  display: flex;
+  gap: 8px;
+}
+#city-interaction button {
+  padding: 7px 10px;
+  font-size: 11px;
+  border-color: #bdab7f70;
+  color: #e5d3a6;
+}
+#city-book {
+  width: min(680px, calc(100vw - 28px));
+  max-width: none;
+  max-height: calc(100vh - 44px);
+  padding: 24px;
+  background: #101b20;
+  color: #dbd7c9;
+  border: 1px solid #b6a16c;
+  border-top: 2px solid #c6ac76;
+  border-radius: 2px 14px;
+  box-shadow: 0 20px 80px #0009;
+  overflow: auto;
+}
+#city-book::backdrop {
+  background: #030b10c7;
+}
+#city-book header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid #a3956a44;
+  padding-bottom: 14px;
+}
+#city-book header small {
+  font:
+    8px/1.6 ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  color: #ab9e7a;
+}
+#city-book h2 {
+  font:
+    28px/1.3 "Songti SC",
+    serif;
+  letter-spacing: 5px;
+  margin: 7px 0 0;
+  color: #e5d6b2;
+}
+#city-book-close {
+  font-size: 26px;
+  border: 0;
+  padding: 4px 8px;
+}
+.city-book-intro {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #aab6b1;
+  margin: 16px 0;
+}
+#city-entries {
+  display: grid;
+  gap: 10px;
+}
+#city-entries article {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  gap: 16px;
+  border: 1px solid #a194702b;
+  background: #07131a77;
+  min-height: 104px;
+}
+#city-entries img {
+  width: 116px;
+  height: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  opacity: 0.8;
+}
+#city-entries article[data-visited="false"] {
+  opacity: 0.6;
+}
+#city-entries article[data-visited="false"] img {
+  filter: grayscale(1);
+  opacity: 0.25;
+}
+#city-entries article > div {
+  padding: 10px 14px 10px 0;
+}
+#city-entries small {
+  font:
+    8px/1.4 ui-monospace,
+    monospace;
+  letter-spacing: 1px;
+  color: #b2a68b;
+}
+#city-entries h3 {
+  font:
+    19px/1.4 "Songti SC",
+    serif;
+  margin: 5px 0;
+  color: #daceaf;
+}
+#city-entries h3 span {
+  font: 9px/1.4 sans-serif;
+  color: #88a99f;
+  margin-left: 14px;
+  white-space: nowrap;
+}
+#city-entries p {
+  font-size: 11px;
+  line-height: 1.8;
+  margin: 4px 0 0;
+  color: #b7c0ba;
+}
+#city-choice-record {
+  white-space: pre-line;
+  font:
+    12px/1.8 "Songti SC",
+    serif;
+  border-left: 1px solid #b49b67;
+  padding-left: 14px;
+  color: #d3c5a4;
+  margin: 20px 0 0;
+}
+@media (max-height: 760px) {
+  #city-interaction {
+    bottom: 98px;
+    padding: 10px 12px;
+  }
+  #city-narrative {
+    bottom: 80px;
+    max-width: 270px;
+  }
+  #city-narrative p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 720px) {
+  #city-narrative {
+    max-width: 220px;
+    left: 14px;
+  }
+  #city-interaction {
+    right: 14px;
+    width: 230px;
+  }
+  #city-book {
+    padding: 18px;
+  }
+  #city-entries article {
+    grid-template-columns: 70px 1fr;
+    gap: 10px;
+  }
+  #city-entries img {
+    width: 70px;
+  }
+  #city-entries h3 span {
+    display: block;
+    margin: 3px 0 0;
+  }
+}

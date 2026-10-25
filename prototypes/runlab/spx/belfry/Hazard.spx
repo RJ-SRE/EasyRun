@@ -1,19 +1,31 @@
 onCloned data => {
  i:=data.(int)
  for {
-  waitNextFrame(); kind:=enemyType[i]; tell:=enemyState[i]==1 && enemyMode[i]==1; active:=enemyHazard[i]>0
-  if enemyHP[i]>0 && (tell || active) && (kind==1 || kind==2 || kind==3 || kind==4 || kind==0) {
-   show; setGraphicEffect GhostEffect,0
-   if kind==2 || kind==3 {
-    setCostume 1; setXYpos enemyX[i],enemyY[i]; setHeading 90
-    if tell {setSize 1.4; setGraphicEffect GhostEffect,65} else {setSize (0.9-enemyHazard[i])*360/95}
-   } else if kind==4 && enemyMode[i]==0 {
-    setCostume 2; setXYpos enemyX[i],enemyY[i]; setSize 0.9; setHeading angle(Hero.px-enemyX[i],Hero.py+28-enemyY[i])
-   } else {
-    dx:=enemyAimX[i]-enemyX[i]; dy:=enemyAimY[i]-enemyY[i]
-    setCostume 0; setXYpos enemyX[i]+dx/2,enemyY[i]+dy/2; setHeading angle(dx,dy); setSize dist(dx,dy)/400
-    if tell {setGraphicEffect GhostEffect,65}
+  waitNextFrame(); kind:=enemyType[i]; state:=enemyState[i]; t:=enemyClock[i]; visible:=false
+  setGraphicEffect GhostEffect,0
+  if enemyHP[i]>0 {
+   if (kind==2 || kind==4) && (state==1 || state==3) {
+    visible=true; tx:=enemyAimX[i]; ty:=enemyAimY[i]
+    if state==3 && kind==2 {visible=false}
+    if kind==4 && state==3 && chainOwner!=i {progress:=clamp(t/0.34,0,1); if t>0.44 {progress=clamp((0.85-t)/0.41,0,1)}; tx=enemyX[i]+(tx-enemyX[i])*progress; ty=enemyY[i]+(ty-enemyY[i])*progress}
+    ox:=enemyX[i]; oy:=enemyY[i]
+    if kind==4 && enemyMode[i]==1 {
+     oy=enemyY[i]-22; ty=oy; reach:=220.0
+     if state==3 {reach*=clamp(t/0.12,0,1); if t>0.34 {reach*=clamp((0.54-t)/0.2,0,1)}; if t>0.54 {visible=false}}
+     tx=ox+enemyFacing[i]*reach
+    }
+    dx:=tx-ox; dy:=ty-oy; setCostume 0; setXYpos ox+dx/2,oy+dy/2; setHeading angle(dx,dy); setSize dist(dx,dy)/400
+    if kind==4 && state==3 {setCostume 3}
+    if state==1 {setGraphicEffect GhostEffect,70}
    }
-  } else {hide}
+   if (kind==1 || kind==3) && state==3 && enemyHazard[i]>0 {
+    visible=true; setCostume 2; setXYpos enemyX[i]+enemyFacing[i]*20,enemyY[i]; setHeading enemyFacing[i]*90; setSize 0.52
+    if t>0.7 {setXYpos enemyX[i]+enemyFacing[i]*30,enemyY[i]-23; setSize 0.60}
+   }
+   if kind==5 && state==4 && bindEnemy==i {
+    visible=true; setCostume 1; setXYpos Hero.px,Hero.py+32; setSize 0.26; setHeading 90+sin(worldTime*12)*8; setGraphicEffect GhostEffect,35
+   }
+  }
+  if visible {show} else {hide}
  }
 }

@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-24T19:52:15.380Z",
+  "checks": [
+    "main/full view derives consistent counts and route membership",
+    "all 5 regions and 15 room selections render objectives, enemies, safe alternatives and word uses",
+    "all 30 distinct words have visible initial and return contexts",
+    "concept art and schematic resolve from project-local assets",
+    "1280/768/390 widths keep the plan and 30-word table within the viewport"
+  ],
+  "errors": []
+}

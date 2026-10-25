@@ -1,0 +1,321 @@
+{
+  "date": "2026-10-24T17:35:31.961Z",
+  "cases": [
+    "pause stops voices, tension and room tails",
+    "cast, contact, tension and recoil follow actual hook lifecycle",
+    "mute removes every voice; unmute resumes from current state",
+    "early release cancels contact and tension cues",
+    "hidden page stops audio; a resume gesture restarts only the current ambience",
+    "late sample loading cannot resurrect a paused cast"
+  ],
+  "diagnostic": {
+    "enabled": true,
+    "context": "running",
+    "sources": 0,
+    "loops": 2,
+    "cached": 32,
+    "epoch": 13,
+    "dropped": 0,
+    "history": [
+      {
+        "cue": "hook",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.18133333333333335,
+        "pan": -0.4736478323001746
+      },
+      {
+        "cue": "attach",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.23466666666666666,
+        "pan": -0.17900050972492876
+      },
+      {
+        "cue": "brass",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.23466666666666666,
+        "pan": -0.17900050972492876
+      },
+      {
+        "cue": "tension",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.33066666666666666,
+        "pan": -0.19626037061949886
+      },
+      {
+        "cue": "hook",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.328,
+        "pan": -0.4294737715035303
+      },
+      {
+        "cue": "attach",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.3813333333333333,
+        "pan": -0.1448217774815508
+      },
+      {
+        "cue": "brass",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.3813333333333333,
+        "pan": -0.1448217774815508
+      },
+      {
+        "cue": "tension",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.4613333333333334,
+        "pan": -0.17315693112667335
+      },
+      {
+        "cue": "brass",
+        "variant": 3,
+        "epoch": 5,
+        "time": 2.288,
+        "pan": -0.2412620891627645
+      },
+      {
+        "cue": "cloth",
+        "variant": 1,
+        "epoch": 5,
+        "time": 2.288,
+        "pan": -0.2412620891627645
+      },
+      {
+        "cue": "sling",
+        "variant": 1,
+        "epoch": 5,
+        "time": 2.288,
+        "pan": -0.2412620891627645
+      },
+      {
+        "cue": "hook",
+        "variant": 3,
+        "epoch": 9,
+        "time": 2.7306666666666666,
+        "pan": -0.4416753790679795
+      },
+      {
+        "cue": "cloth",
+        "variant": 2,
+        "epoch": 9,
+        "time": 2.752,
+        "pan": -0.43789716957659663
+      },
+      {
+        "cue": "sling",
+        "variant": 2,
+        "epoch": 9,
+        "time": 2.752,
+        "pan": -0.43789716957659663
+      },
+      {
+        "cue": "hook",
+        "variant": 4,
+        "epoch": 13,
+        "time": 3.1093333333333333,
+        "pan": -0.4294737715035303
+      },
+      {
+        "cue": "attach",
+        "variant": 3,
+        "epoch": 13,
+        "time": 3.1626666666666665,
+        "pan": -0.1448217774815508
+      },
+      {
+        "cue": "brass",
+        "variant": 4,
+        "epoch": 13,
+        "time": 3.1626666666666665,
+        "pan": -0.1448217774815508
+      },
+      {
+        "cue": "tension",
+        "variant": 3,
+        "epoch": 13,
+        "time": 3.2426666666666666,
+        "pan": -0.17315693112667335
+      },
+      {
+        "cue": "cloth",
+        "variant": 3,
+        "epoch": 13,
+        "time": 3.96,
+        "pan": -0.24127164428844441
+      },
+      {
+        "cue": "sling",
+        "variant": 3,
+        "epoch": 13,
+        "time": 3.962666666666667,
+        "pan": -0.24127164428844441
+      },
+      {
+        "cue": "land",
+        "variant": 1,
+        "epoch": 13,
+        "time": 4.810666666666667,
+        "pan": -0.23997025939719946
+      }
+    ],
+    "errors": []
+  },
+  "events": [
+    {
+      "name": "start",
+      "time": 0,
+      "x": 190,
+      "y": 0
+    },
+    {
+      "name": "hook",
+      "time": 0.06666667014360428,
+      "x": 190,
+      "y": 0
+    },
+    {
+      "name": "hookattach",
+      "time": 0.11666667275130749,
+      "x": 360,
+      "y": 150
+    },
+    {
+      "name": "hooktension",
+      "time": 0.20000001043081284,
+      "x": 360,
+      "y": 150
+    },
+    {
+      "name": "fold",
+      "time": 1.0166667196899652,
+      "x": 354.92218813908073,
+      "y": 118.33464312682163
+    },
+    {
+      "name": "hookrelease",
+      "time": 1.0166667196899652,
+      "x": 354.92218813908073,
+      "y": 118.33464312682163
+    },
+    {
+      "name": "sling",
+      "time": 1.0166667196899652,
+      "x": 354.92218813908073,
+      "y": 118.33464312682163
+    }
+  ],
+  "errors": [],
+  "routeRegression": [
+    {
+      "mode": 0,
+      "state": {
+        "phase": 2,
+        "difficulty": 0,
+        "checkpoint": 4,
+        "elapsed": 57.13703600902108,
+        "deaths": 2,
+        "collected": 2,
+        "x": 5803.886579778686,
+        "y": 550,
+        "vx": 0,
+        "vy": 0,
+        "hook": -1,
+        "target": 26,
+        "pull": 0,
+        "foldTime": 0,
+        "liftTime": 0,
+        "fold": 1,
+        "valveLeft": 1,
+        "valveRight": 1,
+        "weight": 1,
+        "wind": 1,
+        "windStage": 0,
+        "attempts": 3,
+        "hookCount": 39,
+        "wallJumps": 0,
+        "grounded": 1,
+        "standing": 26,
+        "dashCool": 0,
+        "fxCount": 0,
+        "failReason": 0,
+        "cameraX": 5539.999999999997,
+        "cameraY": 700.30832004233,
+        "worldTime": 57.13703600902108,
+        "hookAge": 0.20000001043081284,
+        "hookFlight": 0.045,
+        "hookContact": 0,
+        "hookTension": 0,
+        "hookX": 5750,
+        "hookY": 720,
+        "ropeFade": 0
+      },
+      "errors": []
+    },
+    {
+      "mode": 1,
+      "state": {
+        "phase": 2,
+        "difficulty": 1,
+        "checkpoint": 4,
+        "elapsed": 55.409784613372736,
+        "deaths": 1,
+        "collected": 2,
+        "x": 5799.959889021542,
+        "y": 550,
+        "vx": 0,
+        "vy": 0,
+        "hook": -1,
+        "target": 26,
+        "pull": 0,
+        "foldTime": 0,
+        "liftTime": 0,
+        "fold": 1,
+        "valveLeft": 1,
+        "valveRight": 1,
+        "weight": 1,
+        "wind": 1,
+        "windStage": 2,
+        "attempts": 2,
+        "hookCount": 34,
+        "wallJumps": 0,
+        "grounded": 1,
+        "standing": 26,
+        "dashCool": 0,
+        "fxCount": 0,
+        "failReason": 0,
+        "cameraX": 5539.999999999996,
+        "cameraY": 700.3575783801504,
+        "worldTime": 55.409784613372736,
+        "hookAge": 0.36666668578982353,
+        "hookFlight": 0.062275489469207475,
+        "hookContact": 0,
+        "hookTension": 0,
+        "hookX": 5750,
+        "hookY": 720,
+        "ropeFade": 0
+      },
+      "errors": []
+    }
+  ],
+  "sources": {
+    "materials": "Existing original procedural samples in public/audio/sfx; not recorded Foley",
+    "reverb": "Deterministic 1.35-second synthetic room impulse",
+    "voices": false
+  },
+  "audioMeasurement": [
+    "mean_volume: -34.2 dB",
+    "max_volume: -12.0 dB"
+  ],
+  "build": {
+    "files": 275,
+    "sourceOnlyMatch": true,
+    "manifestSha256": "24b9254efbdbcdc99bcc230f106b7b84041581f6d1c7645e2c43aa628c0804a7"
+  }
+}

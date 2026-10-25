@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-24T19:35:57.143Z",
+  "browser": "156.0.8078.4",
+  "cases": [
+    "live focus motion and tension audio while damage, physics and cooldowns remain frozen",
+    "correct letters charge the hero effect without advancing combat",
+    "mute clears focus sources and unmute preserves the pending challenge",
+    "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final E",
+    "wrong meaning resumes the fallback attack promptly and leaves only passive feedback",
+    "reduced motion removes zoom and particles; restart clears motion, audio and old results"
+  ],
+  "errors": [],
+  "timing": {
+    "successReleaseMs": 10.509999997913837,
+    "failureReleaseMs": 15.839999996125698,
+    "focusFrameMedianMs": 33.32999999999993,
+    "focusFrameP95Ms": 50
+  },
+  "note": "Real opening platform, real keyboard inputs; seeded vocabulary only. Frame timings are local headless measurements, not a device-wide performance guarantee."
+}

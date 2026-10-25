@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-24T20:02:24.068959+00:00",
+  "counts": {
+    "flow": 18,
+    "resilience": 5,
+    "ninja": 10,
+    "motion": 9
+  },
+  "totalBrowserCases": 42,
+  "sourceSha256": {
+    "prototypes/runlab/build-belfry.mjs": "f3d1cf437988400dfde014d0afd47a24d480ec591b914b24be9824642bf168f6",
+    "prototypes/runlab/public/belfry-audio.js": "79da494251db195cadb3bb39ae0310e8a4164652e7010035516c7d6cf58712b9",
+    "prototypes/runlab/public/belfry.js": "bce09eb26a6e3df12094c108b5f0100c166cc2ea41f22bff54c3aa845ca38c84",
+    "prototypes/runlab/public/inscription-motion.js": "e9d8954d71f7d34a93352c46ba73b85ebab77c59754beb6be11476d9bb27a8cd",
+    "prototypes/runlab/public/inscription-ui.js": "5331d87c5fd6c984e6a7546a64a6d7becb0e3e2417d4fa9dc4f3a6dab10f4974",
+    "prototypes/runlab/public/inscription.css": "58e901139d685c330795dd17d24707a0d141ed4132a727d530e826906d2c783a",
+    "prototypes/runlab/spx/belfry/Echo.spx": "978e83afee83507ba145ece444f27d3b0bfb3b2e051f374f01d90042cc020633",
+    "prototypes/runlab/spx/belfry/Enemy.spx": "b33eb8a3f70c6a6f5a2b1d6ebe06ae51b7b8e95ffe1e445cb15477c7d04250da",
+    "prototypes/runlab/spx/belfry/EnemyBlend.spx": "c004d09f1f2588ba50e841f5039e278a9e5e953bd5ffe48332ff1a6af0a21328",
+    "prototypes/runlab/spx/belfry/EnemyTell.spx": "c6fc8fc202f6b125aaf14a9928a97162d4c5029d9e74e722e19ad747c540f0e2",
+    "prototypes/runlab/spx/belfry/Inscription.spx": "8235174e3768c5e8d5494c9e512009c65a59fe5a25114a5f3f64e972492cf4ba",
+    "prototypes/runlab/spx/belfry/Rope.spx": "451af606fc303d9520ca70c1a623ab9efa6a78da14cca6331116fc27ef929363",
+    "prototypes/runlab/spx/belfry/main.spx": "0696544b7d7393284216bf69b21044b03662d9e8e9040b515ed02950a8d8c1c3",
+    "prototypes/runlab/test-belfry-inscription-motion.mjs": "432f89f7f517f7ae7c41fc84de69abcfdecef55805f437c21e56213f9e5f8df4"
+  },
+  "build": {
+    "files": 359,
+    "sprites": 44
+  },
+  "limits": [
+    "Host rAF during a recorded local browser run is not engine GPU FPS or a stable-60-FPS guarantee.",
+    "No full-route replay this iteration.",
+    "Input still protects simulation positions, damage, cooldowns and encounter clocks.",
+    "New five-region/semantic content remains a proposal."
+  ]
+}

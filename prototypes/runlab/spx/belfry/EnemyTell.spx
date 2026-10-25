@@ -2,9 +2,12 @@ onCloned data => {
  i:=data.(int)
  for {
   waitNextFrame()
-  if enemyHP[i]>0 && enemyState[i]==1 {
-   show; setXYpos enemyX[i],enemyY[i]; size:=0.75; if enemyType[i]==3 {size=1.9}
-   setSize size*(1+sin(worldTime*15)*0.07)
+  if enemyHP[i]>0 && (enemyState[i]==1 || enemyState[i]==5) {
+   show; setXYpos enemyX[i],enemyY[i]+12; setSize 0.50
+   setCostume 0; setGraphicEffect GhostEffect,0
+   if enemyType[i]==1 && enemyMode[i]==1 && enemyState[i]==1 && enemyClock[i]<0.32 && enemyStep[i]==0 {setCostume 1; setSize 0.27}
+   if enemyState[i]==5 {setSize 0.34; setGraphicEffect GhostEffect,50}
+   setGraphicEffect BrightnessEffect,8+sin(visualTime*20)*5
   } else {hide}
  }
 }

@@ -152,9 +152,10 @@ try {
   await save("light recovery cancels into dash");
   await practice();
   await tap("q");
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(1350);
+  assert.equal((await state()).ultimateTime, 0);
   assert.equal((await state()).attackTime, 0);
-  await save("nova active window expires without another input");
+  await save("five-hit ultimate active window expires without another input");
   await tap("r");
   await wait(() => latestState.practice === 0 && latestState.elapsed < 1);
   assert.equal((await state()).attackKind, 0);
@@ -176,7 +177,7 @@ try {
     "sound settings retain only effects and music; former voice controls are absent",
   );
   await practice();
-  await wait(() => soundDiagnostics.cached === 56, 15000);
+  await wait(() => soundDiagnostics.cached === 82, 15000);
   await tap("j");
   await page.waitForTimeout(250);
   assert.ok(
@@ -204,9 +205,9 @@ try {
     await c.close();
     return result;
   });
-  assert.equal(decoded.length, 56);
+  assert.equal(decoded.length, 82);
   report.audio = decoded;
-  await save("all 56 retained effects decode without loading any voice pack");
+  await save("all 82 retained effects decode without loading any voice pack");
   await page.reload();
   await wait(() => latestState || runtimeErrors.length, 45000);
   assert.deepEqual(await page.evaluate(() => soundDiagnostics.settings), {
@@ -237,7 +238,9 @@ try {
   );
   await fallback.locator("#play").click();
   await fallback.waitForFunction(
-    () => window.soundDiagnostics.errors.length > 0,
+    () =>
+      window.soundDiagnostics.errors.length > 0 &&
+      window.latestState.phase === 1,
   );
   assert.equal(await fallback.evaluate(() => latestState.phase), 1);
   assert.equal(await fallback.locator("#dialogue").count(), 0);

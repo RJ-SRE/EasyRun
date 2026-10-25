@@ -1,6 +1,9 @@
 import "math"
 
 var (
+ healGated bool
+ ultimateGated bool
+ bladeLink int
  px float64
  py float64
  vx float64
@@ -20,6 +23,29 @@ var (
  hookY float64
  dashTime float64
  dashCool float64
+ basicCool float64
+ airAttacks int
+ airHitSlow bool
+ bowRecoil float64
+ bowCool float64
+ bladeCool float64
+ healCool float64
+ ultimateCool float64
+ bowTarget int
+ bowInputX float64
+ bowInputY float64
+ bowCharging bool
+ bowCharge float64
+ prevBow bool
+ prevHeal bool
+ healTime float64
+ ultimateTime float64
+ ultimateStep int
+ aimX float64
+ aimY float64
+ bladeX float64
+ bladeY float64
+ ultimateDir float64
  attackKind int
  attackAge float64
  attackDuration float64
@@ -40,6 +66,7 @@ var (
  plunging bool
  prevJump bool
  prevHook bool
+ attackPressed bool
  prevAttack bool
  prevDash bool
  prevBurst bool
@@ -54,10 +81,12 @@ var (
  landing float64
 )
 func resetHero(x,y float64) {
+ healGated=false; ultimateGated=false; bladeLink=-1
+ bowTarget=-1; bowInputX=0; bowInputY=0; bowRecoil=0; basicCool=0; airAttacks=0; airHitSlow=false; bowCool=0; bladeCool=0; healCool=0; ultimateCool=0; bowCharging=false; bowCharge=0; prevBow=false; prevHeal=false; healTime=0; ultimateTime=0; ultimateStep=0; aimX=1; aimY=0; bladeX=1; bladeY=0; ultimateDir=0
  px=x; py=y; vx=0; vy=0; facing=90; grounded=true; airJump=true; coyote=0.12; buffer=0; dropTime=0; hook=-1; target=-1; hookCool=0
  attackKind=0; attackAge=0; attackDuration=0; attackBuffer=0; bufferTime=0; chainStep=0; chainWindow=0; chargeTime=0; charging=false; prevHeavy=false; attackApplied=false; charged=false; attackFacing=90
  dashTime=0; dashCool=0; attackTime=0; attackCool=0; invulnerable=1.0; plunging=false
- prevJump=false; prevHook=false; prevAttack=false; prevDash=false; prevBurst=false; runDistance=0; pose=0; blendTime=0; bodyOffset=0; bodyVelocity=0; renderY=y; landing=0; trailAt=0
+ prevJump=false; prevHook=false; prevAttack=false; attackPressed=false; prevDash=false; prevBurst=false; runDistance=0; pose=0; blendTime=0; bodyOffset=0; bodyVelocity=0; renderY=y; landing=0; trailAt=0
  cameraY=y-100; cameraRenderY=cameraY; cameraRenderX=480; Camera.setXYpos 480,cameraY; setXYpos px,py; show
 }
 func chooseTarget() {
@@ -86,23 +115,26 @@ func releaseHook(boost bool) {
  }
 }
 // Input buffering stores intent; damage only occurs at the authored strike frame.
-func cancelAttack() {attackKind=0; attackCool=0; attackTime=0; attackBuffer=0; bufferTime=0; charging=false; chargeTime=0}
-func canMoveCancel() bool {return attackKind==0 || (attackKind!=7 && attackAge>=attackWindup+0.04)}
+func cancelAttack() {wordWanted=0; bladeLink=-1; attackKind=0; attackCool=0; attackTime=0; attackBuffer=0; bufferTime=0; charging=false; chargeTime=0; bowCharging=false; bowCharge=0; bowTarget=-1; bowInputX=0; bowInputY=0; if healTime>0 {healTime=0; event("healbreak")}}
+func canMoveCancel() bool {return ultimateTime<=0 && (attackKind==0 || (attackKind!=7 && attackAge>=attackWindup+0.04))}
 func beginAttack(kind int) {
+ if kind!=7 && (basicCool>0 || (!grounded && airAttacks>=2)) {return}
+ if kind==4 && !grounded {kind=1}
  if kind==1 {
   if !grounded {kind=5; if chainWindow>0 && chainStep==5 {kind=6}} else {if chainWindow>0 && chainStep<3 {kind=chainStep+1}}
  }
+ if kind!=7 {basicCool=0.28; if !grounded {airAttacks++}}
  attackKind=kind; chainStep=kind; chainWindow=0.8; attackAge=0; attackApplied=false; attackFacing=facing
  attackWindup=0.07; attackDuration=0.23
  if kind==2 {attackWindup=0.08; attackDuration=0.25}
- if kind==3 {attackWindup=0.14; attackDuration=0.39}
+ if kind==3 {attackWindup=0.14; attackDuration=0.52; basicCool=0.52}
  if kind==4 {attackWindup=0.11; attackDuration=0.33}
- if kind==5 || kind==6 {attackWindup=0.07; attackDuration=0.26; vy=math.Max(vy,90)}
+ if kind==5 || kind==6 {attackWindup=0.07; attackDuration=0.28}
  if kind==7 {attackWindup=0.16; attackDuration=0.62}
  attackCool=attackDuration; attackTime=0; attackBuffer=0; bufferTime=0; plunging=false
  if kind!=7 {charged=false}
 }
-func requestAttack(kind int) {attackBuffer=kind; bufferTime=0.20}
+func requestAttack(kind int) {attackBuffer=kind; bufferTime=0.24}
 func strike() {
  kind:=attackKind; damage:=1; reach:=133.0; style:=0
  if kind==2 {style=2}
@@ -110,23 +142,28 @@ func strike() {
  if kind==4 {style=4; reach=145}
  if kind==5 || kind==6 {style=5; reach=150}
  if kind==7 {damage=2; reach=170; style=6; if charged {damage=3; reach=192}}
- Slash.clone []float64{px,py+32,attackFacing,float64(style),float64(attempts)}
+ if kind==7 {skillFX(px+bladeX*70,py+32+bladeY*70,angle(bladeX,bladeY),1,1.0); burst(px+bladeX*80,py+32+bladeY*80,12,3,260)} else {Slash.clone []float64{px,py+32,attackFacing,float64(style),float64(attempts)}}
  if kind==1 {event("light1")}; if kind==2 {event("light2")}; if kind==3 {event("finisher")}; if kind==4 {event("launcher")}; if kind==5 || kind==6 {event("aircut")}; if kind==7 {event("heavy"); if charged {event("charged")}}
  event("slash"); lastMove=kind
  if kind==4 {releaseHook(false); vy=530; grounded=false; airJump=true}
- if kind==7 {vx+=attackFacing/90*240}
+ if kind==7 {vx+=bladeX*240; vy+=bladeY*120}
  if kind==3 {vx+=attackFacing/90*160}
  for i:=0;i<len(enemyHP);i++ {
   dx:=enemyX[i]-px; dy:=enemyY[i]-py-28; r:=reach; if enemyType[i]==3 {r+=40}
-  if dist(dx,dy)<r && (dx*attackFacing> -1500 || abs(dx)<45 || kind==3) {
-   if hitEnemy(i,damage) {
+  inArc:=dx*attackFacing> -1500 || abs(dx)<45 || kind==3
+  if kind==7 {inArc=dx*bladeX+dy*bladeY> -28}
+  if dist(dx,dy)<r && inArc && !blockedLine(px,py+28,enemyX[i],enemyY[i]) {
+   dealt:=damage; marked:=kind==7 && charged && enemyMark[i]>0
+   if marked {dealt+=2}
+   if hitEnemy(i,dealt) {
+    if marked {enemyMark[i]=0; skillFX(enemyX[i],enemyY[i],angle(bladeX,bladeY),3,0.85); event("markbreak")}
     if enemyType[i]!=3 {
      push:=95.0; lift:=70.0; stun:=0.18
      if kind==4 {push=65; lift=590; stun=0.85; event("launchhit")}
-     if kind==5 || kind==6 {push=90; lift=310; stun=0.55; vy=math.Max(vy,190); airJump=true}
+     if kind==5 || kind==6 {push=90; lift=310; stun=0.55; if !airHitSlow && vy<0 {vy*=0.4; airHitSlow=true}}
      if kind==3 || kind==7 {push=540; lift=220; stun=0.7; enemyThrown[i]=0.7}
-     if enemyType[i]==2 {push*=0.25; lift*=0.35}
-     enemyVX[i]=attackFacing/90*push; enemyVY[i]=lift; enemyStun[i]=stun
+     if enemyType[i]==4 {push*=0.5; lift*=0.65}
+     enemyVX[i]=attackFacing/90*push; enemyVY[i]=lift; if kind==7 {enemyVX[i]=bladeX*push; enemyVY[i]=bladeY*push+100}; enemyStun[i]=stun
     }
     if kind==7 {hitStop=0.075; shock=6}
    }
@@ -143,22 +180,118 @@ func updateAttack(dt float64) {
   attackTime=0; if attackAge>=attackWindup && attackAge<attackWindup+0.10 {attackTime=0.1}
   if attackAge>=attackDuration {attackKind=0; attackTime=0}
  }
- if attackBuffer>0 && !charging && (attackKind==0 || (attackKind!=7 && attackAge>=attackDuration-0.065)) {beginAttack(attackBuffer)}
+ if attackBuffer>0 && !charging && !bowCharging && healTime<=0 && ultimateTime<=0 && basicCool<=0 && (attackKind==0 || (attackKind!=7 && attackAge>=attackDuration-0.065)) {beginAttack(attackBuffer)}
 }
+// Skill cooldown telemetry remains zero for host/save compatibility. Action
+// windups, recovery and the basic attack cadence still use simulation time.
+func readAim() {
+ aimX=0; aimY=0
+ if keyPressed(KeyA)||keyPressed(KeyLeft) {aimX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {aimX+=1}
+ if keyPressed(KeyW)||keyPressed(KeyUp) {aimY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {aimY-=1}
+ if aimX==0 && aimY==0 {aimX=facing/90}
+ d:=dist(aimX,aimY); aimX/=d; aimY/=d
+ if aimX!=0 && (charging || bowCharging || (attackKind==0 && ultimateTime<=0)) {facing=90; if aimX<0 {facing=-90}}
+}
+// Bow locking is independent of grapple selection. Retain a valid lock until
+// direction intent changes; small enemy motion must not flicker between foes.
+func validBowTarget(i int) bool {
+ if i<0 || i>=len(enemyHP) {return false}
+ if enemyHP[i]<=0 || (enemyType[i]==3 && bossShield>0) {return false}
+ if dist(enemyX[i]-px,enemyY[i]-py-32)>540 || abs(enemyY[i]-cameraY)>270 {return false}
+ return !blockedLine(px,py+32,enemyX[i],enemyY[i])
+}
+func aimBow() {
+ inputX:=0.0; inputY:=0.0
+ if keyPressed(KeyA)||keyPressed(KeyLeft) {inputX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {inputX+=1}
+ if keyPressed(KeyW)||keyPressed(KeyUp) {inputY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {inputY-=1}
+ manual:=inputX!=0 || inputY!=0
+ changed:=manual && (inputX!=bowInputX || inputY!=bowInputY)
+ if !validBowTarget(bowTarget) || changed {
+  bowTarget=-1; best:=100000.0; directionLength:=math.Max(1,dist(inputX,inputY))
+  for i:=0;i<len(enemyHP);i++ {
+   if validBowTarget(i) {
+    dx:=enemyX[i]-px; dy:=enemyY[i]-py-32; d:=math.Max(1,dist(dx,dy)); cost:=d
+    if manual {cost-=220*(dx*inputX+dy*inputY)/d/directionLength}
+    if cost<best {best=cost; bowTarget=i}
+   }
+  }
+ }
+ bowInputX=inputX; bowInputY=inputY
+ if bowTarget>=0 {
+  dx:=enemyX[bowTarget]-px; dy:=enemyY[bowTarget]-py-32; d:=math.Max(1,dist(dx,dy)); aimX=dx/d; aimY=dy/d
+  if abs(aimX)>0.05 {facing=90; if aimX<0 {facing=-90}}
+ }
+}
+func shootBow() {
+ full:=0.0; if bowCharge>=0.55 {full=1}
+ bowRecoil=0.2; bodyVelocity=-25; bowCharging=false; bowCharge=0; attackTime=0.12; lastMove=11
+ Arrow.clone []float64{px+aimX*24,py+32+aimY*24,aimX,aimY,full,float64(attempts)}
+ skillFX(px+aimX*30,py+32+aimY*30,angle(aimX,aimY),0,0.65+full*0.3)
+ bowTarget=-1; vx-=aimX*45; event("bowshot"); if full>0 {event("bowfull")}
+}
+func releaseBlade(full bool) {charged=full; charging=false; chargeTime=0; beginAttack(7)}
 func nova() {
- if energy<60 {event("empty"); return}
- cancelAttack(); energy-=60; attackTime=0.32; lastMove=9; invulnerable=0.6; releaseHook(false); vy=math.Max(vy,350); shock=7
- ring(px,py+32,2.6,1); Slash.clone []float64{px,py+32,90,1,float64(attempts)}; burst(px,py+32,25,0,500)
- for i:=0;i<len(enemyHP);i++ {if dist(px-enemyX[i],py+28-enemyY[i])<245 {hitEnemy(i,3)}}
- event("nova")
+ if ultimateTime>0 || healTime>0 || attackKind==7 {return}
+ cancelAttack(); releaseHook(false); dashTime=0; ultimateTime=1.08; ultimateStep=0; ultimateGated=false; ultimateDir=0
+ if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
+ if wordMode==1 && practice==0 {requestWord(4); return}
+ releaseUltimate()
 }
+func releaseUltimate() {
+ ultimateGated=true; lastMove=9; invulnerable=math.Max(invulnerable,1.0); vx*=0.2; vy*=0.4
+ skillFX(px,py+32,90,4,0.85); event("chainstart")
+}
+func updateSkills(dt float64) {
+ bowRecoil=math.Max(0,bowRecoil-dt); basicCool=math.Max(0,basicCool-dt)
+ readAim()
+ if healTime>0 {
+  moving:=keyPressed(KeyA)||keyPressed(KeyD)||keyPressed(KeyLeft)||keyPressed(KeyRight)||keyPressed(KeySpace)||keyPressed(KeyK)||keyPressed(KeyShift)
+  if !grounded || moving {healTime=0; event("healbreak")} else {
+   if wordMode==1 && practice==0 && !healGated && healTime-dt<=0.15 {healTime=0.15; requestWord(3); return}
+   healTime=math.Max(0,healTime-dt); vx=0
+   if healTime<=0 {if health<maxHealth {health++}; skillFX(px,py+30,90,2,0.9); burst(px,py+20,9,1,100); event("healcomplete")}
+  }
+ }
+ if ultimateTime>0 {
+  if wordMode==1 && practice==0 && !ultimateGated {return}
+  ultimateTime=math.Max(0,ultimateTime-dt); age:=1.08-ultimateTime
+  if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
+  threshold:=0.12+float64(ultimateStep)*0.17; if ultimateStep==4 {threshold=0.88}
+  if ultimateStep<5 && age>=threshold {
+   final:=ultimateStep==4; strikeX:=px; strikeY:=py+32; best:=260.0
+   for i:=0;i<len(enemyHP);i++ {d:=dist(enemyX[i]-px,enemyY[i]-py-32); if enemyHP[i]>0 && d<best && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {best=d; strikeX=enemyX[i]; strikeY=enemyY[i]}}
+   heading:=55.0; if ultimateStep%2==1 {heading=125}; size:=0.85; if final {heading=90-ultimateDir*65; size=1.35}
+   skillFX(strikeX,strikeY,heading,1,size); Trail.clone []float64{strikeX-40,strikeY-25,35,90,float64(attempts)}
+   attackTime=0.1
+   for i:=0;i<len(enemyHP);i++ {
+    if dist(enemyX[i]-strikeX,enemyY[i]-strikeY)<115 && dist(enemyX[i]-px,enemyY[i]-py-32)<285 && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {
+     damage:=1; if enemyType[i]==3 {damage=2}; if final {damage=3}
+     if hitEnemy(i,damage) {if enemyType[i]!=3 {enemyStun[i]=0.4; if final {enemyVX[i]=facing/90*270; enemyVY[i]=ultimateDir*420+80}}; if final {hitStop=0.07; shock=6}; event("chainhit")}
+    }
+   }
+   if final {event("chainfinish"); burst(strikeX,strikeY,18,3,330); if ultimateDir>0 {vy=480; grounded=false}; if ultimateDir<0 {vy=-680; grounded=false}} else {event("swordcut")}
+   ultimateStep++
+  }
+ }
+}
+func captureAttack() {held:=keyPressed(KeyJ); if held && !prevAttack {attackPressed=true}; prevAttack=held}
 func update(dt float64) {
+ if controlImmune>0 {controlImmune=math.Max(0,controlImmune-dt)}
+ if controlGrace>0 {controlGrace=math.Max(0,controlGrace-dt)}
+ if bindTime>0 {
+  bindTime=math.Max(0,bindTime-dt); px=bindX; py=bindY; vx=0; vy=0; grounded=true
+  prevJump=keyPressed(KeySpace); prevHook=keyPressed(KeyE); prevAttack=keyPressed(KeyJ); prevHeavy=keyPressed(KeyL); prevDash=keyPressed(KeyK)||keyPressed(KeyShift); prevBurst=keyPressed(KeyQ); prevBow=keyPressed(KeyU); prevHeal=keyPressed(KeyI); attackPressed=false
+  if bindTime<=0 {if wordMode==1 && practice==0 {bindTime=0.0001; requestWord(6)} else {releaseBind()}}; return
+ }
+
  if invulnerable>0 {invulnerable-=dt}; if hookCool>0 {hookCool-=dt}; if dashCool>0 {dashCool-=dt};  if dropTime>0 {dropTime-=dt}; if landing>0 {landing-=dt}
+ updateSkills(dt)
+ if wordWanted>0 {return}
  updateAttack(dt)
  chooseTarget()
- jump:=keyPressed(KeySpace); grap:=keyPressed(KeyE); attack:=keyPressed(KeyJ); dash:=keyPressed(KeyK)||keyPressed(KeyShift); special:=keyPressed(KeyQ); heavy:=keyPressed(KeyL)
+ jump:=keyPressed(KeySpace); grap:=keyPressed(KeyE); dash:=keyPressed(KeyK)||keyPressed(KeyShift); special:=keyPressed(KeyQ); heavy:=keyPressed(KeyL); bow:=keyPressed(KeyU); heal:=keyPressed(KeyI)
  if jump && !prevJump {buffer=0.13}; if buffer>0 {buffer-=dt}
- if grounded {coyote=0.12; airJump=true} else {coyote-=dt}
+ if grounded {coyote=0.12; airJump=true; airAttacks=0; airHitSlow=false} else {coyote-=dt}
  if buffer>0 && canMoveCancel() {
   down:=keyPressed(KeyS)||keyPressed(KeyDown)
   if grounded && down {dropTime=0.25; py-=8; grounded=false; vy=-120; coyote=0; buffer=0} else if coyote>0 || airJump || px<102 || px>858 {
@@ -174,19 +307,34 @@ func update(dt float64) {
   if target>=0 {hook=target; hookAge=0; hookCount++; hookX=anchorX[0]; hookY=anchorY[0]; grounded=false; plunging=false; event("hook"); ropeLength=475} else {event("nohook")}
  }
  if !grap && prevHook {releaseHook(true)}
- if attack && !prevAttack && !charging {
-  if (keyPressed(KeyS)||keyPressed(KeyDown)) && !grounded && canMoveCancel() {
-   cancelAttack(); plunging=true; hook=-1; vy=-1050; vx*=0.4; ring(px,py+20,0.7,1); lastMove=8; event("plunge")
+ if attackPressed && !charging && !bowCharging && healTime<=0 && ultimateTime<=0 {
+  if (keyPressed(KeyS)||keyPressed(KeyDown)) && !grounded && canMoveCancel() && basicCool<=0 && airAttacks<2 {
+   cancelAttack(); basicCool=0.28; airAttacks++; plunging=true; hook=-1; vy=-1050; vx*=0.4; ring(px,py+20,0.7,1); lastMove=8; event("plunge")
   } else {kind:=1; if keyPressed(KeyW)||keyPressed(KeyUp) {kind=4}; requestAttack(kind)}
  }
- if heavy && !prevHeavy && canMoveCancel() {cancelAttack(); charging=true; chargeTime=0; event("charge")}
+ attackPressed=false
+ if heavy && !prevHeavy && canMoveCancel() && !bowCharging && healTime<=0 {cancelAttack(); charging=true; chargeTime=0; event("charge")}
+ if bow && !prevBow && canMoveCancel() && !charging && healTime<=0 {cancelAttack(); bowCharging=true; bowCharge=0; event("bowdraw")}
+ if bowCharging {
+  aimBow()
+  bowCharge=math.Min(1,bowCharge+dt)
+  if bowCharge>=0.55 && bowCharge-dt<0.55 {event("bowready"); skillFX(px+aimX*28,py+32+aimY*28,angle(aimX,aimY),0,0.55)}
+  if !bow {if wordMode==1 && practice==0 {requestWord(1); return} else {shootBow()}}
+ }
+ if heal && !prevHeal && canMoveCancel() && !charging && !bowCharging && healTime<=0 {
+  if !grounded {event("healground")} else if health>=maxHealth {event("healfull")} else if embers<=0 {event("healempty")} else {cancelAttack(); releaseHook(false); embers--; healTime=0.8; healGated=false; vx=0; event("healstart")}
+ }
+ prevBow=bow; prevHeal=heal
  if charging {
   chargeTime=math.Min(1.0,chargeTime+dt)
   if chargeTime>=0.55 && chargeTime-dt<0.55 {ring(px,py+30,0.8,1); event("chargeready")}
-  if !heavy {charged=chargeTime>=0.55; charging=false; beginAttack(7)}
+  if !heavy {
+   bladeX=aimX; bladeY=aimY; full:=chargeTime>=0.55
+   if wordMode==1 && practice==0 {requestWord(2); return} else {releaseBlade(full)}
+  }
  }
  prevHeavy=heavy
- if special && !prevBurst {nova()}
+ if special && !prevBurst {nova(); if wordWanted>0 {return}}
  if dash && !prevDash && dashCool<=0 && canMoveCancel() {
   cancelAttack(); lastMove=10
   releaseHook(false); dashTime=0.18; dashCool=0.8; invulnerable=0.25; plunging=false; grounded=false
@@ -195,29 +343,30 @@ func update(dt float64) {
   if keyPressed(KeyS)||keyPressed(KeyDown) {dy=-1}
   d:=dist(dx,dy); vx=dx/d*850; vy=dy/d*850; burst(px,py+28,10,0,240); event("dash")
  }
- prevJump=jump; prevHook=grap; prevAttack=attack; prevDash=dash; prevBurst=special
+ prevJump=jump; prevHook=grap; prevDash=dash; prevBurst=special
  input:=0.0; if keyPressed(KeyA)||keyPressed(KeyLeft) {input-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {input+=1}
  wasGrounded:=grounded; oldY:=py
  if dashTime>0 {dashTime-=dt} else {
   accel:=850.0; if grounded {accel=2200}
   if hook<0 {
-   requested:=input*300; if charging {requested*=0.5}
+   requested:=input*300; if charging || bowCharging {requested*=0.35}; if healTime>0 || ultimateTime>0 {requested=0}
    if input!=0 || grounded {if vx<requested {vx=math.Min(requested,vx+accel*dt)} else {vx=math.Max(requested,vx-accel*dt)}} else {vx*=1-dt*0.5}
   } else {vx+=input*1100*dt}
-  gravity:=1250.0; if grap && hook>=0 {gravity=460}
+  gravity:=1250.0; if grap && hook>=0 {gravity=460}; if ultimateTime>0.22 {gravity=280}
   vy-=gravity*dt
+  if practice==0 && cityWind==1 && px>640 && px<830 && py< -90 && py> -730 && hook<0 && !plunging {vy=math.Min(560,vy+1850*dt)}
  }
  if hook>=0 {
   hookAge+=dt
-  if hookAge>=0.045 && hookAge-dt<0.045 {event("hookattach")}
+  if hookAge>=0.045 && hookAge-dt<0.045 {airAttacks=0; airHitSlow=false; event("hookattach")}
   if hookAge>=0.12 && hookAge-dt<0.12 {event("hooktension")}
   valid:=true
   if hook<len(anchorX) {hookX=anchorX[hook]; hookY=anchorY[hook]} else {j:=hook-len(anchorX); hookX=enemyX[j]; hookY=enemyY[j]; valid=enemyHP[j]>0}
   dx:=hookX-px; dy:=hookY-py-28; d:=dist(dx,dy)
   lightTarget:=-1
-  if hook>=len(anchorX) {j:=hook-len(anchorX); if enemyType[j]==0 || enemyType[j]==4 {lightTarget=j}}
+  if hook>=len(anchorX) {j:=hook-len(anchorX); if enemyType[j]!=3 && enemyType[j]!=4 {lightTarget=j}}
   if lightTarget>=0 && valid && d>=80 {
-   enemyStun[lightTarget]=0.35; enemyOffX[lightTarget]-=dx/d*650*dt; enemyOffY[lightTarget]-=dy/d*650*dt; enemyVX[lightTarget]=0; enemyVY[lightTarget]=0
+   enemyStun[lightTarget]=0.35; enemyX[lightTarget]-=dx/d*650*dt; enemyY[lightTarget]-=dy/d*650*dt; enemyRecoverFor(lightTarget,0.6); enemyVX[lightTarget]=0; enemyVY[lightTarget]=0
    vy=math.Max(vy,-70); ropeLength=d
   }
   closeRange:=64.0; if lightTarget>=0 {closeRange=85}
@@ -230,6 +379,10 @@ func update(dt float64) {
    speed:=dist(vx,vy); if speed>820 {vx*=820/speed; vy*=820/speed}
    ropeLength=math.Max(70,math.Min(ropeLength,d)-170*dt)
   }
+ }
+ if chainOwner>=0 {
+  chainTime=math.Max(0,chainTime-dt); owner:=chainOwner; dx:=enemyX[owner]-px; dy:=enemyY[owner]-py-30; d:=math.Max(1,dist(dx,dy))
+  if enemyHP[owner]<=0 || attackTime>0 {breakChain("chaincut")} else if hook>=0 || d<88 || d>520 || chainTime<=0 {breakChain("chainfree")} else {vx+=dx/d*620*dt; vy+=dy/d*500*dt}
  }
  if plunging {vy=-1100}
  vy=clamp(vy,-900,950); if plunging {vy=-1100}; vx=clamp(vx,-900,900)
@@ -246,9 +399,8 @@ func update(dt float64) {
  if vy<=0 {
   for i:=0;i<len(floorX);i++ {
    top:=floorY[i]
-   active:=true; if segment==2 && floorKind[i]==1 {active=false}
-   if floorKind[i]==2 && enemyHP[2]<=0 {active=false}; if floorKind[i]==3 && enemyHP[6]<=0 {active=false}
-   solid:=floorKind[i]>=2 || i==14
+   active:=floorActive(i)
+   solid:=floorKind[i]==2 || floorKind[i]==3 || i==14
    if hook>=0 && hookY<py+20 && !solid {active=false}
    tolerance:=4.0; if solid {tolerance=14}
    if active && (dropTime<=0 || solid) && px+12>floorX[i] && px-12<floorX[i]+floorW[i] && oldY>=top-tolerance && py<=top {py=top; vy=0; grounded=true}
@@ -262,6 +414,7 @@ func update(dt float64) {
   }
  }
  if grounded && !wasGrounded {
+  event("touchdown")
   bodyVelocity=-clamp(fallSpeed/6,20,110); landing=0.13
   if fallSpeed>200 {burst(px,py+3,8,2,150); ring(px,py+2,0.8,0); if fallSpeed>600 {event("hardland")} else {event("land")}}
   if plunging {shock=6; ring(px,py,2.1,1); for i:=0;i<len(enemyHP);i++ {if dist(px-enemyX[i],py+35-enemyY[i])<160 {hitEnemy(i,2)}}}
@@ -277,7 +430,7 @@ func update(dt float64) {
 }
 func render(dt float64) {
  next:=0
- if plunging {next=21} else if charging {next=33} else if attackKind>0 {
+ if bindTime>0 {next=22} else if ultimateTime>0 {next=25+(ultimateStep%3)*2+1} else if healTime>0 {next=39} else if bowCharging {next=37} else if bowRecoil>0 {next=38} else if plunging {next=21} else if charging {next=33} else if attackKind>0 {
   pair:=0; if attackKind==2 {pair=2}; if attackKind==3 {pair=4}; if attackKind==4 {pair=6}; if attackKind==7 {pair=8}; if attackKind==5 || attackKind==6 {pair=10}
   next=25+pair; if attackAge>=attackWindup {next++}
  } else if attackTime>0 {next=20} else if hook>=0 {next=18; if hookAge<0.1 {next=17}} else if dashTime>0 {next=24} else if !grounded {if vy>70 {next=13} else {next=15}} else if landing>0 {next=22} else if abs(vx)>30 {next=int(runDistance/14)%12+1}
@@ -285,12 +438,13 @@ func render(dt float64) {
   duration:=0.055; if next>=1 && next<=12 && pose>=1 && pose<=12 {duration=0.025}
   PoseBlend.clone []float64{float64(pose),duration,float64(attempts),facing}; pose=next; blendTime=duration; blendDuration=duration; setCostume pose
  }
- if attackKind==0 && !charging {if vx < -20 {facing=-90} else if vx>20 {facing=90}}; setHeading facing
+ if attackKind==0 && !charging && !bowCharging && ultimateTime<=0 {if vx < -20 {facing=-90} else if vx>20 {facing=90}}; setHeading facing
  bodyVelocity+=(-210*bodyOffset-23*bodyVelocity)*dt; bodyOffset+=bodyVelocity*dt; renderY=py+bodyOffset
- if charging {renderY+=sin(worldTime*43)*chargeTime*1.8}
+ if charging {renderY+=sin(visualTime*43)*chargeTime*1.8}; if bindTime>0 {renderY+=sin(visualTime*35)*1.2}
+ if phase==5 {renderY+=sin(visualTime*4)*1.3}
  ghost:=0.0
  if blendTime>0 {blendTime=math.Max(0,blendTime-dt); ghost=blendTime/blendDuration*40}
- if invulnerable>0 && int(worldTime*14)%2==0 {ghost=65}
+ if invulnerable>0 && int(visualTime*14)%2==0 {ghost=35}
  setGraphicEffect GhostEffect,ghost
  setXYpos px,renderY
  targetY:=py-80+clamp(vy*0.18,-100,150)
@@ -298,6 +452,7 @@ func render(dt float64) {
  if practice==1 {targetY=120}
  targetY=clamp(targetY,-3350,220)
  cameraY+=(targetY-cameraY)*(1-exp(-7*dt))
- cameraRenderX=480+sin(worldTime*81)*shock; cameraRenderY=cameraY+sin(worldTime*73)*shock*0.6
+ renderShock:=shock; if phase==5 {renderShock*=exp(-wordFocusAge*12)}
+ cameraRenderX=480+sin(visualTime*81)*renderShock; cameraRenderY=cameraY+sin(visualTime*73)*renderShock*0.6
  Camera.setXYpos cameraRenderX,cameraRenderY
 }

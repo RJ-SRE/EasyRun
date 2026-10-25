@@ -1,0 +1,201 @@
+{
+  "date": "2026-10-24T19:08:12.489Z",
+  "layouts": [
+    {
+      "name": "menu-1440",
+      "viewport": {
+        "x": 47.40625,
+        "y": 67,
+        "width": 1345.1875,
+        "height": 840.734375
+      },
+      "card": {
+        "x": 979.53125,
+        "y": 300.2890625,
+        "width": 292,
+        "height": 374.140625
+      },
+      "coverage": 0.09659976971302185
+    },
+    {
+      "name": "ledger-1440",
+      "viewport": {
+        "x": 47.40625,
+        "y": 67,
+        "width": 1345.1875,
+        "height": 840.734375
+      },
+      "card": {
+        "x": 420,
+        "y": 199.5625,
+        "width": 600,
+        "height": 575.59375
+      },
+      "coverage": 0.30536952405383616
+    },
+    {
+      "name": "menu-1280",
+      "viewport": {
+        "x": 172.203125,
+        "y": 51,
+        "width": 935.59375,
+        "height": 584.734375
+      },
+      "card": {
+        "x": 772.3125,
+        "y": 171.0390625,
+        "width": 270,
+        "height": 344.640625
+      },
+      "coverage": 0.1700921598060745
+    },
+    {
+      "name": "ledger-1280",
+      "viewport": {
+        "x": 172.203125,
+        "y": 51,
+        "width": 935.59375,
+        "height": 584.734375
+      },
+      "card": {
+        "x": 340,
+        "y": 119.5625,
+        "width": 600,
+        "height": 447.59375
+      },
+      "coverage": 0.4908958113377774
+    },
+    {
+      "name": "menu-1024",
+      "viewport": {
+        "x": 25,
+        "y": 67,
+        "width": 974,
+        "height": 608.75
+      },
+      "card": {
+        "x": 619.34375,
+        "y": 184.3046875,
+        "width": 292,
+        "height": 374.140625
+      },
+      "coverage": 0.18425521463597688
+    },
+    {
+      "name": "ledger-1024",
+      "viewport": {
+        "x": 25,
+        "y": 67,
+        "width": 974,
+        "height": 608.75
+      },
+      "card": {
+        "x": 212,
+        "y": 102.65625,
+        "width": 600,
+        "height": 537.421875
+      },
+      "coverage": 0.5438368842470981
+    },
+    {
+      "name": "spelling-1440",
+      "viewport": {
+        "x": 47.40625,
+        "y": 67,
+        "width": 1345.1875,
+        "height": 840.734375
+      },
+      "card": {
+        "x": 480,
+        "y": 89,
+        "width": 480,
+        "height": 159.578125
+      },
+      "coverage": 0.06772873552661554
+    },
+    {
+      "name": "spelling-1280",
+      "viewport": {
+        "x": 172.203125,
+        "y": 51,
+        "width": 935.59375,
+        "height": 584.734375
+      },
+      "card": {
+        "x": 420,
+        "y": 65,
+        "width": 440,
+        "height": 146.140625
+      },
+      "coverage": 0.11753783834360713
+    },
+    {
+      "name": "spelling-1024",
+      "viewport": {
+        "x": 25,
+        "y": 67,
+        "width": 974,
+        "height": 608.75
+      },
+      "card": {
+        "x": 272,
+        "y": 89,
+        "width": 480,
+        "height": 159.578125
+      },
+      "coverage": 0.1291863607807091
+    },
+    {
+      "name": "paused-1024",
+      "viewport": {
+        "x": 25,
+        "y": 67,
+        "width": 974,
+        "height": 608.75
+      },
+      "card": {
+        "x": 272,
+        "y": 89,
+        "width": 480,
+        "height": 159.578125
+      },
+      "coverage": 0.1291863607807091
+    },
+    {
+      "name": "meaning-1440",
+      "viewport": {
+        "x": 47.40625,
+        "y": 67,
+        "width": 1345.1875,
+        "height": 840.734375
+      },
+      "card": {
+        "x": 480,
+        "y": 89,
+        "width": 480,
+        "height": 161.578125
+      },
+      "coverage": 0.06857758289246366
+    },
+    {
+      "name": "meaning-1280",
+      "viewport": {
+        "x": 172.203125,
+        "y": 51,
+        "width": 935.59375,
+        "height": 584.734375
+      },
+      "card": {
+        "x": 420,
+        "y": 65,
+        "width": 440,
+        "height": 148.140625
+      },
+      "coverage": 0.11914639637931565
+    }
+  ],
+  "errors": [],
+  "note": "Real first-platform inputs; seeded local word pool with the longest available word. No engine state mutation.",
+  "keyboard": "Pause resume, focused meaning option and ledger close all accept Enter without leaking input into the game.",
+  "passed": true
+}

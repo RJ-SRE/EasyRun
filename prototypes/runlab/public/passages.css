@@ -1,0 +1,517 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #dfdfcd;
+  background: #090f12;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at 50% 20%, #1b2a2a, #090f12 72%);
+}
+button,
+a,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  color: inherit;
+  border: 1px solid transparent;
+  background: transparent;
+}
+button:hover {
+  color: #f9e2ac;
+  border-color: #6b705c;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #d6c48e;
+  outline-offset: 4px;
+}
+button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+button[hidden],
+[hidden] {
+  display: none !important;
+}
+header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  max-width: 1600px;
+  margin: auto;
+  padding: 0 28px;
+  font-size: 10px;
+  color: #9ca99f;
+  letter-spacing: 0.1em;
+}
+header a {
+  text-decoration: none;
+  color: #e9dfc5;
+  font:
+    25px Georgia,
+    serif;
+  white-space: nowrap;
+}
+header a small {
+  font: 8px monospace;
+  letter-spacing: 0.4em;
+  margin-left: 20px;
+}
+header nav {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+header button {
+  padding: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+main {
+  width: min(96vw, calc((100dvh - 146px) * 1.6), 1500px);
+  margin: auto;
+  border: 1px solid #344039;
+  background: #071015;
+  box-shadow: 0 24px 90px #0007;
+}
+#viewport {
+  width: 100%;
+  aspect-ratio: 8/5;
+  position: relative;
+  overflow: hidden;
+  background: #102228;
+}
+#stage {
+  position: absolute;
+  inset: 0;
+}
+#stage iframe {
+  width: 960px;
+  height: 600px;
+  border: 0;
+  transform-origin: top left;
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 100px #030b1080;
+}
+.hud {
+  position: absolute;
+  inset: 25px 28px auto;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  text-shadow: 0 1px 5px #000;
+}
+.hud small,
+.eyebrow {
+  font: 9px monospace;
+  letter-spacing: 0.2em;
+  color: #c5b68d;
+}
+.hud h2 {
+  font:
+    21px Georgia,
+    "Songti SC",
+    serif;
+  letter-spacing: 0.16em;
+  margin: 8px 0;
+}
+.hud p {
+  font-size: 11px;
+  max-width: 350px;
+  margin: 6px 0;
+  color: #bfc9ba;
+  line-height: 1.5;
+}
+.run {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 9px;
+}
+.run b {
+  font: 19px monospace;
+  color: #efe4c2;
+  letter-spacing: 0.1em;
+}
+.run span {
+  font-size: 13px;
+  color: #d4bf8f;
+}
+.run small {
+  letter-spacing: 0;
+  color: #9dafaa;
+}
+#mechanism {
+  font-size: 11px;
+  color: #ebc38b;
+}
+#minimap {
+  position: absolute;
+  right: 25px;
+  top: 130px;
+  width: 145px;
+  opacity: 0.8;
+  background: #0a141abe;
+  border: 1px solid #53645955;
+  pointer-events: none;
+}
+#minimap svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.bottom {
+  position: absolute;
+  bottom: 16px;
+  left: 25px;
+  right: 25px;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #d2d7bf;
+  text-shadow: 0 1px 5px #000;
+  pointer-events: none;
+}
+#hint {
+  max-width: 75%;
+  line-height: 1.5;
+}
+#checkpoint {
+  white-space: nowrap;
+  color: #bdb084;
+}
+#toast {
+  position: absolute;
+  top: 23%;
+  left: 50%;
+  transform: translate(-50%, 8px);
+  background: #0a161ce0;
+  border-bottom: 1px solid #a88e56;
+  padding: 9px 18px;
+  color: #e8d7b0;
+  opacity: 0;
+  transition: 0.25s;
+  font-size: 12px;
+  pointer-events: none;
+  text-align: center;
+}
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+#pull {
+  position: absolute;
+  bottom: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 170px;
+  height: 3px;
+  background: #2d3f40;
+}
+#pull i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #edd09a;
+}
+#pull span {
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  color: #dfd0aa;
+  margin-top: 7px;
+}
+#overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #051015eb, #09161c85 60%, transparent);
+}
+.title {
+  width: 68%;
+  padding: 5% 8%;
+}
+.eyebrow {
+  font-size: 9px;
+  line-height: 1.8;
+}
+.title h1 {
+  font:
+    clamp(30px, 4vw, 58px) Georgia,
+    "Songti SC",
+    serif;
+  color: #eadfc4;
+  letter-spacing: 0.17em;
+  margin: 17px 0 22px;
+}
+.title p {
+  font-size: 13px;
+  line-height: 1.9;
+  white-space: pre-line;
+  color: #b9c7bc;
+}
+.primary {
+  margin-top: 20px;
+  padding: 13px 28px;
+  border: 1px solid #c2ac75;
+  background: #c7b37f;
+  color: #0e1b20;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+.primary:hover {
+  background: #ead5a0;
+  color: #0a171c;
+}
+#difficulty {
+  display: flex;
+  gap: 12px;
+  margin: 22px 0 8px;
+}
+#difficulty button {
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #41524a;
+  background: #0b1b2380;
+}
+#difficulty button.selected {
+  border-color: #cdb581;
+  background: #b49b5933;
+}
+#difficulty b,
+#difficulty small {
+  display: block;
+  font-size: 12px;
+}
+#difficulty small {
+  font-size: 10px;
+  margin-top: 8px;
+  color: #aebcae;
+}
+#foot {
+  font-size: 10px;
+  color: #8e9c93;
+}
+#sheet {
+  position: absolute;
+  inset: 0;
+  background: #071319f5;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+#sheet > div {
+  max-width: 710px;
+  width: 100%;
+  max-height: 100%;
+  overflow: auto;
+}
+#sheet h2 {
+  font:
+    24px Georgia,
+    "Songti SC",
+    serif;
+  margin: 10px 0 20px;
+  color: #e2d8b8;
+}
+#sheet dl {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 11px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+#sheet dt {
+  color: #d3bb88;
+}
+#sheet dd {
+  margin: 0;
+  color: #bec8bb;
+}
+#sheet-content p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #afc0b3;
+}
+#sheet svg {
+  width: 100%;
+  max-height: 260px;
+  border: 1px solid #475c4c;
+  background: #0d2028;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  font-size: 10px;
+  color: #96a797;
+  gap: 15px;
+}
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 16px;
+  font-size: 10px;
+  color: #aab9ac;
+}
+kbd {
+  border: 1px solid #5e6b5d;
+  padding: 2px 4px;
+  font-size: 9px;
+  color: #c9cfb5;
+}
+.mobile {
+  display: none;
+  text-align: center;
+  font-size: 12px;
+  color: #ccb688;
+}
+main:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+main:fullscreen #viewport {
+  width: min(100vw, 160vh);
+}
+main:fullscreen footer {
+  display: none;
+}
+@media (max-height: 750px) {
+  header {
+    height: 48px;
+  }
+  main {
+    width: min(96vw, calc((100dvh - 118px) * 1.6));
+  }
+  .hud {
+    inset: 14px 18px auto;
+  }
+  .hud h2 {
+    font-size: 16px;
+  }
+  .hud p,
+  #mechanism {
+    font-size: 9px;
+    max-width: 290px;
+  }
+  #minimap {
+    width: 110px;
+    top: 100px;
+    right: 18px;
+  }
+  .title h1 {
+    margin: 10px 0;
+  }
+  .title p {
+    font-size: 11px;
+  }
+  #difficulty {
+    margin: 10px 0;
+  }
+  .controls {
+    padding: 12px;
+  }
+  .bottom {
+    font-size: 9px;
+  }
+  #sheet dl {
+    gap: 5px;
+    font-size: 10px;
+  }
+  #sheet h2 {
+    font-size: 20px;
+  }
+}
+@media (max-width: 700px) {
+  header {
+    padding: 10px;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header > span {
+    display: none;
+  }
+  header nav {
+    margin-left: 0;
+    gap: 0;
+  }
+  main {
+    width: 96vw;
+  }
+  .hud {
+    inset: 10px;
+  }
+  .hud p,
+  #mechanism,
+  #minimap,
+  .bottom {
+    display: none;
+  }
+  .hud h2 {
+    font-size: 12px;
+  }
+  .run b {
+    font-size: 12px;
+  }
+  .title {
+    width: 100%;
+    padding: 7%;
+  }
+  .title h1 {
+    font-size: 25px;
+  }
+  .title p {
+    font-size: 10px;
+    margin: 6px 0;
+  }
+  .eyebrow {
+    font-size: 7px;
+  }
+  #difficulty {
+    margin: 6px 0;
+  }
+  #difficulty button {
+    padding: 7px;
+  }
+  .primary {
+    padding: 8px 16px;
+    margin-top: 8px;
+  }
+  .mobile {
+    display: block;
+  }
+  #foot {
+    display: none;
+  }
+  footer {
+    font-size: 8px;
+  }
+  #sheet {
+    padding: 15px;
+  }
+  #sheet dl {
+    grid-template-columns: 85px 1fr;
+  }
+}

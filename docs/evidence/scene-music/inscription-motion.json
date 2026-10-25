@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-25T04:27:52.571Z",
+  "browser": "156.0.8078.4",
+  "cases": [
+    "live focus motion and tension audio while damage, physics and cooldowns remain frozen",
+    "correct letters charge the hero effect without advancing combat",
+    "mute clears focus sources and unmute preserves the pending challenge",
+    "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final E",
+    "a successful arrow does not bypass the next charged sword challenge; only its own answer releases the blade",
+    "the following full bow charge also requires its own answer and records exactly one new settlement",
+    "wrong meaning cancels the arrow, immediately restores movement and leaves passive feedback",
+    "reduced motion removes zoom and particles; restart clears motion, audio and old results",
+    "after restart, success never auto-opens a question; the next deliberate full charge asks normally"
+  ],
+  "errors": [],
+  "timing": {
+    "successReleaseMs": 5.430000007152557,
+    "failureReleaseMs": 3.7200000137090683,
+    "focusFrameMedianMs": 33.32999999999993,
+    "focusFrameP95Ms": 33.340000000000146
+  },
+  "note": "Real opening platform, real keyboard inputs; seeded vocabulary only. Frame timings are local headless measurements, not a device-wide performance guarantee."
+}

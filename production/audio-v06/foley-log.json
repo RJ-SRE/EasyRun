@@ -285,7 +285,7 @@
     "duration": 0.6489031888743518,
     "seed": 1501943853,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "eab775770c3dd432ef2d173f05edd2ba37474fe5fd8ef7c009faf8fc506f14ff"
+    "sha256": "91edf4e52156d11801d1fb9c9df1a4e6c03f4841f7e9d881dd32d472c6498988"
   },
   {
     "id": "brass-2",
@@ -294,7 +294,7 @@
     "duration": 0.668292665031505,
     "seed": 1176373032,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "2260402e2cdae901adb678629614bd89cb5706553c344245ba5cbdac9a9d4c99"
+    "sha256": "e1e7208ec6398f8eaf05bbca4dd053eed8890cd267fc6966ffaf66d4b7cc5a04"
   },
   {
     "id": "brass-3",
@@ -303,7 +303,7 @@
     "duration": 0.6710088928467551,
     "seed": 3965845735,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "bb06a99d46fc4f992561392cd1b90d998e6ec10231f644c6724e91ea4a194c84"
+    "sha256": "dc503bff9c5c070348aad3a256424ee1586218d2a205839b3e6eaa6bec12de5b"
   },
   {
     "id": "brass-4",
@@ -312,7 +312,7 @@
     "duration": 0.6975299384906056,
     "seed": 266430871,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "7e8c75b53920ee76acb69af8310cdc3f123cb1c55f38431a7a67d29f56517148"
+    "sha256": "8015af58c8f8f26ada7548c019aac50eebb3dbdf437c7219a1a828c70b5858ef"
   },
   {
     "id": "brass-5",
@@ -321,7 +321,7 @@
     "duration": 0.6978998699885601,
     "seed": 4111979355,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "f346dd23c973bc66be1dc2fc263c157ff145f5b52da79ac557646a38621c6e43"
+    "sha256": "cfeb830e5d1b7b71e4b89ff40e603427f4b2ff0d77e544e84584269e2e485e97"
   },
   {
     "id": "heavy-1",
@@ -330,7 +330,7 @@
     "duration": 0.5232103142160851,
     "seed": 2713186070,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "4a3b51f1297e617a26a673f6c2ac47c10d23fa8e968c1947cbd3004294106207"
+    "sha256": "ece0ec76f4fbb7de1974d80fc623614ee9b5fd6ae1a06aadc42ad0ccdcb97533"
   },
   {
     "id": "heavy-2",
@@ -339,7 +339,7 @@
     "duration": 0.5395207647127411,
     "seed": 4020314332,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "af12d35760394410936533447668d5cebe1fc8a0edbdb936303b19bb04ac81f2"
+    "sha256": "9a9902e2bc2cd979591dfa563b39dce2fcd5640fde57524dfd2bf951fcdc79f9"
   },
   {
     "id": "heavy-3",
@@ -348,7 +348,7 @@
     "duration": 0.5854452566786355,
     "seed": 1884563385,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "765f576b2e5364ecdac79f89be16d19de1e05e0ac6898d535409717eb2ac0ffa"
+    "sha256": "52f5f1b21a766fa17a807b07e62e8b24eda7fc30fa8ec1ae283eed7ceefbeb71"
   },
   {
     "id": "heavy-4",
@@ -357,7 +357,7 @@
     "duration": 0.5199327147290872,
     "seed": 4165015109,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "16e31c2a8da38ecd79866c1861a3fa0485b0c58abcde22bb719aa485b8479465"
+    "sha256": "04a7bcccb79a9f0b7a571159546bc9ba970d515653e23830a82f3b58c73d81af"
   },
   {
     "id": "dash-1",
@@ -402,7 +402,7 @@
     "duration": 1.2394261227137178,
     "seed": 4249257237,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "606ae2542e40a40f621eb80c787cb8a5832722186567debd4d04ea3c6f424891"
+    "sha256": "0dc2fcfe9ba3e8da96eca67fdbc18dc9225dbc92a7c1093a282d033c52e2dead"
   },
   {
     "id": "nova-2",
@@ -411,7 +411,7 @@
     "duration": 1.1570228549623987,
     "seed": 3038291259,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "d12b82da4e9377ee03233a3478a2cc0bd4fd92a52130f6ce71132329c0ada69d"
+    "sha256": "f56bc90c9aac83487948e183e1ed055d3efd1116eca3225183f7735144ed2d5f"
   },
   {
     "id": "nova-3",
@@ -420,7 +420,7 @@
     "duration": 1.109471705547982,
     "seed": 1301619115,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "c98dccb0d710055066e30b85fbc3e90475585cc334bc43dc2801f43646b0b7a0"
+    "sha256": "12cc8237ad3292cbf03c97643357830e651fe4aeb2ce29467d98159cd2e23e7f"
   },
   {
     "id": "tell-1",
@@ -456,7 +456,7 @@
     "duration": 0.2209185284959957,
     "seed": 1211631850,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "66704b70d6807b2259a660cc131f45992f9fb67a07da8e0154b13d18797e0518"
+    "sha256": "46a1784ffe7f369459e511f2306fc6c072f973df5a48c850379a11a41d04a596"
   },
   {
     "id": "land-2",
@@ -465,7 +465,7 @@
     "duration": 0.2226851415981055,
     "seed": 2921112339,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "0924e59fc52875eaf36a6b307e5943576ee8ccfb1872c77f35b22225f57ec3b4"
+    "sha256": "0cb7fe088cae8fdfd19de84811360b5e32e98fcc420184099fc389a532d3f6ea"
   },
   {
     "id": "land-3",
@@ -474,7 +474,7 @@
     "duration": 0.22647175110728873,
     "seed": 3409629850,
     "source": "original layered procedural Foley-style synthesis",
-    "sha256": "00f822aa0412f6b894ace171dec4e7f4e5b10d08c65d2b8a67af38a3e1c6421f"
+    "sha256": "d81e2aa3b161521792a26e104a15cc24128c2cbcd850e2c8347a602d5dd4ec7a"
   },
   {
     "id": "web-1",

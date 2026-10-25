@@ -1,0 +1,26 @@
+✔ 15 distinct achievements, cosmetic titles only, reload does not re-award (1.770375ms)
+✔ practice, duplicated telemetry and previous attempt cannot earn awards (0.209708ms)
+✔ air chain needs different targets within one uninterrupted flight (0.144083ms)
+✔ combat awards require actual hits, projectile cuts and one-health healing (0.248667ms)
+✔ echoes measure one adventure, while parries accumulate across adventures (0.162542ms)
+✔ no-damage completion needs a fresh core journey; hurt, death, retry or restore exclude it (0.152667ms)
+✔ word awards count verified, distinct words; stale and duplicate settlement ignored (0.251458ms)
+✔ retired resonance saves preserve other achievements and words, without a dead title or goal (0.203708ms)
+✔ invalid saves recover without fabricated unlocks or equipped titles (0.193625ms)
+✔ curated CET-4 membership, unique senses, explicit spelling and three distinct options (4.600625ms)
+✔ 1,000 seeds per difficulty: 30 unique eligible words, six short entries, deterministic (80.035583ms)
+✔ history quotas and preview never award completion (0.857416ms)
+✔ idempotent releases, spelling case and victory confirmation (0.462375ms)
+✔ unseen priority, spaced retry, no blocking completion requirement (0.34475ms)
+✔ all 30 entries appear, then review never inflates progress (0.949417ms)
+✔ reload keeps pool, pending options, progress and history; restart preserves the group only (6.531583ms)
+✔ invalid save recovers and timing settings are independent (5.744416ms)
+✔ a fast all-wrong pass rotates old words instead of repeating the same failure (1.188084ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 209.43925

@@ -1,0 +1,62 @@
+Checking test-inscription-core.mjs at isolated server http://127.0.0.1:50346
+✔ curated CET-4 membership, unique senses, explicit spelling and three distinct options (2.514959ms)
+✔ 1,000 seeds per difficulty: 30 unique eligible words, six short entries, deterministic (51.062125ms)
+✔ history quotas and preview never award completion (0.55625ms)
+✔ idempotent releases, spelling case and victory confirmation (0.351584ms)
+✔ unseen priority, spaced retry, no blocking completion requirement (0.205791ms)
+✔ all 30 entries appear, then review never inflates progress (0.556667ms)
+✔ reload keeps pool, pending options, progress and history; restart preserves the group only (0.320916ms)
+✔ invalid save recovers and timing settings are independent (0.165625ms)
+✔ a fast all-wrong pass rotates old words instead of repeating the same failure (0.696792ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 60.563291
+Checking test-belfry-combat.mjs at isolated server http://127.0.0.1:50346
+PASS three-step buffered chain causes damage at strike frames
+PASS holding light attack does not auto-repeat
+PASS launcher lifts enemy and player into aerial follow-up
+PASS charge freezes during pause, releases into heavy strike on resume
+PASS heavy strike throws an enemy into another enemy
+PASS light recovery cancels into dash
+PASS five-hit ultimate active window expires without another input
+PASS full restart clears charge, combo and practice
+PASS sound settings retain only effects and music; former voice controls are absent
+PASS blade effects play and global mute clears active sources
+PASS all 82 retained effects decode without loading any voice pack
+PASS reload preserves music/effects preferences and never fetches dialogue or speech
+PASS failed effects decoding leaves gameplay operational and cannot create dialogue
+Checking test-belfry-enemies.mjs at isolated server http://127.0.0.1:50346
+PASS safe start and legacy voice settings do not restore dialogue
+PASS hovering assassin alternates single knife and repositioned pursuit knives
+PASS ground assassin plants feet and executes cut-elbow-sweep with real damage
+PASS wall archer locks aim before release and alternates arrow weights
+PASS chain connects, pulls physically and light attack cuts it
+PASS permanent anchor grapple releases a tether without energy
+PASS 0.7-second grip blocks movement, jump, grapple, attacks, charge, dash and nova
+PASS pause freezes capture and clears active sound
+PASS capture releases on time, restores input and grants immunity
+PASS jumping the telegraph avoids the grab and exposes recovery
+PASS restart during capture clears all restraint and stale enemy state
+PASS mixed encounter limits committed attacks and prevents damage during grips
+Checking test-belfry-ninja.mjs at isolated server http://127.0.0.1:50346
+PASS hover crosses a continuous aerial arc, then locks a second knife
+PASS martial assassin retreats, leaps into a kick, lands and sweeps
+PASS visible guard parries a frontal light strike without losing HP
+PASS heavy strike breaks the same stance and interrupts its counterattack
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert.ok(Math.max(...wall.map((f) => Math.abs(f.x - wall[0].x))) > 110)
+
+    at file:///Users/rj/.codex/worktrees/inscription-integration/%E4%B8%83%E7%89%9B%E9%BB%91%E5%AE%A2%E6%9D%BE/prototypes/runlab/test-belfry-ninja.mjs:149:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}

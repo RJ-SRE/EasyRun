@@ -1,0 +1,316 @@
+/* A brass field register, kept outside the player's combat path. */
+#achievement-ledger {
+  --ach-gold: #c8ae78;
+  color: #d8d2bf;
+  background: linear-gradient(135deg, #1c2525, #0d171b 55%);
+  border: 1px solid #a78e5f80;
+  border-top: 2px solid #c1a26a;
+  border-radius: 2px 16px 2px 16px;
+  box-shadow:
+    0 24px 80px #0009,
+    inset 0 0 0 4px #080e1244;
+  width: min(680px, calc(100vw - 32px));
+  max-width: none;
+  max-height: min(620px, calc(100vh - 40px));
+  padding: 20px 24px 16px;
+  overflow: auto;
+}
+#achievement-ledger::backdrop {
+  background: #040b0eb5;
+}
+.achievement-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #aa926344;
+}
+.achievement-heading > div {
+  flex: 1;
+}
+.achievement-heading small {
+  font:
+    8px/1.5 ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  color: #9e947a;
+}
+.achievement-heading h2 {
+  font:
+    26px/1.3 "Songti SC",
+    serif;
+  letter-spacing: 5px;
+  margin: 5px 0 0;
+  color: #ede0bf;
+}
+#achievement-total {
+  font:
+    10px/1.4 ui-monospace,
+    monospace;
+  color: #bba477;
+}
+#achievements-close {
+  font:
+    27px/1 Georgia,
+    serif;
+  padding: 2px 5px;
+  border: 0;
+  color: #b6b7a4;
+}
+.achievement-filters {
+  display: flex;
+  gap: 18px;
+  margin: 12px 0 16px;
+}
+.achievement-filters button {
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  font-size: 11px;
+  color: #879991;
+}
+.achievement-filters [aria-pressed="true"] {
+  color: #e1c893;
+  border-bottom-color: #b99d65;
+}
+.achievement-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 218px;
+  gap: 20px;
+}
+#achievement-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  max-height: 350px;
+  overflow: auto;
+  align-content: start;
+  scrollbar-width: thin;
+  scrollbar-color: #9d85534d transparent;
+  padding: 3px;
+}
+#achievement-list button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 71px;
+  padding: 9px;
+  text-align: left;
+  background: #142024;
+  border: 1px solid #70877b30;
+  border-radius: 0 8px 0 0;
+  color: #89978d;
+}
+#achievement-list button[aria-pressed="true"] {
+  border-color: #c6a978a0;
+  background: #c7a4670f;
+}
+#achievement-list button[data-unlocked="true"] {
+  color: #dcc699;
+}
+#achievement-list svg {
+  width: 29px;
+  height: 29px;
+  flex: 0 0 auto;
+}
+#achievement-ledger svg,
+#achievement-notice svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.05;
+  stroke-linejoin: bevel;
+}
+#achievement-list strong {
+  font:
+    12px/1.4 "Songti SC",
+    serif;
+  display: block;
+}
+#achievement-list small {
+  display: block;
+  font:
+    9px/1.5 ui-monospace,
+    monospace;
+  color: #7f9288;
+  margin-top: 4px;
+}
+#achievement-detail {
+  border-left: 1px solid #ab936a35;
+  padding: 5px 0 2px 20px;
+}
+.achievement-medallion {
+  display: grid;
+  place-items: center;
+  margin: 3px auto 17px;
+  width: 80px;
+  height: 80px;
+  color: #7e8b7e;
+  border: 1px solid #89967c40;
+  border-radius: 50%;
+  outline: 1px dashed #92927230;
+  outline-offset: 5px;
+  background: radial-gradient(#83937c13, transparent 70%);
+}
+.achievement-medallion svg {
+  width: 46px;
+  height: 46px;
+}
+[data-unlocked="true"] .achievement-medallion {
+  color: #ddc392;
+  border-color: #c4ab6970;
+  background: radial-gradient(#b89c6325, transparent 70%);
+}
+.achievement-category {
+  color: #9f9e83;
+  font:
+    9px/1.4 ui-monospace,
+    monospace;
+  letter-spacing: 1px;
+}
+#achievement-detail h3 {
+  font:
+    21px/1.4 "Songti SC",
+    serif;
+  letter-spacing: 2px;
+  margin: 7px 0 10px;
+  color: #ddd0b0;
+}
+.achievement-rule {
+  font: 12px/1.8 sans-serif;
+  color: #bbc4b3;
+  margin: 0;
+  min-height: 45px;
+}
+.achievement-lore {
+  font:
+    11px/1.8 "Songti SC",
+    serif;
+  color: #81958b;
+  margin: 12px 0;
+}
+.achievement-track {
+  height: 2px;
+  background: #7f8c782b;
+}
+.achievement-track i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8fa48a, #c3ab72);
+}
+.achievement-record {
+  display: block;
+  font: 9px/1.7 sans-serif;
+  margin-top: 5px;
+  color: #919a85;
+}
+#achievement-equip {
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px 6px;
+  color: #d5c397;
+  border-color: #c3a76a66;
+  border-radius: 0 7px 0 0;
+  font-size: 11px;
+}
+#achievement-equip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+#achievement-ledger > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ab936a35;
+}
+#achievement-storage {
+  font: 9px/1.7 sans-serif;
+  margin: 0;
+  color: #8d9c8e;
+}
+#achievements-export {
+  padding: 3px 0;
+  border: 0;
+  white-space: nowrap;
+  font-size: 10px;
+  color: #bda778;
+}
+#achievement-ledger button:focus-visible {
+  outline: 1px solid #dec48d;
+  outline-offset: 2px;
+}
+#achievement-notice {
+  position: absolute;
+  right: 22px;
+  top: 96px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px;
+  width: 214px;
+  pointer-events: none;
+  border-left: 2px solid #bfa56c;
+  background: linear-gradient(100deg, #182427ec, #0f191dd4);
+  color: #cab384;
+}
+#achievement-notice svg {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+}
+#achievement-notice small {
+  display: block;
+  font: 8px/1.5 sans-serif;
+  letter-spacing: 1px;
+  color: #9ba893;
+}
+#achievement-notice strong {
+  display: block;
+  margin-top: 4px;
+  font:
+    16px/1.3 "Songti SC",
+    serif;
+  letter-spacing: 2px;
+}
+@media (max-width: 700px) {
+  #achievement-ledger {
+    padding: 16px;
+  }
+  .achievement-body {
+    grid-template-columns: minmax(0, 1fr) 46%;
+    gap: 12px;
+  }
+  #achievement-list {
+    grid-template-columns: 1fr;
+  }
+  #achievement-detail {
+    padding-left: 12px;
+  }
+  #achievement-total {
+    font-size: 9px;
+  }
+  .achievement-heading {
+    gap: 6px;
+  }
+  .achievement-heading h2 {
+    font-size: 23px;
+  }
+}
+@media (max-height: 700px) {
+  #achievement-list {
+    max-height: 290px;
+  }
+  .achievement-medallion {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 12px;
+  }
+  .achievement-medallion svg {
+    width: 36px;
+    height: 36px;
+  }
+}

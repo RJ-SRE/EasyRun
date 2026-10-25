@@ -26,6 +26,7 @@ export default tseslint.config(
     files: [
       "prototypes/runlab/build-belfry.mjs",
       "prototypes/runlab/belfry-level.mjs",
+      "prototypes/runlab/belfry-city-art.mjs",
       "prototypes/runlab/test-belfry*.mjs",
     ],
     languageOptions: {
@@ -47,11 +48,19 @@ export default tseslint.config(
         fetch: "readonly",
         AudioContext: "readonly",
         foes: "readonly",
+        inscriptionDiagnostics: "readonly",
+        sessionStorage: "readonly",
+        Storage: "readonly",
+        Event: "readonly",
       },
     },
   },
   {
-    files: ["prototypes/runlab/public/belfry*.js"],
+    files: [
+      "prototypes/runlab/public/belfry*.js",
+      "prototypes/runlab/public/inscription*.js",
+      "prototypes/runlab/public/cet4-words.js",
+    ],
     languageOptions: {
       globals: {
         window: "readonly",
@@ -69,6 +78,10 @@ export default tseslint.config(
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
+        requestAnimationFrame: "readonly",
+        crypto: "readonly",
+        sessionStorage: "readonly",
+        URLSearchParams: "readonly",
       },
     },
   },

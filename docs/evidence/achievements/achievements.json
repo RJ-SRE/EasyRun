@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-24T20:15:24.452Z",
+  "browser": "156.0.8078.4",
+  "cases": [
+    "menu ledger shows all 16 rules, group filtering and locked titles without starting a game",
+    "correct real inscription unlocks once after resolution; no achievement obstruction during typing",
+    "two real resonance continuations award the combo without adding word credit",
+    "real grapple unlock, paused ledger, input containment and cosmetic title equip leave combat unchanged",
+    "JSON export contains the actual local unlocks and equipped title",
+    "queued unlocks defer through the next word challenge and resume without duplicate rewards",
+    "ledger fits desktop/short/narrow views; closing an already paused game preserves pause",
+    "reload retains earned titles and progress without replaying unlock notifications",
+    "practice arena actions do not change persistent achievements",
+    "corrupt fault preserves playable adventure",
+    "storage fault preserves playable adventure",
+    "module fault preserves playable adventure",
+    "word-module fault preserves playable adventure and releases held movement across ledger"
+  ],
+  "errors": [],
+  "note": "Real opening-platform gameplay and input; only vocabulary pool seeded. Failure recovery uses request/storage faults. Rare full-route achievements verified separately in pure model tests."
+}

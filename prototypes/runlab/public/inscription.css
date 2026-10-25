@@ -1,0 +1,867 @@
+/* Broken clockwork: a small, legible instrument suspended inside the city. */
+#word-menu,
+.word-focus-card,
+.word-ledger-page {
+  --etch: #b69a6570;
+  --brass: #ccb582;
+  --ink: #10191b;
+  --ivory: #eee3c9;
+  color: var(--ivory);
+  background:
+    linear-gradient(115deg, #bd9a4c09, transparent 35%),
+    linear-gradient(160deg, #192124f7, #0b1316f7);
+  border: 1px solid var(--etch);
+  box-shadow:
+    0 12px 30px #0006,
+    inset 0 0 0 3px #0c131680;
+}
+
+/* A narrow loadout plaque, secondary to the title and the city. */
+#word-menu {
+  position: absolute;
+  right: 9%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 292px;
+  max-height: 84%;
+  overflow: auto;
+  z-index: 5;
+  padding: 20px;
+  border-top-color: #d1b57e9c;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% 100%,
+    14px 100%,
+    0 calc(100% - 14px)
+  );
+}
+.word-loadout-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+.word-loadout-seal {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border: 1px solid #b69a6570;
+  outline: 1px dashed #b69a6540;
+  outline-offset: 4px;
+  border-radius: 50%;
+  font:
+    10px Georgia,
+    serif;
+  letter-spacing: -1px;
+  color: var(--brass);
+}
+#word-menu .eyebrow {
+  font-size: 7px;
+  letter-spacing: 1.5px;
+  color: #a99572;
+}
+#word-menu h2 {
+  font:
+    23px/1.25 "Songti SC",
+    "Noto Serif SC",
+    serif;
+  letter-spacing: 3px;
+  font-weight: 400;
+  margin: 6px 0 0;
+}
+.word-switch {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 0;
+  border-block: 1px solid #9e896d2b;
+  font-size: 12px;
+  color: #d0cbb8;
+  cursor: pointer;
+}
+.word-switch input {
+  margin: 0;
+  accent-color: #bba06a;
+  width: 13px;
+  height: 13px;
+}
+.word-switch small {
+  font-size: 10px;
+  margin-left: auto;
+  color: #8e9a93;
+}
+.word-settings {
+  display: grid;
+  margin: 7px 0 12px;
+}
+.word-settings label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  border-bottom: 1px solid #a8977820;
+  font-size: 11px;
+  color: #aeb5a8;
+}
+.word-settings select {
+  width: 112px;
+  padding: 5px 0 5px 9px;
+  border: 0;
+  border-radius: 0;
+  font: inherit;
+  background: #111b1c;
+  color: #e1d4b5;
+  cursor: pointer;
+}
+.word-disabled .word-settings {
+  opacity: 0.45;
+}
+.word-note {
+  font-size: 10px;
+  line-height: 1.75;
+  color: #8d9b94;
+  margin: 11px 0 0;
+}
+.word-actions {
+  display: flex;
+  gap: 8px;
+}
+.word-actions button {
+  padding: 8px 10px;
+  border-color: #b59b644d;
+  font-size: 11px;
+  color: #d7c59f;
+  background: #b49b6b08;
+}
+#word-preview {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+#word-preview b {
+  font:
+    15px Georgia,
+    serif;
+}
+#word-preview i {
+  font: 12px sans-serif;
+  margin-left: 3px;
+}
+#word-shuffle {
+  padding-inline: 9px;
+  border-color: transparent;
+  color: #a5ad9e;
+}
+#word-storage {
+  font-size: 9px;
+  line-height: 1.6;
+  color: #76877f;
+  margin: 9px 0 0;
+}
+#word-continue {
+  margin-top: 12px;
+  padding: 6px 0;
+  font-size: 11px;
+  color: #d6bd85;
+}
+.word-title-screen .overlay-content {
+  max-width: 380px;
+  width: 41%;
+}
+.word-title-screen .overlay h1 {
+  font-size: clamp(32px, 3.7vw, 51px);
+  letter-spacing: 7px;
+}
+.word-title-screen .title-sigil {
+  right: 10%;
+  opacity: 0.3;
+}
+.word-title-screen .difficulty {
+  gap: 8px;
+}
+.word-title-screen .difficulty button {
+  min-width: 0;
+  flex: 1;
+}
+
+/* Progress reads like an etched tally, not another notification card. */
+#word-progress {
+  position: absolute;
+  left: 27px;
+  top: 100px;
+  z-index: 6;
+  border: 0;
+  border-left: 1px solid #bba98470;
+  background: linear-gradient(90deg, #10202896, transparent);
+  color: #d1bf95;
+  font:
+    11px/1.4 ui-monospace,
+    monospace;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+}
+/* The field ledger opens only on request, with thirty visible tally marks. */
+#word-journal {
+  z-index: 12;
+  background: #050c10a6;
+  backdrop-filter: blur(3px);
+  padding: 24px;
+  overflow: hidden;
+}
+#word-journal > .word-ledger-page {
+  width: min(600px, 100%);
+  max-width: 600px;
+  max-height: 100%;
+  padding: 22px 26px 16px;
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid #b59a69;
+}
+.word-ledger-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.word-ledger-head .eyebrow {
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+#word-journal h2 {
+  font-size: 25px;
+  margin: 8px 0 12px;
+  letter-spacing: 4px;
+}
+#word-journal #word-close {
+  margin: -5px -10px 0 0;
+  padding: 5px 9px;
+  font:
+    25px/1 Georgia,
+    serif;
+  color: #a7ac9d;
+  border-color: transparent;
+}
+#word-journal #word-summary {
+  font-size: 12px;
+  color: #d7c69f;
+  margin: 0 0 12px;
+}
+#word-ledger-track {
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  gap: 4px;
+  margin-bottom: 14px;
+}
+#word-ledger-track i {
+  height: 7px;
+  background: #87958c20;
+  border-bottom: 1px solid #b29d6859;
+  transform: skew(-15deg);
+}
+#word-ledger-track [data-state="complete"] {
+  background: #cfbb83;
+}
+#word-ledger-track [data-state="review"] {
+  background: #b47e57;
+}
+.word-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #929e94;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ac936748;
+}
+#word-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  max-height: min(330px, 38vh);
+  min-height: 60px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #97835955 transparent;
+  margin: 5px 0 10px;
+}
+.word-row {
+  display: grid;
+  grid-template-columns: 13px minmax(0, 1fr);
+  gap: 2px 7px;
+  padding: 9px 0;
+  border-bottom: 1px solid #8d9c8f1c;
+}
+.word-row > span {
+  grid-row: 1 / 3;
+  align-self: center;
+  color: #9c9275;
+  font-size: 11px;
+}
+.word-row b {
+  font:
+    15px/1.2 Georgia,
+    serif;
+  letter-spacing: 0.3px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.word-row small {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #95a399;
+}
+.word-row[data-state="complete"] > span {
+  color: #dfc386;
+}
+.word-row[data-state="review"] > span {
+  color: #c7906b;
+}
+.word-ledger-page > footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #ac936748;
+  padding-top: 10px;
+}
+#word-journal .word-note {
+  margin: 0;
+}
+#word-journal #word-export {
+  margin: 0;
+  padding: 6px 0;
+  border: 0;
+  font-size: 10px;
+  color: #c4b287;
+  white-space: nowrap;
+}
+
+/* One broken ring, one word, one action. Fixed size instead of viewport scaling. */
+#word-current {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9;
+}
+#word-focus.word-released {
+  pointer-events: none;
+}
+#word-focus.word-released * {
+  pointer-events: none;
+}
+.word-focusing .seal-outer {
+  transform-origin: 32px 32px;
+  animation: inscription-orbit 24s linear infinite;
+}
+.word-focus-paused .word-focus-card,
+.word-focus-paused .seal-outer {
+  animation-play-state: paused;
+}
+@keyframes inscription-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+#word-focus {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 22px;
+  background: linear-gradient(#07101528, transparent 38%);
+  pointer-events: auto;
+}
+.word-focus-card {
+  width: min(480px, calc(100% - 310px));
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  column-gap: 16px;
+  padding: 13px 18px 10px 12px;
+  border-top-color: #d6be888f;
+  border-bottom-color: #79674775;
+  border-radius: 2px 14px 2px 14px;
+  animation: inscription-arrive 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.word-focus-card::before,
+.word-focus-card::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border: 1px solid #b19a66a3;
+  transform: rotate(45deg);
+  background: #172021;
+}
+.word-focus-card::before {
+  left: -3px;
+  top: 17px;
+}
+.word-focus-card::after {
+  right: -3px;
+  bottom: 17px;
+}
+.word-seal {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--brass);
+}
+.word-seal svg {
+  width: 56px;
+  height: 56px;
+  fill: none;
+  stroke: currentColor;
+}
+.seal-outer {
+  stroke-width: 0.7;
+  stroke-dasharray: 32 9 18 6 27 9;
+  opacity: 0.5;
+}
+.seal-track {
+  stroke: #b69a652c;
+  stroke-width: 1.5;
+}
+#word-timer-fill {
+  stroke-width: 1.5;
+  stroke-dasharray: 100;
+  transform: rotate(-90deg);
+  transform-origin: 32px 32px;
+}
+.seal-notch {
+  stroke-width: 0.8;
+  opacity: 0.5;
+}
+#word-seal-icon {
+  stroke-width: 1.1;
+  stroke-linecap: square;
+  stroke-linejoin: bevel;
+}
+#word-time {
+  font:
+    11px/1.5 ui-monospace,
+    monospace;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.seal-caption {
+  font-size: 8px;
+  color: #7d8d82;
+  margin-top: 1px;
+}
+.word-ritual {
+  min-width: 0;
+}
+.word-focus-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 17px;
+}
+.word-focus-head h2 {
+  margin: 0;
+  font:
+    11px/1.4 "Songti SC",
+    "Noto Serif SC",
+    serif;
+  color: #b5b8a3;
+  letter-spacing: 1px;
+}
+#word-mode {
+  font:
+    9px/1.4 ui-monospace,
+    monospace;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  color: #a68f67;
+}
+#word-cue {
+  font:
+    28px/1.15 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: 1.2px;
+  color: #efe3c3;
+  margin: 3px 0 1px;
+  overflow-wrap: anywhere;
+}
+#word-context {
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 2px 0 7px;
+  color: #9fad9e;
+  min-height: 15px;
+}
+#word-spelling {
+  position: relative;
+  min-height: 30px;
+  padding-bottom: 2px;
+}
+#word-glyphs {
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+  min-height: 27px;
+  padding-right: 2px;
+}
+#word-glyphs span {
+  display: grid;
+  place-items: center;
+  flex: 0 1 20px;
+  min-width: 0;
+  height: 26px;
+  font:
+    17px/1 ui-monospace,
+    monospace;
+  color: #e3cf9f;
+  border-bottom: 1px solid #9d8b5f66;
+  background: linear-gradient(0deg, #c4a56b0c, transparent 75%);
+}
+#word-glyphs .next-glyph {
+  border-color: #d9bd81;
+  box-shadow: 0 2px 3px -2px #e8ce8c;
+}
+#word-glyphs .inscribed {
+  border-color: #cbb987;
+  background: linear-gradient(0deg, #b8a36c24, transparent);
+}
+#word-glyphs .miscast {
+  color: #d99671;
+  border-color: #bb7554;
+}
+#word-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: text;
+  font-size: 16px;
+}
+#word-spelling:focus-within #word-glyphs {
+  filter: brightness(1.08);
+}
+#word-letter-feedback {
+  position: absolute;
+  right: 0;
+  top: -20px;
+  font: 9px/1.4 sans-serif;
+  color: #899b8d;
+  pointer-events: none;
+}
+#word-input.word-mistyped + #word-letter-feedback {
+  color: #cf946d;
+  background: #131c1c;
+}
+#word-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+#word-options button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 6px 7px;
+  border-color: #a58b5e55;
+  border-radius: 0 6px 0 0;
+  background: linear-gradient(110deg, #b9a0690c, #122023);
+  font-size: 12px;
+  line-height: 1.35;
+  color: #d8d2bb;
+  text-align: left;
+}
+#word-options kbd {
+  color: #bda572;
+  font:
+    11px ui-monospace,
+    monospace;
+  border: 0;
+  padding: 0 6px 0 0;
+  border-right: 1px solid #b79b6240;
+  background: none;
+}
+#word-options button:hover,
+#word-options button:focus-visible {
+  background: #cbb4781a;
+  border-color: #d2bd88;
+  outline: 1px solid #d2bd88;
+  outline-offset: 2px;
+}
+.word-focus-foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0 0 72px;
+  border-top: 1px solid #a58b5e25;
+  padding-top: 5px;
+  min-height: 20px;
+}
+#word-benefit,
+#word-feedback {
+  margin: 0;
+  color: #a4ac96;
+  font-size: 10px;
+  line-height: 1.4;
+}
+#word-feedback {
+  display: none;
+}
+.word-key-hint {
+  font-size: 9px;
+  white-space: nowrap;
+  color: #7d8c82;
+}
+.word-key-hint kbd {
+  font:
+    9px ui-monospace,
+    monospace;
+  color: #a9ad99;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+#word-focus[data-result="correct"] .word-seal {
+  color: #d8e0bb;
+}
+#word-focus[data-result="correct"] .word-focus-card {
+  border-color: #c5cf9ba6;
+}
+#word-focus[data-result="wrong"] .word-seal {
+  color: #c28b64;
+}
+#word-focus[data-result="correct"] #word-feedback,
+#word-focus[data-result="wrong"] #word-feedback {
+  display: block;
+  color: #dfcc9f;
+}
+#word-focus[data-result="correct"] #word-benefit,
+#word-focus[data-result="wrong"] #word-benefit {
+  display: none;
+}
+#word-pause {
+  position: absolute;
+  inset: 0;
+  padding: 16px 25px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  align-content: center;
+  background: #101a1bf7;
+  border-radius: inherit;
+}
+#word-pause b {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 5px;
+}
+#word-pause button {
+  padding: 7px 6px;
+  border-color: #c7af7d50;
+  font-size: 11px;
+  color: #d8c8a6;
+}
+#word-pause #word-restart {
+  grid-column: 1 / -1;
+  border-color: transparent;
+  color: #97a494;
+  padding: 3px;
+  font-size: 10px;
+}
+.word-focusing #chapter,
+.word-focusing #toast,
+.word-focusing #restraint,
+.word-focusing .mission,
+.word-focusing #word-progress {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+.word-focusing #boss {
+  opacity: 0.2;
+}
+.word-focusing .skill-dock {
+  opacity: 0.6;
+}
+.reduced-effects #damage {
+  display: none;
+}
+.reduced-effects * {
+  animation: none !important;
+  transition: none !important;
+}
+@keyframes inscription-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .word-focus-card,
+  .seal-outer {
+    animation: none !important;
+  }
+}
+@media (max-height: 760px) {
+  #word-menu {
+    right: 7%;
+    width: 270px;
+    padding: 16px 18px;
+  }
+  .word-loadout-head {
+    margin-bottom: 12px;
+  }
+  #word-menu h2 {
+    font-size: 21px;
+  }
+  .word-switch {
+    padding-block: 9px;
+  }
+  .word-settings label {
+    min-height: 29px;
+  }
+  .word-title-screen .overlay h1 {
+    font-size: 36px;
+  }
+  #word-focus {
+    padding-top: 14px;
+  }
+  .word-focus-card {
+    width: min(440px, calc(100% - 290px));
+    padding: 10px 15px 8px 10px;
+    grid-template-columns: 48px minmax(0, 1fr);
+    column-gap: 12px;
+  }
+  .word-seal svg {
+    width: 48px;
+    height: 48px;
+  }
+  #word-cue {
+    font-size: 25px;
+  }
+  #word-context {
+    margin-bottom: 5px;
+  }
+  .word-focus-foot {
+    margin-left: 60px;
+    margin-top: 5px;
+  }
+  #word-progress {
+    top: 96px;
+  }
+  #word-journal > .word-ledger-page {
+    padding: 18px 22px 13px;
+  }
+  #word-journal h2 {
+    font-size: 22px;
+    margin-bottom: 9px;
+  }
+  #word-list {
+    max-height: 30vh;
+  }
+}
+@media (max-width: 1000px) {
+  #word-menu {
+    right: 5%;
+    width: 260px;
+    padding-inline: 16px;
+  }
+  .word-title-screen .overlay {
+    padding-inline: 5%;
+  }
+  .word-title-screen .overlay-content {
+    width: 43%;
+  }
+  .word-title-screen .difficulty {
+    flex-wrap: wrap;
+  }
+  .word-title-screen .difficulty button {
+    min-width: 115px;
+  }
+}
+@media (max-width: 700px) {
+  #word-menu {
+    width: 42%;
+    right: 3%;
+    padding: 10px;
+  }
+  .word-loadout-head {
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+  .word-loadout-seal {
+    width: 28px;
+    height: 28px;
+    font-size: 7px;
+  }
+  #word-menu h2 {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+  #word-menu .eyebrow {
+    display: none;
+  }
+  .word-switch {
+    font-size: 10px;
+  }
+  .word-switch small,
+  #word-menu .word-note {
+    display: none;
+  }
+  .word-settings select {
+    width: 85px;
+  }
+  .word-settings label {
+    font-size: 10px;
+  }
+  .word-actions {
+    gap: 3px;
+  }
+  .word-actions button {
+    padding-inline: 4px;
+    font-size: 10px;
+  }
+  #word-preview {
+    gap: 4px;
+  }
+  .word-focus-card {
+    width: min(440px, calc(100% - 28px));
+  }
+  #word-focus {
+    padding-top: 8px;
+  }
+  #word-journal {
+    padding: 12px;
+  }
+  #word-journal > .word-ledger-page {
+    padding: 12px 16px;
+  }
+  #word-list {
+    column-gap: 13px;
+    max-height: 24vh;
+  }
+  .word-row b {
+    font-size: 14px;
+  }
+}

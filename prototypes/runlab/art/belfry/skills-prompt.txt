@@ -1,0 +1,7 @@
+Built-in imagegen, 2026-10-25, transparent PNG.
+References: frames/action-0.png and frames/combat-8.png, existing assassin identity.
+Use case: identity-preserve. Production 2D sprite atlas, exactly three separate full-body poses in a 3-column single row, facing right, feet on a shared baseline, full body/weapons visible and clear gutters. Preserve dark hooded assassin, ivory beak mask, layered worn black/brown leather, brass vambraces, muted red scarf and realistic painted texture.
+1. Grounded archer stance, knees flexed, left arm extending a dark crimson recurve bow, right hand drawing string to cheek; arrow right.
+2. Same stance immediately after releasing; bow arm extended, drawing hand recoiling, scarf trailing; no arrow.
+3. One-knee kneeling, head bowed, cupped gloved hands around tiny amber ember, blade sheathed.
+Mature dark fantasy, strong silhouette, subtle pale rim light. No ground, shadow, background, text, numbers, borders, HUD, glow clouds, extra characters or franchise likenesses. True transparency.

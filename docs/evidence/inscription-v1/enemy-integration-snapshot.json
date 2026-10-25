@@ -1,0 +1,12 @@
+{
+  "note": "Frozen ninja baseline integrated for inscription v0.7. Later enemy VFX work in the other chat is intentionally separate, not overwritten.",
+  "files": {
+    "prototypes/runlab/spx/belfry/Assassins.spx": "a24c3ec25e97c45b282a2ddfcb1127301f93635f69839beacf4e09e4c04ca522",
+    "prototypes/runlab/spx/belfry/Enemy.spx": "0481e01415b2a5033ca73baaeb0d4bf379f489e139affb45c186b3f1cfa5386d",
+    "prototypes/runlab/spx/belfry/EnemyTell.spx": "185b733bb818eea55947388ae3b8515bdd40579b878fadede1559d396748fe47",
+    "prototypes/runlab/spx/belfry/Hazard.spx": "9e3145130dcf2f9a53fda4637845889420e1c2fa1d2861de2c288235c8afeb9e",
+    "prototypes/runlab/art/belfry/ninja-fighter-source.png": "94d738ce61f44e4452241155f62da638351339d04c7aba5896c06a36d3ab5a0d",
+    "prototypes/runlab/art/belfry/ninja-archer-source.png": "5e1576290fad3eb1054f62ebdc574ff90189d75248c67c50ea7270c2179fe508",
+    "prototypes/runlab/art/belfry/ninja-chain-source.png": "4216962c6685c84289ff5ab1980a6dc11eeb739eb5caeb3a3030a808321213b9"
+  }
+}

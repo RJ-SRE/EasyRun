@@ -1,0 +1,215 @@
+{
+  "date": "2026-10-24T18:24:47.910Z",
+  "cases": [
+    "pause stops voices, tension and room tails",
+    "cast, contact, tension and recoil follow actual hook lifecycle",
+    "mute removes every voice; unmute resumes from current state",
+    "early release cancels contact and tension cues",
+    "hidden page stops audio; a resume gesture restarts only the current ambience",
+    "late sample loading cannot resurrect a paused cast"
+  ],
+  "diagnostic": {
+    "enabled": true,
+    "context": "running",
+    "sources": 0,
+    "loops": 2,
+    "cached": 32,
+    "epoch": 13,
+    "dropped": 0,
+    "history": [
+      {
+        "cue": "hook",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.17866666666666667,
+        "pan": -0.4439726658012402
+      },
+      {
+        "cue": "attach",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.22933333333333333,
+        "pan": -0.15809723390381222
+      },
+      {
+        "cue": "brass",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.22933333333333333,
+        "pan": -0.15809723390381222
+      },
+      {
+        "cue": "tension",
+        "variant": 1,
+        "epoch": 2,
+        "time": 0.30933333333333335,
+        "pan": -0.18213701910918542
+      },
+      {
+        "cue": "hook",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.344,
+        "pan": -0.4294737715035303
+      },
+      {
+        "cue": "attach",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.392,
+        "pan": -0.1448217774815508
+      },
+      {
+        "cue": "brass",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.392,
+        "pan": -0.1448217774815508
+      },
+      {
+        "cue": "tension",
+        "variant": 2,
+        "epoch": 5,
+        "time": 1.4773333333333334,
+        "pan": -0.17315693112667335
+      },
+      {
+        "cue": "brass",
+        "variant": 3,
+        "epoch": 5,
+        "time": 2.2986666666666666,
+        "pan": -0.2412620891627645
+      },
+      {
+        "cue": "cloth",
+        "variant": 1,
+        "epoch": 5,
+        "time": 2.2986666666666666,
+        "pan": -0.2412620891627645
+      },
+      {
+        "cue": "sling",
+        "variant": 1,
+        "epoch": 5,
+        "time": 2.2986666666666666,
+        "pan": -0.2412620891627645
+      },
+      {
+        "cue": "hook",
+        "variant": 3,
+        "epoch": 9,
+        "time": 2.6986666666666665,
+        "pan": -0.40495245973705113
+      },
+      {
+        "cue": "cloth",
+        "variant": 2,
+        "epoch": 9,
+        "time": 2.7146666666666666,
+        "pan": -0.4008764070139086
+      },
+      {
+        "cue": "sling",
+        "variant": 2,
+        "epoch": 9,
+        "time": 2.7146666666666666,
+        "pan": -0.4008764070139086
+      },
+      {
+        "cue": "hook",
+        "variant": 4,
+        "epoch": 13,
+        "time": 3.0773333333333333,
+        "pan": -0.42938911905118265
+      },
+      {
+        "cue": "attach",
+        "variant": 3,
+        "epoch": 13,
+        "time": 3.1306666666666665,
+        "pan": -0.14476503324697992
+      },
+      {
+        "cue": "brass",
+        "variant": 4,
+        "epoch": 13,
+        "time": 3.1306666666666665,
+        "pan": -0.14476503324697992
+      },
+      {
+        "cue": "tension",
+        "variant": 3,
+        "epoch": 13,
+        "time": 3.2106666666666666,
+        "pan": -0.17311889432953714
+      },
+      {
+        "cue": "cloth",
+        "variant": 3,
+        "epoch": 13,
+        "time": 4.010666666666666,
+        "pan": -0.24126515420630487
+      },
+      {
+        "cue": "sling",
+        "variant": 3,
+        "epoch": 13,
+        "time": 4.010666666666666,
+        "pan": -0.24126515420630487
+      },
+      {
+        "cue": "land",
+        "variant": 1,
+        "epoch": 13,
+        "time": 4.858666666666666,
+        "pan": -0.24049141549532574
+      }
+    ],
+    "errors": []
+  },
+  "events": [
+    {
+      "name": "start",
+      "time": 0,
+      "x": 190,
+      "y": 0
+    },
+    {
+      "name": "hook",
+      "time": 0.06666667014360428,
+      "x": 190,
+      "y": 0
+    },
+    {
+      "name": "hookattach",
+      "time": 0.11666667275130749,
+      "x": 360,
+      "y": 150
+    },
+    {
+      "name": "hooktension",
+      "time": 0.20000001043081284,
+      "x": 360,
+      "y": 150
+    },
+    {
+      "name": "fold",
+      "time": 1.0166667196899652,
+      "x": 354.92218813908073,
+      "y": 118.33464312682163
+    },
+    {
+      "name": "hookrelease",
+      "time": 1.0166667196899652,
+      "x": 354.92218813908073,
+      "y": 118.33464312682163
+    },
+    {
+      "name": "sling",
+      "time": 1.0166667196899652,
+      "x": 354.92218813908073,
+      "y": 118.33464312682163
+    }
+  ],
+  "errors": []
+}

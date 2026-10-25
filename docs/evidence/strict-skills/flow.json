@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-25T03:47:44.354Z",
+  "cases": [
+    "30-word menu, independent difficulty and no preview credit",
+    "full charge requests exactly one challenge; physics, cooldown and air budget freeze",
+    "typing isolation, escape pause, full arrow and single progress settlement",
+    "marked blade still requires its own answer before detonating the mark",
+    "one misspelled letter cancels the entire blade, with no fallback damage or cooldown",
+    "heal failure refunds once, with no healing or cooldown",
+    "correct heal completes remaining channel and restores one HP",
+    "ultimate asks before any hit, releases all five on success, and can be requested again without cooldown",
+    "failed ultimate cancels all five hits and its release effects",
+    "even an empty ultimate requires an answer and cannot bypass the gate",
+    "optional F chain release restores movement",
+    "binder preserves hard control then guarantees bounded release with immunity",
+    "IME composition pauses timer without injecting game actions",
+    "restart cancels pending action without late release or credit",
+    "timeout cancels skill 1 with no delayed damage, heal or cooldown",
+    "timeout cancels skill 2 with no delayed damage, heal or cooldown",
+    "timeout cancels skill 3 with no delayed damage, heal or cooldown",
+    "timeout cancels skill 4 with no delayed damage, heal or cooldown",
+    "short skill 1 requires an answer; a failed cast can immediately be retried",
+    "short skill 2 requires an answer; a failed cast can immediately be retried",
+    "abandon cancels the pending skill without a fallback projectile",
+    "checkpoint death retry preserves word group",
+    "saved progress resumes after a full browser reload",
+    "victory never requires all 30 words"
+  ],
+  "errors": [],
+  "fixture": "Response-only fixed arena and lifecycle events; production Hero, physics, QTE host, keyboard and result processing."
+}

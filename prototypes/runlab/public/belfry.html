@@ -13,13 +13,17 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4L11 40l21 20 21-20z' fill='%23cbb78c'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="/belfry.css" />
+    <link rel="stylesheet" href="/inscription.css" />
+    <link rel="stylesheet" href="/belfry-achievements.css" />
+    <link rel="stylesheet" href="/belfry-city.css" />
   </head>
   <body>
     <header class="topbar">
       <a href="/" class="wordmark">裂 隙 <small>R U P T U R E</small></a
-      ><span class="edition">倒悬钟城 <i>／</i> THE HOLLOW BELFRY</span>
+      ><span class="edition">回声之城 <i>／</i> FIVE DISTRICTS</span>
       <nav>
         <button id="sound" aria-pressed="true">声音 开</button
+        ><button id="music-start">播放音乐</button
         ><button id="audio-settings">声音设置</button
         ><button id="help">操作指南</button
         ><button id="pause" disabled>暂停 Esc</button
@@ -38,9 +42,8 @@
               <div class="micro">THE THREADBEARER</div>
               <div id="health" aria-label="生命值"></div>
               <div class="energy-row">
-                <span>弦能</span>
-                <div class="energy-track"><i id="energy"></i></div>
-                <kbd>Q</kbd>
+                <span>余烬</span><b id="embers">◆◇</b
+                ><small id="ember-progress">0/4 命中</small>
               </div>
             </div>
             <div class="mission">
@@ -54,8 +57,8 @@
           </div>
           <div id="boss" hidden>
             <div>
-              <span>末代钟卫</span
-              ><small id="boss-state">守护一颗早已无人需要的心</small>
+              <span>守心者</span
+              ><small id="boss-state">守护钟心的最后一位刺客</small>
             </div>
             <div class="boss-track"><i id="boss-health"></i></div>
           </div>
@@ -68,10 +71,73 @@
             <span>Ⅴ</span>
           </aside>
           <div id="combo" class="combo"></div>
+          <div
+            id="practice-controls"
+            class="practice-controls"
+            hidden
+            aria-label="选择练习敌人"
+          >
+            <span>刺客排练</span><button data-spar="0">1 悬刃</button
+            ><button data-spar="1">2 短锋</button
+            ><button data-spar="2">3 壁弓</button
+            ><button data-spar="3">4 缚索</button
+            ><button data-spar="4">5 封脉</button
+            ><button data-spar="5">6 组合</button>
+          </div>
+          <div id="restraint" class="restraint" hidden role="status">
+            <span>封脉 · 暂时无法行动</span><b id="restraint-time"></b>
+            <div><i id="restraint-fill"></i></div>
+          </div>
           <div id="toast" role="status"></div>
           <div id="chapter" class="chapter">
             <span id="chapter-num"></span><strong id="chapter-title"></strong>
             <p id="chapter-copy"></p>
+          </div>
+          <div class="skill-dock" aria-label="技能状态">
+            <div class="skill-meta">
+              <span id="combat-focus">赤弦 · 墨刃</span
+              ><small id="air-budget">J 普攻 · 0.28s</small>
+            </div>
+            <div class="skill-slots">
+              <div class="skill-slot" id="skill-bow" title="无冷却 · 答对放箭">
+                <kbd>U</kbd
+                ><svg viewBox="0 0 36 36" aria-hidden="true">
+                  <path d="M7 4Q29 18 7 32L15 18Z M5 18H31m-6-4 6 4-6 4" />
+                </svg>
+                <div><b>贯夜</b><span class="skill-time">就绪</span></div>
+              </div>
+              <div
+                class="skill-slot"
+                id="skill-blade"
+                title="无冷却 · 答对挥斩"
+              >
+                <kbd>L</kbd
+                ><svg viewBox="0 0 36 36" aria-hidden="true">
+                  <path d="M8 29L27 6Q31 19 12 29M5 25l8 8M5 32l5-5" />
+                </svg>
+                <div><b>断潮</b><span class="skill-time">就绪</span></div>
+              </div>
+              <div class="skill-slot" id="skill-heal" title="无冷却 · 辨义回血">
+                <kbd>I</kbd
+                ><svg viewBox="0 0 36 36" aria-hidden="true">
+                  <path
+                    d="M18 3L23 13 33 18 23 23 18 33 13 23 3 18 13 13Z M18 11v14M11 18h14"
+                  />
+                </svg>
+                <div><b>回息</b><span class="skill-time">就绪</span></div>
+              </div>
+              <div
+                class="skill-slot"
+                id="skill-ultimate"
+                title="无冷却 · 答对释放五击"
+              >
+                <kbd>Q</kbd
+                ><svg viewBox="0 0 36 36" aria-hidden="true">
+                  <path d="M7 4L29 32M29 4L7 32M4 11L32 25M4 25L32 11" />
+                </svg>
+                <div><b>连环剑刀</b><span class="skill-time">就绪</span></div>
+              </div>
+            </div>
           </div>
           <div class="bottom-hud">
             <div id="hint">向深处坠落，借钩索归来。</div>
@@ -104,7 +170,7 @@
           <div id="settings-panel" class="guide settings-panel" hidden>
             <div>
               <span class="eyebrow">SOUNDS OF THE HOLLOW</span>
-              <h2>听见刀锋与钟声。</h2>
+              <h2>听见刀锋与远方。</h2>
               <label
                 >动作音效<input
                   id="setting-sfx"
@@ -114,14 +180,17 @@
                   step="0.05"
               /></label>
               <label
-                >环境音乐<input
+                >背景音乐<input
                   id="setting-music"
                   type="range"
                   min="0"
                   max="1"
                   step="0.05"
               /></label>
-              <p>动作音效与环境音乐可独立调整。</p>
+              <p>动作音效与背景音乐可独立调整；每个阶段单曲循环。</p>
+              <p id="music-track" role="status">
+                点击「播放音乐」启用背景音乐。
+              </p>
               <button id="close-settings" class="primary">
                 回到钟城 <span>↗</span>
               </button>
@@ -140,23 +209,45 @@
                 <dd>牵引锚点/重敌 → 甩出；轻敌会被钩近并斩击</dd>
                 <dt>方向 + E</dt>
                 <dd>偏向该方向选目标；S + E 可钩向下方</dd>
+                <dt>F / V · 城中机关</dt>
+                <dd>
+                  站稳并靠近铜色机关，F 修复或读取；机枢前厅 F 留灯 / V
+                  携心。右上角纪事可回看线索。
+                </dd>
                 <dt>J → J → J</dt>
-                <dd>三段轻击；空中为两段追击。可稍提前输入下一击</dd>
+                <dd>地面三连；间隔 ≥0.28 秒。每次腾空限两击，空挥不能滞空</dd>
                 <dt>W + J / S + J</dt>
-                <dd>挑空后追击 / 空中坠星，击穿重甲</dd>
+                <dd>地面挑空 / 空中坠星；落地或接上钩索恢复追击额度</dd>
+                <dt>按住 U → 松开</dt>
+                <dd>
+                  贯夜 · 无冷却；自动锁定附近可命中的敌人，方向键偏向选敌。0.55
+                  秒满蓄，穿透两敌并留下裂印
+                </dd>
                 <dt>按住 L → 松开</dt>
-                <dd>蓄力重击；金环亮起后可破甲、将轻敌撞向其他敌人</dd>
+                <dd>断潮 · 无冷却；方向挥刀，满蓄引爆裂印并击退敌人</dd>
                 <dt>K 或 Shift</dt>
                 <dd>冲刺；W + K 向上，S + K 向下</dd>
+                <dt>I</dt>
+                <dd>
+                  回息 · 无冷却；消耗 1 余烬，地面静止 0.8
+                  秒回血。移动或受击会打断
+                </dd>
                 <dt>Q</dt>
-                <dd>断弦爆发，消耗 60 弦能；击杀与回声补充弦能</dd>
+                <dd>
+                  连环剑刀 · 无冷却；第一击前答题，答对释放五段，W 上挑 / S
+                  下压收势
+                </dd>
                 <dt>S + 空格</dt>
                 <dd>穿过脚下的平台</dd>
                 <dt>Enter / R / Esc</dt>
                 <dd>检查点继续 / 从头开始 / 暂停</dd>
               </dl>
               <p>
-                金铜环是永久锚点。击杀敌人会恢复二段跳和冲刺；橙色预警后，钟卫露出破绽。
+                铭文模式：U/L 每次松键都答题；I 辨义回血；Q 答对后出招；F
+                可解链。选错、拼错或超时均取消本次技能；短蓄和裂印不免题。普攻与移动不弹题。金铜环是永久锚点。击杀恢复二段跳和冲刺。悬刃投刀、短锋连招、壁弓伏击、缚索牵引、封脉擒拿；观察起手，利用收招。封脉命中后锁身
+                0.7 秒；铭文模式随后辨义脱身，纯动作模式自动释放。 每 4
+                次有效伤害获得 1 余烬，上限
+                2。冲刺可取消蓄力；四个技能无冷却，动作收势后可再次施放。金铜环是永久锚点。
               </p>
               <button id="close-guide" class="primary">
                 明白了 <span>↗</span>
@@ -173,8 +264,9 @@
         <span><kbd>A D</kbd> 移动</span><span><kbd>SPACE</kbd> 跳跃</span
         ><span><kbd>E</kbd> 按住钩索 · 松开甩出</span
         ><span><kbd>J</kbd> 连招</span><span><kbd>W J</kbd> 挑空</span
-        ><span><kbd>L</kbd> 蓄力</span><span><kbd>S J</kbd> 坠星</span
-        ><span><kbd>K</kbd> 冲刺</span><span><kbd>Q</kbd> 断弦</span>
+        ><span><kbd>U</kbd> 贯夜</span><span><kbd>L</kbd> 断潮</span
+        ><span><kbd>I</kbd> 回息</span><span><kbd>S J</kbd> 坠星</span
+        ><span><kbd>K</kbd> 冲刺</span><span><kbd>Q</kbd> 连环剑刀</span>
       </div>
       <footer>
         <span>向深处坠落，借钩索归来。</span>
