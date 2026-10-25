@@ -142,6 +142,20 @@ var (
  wordSerial int
  wordOwner int
  wordSegment int
+ stageHost int
+ soundOn int
+ hudText string
+ wordType int
+ wordIndex int
+ wordChoice int
+ wordInputLen int
+ wordTimer float64
+ wordLimit float64
+ wordKeys int
+ wordText []string
+ wordMean []string
+ wordMissA []string
+ wordMissB []string
  hostCheckpoint int
  hostSegment int
  hostElapsed float64
@@ -393,19 +407,18 @@ func updateWorld(dt float64) {
  updateEnemies(dt)
  updateKeeperDanger(dt)
 }
-onKey KeyT, => {if phase==0 || phase==4 || phase==2 || phase==3 {startPractice()}}
-onKey Key1, => {if practice==1 {practiceEncounter(0)} else if phase==0 {difficulty=0; event("difficulty")}}
-onKey Key2, => {if practice==1 {practiceEncounter(1)} else if phase==0 {difficulty=1; event("difficulty")}}
-onKey Key3, => {if practice==1 {practiceEncounter(2)}}
+onKey Key1, => {if stageHost==1 && phase==5 {stageChoose(0)} else if practice==1 {practiceEncounter(0)} else if phase==0 {difficulty=0; event("difficulty")}}
+onKey Key2, => {if stageHost==1 && phase==5 {stageChoose(1)} else if practice==1 {practiceEncounter(1)} else if phase==0 {difficulty=1; event("difficulty")}}
+onKey Key3, => {if stageHost==1 && phase==5 {stageChoose(2)} else if practice==1 {practiceEncounter(2)}}
 onKey Key4, => {if practice==1 {practiceEncounter(3)}}
 onKey Key5, => {if practice==1 {practiceEncounter(4)}}
 onKey Key6, => {if practice==1 {practiceEncounter(5)}}
 onKey Key7, => {if practice==1 {practiceEncounter(6)}}
 onKey Key8, => {if practice==1 {practiceEncounter(7)}}
 onKey Key9, => {if practice==1 {practiceEncounter(8)}}
-onKey KeyF1, => {resolveWord(1)}
-onKey KeyF2, => {resolveWord(2)}
-onKey KeyF3, => {resolveWord(3)}
+onKey KeyF1, => {if stageHost==0 {resolveWord(1)}}
+onKey KeyF2, => {if stageHost==0 {resolveWord(2)}}
+onKey KeyF3, => {if stageHost==0 {resolveWord(3)}}
 onKey KeyF4, => {if phase==0 || phase==2 || phase==3 || phase==4 {wordMode=1-wordMode; event("wordmode")}}
 onKey KeyF6, => {if phase==5 {wordVisualPaused=!wordVisualPaused}}
 onKey KeyF5, => {
@@ -417,12 +430,15 @@ onKey KeyF5, => {
   retryCheckpoint(); event("restored")
  }
 }
-onKey KeyF, => {if phase==1 && chainOwner>=0 {requestWord(5)} else {interactCity(1)}}
-onKey KeyV, => {interactCity(2)}
+onKey KeyF, => {if stageHost==0 || phase!=5 {if phase==1 && chainOwner>=0 {requestWord(5)} else {interactCity(1)}}}
+onKey KeyV, => {if stageHost==0 || phase!=5 {interactCity(2)}}
+onKey KeyC, => {if stageHost==1 && phase==0 {stageContinue()}}
+onKey KeyN, => {if stageHost==1 && (phase==0 || phase==4) {soundOn=1-soundOn; event("sound")}}
+onKey KeyT, => {if phase==0 || phase==4 || phase==2 || phase==3 {startPractice()}}
 
 onKey KeyM, => {if phase==4 {resetInscription(); Hero.cancelAttack(); phase=0; event("menu")}}
 
-onKey KeyR, => {if phase!=0 {startRun()}}
+onKey KeyR, => {if phase!=0 {if stageHost==0 || phase!=5 {startRun()}}}
 onKey KeyEnter, => {if phase==4 {phase=1} else if phase==3 {retryCheckpoint()} else if phase==0 || phase==2 {startRun()}}
 onKey KeyEscape, => {if phase==1 {phase=4} else if phase==4 {phase=1}}
 onStart => {
@@ -448,6 +464,8 @@ onStart => {
   }
   if phase==0 {worldTime+=dt}
   if phase==5 && !wordVisualPaused {wordFocusAge+=dt}
+  if stageHost==1 && phase==5 {wordTimer+=dt; if wordTimer>=wordLimit {resolveWord(2)}; pollStageLetters()}
+  if stageHost==1 {updateStageHud()}
   if phase==1 || phase==5 && !wordVisualPaused {
    targetRate:=1.0; if phase==5 {targetRate=0.28}
    wordVisualRate+=(targetRate-wordVisualRate)*(1-exp(-dt/0.09))

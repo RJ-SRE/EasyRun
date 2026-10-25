@@ -6,6 +6,7 @@ import { chromium } from "@playwright/test";
 import { buildHuntLayout } from "./belfry-hunt.mjs";
 import { huntInit } from "./hunt-init.mjs";
 import { sceneInit, SCENE_SPRITES } from "./belfry-scene.mjs";
+import { WORDS as CET4_WORDS } from "./public/cet4-words.js";
 const layout = buildHuntLayout();
 const { platforms, anchors, echoes, checkpoints } = layout;
 const enemies = layout.enemies.map((e) => [e.x, e.y, e.kind, +e.returnOnly]);
@@ -63,11 +64,32 @@ await copyFile(
   new URL("public/art/clockwell.png", root),
 );
 // Source atlases remain untouched. Build imports alpha-isolated, registered cells.
-const browser = await chromium.launch({ headless: true, channel: "chromium" });
 let actionFrames, combatFrames, skillFrames;
 const assassinFrames = {};
 const assassinKinds = ["hover", "fighter", "archer", "chain", "binder"];
+let reuseAtlas = false;
+async function launchAtlasBrowser() {
+  const chrome =
+    process.env.BELFRY_CHROME ||
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  const attempts = [
+    { headless: true, channel: "chromium" },
+    { headless: true, channel: "chrome" },
+    { headless: true, executablePath: chrome },
+  ];
+  let lastErr;
+  for (const opts of attempts) {
+    try {
+      return await chromium.launch(opts);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
+}
 try {
+  const browser = await launchAtlasBrowser();
+  try {
   const page = await browser.newPage();
   const actions = await readFile(
     new URL("art/belfry/actions-source.png", root),
@@ -360,9 +382,14 @@ try {
     true,
     true,
   );
-} finally {
-  await browser.close();
+  } finally {
+    await browser.close();
+  }
+} catch (err) {
+  reuseAtlas = true;
+  console.warn(`Reusing existing Belfry frames (${err.message})`);
 }
+if (!reuseAtlas) {
 await mkdir(new URL("art/belfry/frames/", root), { recursive: true });
 for (let i = 0; i < 3; i++)
   await writeFile(
@@ -387,6 +414,7 @@ for (const [prefix, frames] of [
       new URL(`art/belfry/frames/${prefix}-${i}.png`, root),
       Buffer.from(frames[i], "base64"),
     );
+}
 await mkdir(new URL("public/art/city/", root), { recursive: true });
 for (const name of ["wind", "forge", "archive", "mirror", "heart"])
   await copyFile(
@@ -541,16 +569,42 @@ for (const [name, count] of [
       pivotX: 192,
       pivotY: 366,
     };
-for (let i = 0; i < 18; i++)
-  enemyImages[`keeper${i}`] = {
-    binary: Buffer.from(assassinFrames.keeper[i], "base64"),
-    w: 384,
-    h: 384,
-    pivotX: 192,
-    pivotY: 366,
-  };
-for (const name of ["warden", "hound", "weaver"])
-  for(let i=0;i<6;i++) enemyImages[`hunt-${name}-${i}`]={binary:Buffer.from(assassinFrames[name][i],"base64"),w:384,h:384,pivotX:192,pivotY:366};
+if (reuseAtlas) {
+  for (let i = 0; i < 18; i++)
+    enemyImages[`keeper${i}`] = {
+      ...(await png(`projects/belfry/assets/sprites/Enemy/keeper${i}.png`, 384)),
+      pivotX: 192,
+      pivotY: 366,
+    };
+  for (const name of ["warden", "hound", "weaver"])
+    for (let i = 0; i < 6; i++)
+      enemyImages[`hunt-${name}-${i}`] = {
+        ...(await png(
+          `projects/belfry/assets/sprites/Enemy/hunt-${name}-${i}.png`,
+          384,
+        )),
+        pivotX: 192,
+        pivotY: 366,
+      };
+} else {
+  for (let i = 0; i < 18; i++)
+    enemyImages[`keeper${i}`] = {
+      binary: Buffer.from(assassinFrames.keeper[i], "base64"),
+      w: 384,
+      h: 384,
+      pivotX: 192,
+      pivotY: 366,
+    };
+  for (const name of ["warden", "hound", "weaver"])
+    for (let i = 0; i < 6; i++)
+      enemyImages[`hunt-${name}-${i}`] = {
+        binary: Buffer.from(assassinFrames[name][i], "base64"),
+        w: 384,
+        h: 384,
+        pivotX: 192,
+        pivotY: 366,
+      };
+}
 sprite(
   "EnemyBlend",
   enemyImages,
@@ -999,6 +1053,18 @@ sprite(
   { visible: false },
   "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos 480,riseY-395} else {hide}}}",
 );
+sprite(
+  "StageHud",
+  {
+    hud: vector(
+      8,
+      8,
+      '<rect width="8" height="8" fill="none"/>',
+    ),
+  },
+  { visible: false },
+  await code("StageHud"),
+);
 // Device art intentionally omitted in the hunt edition.
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
@@ -1022,12 +1088,26 @@ const initialization =
  checkpointX=${floats(checkpoints.map((a) => a[0]))}; checkpointY=${floats(checkpoints.map((a) => a[1]))}
 }
 `;
+const quote = (s) => JSON.stringify(s);
+const stageWordBank =
+  "func initStageWords() {\n wordText=[]string{" +
+  CET4_WORDS.map((w) => quote(w.word)).join(",") +
+  "}\n wordMean=[]string{" +
+  CET4_WORDS.map((w) => quote(w.meaning)).join(",") +
+  "}\n wordMissA=[]string{" +
+  CET4_WORDS.map((w) => quote(w.distractors[0])).join(",") +
+  "}\n wordMissB=[]string{" +
+  CET4_WORDS.map((w) => quote(w.distractors[1])).join(",") +
+  "}\n}\n";
 files["main.spx"] = (await code("main")).replace(
   "func dist(",
   initialization +
     (await code("Assassins")) +
     (await code("Keeper")) +
-    (await code("Inscription")) +
+    (await code("Inscription")).replace(
+      "func initStageWords() {\n // STAGE_WORD_BANK\n}\n",
+      stageWordBank,
+    ) +
     (await code("HuntCombat")) +
     (await code("HuntExpedition")) +
     (await code("Scene")) +
