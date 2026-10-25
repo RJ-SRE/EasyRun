@@ -8,6 +8,11 @@ import {
   BANK,
 } from "./public/inscription-core.js";
 import { endingFor } from "./public/belfry-city.js";
+import { buildExpeditionLayout } from "./belfry-expedition.mjs";
+const layout = buildExpeditionLayout();
+const node = (kind) =>
+  layout.nodes.findIndex((n) => n.kind === kind && n.side < 0);
+const bridgeY = layout.platforms.find((p) => p[3] === 40)[2];
 const out = new URL("./test-results/city/", import.meta.url);
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -17,11 +22,22 @@ const report = {
   cases: [],
   errors: [],
   fixture:
-    "Real first-platform interaction; later fixtures only position the hero, remove enemies and arrange the boss finishing hit in response source. Normal engine input, physics, collisions, city rules, persistence and UI remain in use. This is not a full-route replay.",
+    "Position fixtures isolate authored expedition mechanisms, remove enemies and arrange the boss finishing hit in response source. Normal engine input, physics, collisions, city rules, persistence and UI remain in use. This is not a full-route replay.",
 };
 p.on("pageerror", (e) => report.errors.push(e.message));
 const book = new InscriptionBook(null, 4);
 book.settings.hint = "guided";
+await p.addInitScript(
+  (ids) => {
+    window.cityTestNodes = ids;
+  },
+  {
+    weight: node("weight-left"),
+    drain: node("drain"),
+    bridge: node("bridge-pivot"),
+    energy: node("energy-choice"),
+  },
+);
 await p.addInitScript(
   ({ key, data }) => {
     if (!localStorage.getItem(key)) localStorage.setItem(key, data);
@@ -35,16 +51,20 @@ await p.route("**/belfry.json", async (route) => {
     `
 func cityFixture(i int) {
  for j:=0;j<len(enemyHP);j++ {enemyHP[j]=0; clearEnemyMotion(j)}
- phase=1; segment=0; Hero.resetHero(cityNodeX[i],cityNodeY[i]); controlGrace=2
+ phase=1; segment=0; Hero.resetHero(nodeX[i],nodeY[i]); controlGrace=2
 }
-onKey KeyF7, => {cityFixture(1)}
-onKey KeyF8, => {cityFixture(2)}
-onKey KeyF9, => {cityFixture(3)}
-onKey KeyF10, => {cityFixture(4)}
-onKey KeyF11, => {Hero.resetHero(455,floorY[17]); Hero.grounded=true; health=5}
-onKey KeyF12, => {Hero.resetHero(480,-3590); phase=1; segment=1; bossStage=1; bossShield=0; enemyHP[10]=1; enemyFlash[10]=0; hitEnemy(10,2)}
+onKey KeyO, => {cityFixture(${node("cargo-start")})}
+onKey KeyP, => {cityFixture(${node("cargo-park")})}
+onKey KeyY, => {cityFixture(${node("weight-right")})}
+onKey KeyZ, => {cityFixture(${node("weight-route")})}
+onKey KeyF7, => {cityFixture(${node("weight-left")})}
+onKey KeyF8, => {cityFixture(${node("drain")})}
+onKey KeyF9, => {cityFixture(${node("bridge-pivot")})}
+onKey KeyF10, => {cityFixture(${node("energy-choice")})}
+onKey KeyF11, => {Hero.resetHero(floorX[liftFloor[0]]+70,floorY[liftFloor[0]]); Hero.grounded=true; health=5}
+onKey KeyF12, => {Hero.resetHero(480,worldBottom); phase=1; segment=1; bossStage=2; bossShield=0; enemyState[keeperIndex]=2; enemyHP[keeperIndex]=1; enemyFlash[keeperIndex]=0; hitEnemy(keeperIndex,2)}
 onKey KeyB, => {Hero.resetHero(230,0)}
-onKey KeyN, => {Hero.resetHero(470,-2690)}
+onKey KeyN, => {Hero.resetHero(470,${bridgeY + 70})}
 onKey KeyG, => {Hero.resetHero(735,-450); cityWind=0; Hero.grounded=false}
 onKey KeyH, => {Hero.resetHero(735,-450); cityWind=1; Hero.grounded=false}
 onKey KeyT`,
@@ -93,7 +113,13 @@ try {
   assert.equal((await state()).phase, 0);
   await shot("title");
   await p.locator("#play").click();
-  await wait(() => latestState.phase === 1 && latestState.cityPrompt === 0);
+  await wait(() => latestState.phase === 1);
+  await key("o");
+  await p.waitForTimeout(160);
+  await key("f");
+  await wait(() => latestState.expedition.flags[2] === 1);
+  await key("p");
+  await p.waitForTimeout(160);
   await shot("wind");
   await p.keyboard.press("f");
   await wait(() => latestState.cityWind === 1);
@@ -106,7 +132,7 @@ try {
     1,
   );
   pass(
-    "five-area opening and spoiler-safe journal; real wind-valve interaction is optional and idempotent",
+    "five-area opening and spoiler-safe journal; transport task activates wind exactly once",
   );
   await key("g");
   await p.waitForTimeout(280);
@@ -119,9 +145,19 @@ try {
   pass("wind valve changes real upward physics inside the visible wind column");
   await key("F7");
   await wait(
-    () => latestState.cityPrompt === 1 && latestState.cityDistrict === 1,
+    () =>
+      latestState.expedition.prompt === window.cityTestNodes.weight &&
+      latestState.cityDistrict === 1,
   );
   await p.keyboard.press("f");
+  await wait(() => latestState.expedition.flags[3] === 1);
+  await key("y");
+  await p.waitForTimeout(160);
+  await key("f");
+  await wait(() => latestState.expedition.flags[3] === 3);
+  await key("z");
+  await p.waitForTimeout(160);
+  await key("f");
   await wait(() => latestState.cityForge === 1);
   await shot("forge");
   assert.match(await p.locator("#city-narrative").innerText(), /未完成的工作/);
@@ -140,7 +176,7 @@ try {
   assert.ok(Math.abs(moved.cityLiftY - ride.cityLiftY) > 15);
   assert.ok(Math.abs(moved.y - moved.cityLiftY) < 3);
   pass(
-    "restored foundry lift moves and physically carries a standing passenger",
+    "activated transport lift moves and physically carries a standing passenger",
   );
   await p.locator("#city-book-open").click();
   await wait(() => latestState.phase === 4);
@@ -158,7 +194,9 @@ try {
   );
   await key("F8");
   await wait(
-    () => latestState.cityPrompt === 2 && latestState.cityDistrict === 2,
+    () =>
+      latestState.expedition.prompt === window.cityTestNodes.drain &&
+      latestState.cityDistrict === 2,
   );
   await p.keyboard.down("u");
   await wait(() => latestState.bowCharge >= 0.6);
@@ -178,7 +216,9 @@ try {
   await p.keyboard.press("u", { delay: 90 });
   await wait(() => latestState.phase === 5 && inscriptionDiagnostics.active);
   await answer();
-  await wait(() => latestState.cityPrompt === 2);
+  await wait(
+    () => latestState.expedition.prompt === window.cityTestNodes.drain,
+  );
   await p.keyboard.press("f");
   await wait(() => latestState.cityArchive === 1);
   await shot("archive");
@@ -194,26 +234,32 @@ try {
   );
   await key("F9");
   await wait(
-    () => latestState.cityDistrict === 3 && latestState.cityPrompt === 3,
+    () =>
+      latestState.cityDistrict === 3 &&
+      latestState.expedition.prompt === window.cityTestNodes.bridge,
   );
   await key("n");
-  await wait(() => latestState.y < -2800);
+  await p.waitForFunction((y) => latestState.y < y - 30, bridgeY);
   assert.equal((await state()).cityMirror, 0);
   await key("F9");
-  await wait(() => latestState.cityPrompt === 3);
+  await wait(
+    () => latestState.expedition.prompt === window.cityTestNodes.bridge,
+  );
   await p.keyboard.press("f");
   await wait(() => latestState.cityMirror === 1);
   await shot("mirror");
   await key("n");
-  await wait(() => Math.abs(latestState.y + 2740) < 2);
+  await p.waitForFunction((y) => Math.abs(latestState.y - y) < 2, bridgeY);
   await p.waitForTimeout(250);
-  assert.ok(Math.abs((await state()).y + 2740) < 2);
+  assert.ok(Math.abs((await state()).y - bridgeY) < 2);
   pass(
     "mirror repair activates an actual collision bridge; the unrepaired route has no invisible floor",
   );
   await key("F10");
   await wait(
-    () => latestState.cityDistrict === 4 && latestState.cityPrompt === 4,
+    () =>
+      latestState.cityDistrict === 4 &&
+      latestState.expedition.prompt === window.cityTestNodes.energy,
   );
   await shot("heart");
   assert.equal(await p.locator("#city-alternate").isVisible(), true);
@@ -240,7 +286,7 @@ try {
   const restored = await state();
   for (const flag of ["cityWind", "cityForge", "cityArchive", "cityMirror"])
     assert.equal(restored[flag], 1);
-  assert.ok(restored.cityDepth >= 3070);
+  assert.ok(restored.cityDepth >= -layout.rooms[12].top);
   pass(
     "checkpoint reload preserves all repairs, explored districts and the final decision",
   );
@@ -265,7 +311,9 @@ try {
   await wait(() => latestState.phase === 1 && latestState.cityChoice === 0);
   assert.equal((await state()).cityForge, 0);
   await key("F10");
-  await wait(() => latestState.cityPrompt === 4);
+  await wait(
+    () => latestState.expedition.prompt === window.cityTestNodes.energy,
+  );
   await p.keyboard.press("v");
   await wait(() => latestState.cityChoice === 2);
   await key("F12");

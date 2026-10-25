@@ -2,6 +2,33 @@ export const ACHIEVEMENT_KEY = "easyrun-belfry-achievements-v1";
 export const GROUPS = { journey: "行旅", craft: "技艺", inscription: "铭文" };
 export const ACHIEVEMENTS = [
   {
+    id: "plate-break",
+    group: "craft",
+    title: "裂甲之刃",
+    goal: 1,
+    rule: "在冒险中用断潮打破一名敌人的护架。",
+    lore: "重刃落在它无法承受的位置。",
+    icon: "M5 5l26 26M8 30 28 7M10 7h17v18",
+  },
+  {
+    id: "ward-cut",
+    group: "craft",
+    title: "断线者",
+    goal: 1,
+    rule: "用断潮斩断支援，或击杀正在维系支援的缝魂师。",
+    lore: "最后一根线落下，它们终于各自面对刀锋。",
+    icon: "M5 9l26 18M5 27 31 9M18 3v30",
+  },
+  {
+    id: "elite-hunt",
+    group: "journey",
+    title: "猎场终结者",
+    goal: 4,
+    rule: "累计击败四名精英守卫（双生猎手分别计数）。",
+    lore: "每一道伤痕，都有不同的来历。",
+    icon: "M18 3 5 11l4 16 9 6 9-6 4-16z",
+  },
+  {
     id: "first-sling",
     group: "journey",
     title: "借风起身",
@@ -265,6 +292,10 @@ export class AchievementBook {
       this.mark("air-chain", r.targets.size);
     }
     if (e.name === "guardian") this.mark("keeper");
+    if (e.name === "guardbreak") this.mark("plate-break");
+    if (e.name === "wardbreak") this.mark("ward-cut");
+    if (e.name === "elitekill")
+      this.mark("elite-hunt", (this.data.progress["elite-hunt"] || 0) + 1);
     if (e.name === "core") r.core = true;
     if (e.name === "echo") this.mark("echoes", e.echoes);
     if (e.name === "parry")

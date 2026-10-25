@@ -1,7 +1,10 @@
 onCloned data => {
- i:=data.(int)
+ slot:=data.(int)
  for {
-  waitNextFrame(); kind:=enemyType[i]; state:=enemyState[i]; t:=enemyClock[i]; visible:=false
+  waitNextFrame()
+  i:=sceneEnemies[slot]; if i<0 {hide
+   continue
+  }; kind:=enemyType[i]; state:=enemyState[i]; t:=enemyClock[i]; visible:=false
   setGraphicEffect GhostEffect,0
   if enemyHP[i]>0 {
    if (kind==2 || kind==4) && (state==1 || state==3) {
@@ -18,13 +21,23 @@ onCloned data => {
     if kind==4 && state==3 {setCostume 3}
     if state==1 {setGraphicEffect GhostEffect,70}
    }
-   if (kind==1 || kind==3) && state==3 && enemyHazard[i]>0 {
+   if kind==1 && state==3 && enemyHazard[i]>0 {
     visible=true; setCostume 2; setXYpos enemyX[i]+enemyFacing[i]*20,enemyY[i]; setHeading enemyFacing[i]*90; setSize 0.52
     if t>0.7 {setXYpos enemyX[i]+enemyFacing[i]*30,enemyY[i]-23; setSize 0.60}
    }
    if kind==5 && state==4 && bindEnemy==i {
     visible=true; setCostume 1; setXYpos Hero.px,Hero.py+32; setSize 0.26; setHeading 90+sin(worldTime*12)*8; setGraphicEffect GhostEffect,35
    }
+  }
+  if enemyHP[i]>0 && kind==9 {
+   for j:=0;j<len(enemyWard);j++ {if enemyWard[j]==i && enemyHP[j]>0 {
+    dx:=enemyX[j]-enemyX[i]; dy:=enemyY[j]-enemyY[i]; visible=true; setCostume 0
+    setXYpos enemyX[i]+dx/2,enemyY[i]+dy/2; setHeading angle(dx,dy); setSize dist(dx,dy)/400; setGraphicEffect GhostEffect,50
+   }}
+  }
+  if enemyHP[i]>0 && (kind==7 || kind==8) && state==3 {
+   visible=true; setCostume 2; setHeading enemyFacing[i]*90; setXYpos enemyX[i]+enemyFacing[i]*35,enemyY[i]-12; setSize 0.45
+   if t>0.48 {visible=false}
   }
   if visible {show} else {hide}
  }

@@ -1,0 +1,1238 @@
+{
+  "date": "2026-10-25T09:40:53.427Z",
+  "branch": "feat/hunt-combat-v10",
+  "base": "cd7a233783be7d876b4300bee3b4e29b81020662",
+  "built": {
+    "sha256": "b76c462a0495b22ca7a03140230b156c604ad804a3e939a38884537042ae3997",
+    "modified": "2026-10-25T08:57:27.317Z"
+  },
+  "browserAssertions": 206,
+  "suites": [
+    {
+      "path": "combat/combat.json",
+      "date": "2026-10-25T08:58:03.206Z",
+      "sha256": "e53925f15f5ca508c569510bdaa002137b8ab306e9bfecb9b2d3beb5eb3620f5",
+      "scope": null,
+      "cases": [
+        "three-step buffered chain causes damage at strike frames",
+        "holding light attack does not auto-repeat",
+        "launcher lifts enemy and player into aerial follow-up",
+        "charge freezes during pause, releases into heavy strike on resume",
+        "heavy strike throws an enemy into another enemy",
+        "light recovery cancels into dash",
+        "five-hit ultimate active window expires without another input",
+        "full restart clears charge, combo and practice",
+        "sound settings retain only effects and music; former voice controls are absent",
+        "blade effects play and global mute clears active sources",
+        "all 82 retained effects decode without loading any voice pack",
+        "reload preserves music/effects preferences and never fetches dialogue or speech",
+        "failed effects decoding leaves gameplay operational and cannot create dialogue"
+      ]
+    },
+    {
+      "path": "scene/report.json",
+      "date": "2026-10-25T08:58:40.148Z",
+      "sha256": "77216fb9687c6f3b5cfd15d2fe209aa1fc88ac29e2eafcb1197231b7d90c3823",
+      "scope": "Production renderer/clone births and real input/arrow collision. Response-only camera fixtures visit all rooms in both directions; effect stress deliberately requests more decoration than the pool admits. This is not a natural-route or frame-rate benchmark.",
+      "cases": [
+        "all scene views and combat telegraphs start without device clones",
+        "descent camera room 2",
+        "descent camera room 3",
+        "descent camera room 4",
+        "descent camera room 5",
+        "descent camera room 6",
+        "descent camera room 7",
+        "descent camera room 8",
+        "descent camera room 9",
+        "descent camera room 10",
+        "descent camera room 11",
+        "descent camera room 12",
+        "descent camera room 13",
+        "descent camera room 14",
+        "descent camera room 15",
+        "descent camera room 1",
+        "return camera room 2",
+        "return camera room 3",
+        "return camera room 4",
+        "return camera room 5",
+        "return camera room 6",
+        "return camera room 7",
+        "return camera room 8",
+        "return camera room 9",
+        "return camera room 10",
+        "return camera room 11",
+        "return camera room 12",
+        "return camera room 13",
+        "return camera room 14",
+        "return camera room 15",
+        "return camera room 1",
+        "charged arrow actually exists and hits after excess decoration requests",
+        "rapid real bow inputs never lose arrows and all transient clones retire",
+        "restarts and practice remap existing views without accumulating clones"
+      ]
+    },
+    {
+      "path": "music/report.json",
+      "date": "2026-10-25T08:59:04.065Z",
+      "sha256": "db5a0c5d7726d1d02aeb5ffe850430d5fdb28fafde194d3d887d483d3ceceaaf",
+      "scope": "Real MP3 media, Web Audio routing and player inputs. Response-only F8/F9/F10 fixtures select win/death/title to test music transitions; visibility fixture dispatches the actual host handler. Does not claim a full-route playthrough or subjective audio review.",
+      "cases": [
+        "all three MP3 hashes match the manifest; HEAD, byte/suffix ranges and invalid-range responses are correct",
+        "a title-screen gesture starts Melancholy Of The Boot without starting a run",
+        "the real title recording loops past its end without another player or user gesture",
+        "starting the game switches to Cleaning out the Rooms and retains only one media element",
+        "pause freezes the music position and resume continues the same recording",
+        "music/effects preferences are independent and global mute pauses instead of restarting the song",
+        "a real word challenge keeps normal music gain and continuous playback; explicit challenge pause/resume still works",
+        "visibility loss pauses game and music; returning waits for the player to resume",
+        "the real gameplay recording loops past its end",
+        "victory selects Strange Sports and the real ending recording loops past its end",
+        "a new run starts the gameplay song from its beginning; death uses the same ending track",
+        "rapid scene changes settle on the latest selection without a delayed stale song",
+        "reload preserves volume preferences and the practice arena uses gameplay music",
+        "a missing song exposes retry, recovers after the asset returns and never prevents gameplay"
+      ]
+    },
+    {
+      "path": "assassins/enemies.json",
+      "date": "2026-10-25T09:01:44.017Z",
+      "sha256": "821cfed58fd36906e1b7861617e74f88fff26e786de03513d3c5a51d1683bc5a",
+      "scope": "Single enemies use public rehearsals; final captor/hover/hound group uses response-only initial positions. AI and damage are unchanged.",
+      "cases": [
+        "safe start and legacy voice settings do not restore dialogue",
+        "hovering assassin alternates single knife and repositioned pursuit knives",
+        "ground assassin plants feet and executes cut-elbow-sweep with real damage",
+        "wall archer locks aim before release and alternates arrow weights",
+        "chain connects, pulls physically and light attack cuts it",
+        "permanent anchor grapple releases a tether without energy",
+        "0.7-second grip blocks movement, jump, grapple, attacks, charge, dash and nova",
+        "pause freezes capture and clears active sound",
+        "capture releases on time, restores input and grants immunity",
+        "jumping the telegraph avoids the grab and exposes recovery",
+        "restart during capture clears all restraint and stale enemy state",
+        "mixed encounter limits committed attacks and prevents damage during grips"
+      ]
+    },
+    {
+      "path": "ninja/ninja.json",
+      "date": "2026-10-25T09:02:42.159Z",
+      "sha256": "6274e34ce66b05ca5ba04c5a5d673375a9b20a75c22e35b08952828ff69841f2",
+      "scope": null,
+      "cases": [
+        "hover crosses a continuous aerial arc, then locks a second knife",
+        "martial assassin retreats, leaps into a kick, lands and sweeps",
+        "visible guard parries a frontal light strike without losing HP",
+        "heavy strike breaks the same stance and interrupts its counterattack",
+        "archer wall-kicks, releases in midair and returns along a visible arc",
+        "low chain sweep deals damage on the ground and links into a telegraphed cast",
+        "jumping the low chain sweep avoids damage",
+        "binder visibly flanks, commits a new direction, and can still be jumped",
+        "repositioning is vulnerable: nova interrupts the maneuver before its kick",
+        "pause freezes footwork and restart clears the maneuver"
+      ]
+    },
+    {
+      "path": "skills/skills.json",
+      "date": "2026-10-25T09:05:55.580Z",
+      "sha256": "88474129867a574ebd1235fe7cb3982bc06713bbea916704260f8c070c48d842",
+      "scope": "Isolated arena arranged by test-only F8/F9/F10/F11 handlers; all player mechanics, collision, rendering and audio are the production code.",
+      "cases": [
+        "full bow marks; charged blade consumes mark for five damage",
+        "blade can be used again after recovery without a cooldown",
+        "bow fires on successive inputs without cooldown; pause still freezes combat",
+        "charged arrow pierces two distinct targets and stops before the third",
+        "downward arrow is blocked by a closed platform before reaching the enemy",
+        "dash cancels bow anticipation without firing or spending cooldown",
+        "dash cancel retains the basic attack interval instead of resetting it",
+        "air whiffs and W+J spam allow only two cuts and fall to ground",
+        "healing channels on ground, freezes on pause and consumes a finite ember",
+        "incoming damage interrupts healing with no delayed completion or refund",
+        "jump cancels healing, keeps the resource cost and has no cooldown",
+        "airborne healing rejected before resource or cooldown consumption",
+        "ultimate emits five hits, earns embers on hits and can repeat after recovery without cooldown",
+        "ultimate up finisher produces a bounded launch",
+        "downward ultimate finisher drives the fall; empty cuts grant no ember",
+        "restart clears all cooldowns, charge state, healing and ultimate",
+        "four skill indicators and new local sound cues work with speech still disabled"
+      ]
+    },
+    {
+      "path": "keeper/report.json",
+      "date": "2026-10-25T09:06:25.952Z",
+      "sha256": "8ba19f43a627db84d9f72ab1826b1cf5b7a8114d1ec6f413805d0750acb3b2aa",
+      "scope": "Response-only scene arrangements isolate each production Boss move. Actual player inputs, collisions, transform thresholds, rendering and word lifecycle run unchanged. This is not a full adventure or a human difficulty study.",
+      "cases": [
+        "armored sweep warns, hits its capsule once, then exposes recovery",
+        "thrust commits its endpoint and a real jump avoids the swept body hit",
+        "jumping above the landing shock avoids slam damage",
+        "standing on the marked landing is hit; slam has a longer punish window",
+        "hunter fan produces real parryable projectiles with collision",
+        "cross-cut has a second independent anticipation and ends in recovery",
+        "dive follows a visible rise, locked diagonal path and supported landing",
+        "core blades arrive in three warned lanes with a traversable safe gap",
+        "real heavy damage enters form 2, clears old danger and leaves an opening",
+        "real heavy damage enters form 3, clears old danger and leaves an opening",
+        "first form is directly vulnerable in recovery without exterior seals",
+        "stationary repeated ultimates do not erase the encounter; movement and attack windows matter",
+        "autonomous core AI selects multiple attacks and actually changes horizontal and vertical position",
+        "real final hit starts the return and clears Boss hazards",
+        "ordinary J combo can finish the exposed Boss without a skill or word gate",
+        "word focus freezes all Boss trajectories; wrong answer cancels the skill with no accumulated damage"
+      ]
+    },
+    {
+      "path": "bow-autoaim/bow-autoaim.json",
+      "date": "2026-10-25T09:07:44.227Z",
+      "sha256": "37a973c917d16896cd1d4f31d21742786b73c983a86abd8c4730ebdf199fb67c",
+      "scope": "Test-response-only enemy arrangements; production targeting, arrows, collisions, controls and rendering.",
+      "cases": [
+        "unprompted aim tracks a moving elevated foe and the charged arrow hits",
+        "a foe behind the hero is acquired and hit without a direction key",
+        "upward intent switches from the nearest foe and releasing it keeps the new lock",
+        "valid locks stay stable when another foe moves closer; death reacquires a valid foe",
+        "an occluding platform excludes the otherwise nearby upper foe",
+        "auto-aim selects a plate guard but the actual frontal arrow respects its armor",
+        "out-of-range and off-screen foes leave directional free aim available",
+        "a newly obstructed lock is dropped immediately while charging",
+        "bow lock is independent of grapple selection, freezes on pause and clears on cancellation"
+      ]
+    },
+    {
+      "path": "inscription/report.json",
+      "date": "2026-10-25T09:08:01.168Z",
+      "sha256": "804a05981509ce0ccc2410ccce63fa4b2fe27e5d2124773df0fc333fec635a0c",
+      "scope": "Response-only fixed arena and lifecycle events; production Hero, physics, QTE host, keyboard and result processing.",
+      "cases": [
+        "30-word menu, independent difficulty and no preview credit",
+        "full charge requests exactly one challenge; physics, cooldown and air budget freeze",
+        "typing isolation, escape pause, full arrow and single progress settlement",
+        "marked blade still requires its own answer before detonating the mark",
+        "one misspelled letter cancels the entire blade, with no fallback damage or cooldown",
+        "heal failure refunds once, with no healing or cooldown",
+        "correct heal completes remaining channel and restores one HP",
+        "ultimate asks before any hit, releases all five on success, and can be requested again without cooldown",
+        "failed ultimate cancels all five hits and its release effects",
+        "even an empty ultimate requires an answer and cannot bypass the gate",
+        "optional F chain release restores movement",
+        "binder preserves hard control then guarantees bounded release with immunity",
+        "IME composition pauses timer without injecting game actions",
+        "restart cancels pending action without late release or credit",
+        "timeout cancels skill 1 with no delayed damage, heal or cooldown",
+        "timeout cancels skill 2 with no delayed damage, heal or cooldown",
+        "timeout cancels skill 3 with no delayed damage, heal or cooldown",
+        "timeout cancels skill 4 with no delayed damage, heal or cooldown",
+        "short skill 1 requires an answer; a failed cast can immediately be retried",
+        "short skill 2 requires an answer; a failed cast can immediately be retried",
+        "abandon cancels the pending skill without a fallback projectile",
+        "checkpoint death retry preserves word group",
+        "saved progress resumes after a full browser reload",
+        "victory never requires all 30 words"
+      ]
+    },
+    {
+      "path": "inscription/resilience.json",
+      "date": "2026-10-25T09:09:18.818Z",
+      "sha256": "f595ce3074c305894abbfbe253203cd148534189510a01fd5a4f201c96592d8f",
+      "scope": null,
+      "cases": [
+        "missing word content falls back to an explicitly labelled playable action mode",
+        "blocked storage is disclosed while play remains available",
+        "two desktop viewports keep the compact inscription ribbon inside the game",
+        "background visibility pauses the challenge and requires a conscious resume",
+        "held final E cannot leak into grapple; a new jump responds before E is released"
+      ]
+    },
+    {
+      "path": "inscription-motion/report.json",
+      "date": "2026-10-25T09:09:45.427Z",
+      "sha256": "ec6ce0a89e360edfc73c143f17efeb31ea98b7f7457997f4ad0a27430e88c261",
+      "scope": null,
+      "cases": [
+        "live focus motion and tension audio while damage, physics and cooldowns remain frozen",
+        "correct letters charge the hero effect without advancing combat",
+        "mute clears focus sources and unmute preserves the pending challenge",
+        "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final E",
+        "a successful arrow does not bypass the next charged sword challenge; only its own answer releases the blade",
+        "the following full bow charge also requires its own answer and records exactly one new settlement",
+        "wrong meaning cancels the arrow, immediately restores movement and leaves passive feedback",
+        "reduced motion removes zoom and particles; restart clears motion, audio and old results",
+        "after restart, success never auto-opens a question; the next deliberate full charge asks normally"
+      ]
+    },
+    {
+      "path": "achievements/report.json",
+      "date": "2026-10-25T09:12:26.536Z",
+      "sha256": "2dabb52d38385da25d929b8116dd217ba54781211d424d69655bc232b68d0be9",
+      "scope": null,
+      "cases": [
+        "menu ledger shows all 18 rules, group filtering and locked titles without starting a game",
+        "correct real inscription unlocks once after resolution; no achievement obstruction during typing",
+        "real grapple unlock, paused ledger, input containment and cosmetic title equip leave combat unchanged",
+        "JSON export contains the actual local unlocks and equipped title",
+        "queued unlocks defer through the next word challenge and resume without duplicate rewards",
+        "ledger fits desktop/short/narrow views; closing an already paused game preserves pause",
+        "reload retains earned titles and progress without replaying unlock notifications",
+        "practice arena actions do not change persistent achievements",
+        "corrupt fault preserves playable adventure",
+        "storage fault preserves playable adventure",
+        "module fault preserves playable adventure",
+        "word-module fault preserves playable adventure and releases held movement across ledger"
+      ]
+    },
+    {
+      "path": "hunt/report.json",
+      "date": "2026-10-25T09:15:45.484Z",
+      "sha256": "982501d060c3cc426df67541e2cee256453e4c225e630f04e8a82394259685a8",
+      "scope": "Response-only initial arrangements; all attacks, movement, input and collision use production code. Not human difficulty evidence.",
+      "cases": [
+        "default hunt starts without exterior boss seals and offers all eight roles",
+        "frontal J chain cannot erase the plate guard",
+        "a stationary ultimate cannot bypass intact frontal plate armor",
+        "frontal grappling respects plate armor and grants no free stagger",
+        "a real back attack damages the same guarded enemy",
+        "charged blade breaks plate guard and creates a visible opening",
+        "weaver grants one actual visible ward to its ally",
+        "heavy strike severs support, without refreshing enemy HP",
+        "killing support removes its protection from surviving allies",
+        "hound warns then commits one damaging pounce and exposes recovery",
+        "jumping the committed low pounce avoids damage",
+        "pause freezes new enemy decision and recovery clocks",
+        "duelist takes real combo damage then visibly escapes sustained pressure",
+        "wing judge performs two real dives with a separately visible second warning",
+        "wrong word cancels blade without breaking armor; new AI freezes during the prompt",
+        "correct word releases one real armor-breaking blade",
+        "legacy v2 checkpoint resumes in the real host with identical words and no false elite completion",
+        "migrated v3 progress survives another title and resume cycle",
+        "restart clears rehearsal and retired mechanism state"
+      ]
+    },
+    {
+      "path": "belfry/lifecycle.json",
+      "date": "2026-10-25T09:16:46.822Z",
+      "sha256": "354c8add3a3dd02364e19d4d2012557bd03ffe7a06b408031732d4799df5a496",
+      "scope": null,
+      "cases": [
+        "difficulty selection",
+        "start with chosen difficulty",
+        "pause freezes movement, camera, effects and combat",
+        "help pauses and resumes safely",
+        "locked gate blocks drop-through and checkpoint activates",
+        "real enemy damage causes failure",
+        "checkpoint retry retains gate and death state",
+        "restart resets combat, progression and old effects",
+        "fullscreen enters and exits",
+        "local record export",
+        "record survives reload",
+        "compact desktop and mobile notice"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "belfry/hunt-route-0.json",
+      "sha256": "ce8b47eb93aec8230a6867f4d0eb8a4155ee5e4bbbe0db8866130bf0866205e3",
+      "style": "mixed",
+      "state": {
+        "phase": 2,
+        "segment": 2,
+        "difficulty": 0,
+        "elapsed": 184.89187891136845,
+        "health": 8,
+        "maxHealth": 8,
+        "score": 5190,
+        "combo": 0,
+        "bestCombo": 2,
+        "kills": 20,
+        "energy": 87,
+        "echoes": 0,
+        "x": 153.96608145302326,
+        "y": -14.751453240864388,
+        "vx": 59.21540057415978,
+        "vy": 817.8591176570949,
+        "hook": 0,
+        "target": 0,
+        "checkpoint": 14,
+        "bossHP": 0,
+        "returnTime": 32.98531594984233,
+        "riseY": -11013.425837454572,
+        "attempts": 2,
+        "deaths": 1,
+        "hookCount": 50,
+        "failReason": 0,
+        "fxCount": 0,
+        "cameraY": 42.056380991941076,
+        "dashCool": -4.1723251298364517e-8,
+        "invulnerable": -1.30385160446167e-8,
+        "bossState": 0,
+        "bossShield": 0,
+        "bossStage": 2,
+        "sealLeft": 1,
+        "sealRight": 1,
+        "gateOne": 0,
+        "gateTwo": 0,
+        "attackKind": 0,
+        "chainStep": 5,
+        "chargeTime": 0,
+        "threats": 0,
+        "practice": 0,
+        "attackTime": 0,
+        "attackAge": 0.2833333481103182,
+        "bindTime": 0,
+        "controlImmune": 0,
+        "controlGrace": 0,
+        "chainOwner": -1,
+        "chainTime": 0,
+        "attackSlots": 0,
+        "practiceKind": 5,
+        "basicCool": 0,
+        "airAttacks": 1,
+        "bowCool": 0,
+        "bladeCool": 0,
+        "healCool": 0,
+        "ultimateCool": 0,
+        "bowCharge": 0,
+        "healTime": 0,
+        "ultimateTime": 0,
+        "embers": 1,
+        "emberHits": 3,
+        "aimX": 1,
+        "aimY": 0,
+        "bowTarget": -1,
+        "wordMode": 0,
+        "wordPending": 0,
+        "wordSerial": 0,
+        "bladeLink": -1,
+        "wordVisualRate": 1,
+        "visualTime": 191.5802419964223,
+        "cityDistrict": 0,
+        "cityPrompt": -1,
+        "cityWind": 0,
+        "cityForge": 0,
+        "cityArchive": 0,
+        "cityMirror": 0,
+        "cityChoice": 0,
+        "cityLiftY": 0,
+        "cityDepth": 11540,
+        "bossMove": -1,
+        "bossMaxHP": 36,
+        "bossLocked": 0,
+        "bossChain": 0,
+        "bossWindup": 0.9,
+        "keeperEpoch": 6,
+        "expedition": {
+          "revision": 3,
+          "room": 0,
+          "prompt": -1,
+          "lampStep": 0,
+          "lampMoving": 0,
+          "lampX": 0,
+          "lampY": 0,
+          "cargoChoice": 0,
+          "mirrorChoice": 0,
+          "recordChoice": 0,
+          "trialHooks": 0,
+          "flags": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "done": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "sides": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "wordCoverage": {
+        "requests": 0,
+        "unobservedRequests": [],
+        "differentSeen": 0,
+        "differentCorrect": 0,
+        "effectiveCasts": 0,
+        "mainRouteEffectiveCasts": 0,
+        "distinctWordsWithMainRouteImpact": 0,
+        "byAttempt": [],
+        "byRoom": [
+          {
+            "room": "折翼门廊",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "桥头夹击",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "空井逐影",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "裂甲巡廊",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "炉底猎群",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "执刑者庭",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "沉水伏猎",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "断线书库",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "封存猎场",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "折光追廊",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "双生猎场",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "折翼审判",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "最后的巡守",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "心前围猎",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "守心者室",
+            "requests": 0,
+            "effectiveCasts": 0
+          }
+        ],
+        "impacts": {
+          "arrowhit": 33,
+          "markbreak": 10,
+          "chainhit": 18,
+          "healcomplete": 0
+        },
+        "note": "Answers are automated. These are actual requests and distinct recorded words for this input policy, not natural human coverage or learning evidence. Effective casts are deduplicated by question ID; main-route impacts include downward patrols (which may be bypassed) and exclude healing and return-only enemies. Death/retry may still repeat an encounter. Raw impact events can include multiple hits per cast."
+      },
+      "renderBudget": {
+        "samples": 1716,
+        "peakClones": 178,
+        "missingViews": 0,
+        "note": "Production birth counters and allocated transient objects; camera fixtures are not used in this route."
+      },
+      "browserFrameCadence": {
+        "samples": 10000,
+        "medianMs": 16.66500000000815,
+        "p95Ms": 16.670000000012806,
+        "note": "Host browser rAF intervals during play, not an engine FPS or device compatibility guarantee."
+      },
+      "voidVerified": true,
+      "bossEvents": [
+        {
+          "name": "guardian",
+          "time": 119.81531035002314,
+          "x": 527.9883211615187,
+          "y": -11171.097252325259
+        },
+        {
+          "name": "enrage",
+          "time": 123.92362789098166,
+          "x": 515.1489400690278,
+          "y": -11540
+        },
+        {
+          "name": "enrage",
+          "time": 128.79757413487874,
+          "x": 373.32328049109566,
+          "y": -11540
+        },
+        {
+          "name": "core",
+          "time": 137.4073008932545,
+          "x": 218.59736212168852,
+          "y": -11329.199998539687
+        },
+        {
+          "name": "fail",
+          "time": 151.90656296152613,
+          "x": 219.1516600563196,
+          "y": -11540
+        },
+        {
+          "name": "retry",
+          "time": 151.90656296152613,
+          "x": 760,
+          "y": -11060
+        },
+        {
+          "name": "finish",
+          "time": 184.89187891136845,
+          "x": 153.96608145302326,
+          "y": -14.751453240864388
+        }
+      ]
+    },
+    {
+      "path": "belfry/hunt-route-1.json",
+      "sha256": "1a5231d2534e2e456ea3428c241f7378854c5144b25ea6ceb3be481b60252be3",
+      "style": "mixed",
+      "state": {
+        "phase": 2,
+        "segment": 2,
+        "difficulty": 1,
+        "elapsed": 202.06531542519096,
+        "health": 5,
+        "maxHealth": 5,
+        "score": 6590,
+        "combo": 0,
+        "bestCombo": 4,
+        "kills": 27,
+        "energy": 100,
+        "echoes": 0,
+        "x": 369.45043606111057,
+        "y": 9.024505221063535,
+        "vx": -662.5530840361,
+        "vy": 483.1391216143159,
+        "hook": 0,
+        "target": 0,
+        "checkpoint": 14,
+        "bossHP": 0,
+        "returnTime": 37.07974153790623,
+        "riseY": -10375.571113870032,
+        "attempts": 1,
+        "deaths": 0,
+        "hookCount": 58,
+        "failReason": 0,
+        "fxCount": 0,
+        "cameraY": 78.7351210414962,
+        "dashCool": -0.01663403473794456,
+        "invulnerable": -0.01665601134300232,
+        "bossState": 2,
+        "bossShield": 0,
+        "bossStage": 2,
+        "sealLeft": 1,
+        "sealRight": 1,
+        "gateOne": 0,
+        "gateTwo": 0,
+        "attackKind": 0,
+        "chainStep": 5,
+        "chargeTime": 0,
+        "threats": 0,
+        "practice": 0,
+        "attackTime": 0,
+        "attackAge": 0.28332201205193996,
+        "bindTime": 0,
+        "controlImmune": 0,
+        "controlGrace": 0,
+        "chainOwner": -1,
+        "chainTime": 0,
+        "attackSlots": 0,
+        "practiceKind": 5,
+        "basicCool": 0,
+        "airAttacks": 1,
+        "bowCool": 0,
+        "bladeCool": 0,
+        "healCool": 0,
+        "ultimateCool": 0,
+        "bowCharge": 0,
+        "healTime": 0,
+        "ultimateTime": 0,
+        "embers": 2,
+        "emberHits": 0,
+        "aimX": -1,
+        "aimY": 0,
+        "bowTarget": -1,
+        "wordMode": 1,
+        "wordPending": 0,
+        "wordSerial": 109,
+        "bladeLink": -1,
+        "wordVisualRate": 0.9999999999999999,
+        "visualTime": 216.77141399995776,
+        "cityDistrict": 0,
+        "cityPrompt": -1,
+        "cityWind": 0,
+        "cityForge": 0,
+        "cityArchive": 0,
+        "cityMirror": 0,
+        "cityChoice": 0,
+        "cityLiftY": 0,
+        "cityDepth": 11540,
+        "bossMove": 5,
+        "bossMaxHP": 45,
+        "bossLocked": 1,
+        "bossChain": 0,
+        "bossWindup": 0.78,
+        "keeperEpoch": 5,
+        "expedition": {
+          "revision": 3,
+          "room": 0,
+          "prompt": -1,
+          "lampStep": 0,
+          "lampMoving": 0,
+          "lampX": 0,
+          "lampY": 0,
+          "cargoChoice": 0,
+          "mirrorChoice": 0,
+          "recordChoice": 0,
+          "trialHooks": 0,
+          "flags": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "done": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "sides": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "wordCoverage": {
+        "requests": 109,
+        "unobservedRequests": [
+          {
+            "cast": "1:1",
+            "kind": 1
+          },
+          {
+            "cast": "1:85",
+            "kind": 1
+          }
+        ],
+        "differentSeen": 30,
+        "differentCorrect": 30,
+        "effectiveCasts": 83,
+        "mainRouteEffectiveCasts": 82,
+        "distinctWordsWithMainRouteImpact": 24,
+        "byAttempt": [
+          {
+            "attempt": 1,
+            "mainRouteEffectiveCasts": 82,
+            "distinctWordsWithMainRouteImpact": 24
+          }
+        ],
+        "byRoom": [
+          {
+            "room": "折翼门廊",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "桥头夹击",
+            "requests": 10,
+            "effectiveCasts": 6
+          },
+          {
+            "room": "空井逐影",
+            "requests": 6,
+            "effectiveCasts": 5
+          },
+          {
+            "room": "裂甲巡廊",
+            "requests": 10,
+            "effectiveCasts": 9
+          },
+          {
+            "room": "炉底猎群",
+            "requests": 3,
+            "effectiveCasts": 3
+          },
+          {
+            "room": "执刑者庭",
+            "requests": 5,
+            "effectiveCasts": 5
+          },
+          {
+            "room": "沉水伏猎",
+            "requests": 6,
+            "effectiveCasts": 6
+          },
+          {
+            "room": "断线书库",
+            "requests": 8,
+            "effectiveCasts": 7
+          },
+          {
+            "room": "封存猎场",
+            "requests": 6,
+            "effectiveCasts": 5
+          },
+          {
+            "room": "折光追廊",
+            "requests": 4,
+            "effectiveCasts": 4
+          },
+          {
+            "room": "双生猎场",
+            "requests": 12,
+            "effectiveCasts": 7
+          },
+          {
+            "room": "折翼审判",
+            "requests": 13,
+            "effectiveCasts": 6
+          },
+          {
+            "room": "最后的巡守",
+            "requests": 6,
+            "effectiveCasts": 4
+          },
+          {
+            "room": "心前围猎",
+            "requests": 8,
+            "effectiveCasts": 8
+          },
+          {
+            "room": "守心者室",
+            "requests": 8,
+            "effectiveCasts": 7
+          }
+        ],
+        "impacts": {
+          "arrowhit": 42,
+          "markbreak": 19,
+          "chainhit": 29,
+          "healcomplete": 0
+        },
+        "note": "Answers are automated. These are actual requests and distinct recorded words for this input policy, not natural human coverage or learning evidence. Effective casts are deduplicated by question ID; main-route impacts include downward patrols (which may be bypassed) and exclude healing and return-only enemies. Death/retry may still repeat an encounter. Raw impact events can include multiple hits per cast."
+      },
+      "renderBudget": {
+        "samples": 2118,
+        "peakClones": 181,
+        "missingViews": 0,
+        "note": "Production birth counters and allocated transient objects; camera fixtures are not used in this route."
+      },
+      "browserFrameCadence": {
+        "samples": 10000,
+        "medianMs": 16.66500000000815,
+        "p95Ms": 16.670000000012806,
+        "note": "Host browser rAF intervals during play, not an engine FPS or device compatibility guarantee."
+      },
+      "voidVerified": false,
+      "bossEvents": [
+        {
+          "name": "guardian",
+          "time": 136.46529055794693,
+          "x": 418.64661333272534,
+          "y": -11172.916670204451
+        },
+        {
+          "name": "enrage",
+          "time": 142.3686241955123,
+          "x": 306.1745413994803,
+          "y": -11467.44723342984
+        },
+        {
+          "name": "enrage",
+          "time": 155.7311232050321,
+          "x": 487.6841896123302,
+          "y": -11388.025883407576
+        },
+        {
+          "name": "core",
+          "time": 164.98557388728474,
+          "x": 555.1026991617065,
+          "y": -11501.670330160328
+        },
+        {
+          "name": "finish",
+          "time": 202.06531542519096,
+          "x": 369.45043606111057,
+          "y": 9.024505221063535
+        }
+      ]
+    },
+    {
+      "path": "belfry/hunt-route-1-burst.json",
+      "sha256": "e9927067872add683433904ba1bcdc87747020dbe3124d272f1b146b911be80f",
+      "style": "burst",
+      "state": {
+        "phase": 2,
+        "segment": 2,
+        "difficulty": 1,
+        "elapsed": 154.15874862812453,
+        "health": 5,
+        "maxHealth": 5,
+        "score": 9560,
+        "combo": 0,
+        "bestCombo": 6,
+        "kills": 37,
+        "energy": 100,
+        "echoes": 0,
+        "x": 179.9979840958056,
+        "y": -6.8638770745658455,
+        "vx": 372.3699585099574,
+        "vy": 730.5755361352395,
+        "hook": 0,
+        "target": 0,
+        "checkpoint": 14,
+        "bossHP": 0,
+        "returnTime": 34.16445758879185,
+        "riseY": -10500.92832368195,
+        "attempts": 1,
+        "deaths": 0,
+        "hookCount": 51,
+        "failReason": 0,
+        "fxCount": 0,
+        "cameraY": 54.1976709993697,
+        "dashCool": 0,
+        "invulnerable": -0.01665601134300232,
+        "bossState": 3,
+        "bossShield": 0,
+        "bossStage": 2,
+        "sealLeft": 1,
+        "sealRight": 1,
+        "gateOne": 0,
+        "gateTwo": 0,
+        "attackKind": 5,
+        "chainStep": 5,
+        "chargeTime": 0,
+        "threats": 0,
+        "practice": 0,
+        "attackTime": 0.1,
+        "attackAge": 0.1499940063804388,
+        "bindTime": 0,
+        "controlImmune": 0,
+        "controlGrace": 0,
+        "chainOwner": -1,
+        "chainTime": 0,
+        "attackSlots": 0,
+        "practiceKind": 5,
+        "basicCool": 0.13000599361956122,
+        "airAttacks": 1,
+        "bowCool": 0,
+        "bladeCool": 0,
+        "healCool": 0,
+        "ultimateCool": 0,
+        "bowCharge": 0,
+        "healTime": 0,
+        "ultimateTime": 0,
+        "embers": 2,
+        "emberHits": 0,
+        "aimX": 1,
+        "aimY": 0,
+        "bowTarget": -1,
+        "wordMode": 1,
+        "wordPending": 0,
+        "wordSerial": 65,
+        "bladeLink": -1,
+        "wordVisualRate": 0.9999999999999999,
+        "visualTime": 167.41606886492062,
+        "cityDistrict": 0,
+        "cityPrompt": -1,
+        "cityWind": 0,
+        "cityForge": 0,
+        "cityArchive": 0,
+        "cityMirror": 0,
+        "cityChoice": 0,
+        "cityLiftY": 0,
+        "cityDepth": 11540,
+        "bossMove": 2,
+        "bossMaxHP": 45,
+        "bossLocked": 1,
+        "bossChain": 0,
+        "bossWindup": 0.86,
+        "keeperEpoch": 5,
+        "expedition": {
+          "revision": 3,
+          "room": 0,
+          "prompt": -1,
+          "lampStep": 0,
+          "lampMoving": 0,
+          "lampX": 0,
+          "lampY": 0,
+          "cargoChoice": 0,
+          "mirrorChoice": 0,
+          "recordChoice": 0,
+          "trialHooks": 0,
+          "flags": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "done": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0,
+            1
+          ],
+          "sides": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "wordCoverage": {
+        "requests": 65,
+        "unobservedRequests": [],
+        "differentSeen": 30,
+        "differentCorrect": 30,
+        "effectiveCasts": 58,
+        "mainRouteEffectiveCasts": 58,
+        "distinctWordsWithMainRouteImpact": 28,
+        "byAttempt": [
+          {
+            "attempt": 1,
+            "mainRouteEffectiveCasts": 58,
+            "distinctWordsWithMainRouteImpact": 28
+          }
+        ],
+        "byRoom": [
+          {
+            "room": "折翼门廊",
+            "requests": 0,
+            "effectiveCasts": 0
+          },
+          {
+            "room": "桥头夹击",
+            "requests": 6,
+            "effectiveCasts": 5
+          },
+          {
+            "room": "空井逐影",
+            "requests": 3,
+            "effectiveCasts": 3
+          },
+          {
+            "room": "裂甲巡廊",
+            "requests": 6,
+            "effectiveCasts": 4
+          },
+          {
+            "room": "炉底猎群",
+            "requests": 3,
+            "effectiveCasts": 3
+          },
+          {
+            "room": "执刑者庭",
+            "requests": 6,
+            "effectiveCasts": 6
+          },
+          {
+            "room": "沉水伏猎",
+            "requests": 3,
+            "effectiveCasts": 3
+          },
+          {
+            "room": "断线书库",
+            "requests": 3,
+            "effectiveCasts": 3
+          },
+          {
+            "room": "封存猎场",
+            "requests": 6,
+            "effectiveCasts": 4
+          },
+          {
+            "room": "折光追廊",
+            "requests": 3,
+            "effectiveCasts": 3
+          },
+          {
+            "room": "双生猎场",
+            "requests": 4,
+            "effectiveCasts": 4
+          },
+          {
+            "room": "折翼审判",
+            "requests": 4,
+            "effectiveCasts": 3
+          },
+          {
+            "room": "最后的巡守",
+            "requests": 5,
+            "effectiveCasts": 5
+          },
+          {
+            "room": "心前围猎",
+            "requests": 5,
+            "effectiveCasts": 5
+          },
+          {
+            "room": "守心者室",
+            "requests": 7,
+            "effectiveCasts": 7
+          }
+        ],
+        "impacts": {
+          "arrowhit": 0,
+          "markbreak": 0,
+          "chainhit": 167,
+          "healcomplete": 0
+        },
+        "note": "Answers are automated. These are actual requests and distinct recorded words for this input policy, not natural human coverage or learning evidence. Effective casts are deduplicated by question ID; main-route impacts include downward patrols (which may be bypassed) and exclude healing and return-only enemies. Death/retry may still repeat an encounter. Raw impact events can include multiple hits per cast."
+      },
+      "renderBudget": {
+        "samples": 1679,
+        "peakClones": 183,
+        "missingViews": 0,
+        "note": "Production birth counters and allocated transient objects; camera fixtures are not used in this route."
+      },
+      "browserFrameCadence": {
+        "samples": 9822,
+        "medianMs": 16.66500000000815,
+        "p95Ms": 16.670000000012806,
+        "note": "Host browser rAF intervals during play, not an engine FPS or device compatibility guarantee."
+      },
+      "voidVerified": false,
+      "bossEvents": [
+        {
+          "name": "guardian",
+          "time": 96.1795232097059,
+          "x": 456.3743305364777,
+          "y": -11178.338237367709
+        },
+        {
+          "name": "enrage",
+          "time": 102.05970080055292,
+          "x": 410.82941895035987,
+          "y": -11540
+        },
+        {
+          "name": "enrage",
+          "time": 109.1441214869916,
+          "x": 382.77858914079934,
+          "y": -11522.042677854926
+        },
+        {
+          "name": "core",
+          "time": 119.9942910393327,
+          "x": 523.5936127847061,
+          "y": -11394.145628995815
+        },
+        {
+          "name": "finish",
+          "time": 154.15874862812453,
+          "x": 179.9979840958056,
+          "y": -6.8638770745658455
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "warden-break.png",
+      "sha256": "7398f256d9dacc9e6a540e81b9444f1469ac67749b5c3f6464931523cf28bb81"
+    },
+    {
+      "path": "weaver-link.png",
+      "sha256": "904b450fe906016c3855b5c1a431411aaae81183a08e7eea1b358b259c634a18"
+    },
+    {
+      "path": "hound-tell.png",
+      "sha256": "8391abde538252f43f235cff9d8f3fb92d7b20b982aaa08c88b34f33a931917b"
+    }
+  ],
+  "scope": "Local Chromium checks. Fixed arrangements isolate individual behaviors; routes use real keyboard input and automated correct answers. Not human playability, learning or cross-device evidence."
+}

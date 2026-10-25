@@ -5,5 +5,5 @@ onCloned data => {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
   if phase==1 {age+=dt; t:=clamp(age/duration,0,1); setSize 0.43+t*0.38; setGraphicEffect GhostEffect,t*t*100; setXYpos Hero.px+p[2]/90*18,Hero.py+34}
  }
- die
+ fxCount--; die
 }

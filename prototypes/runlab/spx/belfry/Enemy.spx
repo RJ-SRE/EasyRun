@@ -1,8 +1,12 @@
 onCloned data => {
- i:=data.(int); previous:=-1; blend:=0.0; lastAttempt:=-1; trailAt:=0.0
+ slot:=data.(int); previous:=-1; blend:=0.0; lastAttempt:=-1; trailAt:=0.0; view:=-1
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
-  if enemyHP[i]>0 {
+  i:=sceneEnemies[slot]; if i<0 {hide
+   continue
+  }
+  if view!=i {view=i; previous=-1; blend=0; lastAttempt=-1; trailAt=0}
+  if enemyHP[i]>0 && enemyType[i]!=6 && abs(enemyY[i]-cameraY)<700 {
    show; kind:=enemyType[i]; atlas:=kind; if kind==3 {atlas=1}; if kind>3 {atlas=kind-1}
    pose:=0; state:=enemyState[i]; t:=enemyClock[i]
    if state==0 && abs(enemyVX[i])>22 {pose=int(enemyStride[i]/16)%2}
@@ -13,7 +17,7 @@ onCloned data => {
    if state==5 {pose=1; if kind==5 {pose=2}}
    if enemyStun[i]>0 {pose=5}
    costume:=atlas*6+pose; size:=0.25; if kind==3 {size=0.34}
-   if (kind==1 || kind==3) && enemyStun[i]<=0 {
+   if kind==1 && enemyStun[i]<=0 {
     if state==3 && enemyMode[i]==0 && t>0.25 && t<0.60 {costume=30; if t>=0.37 {costume=31}}
     if enemyMode[i]==1 {
      if state==5 {costume=32}
@@ -24,9 +28,20 @@ onCloned data => {
    }
    if kind==2 && enemyMode[i]==1 && state==3 && enemyStun[i]<=0 {costume=38; if t>0.22 && t<0.62 {costume=39}; if t>0.78 {costume=16}}
    if kind==4 && enemyMode[i]==1 && enemyStun[i]<=0 {if state==1 {costume=40}; if state==3 {costume=41; if t>0.42 {costume=40}}}
+   if kind==3 {
+    pose=0; if state==0 && abs(enemyVX[i])>25 {pose=1}; if state==1 {pose=2}; if state==2 {pose=5}; if state==3 {pose=3}; if state==5 || state==3 && (bossMove==2 || bossMove==5) {pose=4}
+    if state==6 {pose=2; if t>0.40 {pose=4}; if t>0.85 {pose=5}}
+    costume=42+bossStage*6+pose; size=0.38
+   }
+   if kind>=7 {
+    pose=0; if state==0 && abs(enemyVX[i])>20 {pose=1}; if state==1 {pose=2}; if state==3 {pose=3}; if state==2 {pose=4}; if enemyStun[i]>0 {pose=5}
+    costume=60+(kind-7)*6+pose; size=0.34; if kind==8 {size=0.43}; if kind==9 {size=0.30}
+    if enemyElite[i]>0 {size*=1.18}
+   }
+   if kind<7 && kind!=3 && enemyElite[i]>0 {size*=1.16}
    if lastAttempt!=attempts {previous=costume; lastAttempt=attempts; blend=0; trailAt=0}
    if costume!=previous {
-    if fxCount<70 {fxCount++; EnemyBlend.clone []float64{float64(i),float64(previous),enemyFacing[i]*90,size,float64(attempts)}}
+    if previous>=0 && takeFX(80) { EnemyBlend.clone []float64{float64(i),float64(previous),enemyFacing[i]*90,size,float64(attempts)}}
     previous=costume; blend=0.065; setCostume costume
    }
    setCostume costume; setHeading enemyFacing[i]*90
@@ -34,9 +49,9 @@ onCloned data => {
    setSize size*(1+breath); setXYpos enemyX[i],enemyY[i]-34
    // Stationary silhouettes mark actual past positions; they never hit or hide
    // the body. The same pool and attempt/pause lifetime rules bound the cost.
-   fast:=state==5 || (state==3 && enemyMode[i]==1 && (kind==1 || kind==3 || kind==2))
-   if fast && enemyStun[i]<=0 && abs(enemyVX[i])>130 && phase==1 && elapsed-trailAt>0.065 && fxCount<70 {
-    trailAt=elapsed; fxCount++; EnemyBlend.clone []float64{float64(i),float64(costume),enemyFacing[i]*90,size,float64(attempts),enemyX[i],enemyY[i]-34,0.18}
+   fast:=state==5 || (state==3 && enemyMode[i]==1 && (kind==1 || kind==2)) || (kind==3 && state==3 && (bossMove==1 || bossMove==4 || bossMove==5))
+   if fast && enemyStun[i]<=0 && abs(enemyVX[i])>130 && phase==1 && elapsed-trailAt>0.065 && takeFX(70) {
+    trailAt=elapsed; EnemyBlend.clone []float64{float64(i),float64(costume),enemyFacing[i]*90,size,float64(attempts),enemyX[i],enemyY[i]-34,0.18}
    }
    ghost:=0.0; if phase==1 || phase==5 {blend=clamp(blend-presentationDelta(dt),0,0.065)}; if blend>0 {ghost=blend/0.065*35}
    if kind==2 && state==0 {ghost=25}

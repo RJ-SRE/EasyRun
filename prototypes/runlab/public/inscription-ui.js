@@ -1,3 +1,4 @@
+import { expeditionSnapshot, expeditionHost } from "./expedition-progress.js";
 import { InscriptionMotion } from "./inscription-motion.js";
 import {
   InscriptionBook,
@@ -272,15 +273,17 @@ export class InscriptionUI {
   }
   configure(data) {
     const r = this.book.run,
-      s = r.snapshot;
+      s = r.snapshot ? expeditionSnapshot(r.snapshot) : null;
     const integer = (v, max) =>
       Number.isInteger(v) && v >= 0 && v <= max ? v : 0;
     const finite = (v) =>
       Number.isFinite(v) && v >= 0 ? Math.min(v, 1000000) : 0;
-    const checkpoint = s && r.started && !r.won ? integer(s.checkpoint, 4) : -1;
+    this.migratedExpedition = !!s?.migrated;
+    const checkpoint =
+      s && r.started && !r.won ? integer(s.checkpoint, 14) : -1;
     data["main.spx"] = data["main.spx"].replace(
       "// HOST_CONFIGURATION",
-      `wordMode=${this.book.settings.enabled ? 1 : 0}; hostCheckpoint=${checkpoint}; hostSegment=${integer(s?.segment, 2)}; hostElapsed=${finite(s?.elapsed)}; hostScore=${integer(s?.score, 10000000)}; difficulty=${integer(s?.difficulty, 1)}; hostCityWind=${integer(s?.cityWind, 1)}; hostCityForge=${integer(s?.cityForge, 1)}; hostCityArchive=${integer(s?.cityArchive, 1)}; hostCityMirror=${integer(s?.cityMirror, 1)}; hostCityChoice=${integer(s?.cityChoice, 2)}; hostCityDepth=${finite(s?.cityDepth)}`,
+      `wordMode=${this.book.settings.enabled ? 1 : 0}; hostCheckpoint=${checkpoint}; hostSegment=${integer(s?.segment, 2)}; hostElapsed=${finite(s?.elapsed)}; hostScore=${integer(s?.score, 10000000)}; difficulty=${integer(s?.difficulty, 1)}; hostCityWind=${integer(s?.cityWind, 1)}; hostCityForge=${integer(s?.cityForge, 1)}; hostCityArchive=${integer(s?.cityArchive, 1)}; hostCityMirror=${integer(s?.cityMirror, 1)}; hostCityChoice=${integer(s?.cityChoice, 2)}; hostCityDepth=${finite(s?.cityDepth)}; ${expeditionHost((s || expeditionSnapshot(null)).expedition)}`,
     );
   }
   attach(w) {
@@ -433,6 +436,10 @@ export class InscriptionUI {
     if (this.active?.sent && this.state?.phase === 5)
       this.audio.stateChanged({ ...this.state, phase: 1 });
     if (name === "start") this.startSeen = true;
+    if (name === "restored" && this.migratedExpedition) {
+      this.toast("旧旅程已迁移至对应区域入口；原词组与答题记录保留。");
+      this.migratedExpedition = false;
+    }
   }
   receive(s) {
     if (this.bootResume && s.phase === 0) {
@@ -442,7 +449,7 @@ export class InscriptionUI {
     }
     if (this.startSeen && s.phase === 1) {
       this.startSeen = false;
-      if (!s.practice && this.book.settings.enabled) {
+      if (!s.practice) {
         if (!this.resuming) this.book.restart();
         this.book.begin(s.attempts);
         this.resuming = false;
@@ -450,22 +457,12 @@ export class InscriptionUI {
         this.renderBook();
       }
     }
-    if (
-      s.phase === 2 &&
-      !s.practice &&
-      this.book.settings.enabled &&
-      !this.book.run.won
-    ) {
+    if (s.phase === 2 && !s.practice && !this.book.run.won) {
       this.book.victory();
       this.save();
     }
     this.state = s;
-    if (
-      [1, 3, 4].includes(s.phase) &&
-      !s.practice &&
-      this.book.settings.enabled &&
-      this.book.run.started
-    )
+    if ([1, 3, 4].includes(s.phase) && !s.practice && this.book.run.started)
       this.book.run.snapshot = {
         checkpoint: s.checkpoint,
         segment: s.segment,
@@ -478,6 +475,7 @@ export class InscriptionUI {
         cityMirror: s.cityMirror,
         cityChoice: s.cityChoice,
         cityDepth: s.cityDepth,
+        expedition: s.expedition ? structuredClone(s.expedition) : undefined,
       };
     if (
       this.active &&
@@ -512,7 +510,6 @@ export class InscriptionUI {
     for (const name of ["tier", "pace", "hint"])
       $(`#word-${name}`).value = this.book.settings[name];
     $("#word-continue").hidden = !(
-      this.book.settings.enabled &&
       this.book.run.started &&
       !this.book.run.won &&
       this.book.run.snapshot

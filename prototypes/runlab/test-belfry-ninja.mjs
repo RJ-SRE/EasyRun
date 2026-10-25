@@ -87,17 +87,21 @@ try {
   await wait(() => latestState.practice === 1 && latestState.phase === 1);
 
   await pick(0);
+  await wait(() => foes[0]?.state === 1 && foes[0]?.mode === 1);
+  const airOrigin = (await read()).foes[0];
   await wait(() => foes[0]?.state === 5);
   const air = await sampleWhile(0, 5);
-  assert.ok(Math.abs(air.at(-1).x - air[0].x) > 100);
-  assert.ok(Math.max(...air.map((f) => f.y)) - air[0].y > 35);
+  // At 70 ms telemetry intervals the first airborne sample may already be
+  // near the apex. Measure the arc from the observed pre-launch position.
+  assert.ok(Math.abs(air.at(-1).x - airOrigin.x) > 100);
+  assert.ok(Math.max(...air.map((f) => f.y)) - airOrigin.y > 35);
   assert.ok(air.every((f, i) => !i || Math.abs(f.x - air[i - 1].x) < 80));
   await wait(
     () => runEvents.filter((e) => e.name === "enemy_knife").length >= 3,
   );
   await save(
     "hover crosses a continuous aerial arc, then locks a second knife",
-    { samples: air },
+    { origin: airOrigin, samples: air },
   );
 
   await pick(1);
@@ -186,7 +190,11 @@ try {
     () => foes[6]?.state === 1 && foes[6]?.mode === 1 && foes[6]?.clock > 0.6,
   );
   const beforeJump = (await read()).state.health;
-  await tap("Space");
+  // Hold through anticipation to make a full-height jump. A 25 ms tap uses
+  // production short-hop gravity and can land before the final sweep frames.
+  await page.keyboard.down("Space");
+  await wait(() => foes[6]?.state === 3 && foes[6]?.clock >= 0.12);
+  await page.keyboard.up("Space");
   await wait(() => foes[6]?.state === 1 && foes[6]?.mode === 2);
   assert.equal((await read()).state.health, beforeJump);
   await save("jumping the low chain sweep avoids damage");

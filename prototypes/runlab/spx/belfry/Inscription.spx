@@ -39,6 +39,7 @@ func resolveWord(result int) {
  if success {event("wordok"); ring(Hero.px,Hero.py+30,0.7,1)} else {event("wordmiss")}
 }
 func applyInscription(kind int, success bool) {
+ if success && kind<=4 {Hero.skillWord=wordSerial}
  if kind==1 {if success {Hero.shootBow()} else {Hero.cancelAttack(); event("skillcancel")}}
  if kind==2 {if success {Hero.releaseBlade(Hero.chargeTime>=0.55)} else {Hero.cancelAttack(); event("skillcancel")}}
  if kind==3 {
@@ -54,4 +55,9 @@ func applyInscription(kind int, success bool) {
   i:=bindEnemy; releaseBind(); controlImmune=10
   if i>=0 {recovery:=0.25; if success {recovery=1.05}; enemyRecoverFor(i,recovery)}
  }
+}
+// Read-only attribution: one question may cause several hits, but it remains
+// one useful cast. IDs are captured by projectiles before another cast begins.
+func skillImpact(serial,kind,target int) {
+ if wordMode==1 && practice==0 && serial>0 {println "@skillImpact",attempts,serial,kind,target,elapsed}
 }

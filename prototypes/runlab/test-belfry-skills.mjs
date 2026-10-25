@@ -19,11 +19,22 @@ const report = {
 page.on("pageerror", (e) => report.errors.push(e.message));
 page.on("console", (m) => {
   if (m.type() === "error") report.errors.push(m.text());
+  if (m.text().includes("@arrow")) console.log(m.text());
 });
 // Inject deterministic scene arrangements into the test response only. These
 // handlers are never written to the project or exported game.
 await page.route("**/belfry.json", async (route) => {
   const data = await (await route.fetch()).json();
+  if (process.env.DEBUG_ARROWS)
+    data["Arrow.spx"] = data["Arrow.spx"].replace(
+      "// Closest enemy first",
+      'println "@arrowTrace",x,y,dx,dy,enemyX[0],enemyY[0],enemyHP[0],attempts,int(p[5]),blockedLine(ox,oy,enemyX[0],enemyY[0])\n   // Closest enemy first',
+    );
+  if (process.env.DEBUG_ARROWS)
+    data["Arrow.spx"] = data["Arrow.spx"].replace(
+      "seen:=make",
+      'println "@arrowBorn",p,attempts,phase\n seen:=make',
+    );
   data["main.spx"] = data["main.spx"].replace(
     "onKey KeyT",
     `\nfunc skillFixture() {
@@ -37,8 +48,8 @@ onKey KeyF9, => {skillFixture(); enemyHP[0]=0; Hero.resetHero(480,500); Hero.gro
 onKey KeyF10, => {skillFixture(); enemyHP[0]=0; Hero.invulnerable=0}
 onKey KeyF11, => {hurt(1)}
 onKey KeyF6, => {skillFixture(); Hero.resetHero(480,250); Hero.grounded=false; Hero.invulnerable=0; enemyBaseX[0]=480; enemyBaseY[0]=60; floorX[0]=80; floorW[0]=800; floorY[0]=120; floorKind[0]=0}
-// Opposite bob phases align these three foes at arrow height around full charge.
-onKey KeyF7, => {skillFixture(); enemyBaseY[0]=19; enemyBaseX[3]=560; enemyBaseY[3]=45; enemyHP[3]=40; enemyClock[3]=-100; enemyBaseX[6]=680; enemyBaseY[6]=19; enemyType[6]=0; enemyHP[6]=40; enemyClock[6]=-100}
+// Explicitly reset all enabled foes; public mixed rehearsal no longer spawns archers.
+onKey KeyF7, => {skillFixture(); enemyBaseY[0]=45; enemyBaseX[3]=560; enemyBaseY[3]=45; enemyHP[3]=40; enemyBaseX[6]=680; enemyBaseY[6]=45; enemyType[6]=0; enemyHP[6]=40; for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 {clearEnemyMotion(i); enemyState[i]=2; enemyRecover[i]=100; enemyClock[i]=0}}}
 onKey KeyT`,
   );
   await route.fulfill({ json: data });
@@ -348,6 +359,7 @@ try {
   await page.screenshot({ path: fileURLToPath(new URL("error.png", out)) });
 } finally {
   report.finalState = await state();
+  report.foes = await page.evaluate(() => foes);
   report.events = await events();
   report.sound = await page.evaluate(() => soundDiagnostics);
   await writeFile(new URL("skills.json", out), JSON.stringify(report, null, 2));

@@ -60,14 +60,16 @@ try {
   await p.goto(url);
   await ready();
   await open();
-  assert.equal(await p.locator("[data-achievement]").count(), 15);
+  assert.equal(await p.locator("[data-achievement]").count(), 18);
   await p.locator('[data-group="craft"]').click();
-  assert.equal(await p.locator("[data-achievement]").count(), 5);
+  assert.equal(await p.locator("[data-achievement]").count(), 7);
+  assert.equal(await p.locator('[data-achievement="plate-break"]').count(), 1);
+  assert.equal(await p.locator('[data-achievement="ward-cut"]').count(), 1);
   assert.equal(await p.locator("#achievement-equip").isDisabled(), true);
   await close();
   assert.equal((await read()).state.phase, 0);
   pass(
-    "menu ledger shows all 15 rules, group filtering and locked titles without starting a game",
+    "menu ledger shows all 18 rules, group filtering and locked titles without starting a game",
   );
   await p.locator("#play").click();
   await wait(() => latestState.phase === 1);

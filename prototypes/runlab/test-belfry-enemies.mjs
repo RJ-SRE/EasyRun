@@ -24,6 +24,25 @@ await p.addInitScript(() =>
     JSON.stringify({ voice: 1, chatter: "chatty", subtitles: "both" }),
   ),
 );
+// Only the final group is arranged in the response: the current public mixed
+// rehearsal contains the new guard/hound/support group, not a captor.
+await p.route("**/belfry.json", async (route) => {
+  const data = await (await route.fetch()).json();
+  data["main.spx"] = data["main.spx"].replace(
+    "onKey KeyT",
+    `
+onKey KeyF7, => {
+ practiceEncounter(4); Hero.resetHero(570,0); Hero.invulnerable=0
+ enemyClock[4]=2
+ enemyType[0]=0; enemyBaseX[0]=450; enemyBaseY[0]=65; enemyHP[0]=20; clearEnemyMotion(0); enemyClock[0]=-0.5
+ enemyType[8]=8; enemyBaseX[8]=700; enemyBaseY[8]=34; enemyHP[8]=20; clearEnemyMotion(8); enemyClock[8]=-0.5
+}
+onKey KeyT`,
+  );
+  await route.fulfill({ json: data });
+});
+report.fixture =
+  "Single enemies use public rehearsals; final captor/hover/hound group uses response-only initial positions. AI and damage are unchanged.";
 const state = () => p.evaluate(() => latestState),
   events = () => p.evaluate(() => runEvents);
 const tap = (key) => p.keyboard.press(key, { delay: 35 });
@@ -225,8 +244,9 @@ try {
     "restart during capture clears all restraint and stale enemy state",
   );
 
-  await pick(5);
-  await move(500);
+  await hold([]);
+  await tap("F7");
+  await p.waitForTimeout(100);
   const samples = [];
   for (let i = 0; i < 100; i++) {
     const s = await state();

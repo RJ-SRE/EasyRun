@@ -34,7 +34,7 @@ onKey KeyF8, => {bowFixture()}
 onKey KeyF9, => {bowFixture(); Hero.resetHero(450,0); enemyBaseX[0]=120; enemyBaseY[0]=120; bowSync()}
 onKey KeyF10, => {bowFixture(); enemyBaseX[0]=450; enemyBaseY[0]=45; enemyBaseX[3]=340; enemyBaseY[3]=195; enemyHP[3]=40; bowSync()}
 onKey KeyF6, => {bowFixture(); floorX[1]=80; floorW[1]=800; floorY[1]=120; floorKind[1]=0; enemyBaseX[3]=540; enemyBaseY[3]=45; enemyHP[3]=40; bowSync()}
-onKey KeyF7, => {bowFixture(); enemyType[0]=3; enemyBaseX[0]=450; enemyBaseY[0]=45; bossShield=2; enemyBaseX[3]=540; enemyBaseY[3]=45; enemyHP[3]=40; bowSync()}
+onKey KeyF7, => {bowFixture(); enemyType[0]=7; enemyBaseX[0]=450; enemyBaseY[0]=34; enemyBaseX[3]=540; enemyBaseY[3]=45; enemyHP[3]=40; bowSync(); enemyState[0]=0; enemyClock[0]=-100; enemyFacing[0]=-1}
 onKey KeyF5, => {bowFixture(); enemyBaseX[0]=950; enemyBaseY[0]=45; enemyBaseX[3]=340; enemyBaseY[3]=450; enemyHP[3]=40; bowSync()}
 onKey KeyF4, => {bowFixture(); enemyHP[0]=0; bowSync()}
 onKey KeyF3, => {enemyBaseX[3]=380; enemyBaseY[3]=45; bowSync()}
@@ -146,9 +146,13 @@ try {
   await save("an occluding platform excludes the otherwise nearby upper foe");
 
   await fixture("F7");
-  await draw(3);
-  assert.equal((await state()).bossShield, 2);
-  await save("a shielded boss is excluded from automatic targeting");
+  await draw(0);
+  await page.keyboard.up("u");
+  await wait(() => runEvents.some((e) => e.name === "armor"));
+  assert.equal(await page.evaluate(() => foes[0].hp), 40);
+  await save(
+    "auto-aim selects a plate guard but the actual frontal arrow respects its armor",
+  );
 
   await fixture("F5");
   await draw(-1);

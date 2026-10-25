@@ -1,0 +1,35 @@
+// spx 3.3 limits the whole project to 300 live clones, including hidden ones.
+// Render nearby data through fixed, reusable slots. Physics and progression
+// keep the entire authored map; moving a view never changes a collision body.
+func sceneWanted(kind,i int,ys []float64) bool {
+ if kind==0 && practice==1 {return i==0}
+ if abs(ys[i]-cameraY)>700 {return false}
+ if kind==2 {return enemyHP[i]>0 && enemyType[i]!=6}
+ if kind==3 || kind==4 {return practice==0}
+ if kind==5 {return practice==0 && segment==2 && recordChoice==2}
+ if kind==6 {return enemyType[i]==2 && (practice==0 || enemyBaseY[i]>-6000)}
+ return true
+}
+func fillScene(slots []int,kind int,ys []float64) {
+ for s:=0;s<len(slots);s++ {i:=slots[s]; if i>=0 && !sceneWanted(kind,i,ys) {slots[s]=-1}}
+ for i:=0;i<len(ys);i++ {
+  if !sceneWanted(kind,i,ys) {
+   continue
+  }
+  found:=false; free:=-1
+  for s:=0;s<len(slots);s++ {if slots[s]==i {found=true}; if slots[s]<0 && free<0 {free=s}}
+  if !found {if free>=0 {slots[free]=i} else {sceneMissing++}}
+ }
+}
+func updateScene() {
+ sceneMissing=0
+ fillScene(sceneFloors,0,floorY); fillScene(sceneAnchors,1,anchorY)
+ fillScene(sceneEnemies,2,enemyY); fillScene(sceneNiches,6,enemyBaseY)
+ // Retired device and guide arrays never allocate views in the hunt route.
+}
+// Decorative effects yield first. The remaining 60 engine slots are reserved
+// for live arrows/bolts, so visual bursts cannot eat a released attack.
+func takeFX(limit int) bool {
+ if fxCount>=limit || sceneClones+fxCount+projectileCount>=240 {return false}
+ fxCount++; return true
+}

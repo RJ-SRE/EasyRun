@@ -1,14 +1,14 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
+import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
-import {
-  platforms,
-  anchors,
-  enemies,
-  echoes,
-  checkpoints,
-} from "./belfry-level.mjs";
+import { buildHuntLayout } from "./belfry-hunt.mjs";
+import { huntInit } from "./hunt-init.mjs";
+import { sceneInit, SCENE_SPRITES } from "./belfry-scene.mjs";
+const layout = buildHuntLayout();
+const { platforms, anchors, echoes, checkpoints } = layout;
+const enemies = layout.enemies.map((e) => [e.x, e.y, e.kind, +e.returnOnly]);
 const root = new URL("./", import.meta.url),
   files = {},
   zorder = [];
@@ -52,7 +52,9 @@ function sprite(name, images, config = {}, source = "") {
     costumeIndex: 0,
     ...config,
   });
-  files[name + ".spx"] = source;
+  files[name + ".spx"] = SCENE_SPRITES.has(name)
+    ? source.replace("onCloned data => {", "onCloned data => {\n sceneBorn++\n")
+    : source;
   zorder.push(name);
 }
 await mkdir(new URL("public/art/", root), { recursive: true });
@@ -347,6 +349,17 @@ try {
     true,
     true,
   );
+  for (const name of ["warden", "hound", "weaver"])
+    assassinFrames[name] = await importAtlas(`art/belfry/hunt-${name}-source.png`,3,2,384,330,true,true);
+  assassinFrames.keeper = await importAtlas(
+    "art/belfry/keeper-v2-source.png",
+    6,
+    3,
+    384,
+    330,
+    true,
+    true,
+  );
 } finally {
   await browser.close();
 }
@@ -380,7 +393,7 @@ for (const name of ["wind", "forge", "archive", "mirror", "heart"])
     new URL(`art/belfry/city/${name}.png`, root),
     new URL(`public/art/city/${name}.png`, root),
   );
-await addCityArt({ sprite, png, vector });
+await addCityArt({ sprite, png, vector, layout });
 // Depth grading remains subtle so silhouettes, brass anchors and warnings read.
 sprite(
   "Depth",
@@ -407,7 +420,7 @@ function clockArt(r = 210) {
 sprite(
   "DialCore",
   { dial: clockArt() },
-  { x: 480, y: -3460, rotationStyle: "normal" },
+  { x: 480, y: layout.keeperY + 96, rotationStyle: "normal" },
   "onStart => {for {waitNextFrame(); setHeading 90+visualTime*0.8; setGraphicEffect GhostEffect,76}}",
 );
 // Foreground buttresses frame the vertical play field without obscuring routes.
@@ -420,7 +433,7 @@ for (let side = 0; side < 2; side++) {
     "Buttress" + side,
     { wall: vector(70, 4000, c) },
     { x: side ? 912 : 48, y: -1760 },
-    "onStart => {setGraphicEffect GhostEffect,45; setGraphicEffect BrightnessEffect,-15}",
+    "onStart => {setGraphicEffect GhostEffect,45; setGraphicEffect BrightnessEffect,-15; for {waitNextFrame(); setYpos cameraY}}",
   );
 }
 // One texture shared by all ledges; clones scale the drawing, while collision
@@ -429,12 +442,27 @@ const ledge = await png("art/belfry/ledge.png", 1983);
 ledge.pivotY = 315;
 sprite(
   "Ledge",
-  { deck: ledge },
+  {
+    deck: ledge,
+    weight: {
+      ...vector(
+        240,
+        100,
+        '<defs><linearGradient id="w" x2="0" y2="1"><stop stop-color="#736953"/><stop offset=".22" stop-color="#30393a"/><stop offset="1" stop-color="#131f25"/></linearGradient></defs><path d="M0 10h240v16H0zM15 26h210l-14 53H29Z" fill="url(#w)" stroke="#a99670" stroke-width="2"/><path d="M31 34h178M37 46h166M41 59h158M55 27v48m43-48v48m43-48v48m43-48v48" stroke="#8b7859" opacity=".5"/><path d="M6 10V0m228 10V0M8 18h224" stroke="#d0ba89" stroke-width="3"/><circle cx="23" cy="19" r="3" fill="#d7be8a"/><circle cx="217" cy="19" r="3" fill="#d7be8a"/>',
+      ),
+      pivotY: 10,
+    },
+  },
   { visible: false, rotationStyle: "normal" },
   `onCloned data => {
- i:=data.(int); opening:=0.0; setSize floorW[i]/1983; show
+ slot:=data.(int); opening:=0.0; view:=-1
  for {
-  dt:=float64(waitNextFrame()); x:=floorX[i]+floorW[i]/2; y:=floorY[i]; heading:=90.0; ghost:=0.0
+  dt:=float64(waitNextFrame()); i:=sceneFloors[slot]
+  if i<0 {hide
+   continue
+  }
+  if view!=i {view=i; opening=0}
+  show; x:=floorX[i]+floorW[i]/2; y:=floorY[i]; heading:=90.0; ghost:=0.0
   if floorKind[i]==1 && segment==2 {y-=clamp(returnTime*180,0,700); heading+=clamp(returnTime*10,0,35); ghost=clamp(returnTime*20,0,100)}
   if floorKind[i]==2 || floorKind[i]==3 {
    guard:=2; if floorKind[i]==3 {guard=6}
@@ -443,38 +471,15 @@ sprite(
   }
   if !floorActive(i) && floorKind[i]>=4 {ghost=100}
   if floorKind[i]==4 {setGraphicEffect ColorEffect,18} else if floorKind[i]==5 {setGraphicEffect BrightnessEffect,18}
-  if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {setSize floorW[i]/1983}
+  setCostume 0
+  if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {
+   if floorKind[i]==23 || floorKind[i]==43 {setCostume 1; setSize floorW[i]/240} else {setSize floorW[i]/1983}
+  }
   setXYpos x,y; setHeading heading; setGraphicEffect GhostEffect,ghost
  }
 }`,
 );
-for (let i = 0; i < 4; i++) {
-  const [x, y] = checkpoints[i];
-  sprite(
-    "Sanctuary" + i,
-    {
-      beacon: vector(
-        130,
-        160,
-        '<defs><radialGradient id="g"><stop stop-color="#f0d89f" stop-opacity=".30"/><stop offset="1" stop-color="#deb16e" stop-opacity="0"/></radialGradient></defs><ellipse cx="65" cy="90" rx="65" ry="70" fill="url(#g)"/><path d="M47 158V78l18-19 18 19v80" fill="#151e24" stroke="#a29675" stroke-width="2"/><path d="M65 18v49M58 23h14M52 78h26M65 80v53" stroke="#f0cf89" stroke-width="2"/><circle cx="65" cy="49" r="7" fill="#f3d68b"/><path d="M40 159h50" stroke="#c5bd9e" stroke-width="3"/>',
-      ),
-    },
-    { x, y: y + 80 },
-    `onStart => {for {waitNextFrame(); if checkpoint>=${i} {setGraphicEffect BrightnessEffect,8+sin(visualTime*2)*4} else {setGraphicEffect BrightnessEffect,-25}}}`,
-  );
-}
-sprite(
-  "AbandonedPost",
-  {
-    post: vector(
-      100,
-      150,
-      '<path d="M15 147h70M30 140V75h40v65M24 75h52" fill="#171e23" stroke="#80745d" stroke-width="3"/><path d="M23 65V34Q50 2 77 34v31l-27 13Z" fill="#293034" stroke="#a28d65" stroke-width="2"/><path d="M30 43h40M39 53h22" stroke="#080f15" stroke-width="5"/><path d="M50 19V5M49 78l-9 35 23 19" stroke="#586560" stroke-width="2"/>',
-    ),
-  },
-  { x: 805, y: -2025 },
-  "onStart => {for {waitNextFrame(); if practice==1 {hide} else {show}}}",
-);
+// Checkpoints are automatic; no pedestal or abandoned console is drawn.
 const anchorBase =
   '<circle cx="28" cy="28" r="20" fill="#111d24" stroke="#af956b" stroke-width="3"/><circle cx="28" cy="28" r="12" fill="none" stroke="#e9d9aa" stroke-width="1.5"/><path d="M28 1v13m0 28v13M1 28h13m28 0h13" stroke="#7e725c" stroke-width="4"/><path d="M28 20l8 8-8 8-8-8z" fill="#c9f0db"/>';
 sprite(
@@ -500,30 +505,6 @@ sprite(
   await code("Anchor"),
 );
 sprite(
-  "SealCable",
-  {
-    wire: vector(
-      24,
-      6,
-      '<path d="M0 3h24" stroke="#e9a26f" stroke-width="3"/><path d="M0 2h24" stroke="#fff0c0" stroke-width=".8"/>',
-    ),
-  },
-  { visible: false, rotationStyle: "normal" },
-  "onCloned data => {i:=data.(int); side:=i/14; j:=i%14; for {waitNextFrame(); active:=segment==1 && bossShield>0; if side==0 && sealLeft || side==1 && sealRight {active=false}; if active {show; ax:=anchorX[14+side]; ay:=anchorY[14+side]; dx:=enemyX[10]-ax; dy:=enemyY[10]+60-ay; t:=(float64(j)+0.5)/14; setXYpos ax+dx*t,ay+dy*t; setHeading angle(dx,dy); setSize dist(dx,dy)/14/24+0.05} else {hide}}}",
-);
-sprite(
-  "BossWard",
-  {
-    ward: vector(
-      340,
-      340,
-      '<circle cx="170" cy="170" r="155" fill="#c7924c" fill-opacity=".04" stroke="#e9bd7e" stroke-opacity=".6" stroke-width="1.5"/><path d="M170 12l137 79v158l-137 79-137-79V91z" fill="none" stroke="#e7b273" stroke-opacity=".35"/><circle cx="170" cy="170" r="144" fill="none" stroke="#b9c0a4" stroke-opacity=".3" stroke-dasharray="3 13"/>',
-    ),
-  },
-  { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); if segment==1 && bossShield>0 {show; setXYpos enemyX[10],enemyY[10]; setHeading 90+visualTime*10} else {hide}}}",
-);
-sprite(
   "Niche",
   {
     stone: vector(
@@ -533,7 +514,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyType[i]==2 && enemyBaseY[i]>-6000 {show; setSize 0.82; setXYpos enemyBaseX[i],enemyBaseY[i]+15} else {hide}}}",
+  "onCloned data => {slot:=data.(int); for {waitNextFrame(); i:=sceneNiches[slot]; if i>=0 {show; setSize 0.82; setXYpos enemyBaseX[i],enemyBaseY[i]+15} else {hide}}}",
 );
 const enemyImages = {};
 for (const name of assassinKinds)
@@ -560,6 +541,16 @@ for (const [name, count] of [
       pivotX: 192,
       pivotY: 366,
     };
+for (let i = 0; i < 18; i++)
+  enemyImages[`keeper${i}`] = {
+    binary: Buffer.from(assassinFrames.keeper[i], "base64"),
+    w: 384,
+    h: 384,
+    pivotX: 192,
+    pivotY: 366,
+  };
+for (const name of ["warden", "hound", "weaver"])
+  for(let i=0;i<6;i++) enemyImages[`hunt-${name}-${i}`]={binary:Buffer.from(assassinFrames[name][i],"base64"),w:384,h:384,pivotX:192,pivotY:366};
 sprite(
   "EnemyBlend",
   enemyImages,
@@ -628,6 +619,7 @@ sprite(
   { visible: false, rotationStyle: "normal" },
   "onStart => {for {waitNextFrame(); if Hero.charging && (phase==1 || phase==5) {show; setXYpos Hero.px,Hero.py+30; setHeading 90+visualTime*120; setSize 0.45+Hero.chargeTime*0.4; setGraphicEffect BrightnessEffect,Hero.chargeTime*30} else {hide}}}",
 );
+addKeeperArt(sprite, vector, await code("KeeperLine"));
 sprite(
   "Echo",
   {
@@ -799,7 +791,7 @@ sprite(
     ),
   },
   { visible: false },
-  "onCloned data => {i:=data.(int); for {waitNextFrame(); if enemyMark[i]>0 && enemyHP[i]>0 {show; setXYpos enemyX[i],enemyY[i]+58; setSize 0.45; setGraphicEffect GhostEffect,15+sin(visualTime*7)*12} else {hide}}}",
+  "onCloned data => {slot:=data.(int); for {waitNextFrame(); i:=sceneEnemies[slot]; if i>=0 && enemyMark[i]>0 && enemyHP[i]>0 {show; setXYpos enemyX[i],enemyY[i]+58; setSize 0.45; setGraphicEffect GhostEffect,15+sin(visualTime*7)*12} else {hide}}}",
 );
 sprite(
   "Arrow",
@@ -1007,14 +999,21 @@ sprite(
   { visible: false },
   "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos 480,riseY-395} else {hide}}}",
 );
+// Device art intentionally omitted in the hunt edition.
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
-const initialization = `func initLevel() {
- cityNodeX=[]float64{315,230,720,770,230}; cityNodeY=[]float64{0,-1050,-2100,-2630,-3150}
+const initialization =
+  sceneInit(layout) +
+  huntInit(layout) +
+  `func initLevel() {
+ initExpeditionData()
+ keeperIndex=${enemies.findIndex((enemy) => enemy[2] === 3)}
+ cityNodeX=${floats([315, 230, 155, 160, 180])}; cityNodeY=${floats([0, layout.rooms[3].top - 620, layout.rooms[6].top - 620, layout.rooms[11].top - 370, layout.rooms[12].top - 630])}
  anchorX=${floats(anchors.map((a) => a[0]))}; anchorY=${floats(anchors.map((a) => a[1]))}
  floorX=${floats(platforms.map((a) => a[0]))}; floorW=${floats(platforms.map((a) => a[1]))}; floorY=${floats(platforms.map((a) => a[2]))}; floorKind=${ints(platforms.map((a) => a[3]))}
  enemyBaseX=${floats(enemies.map((a) => a[0]))}; enemyBaseY=${floats(enemies.map((a) => a[1]))}; enemyX=${floats(enemies.map((a) => a[0]))}; enemyY=${floats(enemies.map((a) => a[1]))}; enemyType=${ints(enemies.map((a) => a[2]))}
  enemyMark=${floats(enemies.map(() => 0))};
+ enemyTurn=${floats(enemies.map(() => 0))}; enemyArmor=${floats(enemies.map(() => 0))}; enemyPressure=${ints(enemies.map(() => 0))}; enemyEscape=${floats(enemies.map(() => 0))}; enemyWard=${ints(enemies.map(() => -1))}; enemyWardDelay=${floats(enemies.map(() => 0))};
  enemyFacing=${floats(enemies.map(() => -1))}; enemyStride=${floats(enemies.map(() => 0))}; enemyFloor=${ints(enemies.map(() => -1))}; enemyStep=${ints(enemies.map(() => 0))}; enemySpent=${ints(enemies.map(() => 0))}; enemyRecover=${floats(enemies.map(() => 0))}
  enemyFromX=${floats(enemies.map(() => 0))}; enemyFromY=${floats(enemies.map(() => 0))}; enemyMoveX=${floats(enemies.map(() => 0))}; enemyMoveY=${floats(enemies.map(() => 0))}; enemyMoveTime=${floats(enemies.map(() => 0))}; enemyMoveArc=${floats(enemies.map(() => 0))}
  enemyHP=${ints(enemies.map(() => 0))}; enemyState=${ints(enemies.map(() => 0))}; enemyClock=${floats(enemies.map(() => 0))}; enemyFlash=${floats(enemies.map(() => 0))}
@@ -1027,12 +1026,15 @@ files["main.spx"] = (await code("main")).replace(
   "func dist(",
   initialization +
     (await code("Assassins")) +
+    (await code("Keeper")) +
     (await code("Inscription")) +
-    (await code("City")) +
+    (await code("HuntCombat")) +
+    (await code("HuntExpedition")) +
+    (await code("Scene")) +
     "\nfunc dist(",
 );
 files["assets/index.json"] = JSON.stringify({
-  map: { width: 4000, height: 12000 },
+  map: { width: 4000, height: Math.max(12000, layout.depth * 2 + 3000) },
   run: { width: 960, height: 600 },
   maxFPS: 60,
   physics: false,
@@ -1048,6 +1050,14 @@ for (const [p, data] of Object.entries(files)) {
   );
 }
 await writeFile(new URL("public/belfry.json", root), JSON.stringify(files));
+await writeFile(
+  new URL("public/expedition-data.js", root),
+  "// Generated from belfry-hunt.mjs; rebuild to update.\nexport const EXPEDITION = " +
+    JSON.stringify(layout) +
+    ";\n",
+);
 console.log(
   `Built Belfry: ${Object.keys(files).length} files / ${zorder.length} sprites`,
 );
+
+await copyFile(new URL("public/belfry.html",root),new URL("public/index.html",root));

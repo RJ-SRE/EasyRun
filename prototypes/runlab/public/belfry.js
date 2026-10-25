@@ -1,5 +1,8 @@
+import { parseExpedition } from "./expedition-progress.js";
+import { expeditionHint, EXPEDITION } from "./belfry-expedition.js";
 import { BelfryAudio } from "./belfry-audio.js";
 import { CityUI, DISTRICTS, endingFor } from "./belfry-city.js";
+import { keeperStatus } from "./belfry-keeper.js";
 const $ = (s) => document.querySelector(s);
 const fields = [
   "phase",
@@ -82,8 +85,15 @@ const fields = [
   "cityChoice",
   "cityLiftY",
   "cityDepth",
+  "bossMove",
+  "bossMaxHP",
+  "bossLocked",
+  "bossChain",
+  "bossWindup",
+  "keeperEpoch",
 ];
 window.latestState = null;
+window.renderState = null;
 window.runtimeErrors = [];
 window.runEvents = [];
 let frame,
@@ -95,6 +105,9 @@ let frame,
   recordedAttempt = -1;
 let soundOn = true;
 window.foes = {};
+window.keeperLines = {};
+window.expeditionState = null;
+window.huntFoes = {};
 const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
@@ -310,13 +323,9 @@ function onEvent(name, t, x, y) {
     launchhit: "挑空 → J 空中追击 → E 接钩索",
     charged: "蓄力破甲 · 可将轻敌撞向其他敌人",
     collision: "借敌破敌",
-    practice: "排练场 · 1–5 单独练习刺客 / 6 组合遭遇；R 开始冒险",
-    seal: "钟锁断开 · 两侧吊环牵制着守心者",
-    exposed: "守心者失去钟锁 · 现在进攻",
-    sealed: "钟锁保护中 · 钩住两侧悬环，拉断钟锁",
-    enrage: "守心者重新封锁 · 再次拉断两侧钟锁",
-    gate: "钟锁已解 · 通往更深处",
-    hook: "牵引 · 松开 E 甩出",
+    practice: "排练场 · 1–5 刺客 / 6 组合 / 7 裂甲 / 8 猎兽 / 9 缝魂；R 开始冒险",
+    enrage: "守心者正在变形 · 调整站位，留意新的追击轨迹",
+    hook: "牵引 · 松开 E 上甩 / 按住 S 松开 E 下甩",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
     marked: "裂印 · 满蓄断潮可引爆",
     markbreak: "裂印破碎 · 断潮追加伤害",
@@ -328,9 +337,14 @@ function onEvent(name, t, x, y) {
     healcomplete: "回息 · 生命 +1",
     embergain: "余烬 +1",
     chainstart: "连环剑刀 · W 上挑 / S 下压收势",
-    armor: "护刃格挡 · 重击破防，或等待收招",
+    armor: "护架挡住了攻击 · 绕背、重斩破架或先处理缝魂师",
+    guardbreak: "护架已碎 · 追击窗口",
+    wardbreak: "牵线已断 · 守卫失去掩护",
+    elitekill: "精英已倒下 · 猎场出口开放",
     echo: "失落回声 +500 · 余烬充满",
-    checkpoint: "休整灯已点亮 · 生命恢复",
+    checkpoint: "行路灯已点亮 · 进度已保存",
+    restored: "抵达休整灯 · 生命恢复",
+    huntersplit: "双卫掩护已断 · 抓住重新配合前的空档",
     parry: "弹幕已斩断",
 
     retry: "从休整灯重新出发",
@@ -367,22 +381,17 @@ function hint(s) {
       "壁弓 · 除了定点射击，还会蹬墙腾空放箭；J 可击落箭矢。",
       "缚索 · 跳过低位横扫，再防追锁；被牵引时 J 斩链 / E 抓锚。",
       "封脉 · 会绕到另一侧再锁定突进方向；跳开或打断，落空后反击。",
-      "组合遭遇 · 最多两人同时起手；先拆远程，再处理近身控制。",
+      "组合遭遇 · 先处理缝魂师，再拆开空地夹击。",
+      "裂甲卫 · 正面护架，L 重斩破架；也可跳过或绕背攻击。",
+      "棘背猎兽 · 低扑可跳过，跃袭先锁定落点；抓住滑行收势。",
+      "缝魂师 · 细线保护一名同伴；远射施法者，或拉开距离、隔断视线。",
     ][s.practiceKind];
+  if (s.expedition && s.segment !== 1) return expeditionHint(s);
   if (s.segment === 2) {
     if (s.y > -430) return "回到左上方的休整灯。最后一段，借锚点跃出井口。";
     return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
   }
-  if (s.segment === 1 && s.bossShield > 0)
-    return `钩住${!s.sealLeft && !s.sealRight ? "左右两侧" : !s.sealLeft ? "左侧" : "右侧"}红色吊环，抵达吊环时拉断钟锁。`;
-  if (s.segment === 1)
-    return s.bossState === 2
-      ? "守心者已露出破绽 · J 三连 / L 蓄力破甲 / S + J 坠星"
-      : "守心者护刃格挡 · 重击与回钩斩可破防，注意橙色预警。";
-  if (s.gateOne > 0 && s.y < -850 && s.y > -1300)
-    return "第一钟锁 · 击破右侧短锋，开启下方闸门。按住 E 回钩斩。";
-  if (s.gateTwo > 0 && s.y < -1950 && s.y > -2400)
-    return "第二钟锁 · 击破左侧缚索。回钩斩或 S + J 坠星可破甲。";
+  if (s.segment === 1) return keeperStatus(s).hint;
   if (s.hook >= 0) return "松开 E 甩出 → 空格二段跳 → 再次抓住锚点。";
   if (s.y > -230)
     return "D 向右跃入井中 · 按住 E 抓住高亮锚点；松开时借力起飞。";
@@ -393,6 +402,7 @@ function hint(s) {
   return "钟声来自更深处。S + 空格穿过脚下的平台。";
 }
 function receive(s) {
+  s.expedition = window.expeditionState;
   window.latestState = s;
   soundscape.stateChanged(s);
   const music = soundscape.music?.diagnostics();
@@ -489,10 +499,13 @@ function receive(s) {
     : s.segment === 2
       ? `归途 · ${DISTRICTS[s.cityDistrict].name}`
       : s.segment === 1
-        ? "守心机枢 · 解开钟锁"
-        : DISTRICTS[s.cityDistrict].name;
+        ? s.bossShield > 0
+          ? "守心机枢 · 抓住破绽"
+          : "守心机枢 · 守心者"
+        : EXPEDITION.rooms[s.expedition?.room]?.name ||
+          DISTRICTS[s.cityDistrict].name;
   $("#depth-marker").style.top =
-    `${Math.max(0, Math.min(100, (-s.y / 3590) * 100))}%`;
+    `${Math.max(0, Math.min(100, (-s.y / Math.abs(EXPEDITION.platforms[EXPEDITION.keeperFloor][2])) * 100))}%`;
   $("#hint").textContent = hint(s);
   $("#relics").textContent = `◈ ${s.echoes} / 3`;
   $("#combo").innerHTML =
@@ -505,19 +518,14 @@ function receive(s) {
           : "";
   $("#boss").hidden = !(s.segment === 1 && [1, 5].includes(s.phase));
   $("#boss-health").style.width =
-    `${(s.bossHP / (s.difficulty === 0 ? 16 : 20)) * 100}%`;
-  $("#boss-state").textContent =
-    s.bossShield > 0
-      ? `钟锁 ${s.bossShield} / 2 · 拉断两侧吊环`
-      : s.bossState === 2
-        ? "破绽 · 现在攻击"
-        : s.bossState === 1
-          ? "突进预警 · 准备闪避"
-          : "护刃 · 等待收招或重击破防";
+    `${Math.max(0, Math.min(100, (s.bossHP / s.bossMaxHP) * 100))}%`;
+  const keeper = keeperStatus(s);
+  $("#boss-name").textContent = keeper.name;
+  $("#boss-state").textContent = keeper.label;
   $("#status").textContent =
     s.segment === 2
       ? `钟城下沉中 · 距黑潮 ${Math.max(0, Math.round((s.y - s.riseY) / 10))} m`
-      : `${s.difficulty === 0 ? "旅人" : "无畏"} · 第 ${s.checkpoint + 1} 座休整灯 · ${s.kills} 次击破`;
+      : `${s.difficulty === 0 ? "旅人" : "无畏"} · 第 ${s.checkpoint + 1} 处行路灯 · ${s.kills} 次击破`;
   $("#pause").disabled = ![1, 4].includes(s.phase);
   $("#pause").textContent = s.phase === 4 ? "继续 Esc" : "暂停 Esc";
   document.querySelectorAll("[data-mode]").forEach((b) => {
@@ -536,7 +544,7 @@ function receive(s) {
     );
     $("#difficulty").hidden = false;
     $("#overlay-foot").textContent =
-      "五区下潜 · 机关改变归途 · 机枢前厅选择留灯或携心";
+      "八类守卫 · 三场精英猎战 · 三形态守心者 · 夺心上返";
   }
   if (s.phase === 1) {
     $("#overlay").hidden = true;
@@ -624,6 +632,7 @@ async function load() {
   fault = false;
   previousPhase = -1;
   window.latestState = null;
+  window.renderState = null;
   window.runtimeErrors = [];
   frame?.remove();
   frame = document.createElement("iframe");
@@ -644,6 +653,32 @@ async function load() {
           original = w.console.log.bind(w.console);
         w.console.log = (...args) => {
           const text = args.map(String).join(" ");
+          const renderMatch = text.match(/@render\s+(.+)/);
+          if (renderMatch) {
+            const keys = [
+              "sceneClones",
+              "sceneBorn",
+              "missing",
+              "effects",
+              "projectiles",
+              "arrowsRequested",
+              "arrowsBorn",
+              "boltsRequested",
+              "boltsBorn",
+            ];
+            const values = renderMatch[1].trim().split(/\s+/).map(Number);
+            if (values.length === keys.length && values.every(Number.isFinite))
+              window.renderState = Object.fromEntries(
+                keys.map((key, i) => [key, values[i]]),
+              );
+          }
+          const huntMatch=text.match(/@hunt\s+(.+)/);
+          if(huntMatch){const [id,armor,ward,pressure,elite]=huntMatch[1].trim().split(/\s+/).map(Number);window.huntFoes[id]={id,armor,ward,pressure,elite};}
+          const expeditionMatch = text.match(/@expedition\s+(.+)/);
+          if (expeditionMatch)
+            window.expeditionState = parseExpedition(
+              expeditionMatch[1].trim().split(/\s+/).map(Number),
+            );
           let m = text.match(/@state\s+(.+)/);
           if (m) {
             const a = m[1].trim().split(/\s+/).map(Number);
@@ -712,7 +747,37 @@ async function load() {
               time: Number(m[4]),
             });
           }
-          if (!text.includes("@state") && !text.includes("@foe"))
+          m = text.match(/@keeperLine\s+(.+)/);
+          if (m) {
+            const values = m[1].trim().split(/\s+/).map(Number);
+            const keys = [
+              "id",
+              "ax",
+              "ay",
+              "bx",
+              "by",
+              "age",
+              "delay",
+              "life",
+              "width",
+              "style",
+            ];
+            if (
+              values.length === keys.length &&
+              values.every(Number.isFinite)
+            ) {
+              const line = Object.fromEntries(
+                keys.map((k, i) => [k, values[i]]),
+              );
+              window.keeperLines[line.id] = line;
+            }
+          }
+          if (
+            !text.includes("@state") &&
+            !text.includes("@render") &&
+            !text.includes("@foe") &&
+            !text.includes("@keeperLine")
+          )
             original(...args);
         };
         inscription.attach(w);

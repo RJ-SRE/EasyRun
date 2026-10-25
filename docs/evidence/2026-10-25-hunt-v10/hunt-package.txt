@@ -1,0 +1,4 @@
+Packaged belfry.xbp: 45,714,837 bytes
+Packaged rupture.xbp: 9,898,833 bytes
+Packaged velocity.xbp: 17,765 bytes
+Packaged cinema.xbp: 13,896 bytes

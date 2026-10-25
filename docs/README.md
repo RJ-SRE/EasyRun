@@ -1,5 +1,9 @@
 # 文档总目录
 
+> 2026-10-25 更新：当前玩法为 [v0.10 猎战重构](HUNT_V10.md)。旧机关、护送、设施支线和外置钟锁已退出当前构建。下方原日期记录保留，不作为 v0.10 验收。
+
+> 开发分支新增入口：[十五房远征实现](EXPEDITION_V09.md)、[三形态守心者](KEEPER_V09.md)、[开发验收账本](planning/thirty-word-expedition/IMPLEMENTATION.md)。本页下方功能表保留 v0.8.1 发布基线；开发分支已接入十五房、五支线、十八项成就与纯动作续档，仍待完整验收。
+
 整理日期：2026-10-25（Asia/Shanghai）。当前产品是倒悬钟城 v0.8.1 五区与每次技能刻印，保留铭文远征与钟城铭录；最新交付分支为 `main`，已包含 `feat/inscription-v1` 的完整集成。新增内容与未完成项见 [城市实现](CITY_V08.md)。
 
 本目录把正在实施的规则、历史记录和未实装提案分开。产品行为以 [PRD](PRD.md) 为当前需求入口，精确技术契约见对应实现文档；验证结论必须对应报告日期和源码，不能因为文档名称写着“完整”就推断所有平台均已验收。
@@ -24,6 +28,8 @@
 | [INSCRIPTION_V07.md](INSCRIPTION_V07.md)   | 六类触发、词汇事务、冻结、取消 / 续档的具体规则是什么？           |
 | [ACHIEVEMENTS_V07.md](ACHIEVEMENTS_V07.md) | 15 项成就如何判定、去重、展示、佩戴和保存？                       |
 | [SCENE_MUSIC.md](SCENE_MUSIC.md) | 三首背景音乐如何选曲、循环、暂停、音量和维护？ |
+| [SCENE_BUDGET.md](SCENE_BUDGET.md) | 十五房如何控制克隆数量、保留攻击对象并验证实际生成？ |
+| [ENCOUNTERS_V09.md](ENCOUNTERS_V09.md) | 联动配重、双方掩体、镜猎协作与区域补给怎样改变玩法？ |
 | [WORD_BANK.md](WORD_BANK.md)               | 82 词来源、内容版本、抽样范围、义项和许可如何追溯？               |
 | [TESTING.md](TESTING.md)                   | 哪次验证覆盖了什么？哪些报告使用真实路线或测试场景？              |
 | [ROADMAP.md](ROADMAP.md)                   | 下一步先做什么，以什么证据决定是否扩展？                          |

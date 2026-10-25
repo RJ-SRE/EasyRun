@@ -26,7 +26,15 @@ export default tseslint.config(
     files: [
       "prototypes/runlab/build-belfry.mjs",
       "prototypes/runlab/belfry-level.mjs",
+      "prototypes/runlab/belfry-hunt.mjs",
+      "prototypes/runlab/hunt-init.mjs",
+      "prototypes/runlab/test-hunt-data.mjs",
       "prototypes/runlab/belfry-city-art.mjs",
+      "prototypes/runlab/belfry-keeper-art.mjs",
+      "prototypes/runlab/belfry-expedition*.mjs",
+      "prototypes/runlab/belfry-scene.mjs",
+      "prototypes/runlab/expedition-init.mjs",
+      "prototypes/runlab/test-expedition*.mjs",
       "prototypes/runlab/test-belfry*.mjs",
     ],
     languageOptions: {
@@ -48,6 +56,9 @@ export default tseslint.config(
         fetch: "readonly",
         AudioContext: "readonly",
         foes: "readonly",
+        huntFoes: "readonly",
+        renderState: "readonly",
+        keeperLines: "readonly",
         inscriptionDiagnostics: "readonly",
         sessionStorage: "readonly",
         Storage: "readonly",
@@ -60,9 +71,11 @@ export default tseslint.config(
       "prototypes/runlab/public/belfry*.js",
       "prototypes/runlab/public/inscription*.js",
       "prototypes/runlab/public/cet4-words.js",
+      "prototypes/runlab/public/expedition*.js",
     ],
     languageOptions: {
       globals: {
+        structuredClone: "readonly",
         window: "readonly",
         document: "readonly",
         localStorage: "readonly",
