@@ -1,0 +1,33 @@
+✔ 18 distinct achievements, cosmetic titles only, reload does not re-award (2.21675ms)
+✔ practice, duplicated telemetry and previous attempt cannot earn awards (0.239792ms)
+✔ air chain needs different targets within one uninterrupted flight (0.164542ms)
+✔ combat awards require actual hits, projectile cuts and one-health healing (0.194375ms)
+✔ echoes measure one adventure, while parries accumulate across adventures (0.091709ms)
+✔ no-damage completion needs a fresh core journey; hurt, death, retry or restore exclude it (0.159ms)
+✔ word awards count verified, distinct words; stale and duplicate settlement ignored (0.272459ms)
+✔ retired resonance saves preserve other achievements and words, without a dead title or goal (0.217917ms)
+✔ invalid saves recover without fabricated unlocks or equipped titles (0.167709ms)
+✔ combat awards replace retired quests without migrating false unlocks (0.185333ms)
+✔ hunt topology has no mechanism entities or quest prerequisites (1.020167ms)
+✔ all ground patrols and checkpoints stand on permanent geometry (1.092917ms)
+✔ return chain has reachable consecutive anchors without any repair (0.162417ms)
+✔ authored views plus movement fit fixed render pools (5.218417ms)
+✔ v2 device state migrates without replacing word pool or awarding new combat (0.220625ms)
+✔ v3 resume sanitizes completion and does not resurrect device flags (0.157209ms)
+✔ curated CET-4 membership, unique senses, explicit spelling and three distinct options (3.961958ms)
+✔ 1,000 seeds per difficulty: 30 unique eligible words, six short entries, deterministic (58.296625ms)
+✔ history quotas and preview never award completion (0.531708ms)
+✔ idempotent releases, spelling case and victory confirmation (0.349625ms)
+✔ unseen priority, spaced retry, no blocking completion requirement (0.204625ms)
+✔ all 30 entries appear, then review never inflates progress (0.566375ms)
+✔ reload keeps pool, pending options, progress and history; restart preserves the group only (0.322625ms)
+✔ invalid save recovers and timing settings are independent (0.175125ms)
+✔ a fast all-wrong pass rotates old words instead of repeating the same failure (0.906792ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 126.805667
