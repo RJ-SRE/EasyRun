@@ -55,6 +55,13 @@ async function charge() {
   await p.keyboard.up("u");
   await wait(() => inscriptionDiagnostics.active && latestState.phase === 5);
 }
+async function answer() {
+  const { q } = (await read()).word.active;
+  const word = BANK.get(q.wordId);
+  if (q.type === "spell") await p.keyboard.type(word.word, { delay: 25 });
+  else await p.keyboard.press(String(q.options.indexOf(word.meaning) + 1));
+  await wait(() => latestState.phase === 1 && !inscriptionDiagnostics.active);
+}
 try {
   await p.goto(process.env.RUNLAB_URL || "http://127.0.0.1:4177/");
   await wait(
@@ -149,38 +156,35 @@ try {
     "",
   );
   assert.equal((await read()).audio.focusActive, false);
-  const flow = (await read()).state;
-  assert.equal(flow.wordFlowCharges, 2);
-  assert.ok(flow.wordFlowTime > 10 && flow.wordFlowTime <= 12);
-  await p.keyboard.press("Escape");
-  await wait(() => latestState.phase === 4);
-  const stoppedFlow = (await read()).state.wordFlowTime;
-  await p.waitForTimeout(220);
-  assert.equal((await read()).state.wordFlowTime, stoppedFlow);
-  await p.keyboard.press("Escape");
-  await wait(() => latestState.phase === 1);
+  const firstRelease = (await read()).state;
+  assert.equal(await p.locator("#word-flow").count(), 0);
+  assert.equal("wordFlowTime" in firstRelease, false);
+  assert.equal("wordFlowCharges" in firstRelease, false);
   await p.keyboard.down("l");
   await wait(() => latestState.chargeTime >= 0.6);
   await p.keyboard.up("l");
-  await wait(() => latestState.bladeCool > 0);
-  assert.equal((await read()).state.wordFlowCharges, 1);
-  assert.equal((await read()).state.wordSerial, flow.wordSerial);
+  await wait(() => latestState.phase === 5 && inscriptionDiagnostics.active);
+  assert.equal((await read()).state.wordPending, 2);
+  assert.equal((await read()).state.wordSerial, firstRelease.wordSerial + 1);
+  assert.equal((await read()).state.bladeCool, 0);
   assert.equal((await read()).word.count, 1);
+  await answer();
+  await wait(() => latestState.bladeCool > 0);
+  assert.equal((await read()).word.count, 2);
   pass(
-    "first resonance continuation releases a charged sword without a question or extra word credit; pause preserves its action-time budget",
+    "a successful arrow does not bypass the next charged sword challenge; only its own answer releases the blade",
   );
   await wait(() => latestState.bowCool === 0 && latestState.attackKind === 0);
-  await p.keyboard.down("u");
-  await wait(() => latestState.bowCharge >= 0.6);
-  await p.keyboard.up("u");
+  await charge();
+  assert.equal((await read()).state.wordPending, 1);
+  assert.equal((await read()).state.wordSerial, firstRelease.wordSerial + 2);
+  assert.equal((await read()).state.bowCool, 0);
+  assert.equal((await read()).word.count, 2);
+  await answer();
   await wait(() => latestState.bowCool > 0);
-  assert.equal((await read()).state.wordFlowCharges, 0);
-  assert.equal((await read()).state.wordSerial, flow.wordSerial);
-  assert.equal((await read()).word.count, 1);
-  assert.equal((await read()).word.active, null);
-  assert.equal(await p.locator("#word-flow").isVisible(), false);
+  assert.equal((await read()).word.count, 3);
   pass(
-    "second continuation obeys bow cooldown and consumes the last charge without repeat grading",
+    "the following full bow charge also requires its own answer and records exactly one new settlement",
   );
   await wait(() => latestState.bowCool === 0 && latestState.y === 0);
   await charge();
@@ -197,7 +201,6 @@ try {
   pass(
     "wrong meaning resumes the fallback attack promptly and leaves only passive feedback",
   );
-  assert.equal((await read()).state.wordFlowCharges, 0);
   await wait(() => latestState.bowCool === 0);
   await charge();
   await p.emulateMedia({ reducedMotion: "reduce" });
@@ -208,8 +211,6 @@ try {
   await wait(() => latestState.phase === 1 && !inscriptionDiagnostics.active);
   assert.equal((await read()).word.motion.mode, "idle");
   assert.equal((await read()).audio.focusActive, false);
-  assert.equal((await read()).state.wordFlowCharges, 0);
-  assert.equal((await read()).state.wordFlowTime, 0);
   assert.equal(await p.locator("#word-current").isVisible(), false);
   assert.equal(
     await p.locator("#stage").evaluate((el) => el.style.transform),
@@ -219,26 +220,18 @@ try {
     "reduced motion removes zoom and particles; restart clears motion, audio and old results",
   );
   await charge();
-  const renewal = (await read()).word.active;
-  const renewalWord = BANK.get(renewal.q.wordId);
-  if (renewal.q.type === "spell")
-    await p.keyboard.type(renewalWord.word, { delay: 25 });
-  else
-    await p.keyboard.press(
-      String(renewal.q.options.indexOf(renewalWord.meaning) + 1),
-    );
-  await wait(
-    () => latestState.phase === 1 && latestState.wordFlowCharges === 2,
-  );
-  const renewalCount = (await read()).word.count;
-  await wait(() => latestState.wordFlowTime === 0, 20000);
-  assert.equal((await read()).state.wordFlowCharges, 0);
-  assert.equal((await read()).word.count, renewalCount);
+  await answer();
+  const settled = await read();
+  await wait(() => latestState.bowCool === 0);
+  await p.waitForTimeout(500);
+  assert.equal((await read()).word.count, settled.word.count);
   assert.equal((await read()).word.active, null);
+  assert.equal((await read()).state.wordSerial, settled.state.wordSerial);
   await charge();
   assert.equal((await read()).state.phase, 5);
+  assert.equal((await read()).state.wordSerial, settled.state.wordSerial + 1);
   pass(
-    "unused resonance expires after twelve action seconds without auto-opening a question; the next deliberate full charge asks normally",
+    "after restart, success never auto-opens a question; the next deliberate full charge asks normally",
   );
   const intervals = await p.evaluate(() =>
     window.motionFrames.slice(1).sort((a, b) => a - b),

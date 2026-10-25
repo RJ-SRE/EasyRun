@@ -6,7 +6,7 @@ func presentationDelta(dt float64) float64 {
  if phase==1 || phase==5 {return dt*wordVisualRate}
  return dt
 }
-func resetInscription() {wordVisualPaused=false; wordVisualRate=1; wordFocusAge=0; wordFlowTime=0; wordFlowCharges=0; wordWanted=0; wordPending=0; wordOwner=-1; wordSegment=segment}
+func resetInscription() {wordVisualPaused=false; wordVisualRate=1; wordFocusAge=0; wordWanted=0; wordPending=0; wordOwner=-1; wordSegment=segment}
 func requestWord(kind int) {
  if wordMode==0 || practice==1 || phase!=1 || wordPending>0 || wordWanted>0 {return}
  wordWanted=kind; wordOwner=-1; wordSegment=segment
@@ -22,11 +22,6 @@ func beginWord() {
  if kind==4 && (Hero.ultimateTime<=0 || segment!=wordSegment) {Hero.ultimateGated=true; return}
  if kind==5 && (chainOwner<0 || chainOwner!=wordOwner) {return}
  if kind==6 && (bindEnemy<0 || bindEnemy!=wordOwner) {return}
- // One successful answer opens two continuations. Real cooldowns, targeting,
- // resources and attack hitboxes still apply; never award another word here.
- if kind<=4 && wordFlowTime>0 && wordFlowCharges>0 {
-  wordFlowCharges--; applyInscription(kind,true); event("wordflow"); return
- }
  wordPending=kind; wordSerial++; phase=5; hitStop=0; wordFocusAge=0; wordVisualPaused=false
  Hero.attackBuffer=0; Hero.attackPressed=false; Hero.buffer=0
  println "@word",attempts,wordSerial,kind
@@ -35,7 +30,6 @@ func resolveWord(result int) {
  if phase!=5 || wordPending<=0 {return}
  kind:=wordPending; wordPending=0; wordWanted=0; phase=1
  success:=result==1
- if success {wordFlowTime=12; wordFlowCharges=2}
  // The host releases held keys before replying. Never replay typing intent.
  Hero.prevJump=false; Hero.prevHook=false; Hero.prevAttack=false; Hero.prevHeavy=false; Hero.prevBow=false; Hero.prevHeal=false; Hero.prevDash=false; Hero.prevBurst=false
  Hero.attackPressed=false; Hero.attackBuffer=0; Hero.bufferTime=0; Hero.buffer=0

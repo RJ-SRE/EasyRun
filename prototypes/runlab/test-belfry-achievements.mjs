@@ -60,14 +60,14 @@ try {
   await p.goto(url);
   await ready();
   await open();
-  assert.equal(await p.locator("[data-achievement]").count(), 16);
+  assert.equal(await p.locator("[data-achievement]").count(), 15);
   await p.locator('[data-group="craft"]').click();
-  assert.equal(await p.locator("[data-achievement]").count(), 6);
+  assert.equal(await p.locator("[data-achievement]").count(), 5);
   assert.equal(await p.locator("#achievement-equip").isDisabled(), true);
   await close();
   assert.equal((await read()).state.phase, 0);
   pass(
-    "menu ledger shows all 16 rules, group filtering and locked titles without starting a game",
+    "menu ledger shows all 15 rules, group filtering and locked titles without starting a game",
   );
   await p.locator("#play").click();
   await wait(() => latestState.phase === 1);
@@ -86,20 +86,6 @@ try {
   await p.screenshot({ path: fileURLToPath(new URL("unlock.png", out)) });
   pass(
     "correct real inscription unlocks once after resolution; no achievement obstruction during typing",
-  );
-
-  await p.keyboard.down("l");
-  await wait(() => latestState.chargeTime >= 0.6);
-  await p.keyboard.up("l");
-  await wait(() => latestState.bladeCool > 0);
-  await wait(() => latestState.bowCool === 0 && latestState.attackKind === 0);
-  await p.keyboard.down("u");
-  await wait(() => latestState.bowCharge >= 0.6);
-  await p.keyboard.up("u");
-  await wait(() => window.achievementDiagnostics.data.unlocked.resonance);
-  assert.equal((await read()).achievements.data.words.length, 1);
-  pass(
-    "two real resonance continuations award the combo without adding word credit",
   );
 
   await p.keyboard.down("e");
@@ -121,22 +107,14 @@ try {
   );
   await p.waitForTimeout(220);
   const still = (await read()).state;
-  for (const key of [
-    "attempts",
-    "elapsed",
-    "health",
-    "x",
-    "y",
-    "wordFlowTime",
-    "bowCool",
-  ])
+  for (const key of ["attempts", "elapsed", "health", "x", "y", "bowCool"])
     assert.equal(still[key], paused[key], key);
   assert.equal(await p.locator("#achievement-notice").isVisible(), false);
   await p.locator('[data-group="all"]').click();
   await p.locator('[data-achievement="first-sling"]').click();
   await p.locator("#achievement-equip").click();
   assert.equal(await p.locator(".vitals .micro").textContent(), "「借风起身」");
-  assert.equal((await read()).achievements.count, 3);
+  assert.equal((await read()).achievements.count, 2);
   const bounds = await p.locator("#achievement-ledger").boundingBox();
   assert.ok(
     bounds.width <= 682 &&
@@ -154,7 +132,7 @@ try {
   const downloaded = await download;
   const data = JSON.parse(await readFile(await downloaded.path(), "utf8"));
   assert.equal(data.equipped, "first-sling");
-  assert.equal(Object.keys(data.unlocked).length, 3);
+  assert.equal(Object.keys(data.unlocked).length, 2);
   pass("JSON export contains the actual local unlocks and equipped title");
   await p.setViewportSize({ width: 1280, height: 720 });
   await p.screenshot({ path: fileURLToPath(new URL("ledger-720.png", out)) });
@@ -187,7 +165,7 @@ try {
   assert.equal(await p.locator("#achievement-notice").isVisible(), false);
   await p.keyboard.type("create", { delay: 50 });
   await wait(() => latestState.phase === 1 && !inscriptionDiagnostics.active);
-  assert.equal((await read()).achievements.count, 3);
+  assert.equal((await read()).achievements.count, 2);
   await p.locator("#achievement-notice").waitFor({ state: "visible" });
   pass(
     "queued unlocks defer through the next word challenge and resume without duplicate rewards",
@@ -203,7 +181,7 @@ try {
   );
   await p.reload();
   await ready();
-  assert.equal((await read()).achievements.count, 3);
+  assert.equal((await read()).achievements.count, 2);
   assert.equal((await read()).achievements.data.equipped, "first-sling");
   assert.equal((await read()).achievements.queued, 0);
   assert.equal(await p.locator(".vitals .micro").textContent(), "「借风起身」");

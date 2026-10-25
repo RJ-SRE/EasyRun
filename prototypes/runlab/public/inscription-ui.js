@@ -107,13 +107,6 @@ export class InscriptionUI {
     hud.hidden = true;
     hud.onclick = () => this.openBook();
     $("#viewport").append(hud);
-    const flow = document.createElement("div");
-    flow.id = "word-flow";
-    flow.hidden = true;
-    flow.innerHTML = '<span></span><i aria-hidden="true"></i>';
-    flow.title =
-      "答对后 12 秒内，两次技能完整释放无需再次刻印；冷却与消耗照常。";
-    $("#viewport").append(flow);
     const journal = document.createElement("section");
     journal.id = "word-journal";
     journal.className = "guide";
@@ -467,20 +460,6 @@ export class InscriptionUI {
       this.save();
     }
     this.state = s;
-    const flow = $("#word-flow");
-    flow.hidden = !(
-      s.phase === 1 &&
-      s.wordFlowCharges > 0 &&
-      s.wordFlowTime > 0 &&
-      s.wordMode &&
-      !s.practice
-    );
-    if (!flow.hidden) {
-      flow.querySelector("span").textContent =
-        `余响 ${"◆".repeat(s.wordFlowCharges)} · ${Math.ceil(s.wordFlowTime)}s`;
-      flow.querySelector("i").style.transform =
-        `scaleX(${Math.min(1, s.wordFlowTime / 12)})`;
-    }
     if (
       [1, 3, 4].includes(s.phase) &&
       !s.practice &&

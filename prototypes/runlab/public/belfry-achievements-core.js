@@ -101,15 +101,6 @@ export const ACHIEVEMENTS = [
     icon: "M18 4q-1 9 5 10 4-3 3-6 9 14-1 22H11Q2 23 11 12q-1 9 7 11-4-11 0-19z",
   },
   {
-    id: "resonance",
-    group: "craft",
-    title: "刀锋余响",
-    goal: 2,
-    rule: "一次刻印答对后，在同一余响窗口内用完两次技能续招。",
-    lore: "一句已经说完，回声仍在出招。",
-    icon: "M4 24Q18 4 31 12M7 30Q21 10 34 18M6 17Q15 8 22 7",
-  },
-  {
     id: "first-word",
     group: "inscription",
     title: "落笔成锋",
@@ -236,7 +227,6 @@ export class AchievementBook {
         core: false,
         targets: new Set(),
         streak: 0,
-        resonance: 0,
       };
       return;
     }
@@ -253,7 +243,6 @@ export class AchievementBook {
         core: false,
         targets: new Set(),
         streak: 0,
-        resonance: 0,
       };
       return;
     }
@@ -283,7 +272,6 @@ export class AchievementBook {
     if (e.name === "markbreak") this.mark("mark");
     if (e.name === "collision") this.mark("collision");
     if (e.name === "healcomplete" && e.health === 2) this.mark("last-ember");
-    if (e.name === "wordflow") this.mark("resonance", ++r.resonance);
     if (e.name === "finish" && e.phase === 2) {
       this.mark("home");
       if (e.difficulty === 1) this.mark("fearless");
@@ -307,7 +295,6 @@ export class AchievementBook {
       r.streak = 0;
       return;
     }
-    r.resonance = 0;
     this.mark("first-word");
     this.mark("word-streak", ++r.streak);
     if (

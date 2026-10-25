@@ -5,8 +5,6 @@ var (
  wordVisualPaused bool
  wordFocusAge float64
  wordVisualRate float64
- wordFlowTime float64
- wordFlowCharges int
  visualTime float64
  wordMode int
  wordWanted int
@@ -122,7 +120,7 @@ func noise() float64 {fxSeed=(fxSeed*73+41)%997; return float64(fxSeed)/997}
 func event(name string) {
  println "@event",name,elapsed,Hero.px,Hero.py
  // Snapshot at the actual event, independent of the 70 ms HUD sample.
- if name=="start" || name=="practice" || name=="retry" || name=="restored" || name=="menu" || name=="hurt" || name=="fail" || name=="finish" || name=="sling" || name=="hookattach" || name=="touchdown" || name=="guardian" || name=="core" || name=="echo" || name=="parry" || name=="markbreak" || name=="collision" || name=="healcomplete" || name=="wordflow" {
+ if name=="start" || name=="practice" || name=="retry" || name=="restored" || name=="menu" || name=="hurt" || name=="fail" || name=="finish" || name=="sling" || name=="hookattach" || name=="touchdown" || name=="guardian" || name=="core" || name=="echo" || name=="parry" || name=="markbreak" || name=="collision" || name=="healcomplete" {
   deedSerial++
   println "@deed",deedSerial,name,attempts,phase,practice,health,difficulty,deaths,echoes,Hero.hook
  }
@@ -296,7 +294,6 @@ onStart => {
   if phase==1 {
    Hero.captureAttack()
    if hitStop>0 {hitStop-=dt} else {
-    wordFlowTime=math.Max(0,wordFlowTime-dt); if wordFlowTime<=0 {wordFlowCharges=0}
     Hero.update(dt); if phase==1 {updateWorld(dt)}; beginWord()
    }
   }
@@ -312,7 +309,7 @@ onStart => {
   if float64(timer)-lastState>0.07 {
    lastState=float64(timer)
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}
-   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[10],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordFlowTime,wordFlowCharges,wordVisualRate,visualTime
+   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[10],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordVisualRate,visualTime
    for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i],enemyFacing[i],enemyStep[i],enemyMark[i]}}
   }
  }

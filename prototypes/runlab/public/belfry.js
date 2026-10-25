@@ -70,8 +70,6 @@ const fields = [
   "wordPending",
   "wordSerial",
   "bladeLink",
-  "wordFlowTime",
-  "wordFlowCharges",
   "wordVisualRate",
   "visualTime",
 ];

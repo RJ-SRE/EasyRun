@@ -206,31 +206,6 @@
   letter-spacing: 1px;
   padding: 4px 8px;
 }
-#word-flow {
-  position: absolute;
-  left: 27px;
-  top: 130px;
-  z-index: 6;
-  width: 116px;
-  color: #d2c39a;
-  font:
-    10px/1.6 ui-monospace,
-    monospace;
-  letter-spacing: 1px;
-  pointer-events: none;
-  padding: 3px 8px;
-  background: linear-gradient(90deg, #142a2a90, transparent);
-  border-left: 1px solid #c5aa7280;
-}
-#word-flow i {
-  display: block;
-  height: 1px;
-  margin-top: 3px;
-  background: linear-gradient(90deg, #adc9b5, #c9a86a);
-  transform-origin: left;
-  transition: transform 80ms linear;
-}
-
 /* The field ledger opens only on request, with thirty visible tally marks. */
 #word-journal {
   z-index: 12;

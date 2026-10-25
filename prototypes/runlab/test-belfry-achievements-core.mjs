@@ -42,9 +42,9 @@ function adventure(book = new AchievementBook()) {
     },
   };
 }
-test("16 distinct achievements, cosmetic titles only, reload does not re-award", () => {
-  assert.equal(ACHIEVEMENTS.length, 16);
-  assert.equal(new Set(ACHIEVEMENTS.map((a) => a.id)).size, 16);
+test("15 distinct achievements, cosmetic titles only, reload does not re-award", () => {
+  assert.equal(ACHIEVEMENTS.length, 15);
+  assert.equal(new Set(ACHIEVEMENTS.map((a) => a.id)).size, 15);
   const { book, deed } = adventure();
   assert.equal(book.equip("first-sling"), false);
   deed("sling");
@@ -168,16 +168,34 @@ test("word awards count verified, distinct words; stale and duplicate settlement
   assert.ok(a.book.data.unlocked["ten-words"]);
   assert.ok(a.book.data.unlocked["thirty-words"]);
 });
-test("two resonance continuations must come after the same answer; no extra word credit", () => {
+test("retired resonance saves preserve other achievements and words, without a dead title or goal", () => {
   const a = adventure();
   a.word();
-  a.deed("wordflow");
-  a.word("world");
-  a.deed("wordflow");
-  assert.equal(a.book.data.unlocked.resonance, undefined);
-  a.deed("wordflow");
-  assert.ok(a.book.data.unlocked.resonance);
-  assert.deepEqual(a.book.data.words, ["create", "world"]);
+  a.deed("sling");
+  a.book.equip("first-sling");
+  const legacy = JSON.parse(a.book.serialize());
+  legacy.progress.resonance = 2;
+  legacy.unlocked.resonance = Date.now();
+  for (const equipped of ["first-sling", "resonance"]) {
+    const restored = new AchievementBook(
+      JSON.stringify({ ...legacy, equipped }),
+    );
+    assert.equal(restored.corrupt, false);
+    assert.equal(restored.count, 2);
+    assert.equal(restored.data.unlocked.resonance, undefined);
+    assert.equal(restored.data.progress.resonance, undefined);
+    assert.equal(
+      restored.data.equipped,
+      equipped === "resonance" ? "" : equipped,
+    );
+    assert.deepEqual(restored.data.words, ["create"]);
+    assert.deepEqual(restored.data.unlocked, a.book.data.unlocked);
+    assert.deepEqual(restored.pending, []);
+    const resumed = adventure(restored);
+    resumed.deed("wordflow");
+    resumed.deed("wordflow");
+    assert.equal(restored.count, 2);
+  }
 });
 test("invalid saves recover without fabricated unlocks or equipped titles", () => {
   for (const raw of [
