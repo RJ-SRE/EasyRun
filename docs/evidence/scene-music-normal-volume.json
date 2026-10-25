@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-25T04:34:10.883Z",
+  "browser": "156.0.8078.4",
+  "cases": [
+    "all three MP3 hashes match the manifest; HEAD, byte/suffix ranges and invalid-range responses are correct",
+    "a title-screen gesture starts Melancholy Of The Boot without starting a run",
+    "the real title recording loops past its end without another player or user gesture",
+    "starting the game switches to Cleaning out the Rooms and retains only one media element",
+    "pause freezes the music position and resume continues the same recording",
+    "music/effects preferences are independent and global mute pauses instead of restarting the song",
+    "a real word challenge keeps normal music gain and continuous playback; explicit challenge pause/resume still works",
+    "visibility loss pauses game and music; returning waits for the player to resume",
+    "the real gameplay recording loops past its end",
+    "victory selects Strange Sports and the real ending recording loops past its end",
+    "a new run starts the gameplay song from its beginning; death uses the same ending track",
+    "rapid scene changes settle on the latest selection without a delayed stale song",
+    "reload preserves volume preferences and the practice arena uses gameplay music",
+    "a missing song exposes retry, recovers after the asset returns and never prevents gameplay"
+  ],
+  "errors": [],
+  "fixture": "Real MP3 media, Web Audio routing and player inputs. Response-only F8/F9/F10 fixtures select win/death/title to test music transitions; visibility fixture dispatches the actual host handler. Does not claim a full-route playthrough or subjective audio review.",
+  "finalMusic": {
+    "stage": "gameplay",
+    "target": "gameplay",
+    "title": "Cleaning out the Rooms (Wandering Horn)",
+    "artist": "Sea Power",
+    "unlocked": true,
+    "blocked": false,
+    "failed": false,
+    "paused": false,
+    "loop": true,
+    "time": 0.011118,
+    "duration": 387.226122,
+    "readyState": 4,
+    "gain": 0.12467469274997711,
+    "activePlayers": 1
+  },
+  "baseCommit": "92b0162d86cc3432d7ea508185d165c4014ad11d",
+  "sourceSha256": {
+    "prototypes/runlab/public/belfry-music.js": "1c85c61e6d914df21796e477b06d48e4845b5a7b97fa0784f32a1a3066d35ade",
+    "prototypes/runlab/test-belfry-music.mjs": "7fb4bae3d0668ce6b57874f56ec2f735ee60f50157751e2ac285ccb08c734ff9"
+  }
+}

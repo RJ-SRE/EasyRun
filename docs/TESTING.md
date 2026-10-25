@@ -4,6 +4,8 @@
 
 ## 当前结果速查
 
+- 答题正常音量修订：[14 项音乐检查通过](evidence/scene-music-normal-volume.json)，真实题目期间音乐持续播放且保持正常增益，主动暂停 / 静音继续生效。下方初版的自动衰减规则已被此修订替代。
+
 - 背景音乐：[三阶段音乐验收](evidence/scene-music/verification.json)，14 项实际媒体检查、13 项战斗 / 音效回归与 9 项刻印衔接回归；82 个原动作音效解码通过。
 
 - 音频修订：[取消钟鼓验收](evidence/no-bells/verification.json)，音频解码、战斗音效与刻印连续性回归；四技能规则沿用上一修订。

@@ -200,9 +200,8 @@ try {
   const focusAt = (await music()).time;
   await page.waitForTimeout(450);
   assert.equal((await music()).stage, "gameplay");
-  assert.equal((await music()).duck, 0.28);
   assert.ok((await music()).time > focusAt);
-  assert.ok((await music()).gain < 0.4);
+  assert.ok((await music()).gain > 0.95);
   await page.keyboard.press("Escape");
   await remainsPaused();
   await page.locator("#word-resume").click();
@@ -213,10 +212,9 @@ try {
   else await page.keyboard.press(String(q.options.indexOf(word.meaning) + 1));
   await wait(() => latestState.phase === 1 && !inscriptionDiagnostics.active);
   await wait(() => soundDiagnostics.music.gain > 0.95);
-  assert.equal((await music()).duck, 1);
   assert.ok((await music()).time > focusAt);
   pass(
-    "a real word challenge ducks music without restarting it; challenge pause/resume and successful release restore playback and gain",
+    "a real word challenge keeps normal music gain and continuous playback; explicit challenge pause/resume still works",
   );
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", {

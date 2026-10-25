@@ -32,7 +32,6 @@ export class BelfryMusic {
     this.switchTimer = null;
     this.playPending = null;
     this.paused = true;
-    this.duck = 1;
     this.audio.addEventListener("error", () => {
       this.failedStage = this.stage;
       this.onError(
@@ -63,7 +62,6 @@ export class BelfryMusic {
       phase == null ||
       phase === 4 ||
       (phase === 5 && focusPaused);
-    this.duck = phase === 5 ? 0.28 : 1;
     if (stage && stage !== this.target) this.select(stage);
     this.apply();
   }
@@ -101,7 +99,7 @@ export class BelfryMusic {
     }
     if (this.switchTimer || !this.stage || this.failedStage === this.stage)
       return;
-    this.gain.gain.setTargetAtTime(this.duck, this.context.currentTime, 0.12);
+    this.gain.gain.setTargetAtTime(1, this.context.currentTime, 0.12);
     if (!this.audio.paused || this.playPending || this.blocked) return;
     const generation = this.generation;
     const pending = this.audio.play();
@@ -134,7 +132,6 @@ export class BelfryMusic {
       time: this.audio.currentTime,
       duration: Number.isFinite(this.audio.duration) ? this.audio.duration : 0,
       readyState: this.audio.readyState,
-      duck: this.duck,
       gain: this.gain.gain.value,
       activePlayers: this.audio.paused ? 0 : 1,
     };
