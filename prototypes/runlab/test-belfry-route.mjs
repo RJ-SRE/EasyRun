@@ -411,17 +411,18 @@ try {
         } else if (s.chargeTime > 0 && process.env.STYLE === "burst") {
           if (s.chargeTime < 0.58) keys.push("l");
         } else if (process.env.STYLE === "burst") {
-          // An efficient Q-first route tests the no-cooldown skill's real
-          // opportunity cost. Use ordinary attacks between commitments and
-          // keep navigation identical; do not add a fictitious energy fee.
+          // Prefer Q when ready and use other attacks during its real cooldown.
+          // Keep navigation and the production skill timings unchanged.
           if (s.ultimateTime <= 0 && s.attackTime <= 0) {
             if (
               near &&
+              s.bladeCool <= 0 &&
               ((fight.kind === 7 && hunts[fight.id]?.armor <= 0) ||
                 hunts[fight.id]?.ward >= 0)
             )
               keys.push("l");
-            else if (Math.abs(fight.x - s.x) < 235) keys.push("q");
+            else if (Math.abs(fight.x - s.x) < 235 && s.ultimateCool <= 0)
+              keys.push("q");
             else if (tick % 4 === 0) keys.push("j");
           }
         } else if (s.bowCharge > 0) {
@@ -431,11 +432,12 @@ try {
         } else if (s.attackTime <= 0 && s.ultimateTime <= 0) {
           if (
             near &&
+            s.bladeCool <= 0 &&
             (fight.mark > 0 || fight.kind === 7 || hunts[fight.id]?.ward >= 0)
           )
             keys.push("l");
           else if (near && tick % 5 === 0) keys.push("j");
-          else keys.push("u");
+          else if (s.bowCool <= 0) keys.push("u");
         }
         // Approach/retreat keys can leave the hero facing away from the foe.
         // Aim committed melee inputs at the actual target, using normal keys.

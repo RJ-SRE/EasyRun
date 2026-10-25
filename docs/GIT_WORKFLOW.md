@@ -2,6 +2,8 @@
 
 仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。更新：2026-10-25。
 
+v0.10.1 技能冷却修订位于 `feat/skill-cooldowns`，从 `main` 的 `c2fd02a` 派生。U / L / I 各 3 秒、Q 为 5 秒；本轮 80 项浏览器检查及 2 条铭文整关路线通过，证据见 [技能冷却验收](evidence/skill-cooldowns/verification.json)。本修订独立提交和推送，不把历史主分支合并记录当作本次已合入。
+
 当前 `main` 为 v0.10 猎战重构。`feat/hunt-combat-v10` 从集成工作树的 `5575f20` 派生，完成开发与验收后按用户要求合入主分支；保留既有提交、文档与证据，使用现有 Git 身份与 SSH。当前功能与验证入口为 [猎战说明](HUNT_V10.md)。
 
 历史 `feat/expedition-boss-v2` 从 `6825943` 开始三形态守心者、十五房与五支线开发，其提交随本次猎战版本保留。机关、护送与设施支线已经被敌人遭遇替代，旧 [开发清单](planning/thirty-word-expedition/IMPLEMENTATION.md) 仅作历史参考。
@@ -86,11 +88,11 @@ PR 描述写最终问题、行为变化、验证与未覆盖部分，链接对�
 
 [verify.yml](../.github/workflows/verify.yml) 的实际触发为：
 
-| 触发                           | 是否运行配置中的流程     |
-| ------------------------------ | ------------------------ |
-| push 到 main                   | 是                       |
-| pull_request                   | 是                       |
-| workflow_dispatch              | 可手动触发               |
+| 触发                            | 是否运行配置中的流程     |
+| ------------------------------- | ------------------------ |
+| push 到 main                    | 是                       |
+| pull_request                    | 是                       |
+| workflow_dispatch               | 可手动触发               |
 | 仅 push 到 feat/hunt-combat-v10 | 不会因这次 push 自动触发 |
 
 工作流执行锁定依赖安装、测试浏览器安装、完整 game 构建、game lint、默认回归与四个工程包导出，产物保留 14 天；未单独运行 passages 全套或 legacy 两原型。工作流配置存在不代表 CI 已通过；本次没有把本地报告说成远程结果。

@@ -189,8 +189,12 @@ func updateAttack(dt float64) {
  }
  if attackBuffer>0 && !charging && !bowCharging && healTime<=0 && ultimateTime<=0 && basicCool<=0 && (attackKind==0 || (attackKind!=7 && attackAge>=attackDuration-0.065)) {beginAttack(attackBuffer)}
 }
-// Skill cooldown telemetry remains zero for host/save compatibility. Action
-// windups, recovery and the basic attack cadence still use simulation time.
+// Cooldowns belong to simulation time, including control recovery. They freeze
+// with combat during pause, inscription and hit stop; cancelled windups cost none.
+func updateCooldowns(dt float64) {
+ bowCool=math.Max(0,bowCool-dt); bladeCool=math.Max(0,bladeCool-dt)
+ healCool=math.Max(0,healCool-dt); ultimateCool=math.Max(0,ultimateCool-dt)
+}
 func readAim() {
  aimX=0; aimY=0
  if keyPressed(KeyA)||keyPressed(KeyLeft) {aimX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {aimX+=1}
@@ -231,21 +235,21 @@ func aimBow() {
 }
 func shootBow() {
  full:=0.0; if bowCharge>=0.55 {full=1}
- bowRecoil=0.2; bodyVelocity=-25; bowCharging=false; bowCharge=0; attackTime=0.12; lastMove=11
+ bowCool=3; bowRecoil=0.2; bodyVelocity=-25; bowCharging=false; bowCharge=0; attackTime=0.12; lastMove=11
  projectileCount++; arrowMade++; Arrow.clone []float64{px+aimX*24,py+32+aimY*24,aimX,aimY,full,float64(attempts),float64(skillWord)}
  skillFX(px+aimX*30,py+32+aimY*30,angle(aimX,aimY),0,0.65+full*0.3)
  bowTarget=-1; vx-=aimX*45; event("bowshot"); if full>0 {event("bowfull")}
 }
-func releaseBlade(full bool) {charged=full; charging=false; chargeTime=0; beginAttack(7)}
+func releaseBlade(full bool) {bladeCool=3; charged=full; charging=false; chargeTime=0; beginAttack(7)}
 func nova() {
- if ultimateTime>0 || healTime>0 || attackKind==7 {return}
+ if ultimateCool>0 || ultimateTime>0 || healTime>0 || attackKind==7 {return}
  cancelAttack(); releaseHook(false); dashTime=0; ultimateTime=1.08; ultimateStep=0; ultimateGated=false; ultimateDir=0
  if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
  if wordMode==1 && practice==0 {requestWord(4); return}
  releaseUltimate()
 }
 func releaseUltimate() {
- ultimateGated=true; lastMove=9; invulnerable=math.Max(invulnerable,0.35); vx*=0.2; vy*=0.4
+ ultimateCool=5; ultimateGated=true; lastMove=9; invulnerable=math.Max(invulnerable,0.35); vx*=0.2; vy*=0.4
  skillFX(px,py+32,90,4,0.85); event("chainstart")
 }
 func updateSkills(dt float64) {
@@ -256,7 +260,7 @@ func updateSkills(dt float64) {
   if !grounded || moving {healTime=0; event("healbreak")} else {
    if wordMode==1 && practice==0 && !healGated && healTime-dt<=0.15 {healTime=0.15; requestWord(3); return}
    healTime=math.Max(0,healTime-dt); vx=0
-   if healTime<=0 {if health<maxHealth {health++; skillImpact(skillWord,3,-1)}; skillFX(px,py+30,90,2,0.9); burst(px,py+20,9,1,100); event("healcomplete")}
+   if healTime<=0 {healCool=3; if health<maxHealth {health++; skillImpact(skillWord,3,-1)}; skillFX(px,py+30,90,2,0.9); burst(px,py+20,9,1,100); event("healcomplete")}
   }
  }
  if ultimateTime>0 {
@@ -266,7 +270,7 @@ func updateSkills(dt float64) {
   threshold:=0.12+float64(ultimateStep)*0.17; if ultimateStep==4 {threshold=0.88}
   if ultimateStep<5 && age>=threshold {
    // Protection follows the actual blade strokes, not the whole commitment.
-   // Gaps and the final recovery remain punishable; there is no cooldown.
+   // Gaps and the final recovery remain punishable, even while cooling.
    invulnerable=math.Max(invulnerable,0.07)
    final:=ultimateStep==4; strikeX:=px; strikeY:=py+32; best:=260.0
    for i:=0;i<len(enemyHP);i++ {d:=dist(enemyX[i]-px,enemyY[i]-py-32); if enemyHP[i]>0 && d<best && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {best=d; strikeX=enemyX[i]; strikeY=enemyY[i]}}
@@ -286,6 +290,7 @@ func updateSkills(dt float64) {
 }
 func captureAttack() {held:=keyPressed(KeyJ); if held && !prevAttack {attackPressed=true}; prevAttack=held}
 func update(dt float64) {
+ updateCooldowns(dt)
  if controlImmune>0 {controlImmune=math.Max(0,controlImmune-dt)}
  if controlGrace>0 {controlGrace=math.Max(0,controlGrace-dt)}
  if bindTime>0 {
@@ -323,15 +328,15 @@ func update(dt float64) {
   } else {kind:=1; if keyPressed(KeyW)||keyPressed(KeyUp) {kind=4}; requestAttack(kind)}
  }
  attackPressed=false
- if heavy && !prevHeavy && canMoveCancel() && !bowCharging && healTime<=0 {cancelAttack(); charging=true; chargeTime=0; event("charge")}
- if bow && !prevBow && canMoveCancel() && !charging && healTime<=0 {cancelAttack(); bowCharging=true; bowCharge=0; event("bowdraw")}
+ if heavy && !prevHeavy && bladeCool<=0 && canMoveCancel() && !bowCharging && healTime<=0 {cancelAttack(); charging=true; chargeTime=0; event("charge")}
+ if bow && !prevBow && bowCool<=0 && canMoveCancel() && !charging && healTime<=0 {cancelAttack(); bowCharging=true; bowCharge=0; event("bowdraw")}
  if bowCharging {
   aimBow()
   bowCharge=math.Min(1,bowCharge+dt)
   if bowCharge>=0.55 && bowCharge-dt<0.55 {event("bowready"); skillFX(px+aimX*28,py+32+aimY*28,angle(aimX,aimY),0,0.55)}
   if !bow {if wordMode==1 && practice==0 {requestWord(1); return} else {shootBow()}}
  }
- if heal && !prevHeal && canMoveCancel() && !charging && !bowCharging && healTime<=0 {
+ if heal && !prevHeal && healCool<=0 && canMoveCancel() && !charging && !bowCharging && healTime<=0 {
   if !grounded {event("healground")} else if health>=maxHealth {event("healfull")} else if embers<=0 {event("healempty")} else {cancelAttack(); releaseHook(false); embers--; healTime=0.8; healGated=false; vx=0; event("healstart")}
  }
  prevBow=bow; prevHeal=heal
