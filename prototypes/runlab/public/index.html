@@ -23,6 +23,7 @@
       ><span class="edition">回声之城 <i>／</i> FIVE DISTRICTS</span>
       <nav>
         <button id="sound" aria-pressed="true">声音 开</button
+        ><button id="music-start">播放音乐</button
         ><button id="audio-settings">声音设置</button
         ><button id="help">操作指南</button
         ><button id="pause" disabled>暂停 Esc</button
@@ -169,7 +170,7 @@
           <div id="settings-panel" class="guide settings-panel" hidden>
             <div>
               <span class="eyebrow">SOUNDS OF THE HOLLOW</span>
-              <h2>听见刀锋与钟声。</h2>
+              <h2>听见刀锋与远方。</h2>
               <label
                 >动作音效<input
                   id="setting-sfx"
@@ -179,14 +180,17 @@
                   step="0.05"
               /></label>
               <label
-                >环境氛围<input
+                >背景音乐<input
                   id="setting-music"
                   type="range"
                   min="0"
                   max="1"
                   step="0.05"
               /></label>
-              <p>动作音效与环境氛围可独立调整。</p>
+              <p>动作音效与背景音乐可独立调整；每个阶段单曲循环。</p>
+              <p id="music-track" role="status">
+                点击「播放音乐」启用背景音乐。
+              </p>
               <button id="close-settings" class="primary">
                 回到钟城 <span>↗</span>
               </button>

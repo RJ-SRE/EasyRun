@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-25T04:25:04.875Z",
+  "browser": "156.0.8078.4",
+  "cases": [
+    "all three MP3 hashes match the manifest; HEAD, byte/suffix ranges and invalid-range responses are correct",
+    "a title-screen gesture starts Melancholy Of The Boot without starting a run",
+    "the real title recording loops past its end without another player or user gesture",
+    "starting the game switches to Cleaning out the Rooms and retains only one media element",
+    "pause freezes the music position and resume continues the same recording",
+    "music/effects preferences are independent and global mute pauses instead of restarting the song",
+    "a real word challenge ducks music without restarting it; challenge pause/resume and successful release restore playback and gain",
+    "visibility loss pauses game and music; returning waits for the player to resume",
+    "the real gameplay recording loops past its end",
+    "victory selects Strange Sports and the real ending recording loops past its end",
+    "a new run starts the gameplay song from its beginning; death uses the same ending track",
+    "rapid scene changes settle on the latest selection without a delayed stale song",
+    "reload preserves volume preferences and the practice arena uses gameplay music",
+    "a missing song exposes retry, recovers after the asset returns and never prevents gameplay"
+  ],
+  "errors": [],
+  "fixture": "Real MP3 media, Web Audio routing and player inputs. Response-only F8/F9/F10 fixtures select win/death/title to test music transitions; visibility fixture dispatches the actual host handler. Does not claim a full-route playthrough or subjective audio review.",
+  "finalMusic": {
+    "stage": "gameplay",
+    "target": "gameplay",
+    "title": "Cleaning out the Rooms (Wandering Horn)",
+    "artist": "Sea Power",
+    "unlocked": true,
+    "blocked": false,
+    "failed": false,
+    "paused": false,
+    "loop": true,
+    "time": 0.006542,
+    "duration": 387.226122,
+    "readyState": 4,
+    "duck": 1,
+    "gain": 0.16258080303668976,
+    "activePlayers": 1
+  }
+}

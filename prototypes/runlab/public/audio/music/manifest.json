@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "tracks": [
+    {
+      "stage": "menu",
+      "artist": "Sea Power",
+      "title": "Melancholy Of The Boot",
+      "file": "/audio/music/menu.mp3",
+      "sourceFilename": "Sea Power - Melancholy Of The Boot.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 262.099592,
+      "bytes": 10609826,
+      "sha256": "5322690efba8f3581b0879e3bcb65d4f3d4b4c5c85025b14191bd676ba04bddb"
+    },
+    {
+      "stage": "gameplay",
+      "artist": "Sea Power",
+      "title": "Cleaning out the Rooms (Wandering Horn)",
+      "file": "/audio/music/gameplay.mp3",
+      "sourceFilename": "Sea Power - Cleaning out the Rooms (Wandering Horn).mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 387.226122,
+      "bytes": 15491858,
+      "sha256": "c5ca1def4570840e52abb7178bc9e2b9085495f908ec9b5d83d34c81fb856a83"
+    },
+    {
+      "stage": "ending",
+      "artist": "Sea Power",
+      "title": "Strange Sports",
+      "file": "/audio/music/ending.mp3",
+      "sourceFilename": "Sea Power - Strange Sports.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 195.40898,
+      "bytes": 7942185,
+      "sha256": "8281281fcf5bd8d8adb9c75d89b3779f2f22e21cbf3d3d1622697eaa6cdd3d5a"
+    }
+  ]
+}

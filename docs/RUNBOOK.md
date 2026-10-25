@@ -136,7 +136,7 @@ python3 prototypes/runlab/passages-package.py
 | 浏览器提示 executable / headless shell 不存在 | 安装脚本只装 `--no-shell` 浏览器，部分测试使用默认启动。可用 `bash scripts/with-env.sh node node_modules/@playwright/test/cli.js install chromium` 补齐；Linux 缺系统库再按错误处理 |
 | pnpm 要移除共享 node_modules、报无 TTY        | 本次工作树通过链接共享依赖；不要加 CI=true 强迫清理。改用本文 Node 直调命令，或在独立检出安装自己的依赖                                                                             |
 | 新功能看不到                                  | 确认当前分支与端口；重建 spx 并刷新；URL 的 v 参数不能代替切换代码                                                                                                                  |
-| 声音未响                                      | 先点击开始，使浏览器允许音频；检查声音开关、音量、后台 / 暂停状态和诊断。角色语音本来就停用                                                                                         |
+| 声音未响                                      | 先点击「播放音乐」或开始；检查声音开关、独立音量、后台 / 暂停状态与 soundDiagnostics.music。提示重试时确认 public/audio/music 下的 MP3 可访问。角色语音本来就停用                                                                                         |
 | 打字时角色不移动                              | 这是受保护的模拟冻结；应有持续蓄势表现。Esc 可暂停 / 放弃 / 重开；若整个页面无响应，记录控制台错误与版本                                                                            |
 | 成就没有增加                                  | 检查是否排练、是否实际命中、是否重复词、是否同一窗口 / 腾空；以成就详情条件为准                                                                                                     |
 | 进度看似消失                                  | 先检查协议 / 主机 / 端口、浏览器配置及存储提示；不要直接清空站点数据                                                                                                                |

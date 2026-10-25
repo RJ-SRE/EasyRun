@@ -279,6 +279,19 @@ function toast(t) {
 function initAudio() {
   soundscape.init();
 }
+// Unlock title-screen music on a deliberate gesture without starting a run.
+function unlockAudio(event) {
+  if (
+    event.isTrusted &&
+    soundOn &&
+    (!soundscape.music?.unlocked || soundscape.music?.blocked)
+  )
+    initAudio();
+}
+document.addEventListener("pointerdown", unlockAudio, { capture: true });
+document.addEventListener("keydown", unlockAudio, { capture: true });
+$("#music-start").onclick = initAudio;
+
 function onEvent(name, t, x, y) {
   inscription.onEvent(name);
   city.onEvent(name);
@@ -382,6 +395,15 @@ function hint(s) {
 function receive(s) {
   window.latestState = s;
   soundscape.stateChanged(s);
+  const music = soundscape.music?.diagnostics();
+  $("#music-start").hidden =
+    !soundOn || (!!music?.unlocked && !music.blocked && !music.failed);
+  $("#music-start").textContent = music?.failed ? "重试音乐" : "播放音乐";
+  $("#music-track").textContent = music?.failed
+    ? "音乐暂不可用，动作音效与游戏仍可继续。"
+    : music?.title
+      ? `Sea Power · ${music.title} · 单曲循环`
+      : "点击「播放音乐」启用背景音乐。";
   inscription.receive(s);
   city.receive(s);
   achievements?.receive(s);
@@ -837,7 +859,9 @@ window.addEventListener("keydown", (e) => {
     key(e.code, e.key);
   }
 });
+window.addEventListener("pagehide", () => soundscape.music?.audio.pause());
 document.addEventListener("visibilitychange", () => {
+  soundscape.syncMusic();
   if (document.hidden) {
     soundscape.stopAll();
   }

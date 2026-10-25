@@ -1,4 +1,6 @@
-// Gameplay audio only. No character speech, bell tones or drum layers.
+import { BelfryMusic } from "./belfry-music.js";
+
+// Action effects omit bell/drum layers. Scene music is supplied by the user.
 const defaults = { sfx: 0.8, music: 0.35 };
 const counts = {
   bowdraw: 2,
@@ -38,7 +40,6 @@ export class BelfryAudio {
     this.variants = new Map();
     this.fxHistory = [];
     this.errors = [];
-    this.nextAmbient = 0;
     try {
       const saved = JSON.parse(localStorage.getItem("belfry-audio-v2"));
       for (const k of Object.keys(defaults))
@@ -81,6 +82,7 @@ export class BelfryAudio {
           g.connect(this.master);
           this.buses[k] = g;
         }
+        this.music = new BelfryMusic(a, this.buses.music, (e) => this.error(e));
         const paths = Object.entries(counts).flatMap(([k, n]) =>
           Array.from({ length: n }, (_, i) => this.path(k, i + 1)),
         );
@@ -88,11 +90,20 @@ export class BelfryAudio {
           paths.map((path) => this.buffer(path).catch((e) => this.error(e))),
         );
       }
+      this.syncMusic();
+      this.music.unlock();
       if (this.enabled && !document.hidden && this.ctx.state !== "running")
         await this.ctx.resume();
     } catch (e) {
       this.error(e);
     }
+  }
+  syncMusic() {
+    this.music?.sync(this.state, {
+      enabled: this.enabled,
+      hidden: document.hidden,
+      focusPaused: !!this.focusPaused,
+    });
   }
   buffer(path) {
     if (this.cache.has(path)) return Promise.resolve(this.cache.get(path));
@@ -143,7 +154,7 @@ export class BelfryAudio {
       }
     }
     this.sources.clear();
-    this.nextAmbient = 0;
+    this.syncMusic();
     if (this.buses)
       for (const k of ["sfx", "music", "danger"]) {
         this.buses[k].gain.cancelScheduledValues(this.ctx.currentTime);
@@ -169,6 +180,7 @@ export class BelfryAudio {
       this.stopAll();
     if (![1, 5].includes(s.phase) || (old && old.attempts !== s.attempts))
       this.endFocus();
+    this.syncMusic();
   }
   beginFocus() {
     this.stopAll(0.12);
@@ -183,12 +195,14 @@ export class BelfryAudio {
     this.focusPaused = paused;
     if (paused) this.stopCue("focus");
     else this.nextFocus = 0;
+    this.syncMusic();
   }
   endFocus() {
     this.focusMode = false;
     this.focusPaused = false;
     this.focusEvents = [];
     this.stopCue("focus");
+    this.syncMusic();
   }
   inscribe(progress) {
     this.focusProgress = progress;
@@ -350,11 +364,6 @@ export class BelfryAudio {
       )
     )
       this.sample("cloth", { pan, volume: 0.25 });
-    if (name === "chainstart" && this.buses) {
-      const t = this.ctx.currentTime;
-      this.buses.music.gain.setTargetAtTime(0.02, t, 0.01);
-      this.buses.music.gain.setTargetAtTime(this.settings.music, t + 1.1, 0.2);
-    }
   }
   onEvent(name, x = 480) {
     // A resolved arrow emits its sound before @wordResolved / the next @state.
@@ -432,13 +441,18 @@ export class BelfryAudio {
     }
   }
   tick() {
+    this.syncMusic();
     const s = this.state,
       active = s?.phase === 1 && !document.hidden,
       focused = this.focusMode && !this.focusPaused && !document.hidden,
       now = this.now();
     if (this.master)
       this.master.gain.setTargetAtTime(
-        this.enabled && (active || focused || s?.phase === 2) ? 0.65 : 0,
+        this.enabled &&
+          !document.hidden &&
+          (active || focused || [0, 2, 3].includes(s?.phase))
+          ? 0.65
+          : 0,
         this.ctx.currentTime,
         0.04,
       );
@@ -449,10 +463,6 @@ export class BelfryAudio {
     if (focused && now > this.nextFocus) {
       this.air(3.6, 0.025, "sfx", true);
       this.nextFocus = now + 3.2;
-    }
-    if (active && this.allowed() && now > this.nextAmbient) {
-      this.air(6, 0.05);
-      this.nextAmbient = now + 5.5;
     }
   }
   diagnostics() {
@@ -465,6 +475,7 @@ export class BelfryAudio {
       activeSources: this.sources.size,
       fx: [...this.fxHistory],
       dialogueEnabled: false,
+      music: this.music?.diagnostics() ?? null,
       focusActive: !!this.focusMode && !this.focusPaused,
     };
   }

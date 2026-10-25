@@ -1,6 +1,6 @@
 # 美术与资产来源
 
-当前 v0.8 资产状态（2026-10-25）：五类刺客及补充图集共 42 个姿势，主角技能三帧与既有动作图集，82 个本地动作 / 材质采样；角色语音不运行。下文按制作时间保留历史记录，56 个采样、旧机械敌人等数字不是当前总量。
+当前 v0.8 资产状态（2026-10-25）：五类刺客及补充图集共 42 个姿势，主角技能三帧与既有动作图集，82 个本地动作 / 材质采样与 3 首用户提供的 Sea Power 背景音乐；角色语音不运行。下文按制作时间保留历史记录，56 个采样、旧机械敌人等数字不是当前总量。
 
 断环刻印、成就册和 16 个徽记是仓库中的 CSS / SVG 路径设计，分别见 `prototypes/runlab/public/inscription*` 与 `belfry-achievements*`，没有下载其他游戏 UI。三十词远征的旧概念图属于 [后续美术提案](planning/thirty-word-expedition/ART.md)。本轮另生成五张城市运行背景并实际导入引擎，详见本文末尾及 [城市实现](CITY_V08.md)。原图与提示词继续保留，生成拆帧和导出包不重复纳管。
 
@@ -96,3 +96,7 @@ belfry-city-art.mjs 将五图作为引擎精灵打包，按镜头深度渐变并
 保留 82 个采样 ID，其中重制 25 个：brass / heavy / land / nova 的共鸣与低鼓、heavycut / chainfinish 的低鼓层、markbreak 的低音敲击，以及 healcomplete 的铃音和弦。刀风、弓弦、钩索等其他 57 个文件保持原哈希。两份离线生成器、对应 WAV 母版、AAC 运行文件与来源清单同步更新；旧音频可从 Git 历史恢复。
 
 网页环境 / 关键事件不再生成钟鸣，聚焦不再循环低音鼓感脉冲或逐字泛音；环境与聚焦只保留无音高的低音量气流。动作事件、危险预警、音量、静音、暂停和存档约定保持。
+
+## 三阶段音乐 · 2026-10-25
+
+按用户指定从本地桌面复制三份 Sea Power MP3：Melancholy Of The Boot、Cleaning out the Rooms (Wandering Horn)、Strange Sports。运行副本位于 `prototypes/runlab/public/audio/music/`，原文件未修改、未转码。共 34,043,869 字节，各自文件名、时长、大小和 SHA-256 见 [清单](../prototypes/runlab/public/audio/music/manifest.json)。这三首是用户提供的第三方录音，不属于程序化原创采样；曲目映射与维护方法见 [场景音乐](SCENE_MUSIC.md)。

@@ -238,7 +238,9 @@ try {
   );
   await fallback.locator("#play").click();
   await fallback.waitForFunction(
-    () => window.soundDiagnostics.errors.length > 0,
+    () =>
+      window.soundDiagnostics.errors.length > 0 &&
+      window.latestState.phase === 1,
   );
   assert.equal(await fallback.evaluate(() => latestState.phase), 1);
   assert.equal(await fallback.locator("#dialogue").count(), 0);

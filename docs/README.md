@@ -23,6 +23,7 @@
 | [RUNBOOK.md](RUNBOOK.md)                   | 如何从正确分支启动，如何构建、检查、打包和处理常见错误？          |
 | [INSCRIPTION_V07.md](INSCRIPTION_V07.md)   | 六类触发、词汇事务、冻结、取消 / 续档的具体规则是什么？           |
 | [ACHIEVEMENTS_V07.md](ACHIEVEMENTS_V07.md) | 15 项成就如何判定、去重、展示、佩戴和保存？                       |
+| [SCENE_MUSIC.md](SCENE_MUSIC.md) | 三首背景音乐如何选曲、循环、暂停、衰减和维护？ |
 | [WORD_BANK.md](WORD_BANK.md)               | 82 词来源、内容版本、抽样范围、义项和许可如何追溯？               |
 | [TESTING.md](TESTING.md)                   | 哪次验证覆盖了什么？哪些报告使用真实路线或测试场景？              |
 | [ROADMAP.md](ROADMAP.md)                   | 下一步先做什么，以什么证据决定是否扩展？                          |

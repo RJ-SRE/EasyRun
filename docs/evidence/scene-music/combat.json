@@ -1,0 +1,364 @@
+{
+  "date": "2026-10-25T04:27:13.879Z",
+  "cases": [
+    "three-step buffered chain causes damage at strike frames",
+    "holding light attack does not auto-repeat",
+    "launcher lifts enemy and player into aerial follow-up",
+    "charge freezes during pause, releases into heavy strike on resume",
+    "heavy strike throws an enemy into another enemy",
+    "light recovery cancels into dash",
+    "five-hit ultimate active window expires without another input",
+    "full restart clears charge, combo and practice",
+    "sound settings retain only effects and music; former voice controls are absent",
+    "blade effects play and global mute clears active sources",
+    "all 82 retained effects decode without loading any voice pack",
+    "reload preserves music/effects preferences and never fetches dialogue or speech",
+    "failed effects decoding leaves gameplay operational and cannot create dialogue"
+  ],
+  "errors": [],
+  "audio": [
+    {
+      "id": "blade-1",
+      "duration": 0.25908333333333333
+    },
+    {
+      "id": "blade-2",
+      "duration": 0.27625
+    },
+    {
+      "id": "blade-3",
+      "duration": 0.29004166666666664
+    },
+    {
+      "id": "blade-4",
+      "duration": 0.27191666666666664
+    },
+    {
+      "id": "blade-5",
+      "duration": 0.2572083333333333
+    },
+    {
+      "id": "blade-6",
+      "duration": 0.27170833333333333
+    },
+    {
+      "id": "cloth-1",
+      "duration": 0.184
+    },
+    {
+      "id": "cloth-2",
+      "duration": 0.18704166666666666
+    },
+    {
+      "id": "cloth-3",
+      "duration": 0.18833333333333332
+    },
+    {
+      "id": "cloth-4",
+      "duration": 0.18291666666666667
+    },
+    {
+      "id": "hook-1",
+      "duration": 0.157875
+    },
+    {
+      "id": "hook-2",
+      "duration": 0.17195833333333332
+    },
+    {
+      "id": "hook-3",
+      "duration": 0.16620833333333335
+    },
+    {
+      "id": "hook-4",
+      "duration": 0.17166666666666666
+    },
+    {
+      "id": "attach-1",
+      "duration": 0.219125
+    },
+    {
+      "id": "attach-2",
+      "duration": 0.21120833333333333
+    },
+    {
+      "id": "attach-3",
+      "duration": 0.22954166666666667
+    },
+    {
+      "id": "attach-4",
+      "duration": 0.23395833333333332
+    },
+    {
+      "id": "tension-1",
+      "duration": 0.40875
+    },
+    {
+      "id": "tension-2",
+      "duration": 0.4530416666666667
+    },
+    {
+      "id": "tension-3",
+      "duration": 0.413375
+    },
+    {
+      "id": "tension-4",
+      "duration": 0.45058333333333334
+    },
+    {
+      "id": "sling-1",
+      "duration": 0.3027916666666667
+    },
+    {
+      "id": "sling-2",
+      "duration": 0.277625
+    },
+    {
+      "id": "sling-3",
+      "duration": 0.28670833333333334
+    },
+    {
+      "id": "sling-4",
+      "duration": 0.3127916666666667
+    },
+    {
+      "id": "porcelain-1",
+      "duration": 0.4671666666666667
+    },
+    {
+      "id": "porcelain-2",
+      "duration": 0.4807916666666667
+    },
+    {
+      "id": "porcelain-3",
+      "duration": 0.5
+    },
+    {
+      "id": "porcelain-4",
+      "duration": 0.5260833333333333
+    },
+    {
+      "id": "porcelain-5",
+      "duration": 0.497625
+    },
+    {
+      "id": "brass-1",
+      "duration": 0.648875
+    },
+    {
+      "id": "brass-2",
+      "duration": 0.6682916666666666
+    },
+    {
+      "id": "brass-3",
+      "duration": 0.671
+    },
+    {
+      "id": "brass-4",
+      "duration": 0.6975
+    },
+    {
+      "id": "brass-5",
+      "duration": 0.697875
+    },
+    {
+      "id": "heavy-1",
+      "duration": 0.5232083333333334
+    },
+    {
+      "id": "heavy-2",
+      "duration": 0.5395
+    },
+    {
+      "id": "heavy-3",
+      "duration": 0.5854166666666667
+    },
+    {
+      "id": "heavy-4",
+      "duration": 0.5199166666666667
+    },
+    {
+      "id": "dash-1",
+      "duration": 0.21283333333333335
+    },
+    {
+      "id": "dash-2",
+      "duration": 0.20441666666666666
+    },
+    {
+      "id": "dash-3",
+      "duration": 0.23479166666666668
+    },
+    {
+      "id": "dash-4",
+      "duration": 0.2245
+    },
+    {
+      "id": "nova-1",
+      "duration": 1.2394166666666666
+    },
+    {
+      "id": "nova-2",
+      "duration": 1.157
+    },
+    {
+      "id": "nova-3",
+      "duration": 1.1094583333333334
+    },
+    {
+      "id": "tell-1",
+      "duration": 0.472375
+    },
+    {
+      "id": "tell-2",
+      "duration": 0.5062083333333334
+    },
+    {
+      "id": "tell-3",
+      "duration": 0.492125
+    },
+    {
+      "id": "land-1",
+      "duration": 0.22091666666666668
+    },
+    {
+      "id": "land-2",
+      "duration": 0.22266666666666668
+    },
+    {
+      "id": "land-3",
+      "duration": 0.22645833333333334
+    },
+    {
+      "id": "web-1",
+      "duration": 0.34458333333333335
+    },
+    {
+      "id": "web-2",
+      "duration": 0.327875
+    },
+    {
+      "id": "web-3",
+      "duration": 0.319
+    },
+    {
+      "id": "bowdraw-1",
+      "duration": 0.6
+    },
+    {
+      "id": "bowdraw-2",
+      "duration": 0.6
+    },
+    {
+      "id": "bowshot-1",
+      "duration": 0.36
+    },
+    {
+      "id": "bowshot-2",
+      "duration": 0.36
+    },
+    {
+      "id": "bowshot-3",
+      "duration": 0.36
+    },
+    {
+      "id": "bowready-1",
+      "duration": 0.22
+    },
+    {
+      "id": "bowready-2",
+      "duration": 0.22
+    },
+    {
+      "id": "arrowhit-1",
+      "duration": 0.32
+    },
+    {
+      "id": "arrowhit-2",
+      "duration": 0.32
+    },
+    {
+      "id": "arrowhit-3",
+      "duration": 0.32
+    },
+    {
+      "id": "heavycut-1",
+      "duration": 0.5799791666666667
+    },
+    {
+      "id": "heavycut-2",
+      "duration": 0.5799791666666667
+    },
+    {
+      "id": "heavycut-3",
+      "duration": 0.5799791666666667
+    },
+    {
+      "id": "markbreak-1",
+      "duration": 0.55
+    },
+    {
+      "id": "markbreak-2",
+      "duration": 0.55
+    },
+    {
+      "id": "healstart-1",
+      "duration": 0.8
+    },
+    {
+      "id": "healstart-2",
+      "duration": 0.8
+    },
+    {
+      "id": "healcomplete-1",
+      "duration": 0.65
+    },
+    {
+      "id": "healcomplete-2",
+      "duration": 0.65
+    },
+    {
+      "id": "chaincut-1",
+      "duration": 0.23
+    },
+    {
+      "id": "chaincut-2",
+      "duration": 0.23
+    },
+    {
+      "id": "chaincut-3",
+      "duration": 0.23
+    },
+    {
+      "id": "chaincut-4",
+      "duration": 0.23
+    },
+    {
+      "id": "chainfinish-1",
+      "duration": 0.72
+    },
+    {
+      "id": "chainfinish-2",
+      "duration": 0.72
+    },
+    {
+      "id": "chainfinish-3",
+      "duration": 0.72
+    }
+  ],
+  "sound": {
+    "enabled": true,
+    "context": "uninitialized",
+    "settings": {
+      "sfx": 0.5,
+      "music": 0.2
+    },
+    "errors": [],
+    "cached": 0,
+    "activeSources": 0,
+    "fx": [],
+    "dialogueEnabled": false,
+    "music": null,
+    "focusActive": false
+  }
+}

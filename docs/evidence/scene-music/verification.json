@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-25T04:29:36.485406+00:00",
+  "baseCommit": "aba2495",
+  "branch": "feat/inscription-v1",
+  "scope": "Three looping stage tracks, streaming media lifecycle, MP3 byte-range service and existing combat/focus regressions.",
+  "checks": [
+    {
+      "name": "music",
+      "script": "prototypes/runlab/test-belfry-music.mjs",
+      "cases": 14,
+      "errors": 0,
+      "report": "music.json",
+      "executedAt": "2026-10-25T04:25:04.875Z"
+    },
+    {
+      "name": "combat",
+      "script": "prototypes/runlab/test-belfry-combat.mjs",
+      "cases": 13,
+      "errors": 0,
+      "report": "combat.json",
+      "executedAt": "2026-10-25T04:27:13.879Z"
+    },
+    {
+      "name": "inscription-motion",
+      "script": "prototypes/runlab/test-belfry-inscription-motion.mjs",
+      "cases": 9,
+      "errors": 0,
+      "report": "inscription-motion.json",
+      "executedAt": "2026-10-25T04:27:52.571Z"
+    }
+  ],
+  "totalCases": 36,
+  "sfxDecoded": 82,
+  "notes": [
+    "Music tests play actual MP3s and seek near the end to verify looping. Victory/death/title are response-only fixtures, not full-route playthroughs.",
+    "The visibility test overrides document.hidden and invokes the production visibility handler.",
+    "Combat failure fallback now waits for both the decode error and phase 1 telemetry: gesture-based title initialization can report the error before the start state arrives.",
+    "Initial test inputs were corrected to the existing volume slider step of 0.05; production slider behavior was not changed.",
+    "Existing in-app preview refreshed; menu music enabled and current song confirmed in sound settings. Player save/settings were retained.",
+    "No claim of Safari, mobile, physical speaker listening review, remote CI or a full-route replay for this audio revision."
+  ],
+  "sha256": {
+    "prototypes/runlab/public/belfry-music.js": "c87644ec66c40cc1f92b9587d0c7f90424ac31cd6e03e0f400365319520b913e",
+    "prototypes/runlab/public/belfry-audio.js": "87b25b420325a3d8c613697496bd3ec62fdf5aef62995d6d81cb3dc059559c8f",
+    "prototypes/runlab/public/belfry.js": "479c41de835638b6e5c142d3ec0ca1c8e7e7952b906df7ea1ee273b583cec4db",
+    "prototypes/runlab/public/belfry.html": "80d87b4e1dc4d96f90343ff549351315e66f643e4fc6ad194faeff54384091ca",
+    "prototypes/runlab/public/index.html": "80d87b4e1dc4d96f90343ff549351315e66f643e4fc6ad194faeff54384091ca",
+    "prototypes/runlab/server.mjs": "2b8cfab568fb08270c1babcde6cf9097269983b158b3c8a3b61a4d9fa8175257",
+    "scripts/test-game.mjs": "fa5415cf1a000d423caf66fbe90f7a1441a1653c94f32ee59aadb4881b771099",
+    "prototypes/runlab/test-belfry-music.mjs": "e73649fabbaee2d6b6fcff7e8a2666985d477bc22462633c2270a64ffc2ec0cd",
+    "prototypes/runlab/test-belfry-combat.mjs": "6ee38f23a240e80ff0c75a373477a3dc3e992bb190ec07f0aaad71d3ee16b30d",
+    "prototypes/runlab/test-belfry-inscription-motion.mjs": "747a801b5c35ae2a13b445423c8f947cfc0662f7b14b6c034f7ab3df11a20676",
+    "prototypes/runlab/public/audio/music/ending.mp3": "8281281fcf5bd8d8adb9c75d89b3779f2f22e21cbf3d3d1622697eaa6cdd3d5a",
+    "prototypes/runlab/public/audio/music/gameplay.mp3": "c5ca1def4570840e52abb7178bc9e2b9085495f908ec9b5d83d34c81fb856a83",
+    "prototypes/runlab/public/audio/music/manifest.json": "7e35a0c8588add967b2689089cd2341cf9bf85f4ad095e1f5fe49c26211b80a6",
+    "prototypes/runlab/public/audio/music/menu.mp3": "5322690efba8f3581b0879e3bcb65d4f3d4b4c5c85025b14191bd676ba04bddb"
+  }
+}

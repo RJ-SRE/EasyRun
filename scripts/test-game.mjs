@@ -52,6 +52,7 @@ try {
         { file: "test-inscription-core.mjs" },
         { file: "test-belfry-achievements-core.mjs" },
         { file: "test-belfry-combat.mjs" },
+        { file: "test-belfry-music.mjs", words: true },
         { file: "test-belfry-enemies.mjs" },
         { file: "test-belfry-ninja.mjs" },
         { file: "test-belfry-skills.mjs" },
