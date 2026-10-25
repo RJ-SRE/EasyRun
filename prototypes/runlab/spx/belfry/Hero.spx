@@ -4,7 +4,6 @@ var (
  healGated bool
  ultimateGated bool
  bladeLink int
- bladeLinkPlanned bool
  px float64
  py float64
  vx float64
@@ -82,7 +81,7 @@ var (
  landing float64
 )
 func resetHero(x,y float64) {
- healGated=false; ultimateGated=false; bladeLink=-1; bladeLinkPlanned=false
+ healGated=false; ultimateGated=false; bladeLink=-1
  bowTarget=-1; bowInputX=0; bowInputY=0; bowRecoil=0; basicCool=0; airAttacks=0; airHitSlow=false; bowCool=0; bladeCool=0; healCool=0; ultimateCool=0; bowCharging=false; bowCharge=0; prevBow=false; prevHeal=false; healTime=0; ultimateTime=0; ultimateStep=0; aimX=1; aimY=0; bladeX=1; bladeY=0; ultimateDir=0
  px=x; py=y; vx=0; vy=0; facing=90; grounded=true; airJump=true; coyote=0.12; buffer=0; dropTime=0; hook=-1; target=-1; hookCool=0
  attackKind=0; attackAge=0; attackDuration=0; attackBuffer=0; bufferTime=0; chainStep=0; chainWindow=0; chargeTime=0; charging=false; prevHeavy=false; attackApplied=false; charged=false; attackFacing=90
@@ -116,7 +115,7 @@ func releaseHook(boost bool) {
  }
 }
 // Input buffering stores intent; damage only occurs at the authored strike frame.
-func cancelAttack() {wordWanted=0; bladeLink=-1; bladeLinkPlanned=false; attackKind=0; attackCool=0; attackTime=0; attackBuffer=0; bufferTime=0; charging=false; chargeTime=0; bowCharging=false; bowCharge=0; bowTarget=-1; bowInputX=0; bowInputY=0; if healTime>0 {healTime=0; event("healbreak")}}
+func cancelAttack() {wordWanted=0; bladeLink=-1; attackKind=0; attackCool=0; attackTime=0; attackBuffer=0; bufferTime=0; charging=false; chargeTime=0; bowCharging=false; bowCharge=0; bowTarget=-1; bowInputX=0; bowInputY=0; if healTime>0 {healTime=0; event("healbreak")}}
 func canMoveCancel() bool {return ultimateTime<=0 && (attackKind==0 || (attackKind!=7 && attackAge>=attackWindup+0.04))}
 func beginAttack(kind int) {
  if kind!=7 && (basicCool>0 || (!grounded && airAttacks>=2)) {return}
@@ -183,7 +182,8 @@ func updateAttack(dt float64) {
  }
  if attackBuffer>0 && !charging && !bowCharging && healTime<=0 && ultimateTime<=0 && basicCool<=0 && (attackKind==0 || (attackKind!=7 && attackAge>=attackDuration-0.065)) {beginAttack(attackBuffer)}
 }
-// All four skill timers use active simulation time; pausing freezes them.
+// Skill cooldown telemetry remains zero for host/save compatibility. Action
+// windups, recovery and the basic attack cadence still use simulation time.
 func readAim() {
  aimX=0; aimY=0
  if keyPressed(KeyA)||keyPressed(KeyLeft) {aimX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {aimX+=1}
@@ -224,25 +224,25 @@ func aimBow() {
 }
 func shootBow() {
  full:=0.0; if bowCharge>=0.55 {full=1}
- bowRecoil=0.2; bodyVelocity=-25; bowCool=3; bowCharging=false; bowCharge=0; attackTime=0.12; lastMove=11
+ bowRecoil=0.2; bodyVelocity=-25; bowCharging=false; bowCharge=0; attackTime=0.12; lastMove=11
  Arrow.clone []float64{px+aimX*24,py+32+aimY*24,aimX,aimY,full,float64(attempts)}
  skillFX(px+aimX*30,py+32+aimY*30,angle(aimX,aimY),0,0.65+full*0.3)
  bowTarget=-1; vx-=aimX*45; event("bowshot"); if full>0 {event("bowfull")}
 }
-func releaseBlade(full bool) {charged=full; charging=false; chargeTime=0; bladeCool=5; beginAttack(7)}
-func validBladeLink(i int) bool {
- if i<0 || i>=len(enemyHP) {return false}
- dx:=enemyX[i]-px; dy:=enemyY[i]-py-28
- return enemyHP[i]>0 && enemyMark[i]>0 && !(enemyType[i]==3 && bossShield>0) && dist(dx,dy)<192 && dx*aimX+dy*aimY> -28 && !blockedLine(px,py+28,enemyX[i],enemyY[i])
-}
+func releaseBlade(full bool) {charged=full; charging=false; chargeTime=0; beginAttack(7)}
 func nova() {
- if ultimateCool>0 {event("skillcool"); return}
  if ultimateTime>0 || healTime>0 || attackKind==7 {return}
- cancelAttack(); releaseHook(false); dashTime=0; ultimateCool=10; ultimateTime=1.08; ultimateStep=0; ultimateGated=false; lastMove=9; invulnerable=math.Max(invulnerable,1.0); vx*=0.2; vy*=0.4; ultimateDir=0
+ cancelAttack(); releaseHook(false); dashTime=0; ultimateTime=1.08; ultimateStep=0; ultimateGated=false; ultimateDir=0
+ if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
+ if wordMode==1 && practice==0 {requestWord(4); return}
+ releaseUltimate()
+}
+func releaseUltimate() {
+ ultimateGated=true; lastMove=9; invulnerable=math.Max(invulnerable,1.0); vx*=0.2; vy*=0.4
  skillFX(px,py+32,90,4,0.85); event("chainstart")
 }
 func updateSkills(dt float64) {
- bowRecoil=math.Max(0,bowRecoil-dt); basicCool=math.Max(0,basicCool-dt); bowCool=math.Max(0,bowCool-dt); bladeCool=math.Max(0,bladeCool-dt); healCool=math.Max(0,healCool-dt); ultimateCool=math.Max(0,ultimateCool-dt)
+ bowRecoil=math.Max(0,bowRecoil-dt); basicCool=math.Max(0,basicCool-dt)
  readAim()
  if healTime>0 {
   moving:=keyPressed(KeyA)||keyPressed(KeyD)||keyPressed(KeyLeft)||keyPressed(KeyRight)||keyPressed(KeySpace)||keyPressed(KeyK)||keyPressed(KeyShift)
@@ -253,13 +253,10 @@ func updateSkills(dt float64) {
   }
  }
  if ultimateTime>0 {
+  if wordMode==1 && practice==0 && !ultimateGated {return}
   ultimateTime=math.Max(0,ultimateTime-dt); age:=1.08-ultimateTime
-  if !ultimateGated {if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}}
+  if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
   threshold:=0.12+float64(ultimateStep)*0.17; if ultimateStep==4 {threshold=0.88}
-  if ultimateStep==3 && age>=threshold && wordMode==1 && practice==0 && !ultimateGated {
-   available:=false; for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && dist(enemyX[i]-px,enemyY[i]-py-32)<285 && !(enemyType[i]==3 && bossShield>0) && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {available=true}}
-   if available {requestWord(4); return}; ultimateGated=true
-  }
   if ultimateStep<5 && age>=threshold {
    final:=ultimateStep==4; strikeX:=px; strikeY:=py+32; best:=260.0
    for i:=0;i<len(enemyHP);i++ {d:=dist(enemyX[i]-px,enemyY[i]-py-32); if enemyHP[i]>0 && d<best && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {best=d; strikeX=enemyX[i]; strikeY=enemyY[i]}}
@@ -316,30 +313,28 @@ func update(dt float64) {
   } else {kind:=1; if keyPressed(KeyW)||keyPressed(KeyUp) {kind=4}; requestAttack(kind)}
  }
  attackPressed=false
- if heavy && !prevHeavy && canMoveCancel() && !bowCharging && healTime<=0 {if bladeCool<=0 {cancelAttack(); charging=true; chargeTime=0; event("charge")} else {event("skillcool")}}
- if bow && !prevBow && canMoveCancel() && !charging && healTime<=0 {if bowCool<=0 {cancelAttack(); bowCharging=true; bowCharge=0; event("bowdraw")} else {event("skillcool")}}
+ if heavy && !prevHeavy && canMoveCancel() && !bowCharging && healTime<=0 {cancelAttack(); charging=true; chargeTime=0; event("charge")}
+ if bow && !prevBow && canMoveCancel() && !charging && healTime<=0 {cancelAttack(); bowCharging=true; bowCharge=0; event("bowdraw")}
  if bowCharging {
   aimBow()
   bowCharge=math.Min(1,bowCharge+dt)
   if bowCharge>=0.55 && bowCharge-dt<0.55 {event("bowready"); skillFX(px+aimX*28,py+32+aimY*28,angle(aimX,aimY),0,0.55)}
-  if !bow {if bowCharge>=0.55 && wordMode==1 && practice==0 {requestWord(1); return} else {shootBow()}}
+  if !bow {if wordMode==1 && practice==0 {requestWord(1); return} else {shootBow()}}
  }
  if heal && !prevHeal && canMoveCancel() && !charging && !bowCharging && healTime<=0 {
-  if healCool>0 {event("skillcool")} else if !grounded {event("healground")} else if health>=maxHealth {event("healfull")} else if embers<=0 {event("healempty")} else {cancelAttack(); releaseHook(false); embers--; healCool=5; healTime=0.8; healGated=false; vx=0; event("healstart")}
+  if !grounded {event("healground")} else if health>=maxHealth {event("healfull")} else if embers<=0 {event("healempty")} else {cancelAttack(); releaseHook(false); embers--; healTime=0.8; healGated=false; vx=0; event("healstart")}
  }
  prevBow=bow; prevHeal=heal
  if charging {
   chargeTime=math.Min(1.0,chargeTime+dt)
-  if chargeTime>=0.55 && chargeTime-dt<0.55 {ring(px,py+30,0.8,1); event("chargeready"); for i:=0;i<len(enemyHP);i++ {if !bladeLinkPlanned && validBladeLink(i) {bladeLink=i; bladeLinkPlanned=true; event("wordlink")}}}
+  if chargeTime>=0.55 && chargeTime-dt<0.55 {ring(px,py+30,0.8,1); event("chargeready")}
   if !heavy {
    bladeX=aimX; bladeY=aimY; full:=chargeTime>=0.55
-   if full && wordMode==1 && practice==0 {
-    if bladeLinkPlanned {releaseBlade(validBladeLink(bladeLink))} else {requestWord(2); return}
-   } else {releaseBlade(full)}
+   if wordMode==1 && practice==0 {requestWord(2); return} else {releaseBlade(full)}
   }
  }
  prevHeavy=heavy
- if special && !prevBurst {nova()}
+ if special && !prevBurst {nova(); if wordWanted>0 {return}}
  if dash && !prevDash && dashCool<=0 && canMoveCancel() {
   cancelAttack(); lastMove=10
   releaseHook(false); dashTime=0.18; dashCool=0.8; invulnerable=0.25; plunging=false; grounded=false

@@ -92,31 +92,31 @@
             <span id="chapter-num"></span><strong id="chapter-title"></strong>
             <p id="chapter-copy"></p>
           </div>
-          <div class="skill-dock" aria-label="技能与冷却">
+          <div class="skill-dock" aria-label="技能状态">
             <div class="skill-meta">
               <span id="combat-focus">赤弦 · 墨刃</span
               ><small id="air-budget">J 普攻 · 0.28s</small>
             </div>
             <div class="skill-slots">
-              <div
-                class="skill-slot"
-                id="skill-bow"
-                title="3 秒 · 自动锁敌蓄箭"
-              >
+              <div class="skill-slot" id="skill-bow" title="无冷却 · 答对放箭">
                 <kbd>U</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
                   <path d="M7 4Q29 18 7 32L15 18Z M5 18H31m-6-4 6 4-6 4" />
                 </svg>
                 <div><b>贯夜</b><span class="skill-time">就绪</span></div>
               </div>
-              <div class="skill-slot" id="skill-blade" title="5 秒 · 按住蓄刀">
+              <div
+                class="skill-slot"
+                id="skill-blade"
+                title="无冷却 · 答对挥斩"
+              >
                 <kbd>L</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
                   <path d="M8 29L27 6Q31 19 12 29M5 25l8 8M5 32l5-5" />
                 </svg>
                 <div><b>断潮</b><span class="skill-time">就绪</span></div>
               </div>
-              <div class="skill-slot" id="skill-heal" title="5 秒 · 地面回血">
+              <div class="skill-slot" id="skill-heal" title="无冷却 · 辨义回血">
                 <kbd>I</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
                   <path
@@ -128,7 +128,7 @@
               <div
                 class="skill-slot"
                 id="skill-ultimate"
-                title="10 秒 · W/S 收势"
+                title="无冷却 · 答对释放五击"
               >
                 <kbd>Q</kbd
                 ><svg viewBox="0 0 36 36" aria-hidden="true">
@@ -216,22 +216,21 @@
                 <dd>地面挑空 / 空中坠星；落地或接上钩索恢复追击额度</dd>
                 <dt>按住 U → 松开</dt>
                 <dd>
-                  贯夜 · 3
-                  秒冷却；自动锁定附近可命中的敌人，方向键偏向选敌。0.55
+                  贯夜 · 无冷却；自动锁定附近可命中的敌人，方向键偏向选敌。0.55
                   秒满蓄，穿透两敌并留下裂印
                 </dd>
                 <dt>按住 L → 松开</dt>
-                <dd>断潮 · 5 秒冷却；方向挥刀，满蓄引爆裂印并击退敌人</dd>
+                <dd>断潮 · 无冷却；方向挥刀，满蓄引爆裂印并击退敌人</dd>
                 <dt>K 或 Shift</dt>
                 <dd>冲刺；W + K 向上，S + K 向下</dd>
                 <dt>I</dt>
                 <dd>
-                  回息 · 5 秒冷却；消耗 1 余烬，地面静止 0.8
+                  回息 · 无冷却；消耗 1 余烬，地面静止 0.8
                   秒回血。移动或受击会打断
                 </dd>
                 <dt>Q</dt>
                 <dd>
-                  连环剑刀 · 10 秒冷却；五段连击，一题解放末两击，W 上挑 / S
+                  连环剑刀 · 无冷却；第一击前答题，答对释放五段，W 上挑 / S
                   下压收势
                 </dd>
                 <dt>S + 空格</dt>
@@ -240,11 +239,11 @@
                 <dd>检查点继续 / 从头开始 / 暂停</dd>
               </dl>
               <p>
-                铭文模式：满蓄 U/L 松键后答题；I 辨义回血；F
-                可解链。普攻与短蓄不弹题。金铜环是永久锚点。击杀恢复二段跳和冲刺。悬刃投刀、短锋连招、壁弓伏击、缚索牵引、封脉擒拿；观察起手，利用收招。封脉命中后锁身
+                铭文模式：U/L 每次松键都答题；I 辨义回血；Q 答对后出招；F
+                可解链。选错、拼错或超时均取消本次技能；短蓄和裂印不免题。普攻与移动不弹题。金铜环是永久锚点。击杀恢复二段跳和冲刺。悬刃投刀、短锋连招、壁弓伏击、缚索牵引、封脉擒拿；观察起手，利用收招。封脉命中后锁身
                 0.7 秒；铭文模式随后辨义脱身，纯动作模式自动释放。 每 4
                 次有效伤害获得 1 余烬，上限
-                2。冲刺可取消蓄力；技能冷却从释放起算。金铜环是永久锚点。
+                2。冲刺可取消蓄力；四个技能无冷却，动作收势后可再次施放。金铜环是永久锚点。
               </p>
               <button id="close-guide" class="primary">
                 明白了 <span>↗</span>

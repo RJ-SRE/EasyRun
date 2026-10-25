@@ -286,8 +286,8 @@ function onEvent(name, t, x, y) {
   if (window.runEvents.length > 800) window.runEvents.shift();
   soundscape.onEvent(name.startsWith("city") ? "checkpoint" : name, Number(x));
   const labels = {
-    wordlink: "裂印连携 · 满蓄断潮直接释放",
-    healrefund: "铭文未完成 · 余烬已返还",
+    skillcancel: "刻印失败 · 技能已取消",
+    healrefund: "回息已取消 · 余烬已返还",
     wordescape: "锁链已解 · 夺回主动",
     chaincut: "锁链已斩断 · 缚索正在收势",
     chainfree: "已脱离锁链",
@@ -305,7 +305,6 @@ function onEvent(name, t, x, y) {
     gate: "钟锁已解 · 通往更深处",
     hook: "牵引 · 松开 E 甩出",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
-    skillcool: "技能正在冷却 · 观察下方计时",
     marked: "裂印 · 满蓄断潮可引爆",
     markbreak: "裂印破碎 · 断潮追加伤害",
     healground: "回息需要站稳地面",
@@ -412,37 +411,31 @@ function receive(s) {
   $("#ember-progress").textContent =
     s.embers === 2 ? "已满" : `${s.emberHits}/4 命中`;
   $("#embers").setAttribute("aria-label", `余烬 ${s.embers} / 2`);
-  for (const [id, cooldown, charging, unavailable] of [
-    ["bow", s.bowCool, s.bowCharge, false],
-    ["blade", s.bladeCool, s.chargeTime, false],
+  for (const [id, kind, charging, unavailable] of [
+    ["bow", 1, s.bowCharge, false],
+    ["blade", 2, s.chargeTime, false],
     [
       "heal",
-      s.healCool,
+      3,
       s.healTime > 0 ? 0.8 - s.healTime : 0,
       s.embers === 0 || s.health === s.maxHealth,
     ],
-    ["ultimate", s.ultimateCool, s.ultimateTime, false],
+    ["ultimate", 4, s.ultimateTime, false],
   ]) {
-    const el = $(`#skill-${id}`),
-      total = { bow: 3, blade: 5, heal: 5, ultimate: 10 }[id];
-    el.classList.toggle("cooling", cooldown > 0);
+    const el = $(`#skill-${id}`);
     el.classList.toggle("casting", charging > 0);
     el.classList.toggle("unavailable", unavailable);
-    el.style.setProperty(
-      "--cooldown",
-      `${Math.min(100, (cooldown / total) * 100)}%`,
-    );
     el.querySelector(".skill-time").textContent =
-      charging > 0
-        ? id === "heal"
-          ? "回息中"
-          : id === "ultimate"
-            ? "连斩中"
-            : charging >= 0.55
-              ? "满蓄"
-              : "蓄力"
-        : cooldown > 0
-          ? `${cooldown.toFixed(1)}s`
+      s.phase === 5 && s.wordPending === kind
+        ? "待刻印"
+        : charging > 0
+          ? id === "heal"
+            ? "回息中"
+            : id === "ultimate"
+              ? "连斩中"
+              : charging >= 0.55
+                ? "满蓄"
+                : "蓄力"
           : unavailable
             ? s.health === s.maxHealth
               ? "生命满"

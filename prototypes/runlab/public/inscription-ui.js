@@ -8,10 +8,10 @@ import {
 } from "./inscription-core.js";
 const $ = (s) => document.querySelector(s);
 const titles = {
-  1: ["贯夜 · 蓄弦", "贯穿两敌 · 留下裂印"],
-  2: ["断潮 · 蓄锋", "满蓄重斩 · 引爆裂印"],
+  1: ["贯夜 · 蓄弦", "答对放箭 · 错误取消"],
+  2: ["断潮 · 蓄锋", "答对挥斩 · 错误取消"],
   3: ["回息 · 余烬", "生命 +1 · 未完成返还余烬"],
-  4: ["连环剑刀 · 终式", "解放末两击"],
+  4: ["连环剑刀 · 起式", "答对释放五击 · 错误取消"],
   5: ["缚索 · 解链", "斩链反制 · 未完成仍可脱离"],
   6: ["封脉 · 破缚", "拆招反击 · 未完成安全脱身"],
 };
@@ -98,7 +98,7 @@ export class InscriptionUI {
         <label>拼写提示<select id="word-hint"><option value="guided">完整提示</option><option value="standard">渐隐提示</option><option value="recall">回忆</option></select></label>
       </div>
       <div class="word-actions"><button id="word-preview"><span>随行词册</span><b>30 <i>↗</i></b></button><button id="word-shuffle" aria-label="更换本次远征的 30 个单词">换一组</button></div>
-      <p class="word-note">只在关键释放时刻显现。<br>普攻、钩索不断奏，通关无需全清。</p>
+      <p class="word-note">每次技能，都以词解放。<br>答错取消 · 无技能冷却；普攻、钩索不出题。</p>
       <button id="word-continue" class="secondary" hidden>续行上次远征 ↗</button>
       <p id="word-storage" role="status"></p>`;
     $("#viewport").append(menu);
@@ -674,9 +674,9 @@ export class InscriptionUI {
     });
     const excess = Math.max(0, this.input.length - w.word.length);
     $("#word-letter-feedback").textContent = excess
-      ? `多输入 ${excess} 个字母 · ⌫ 修正`
+      ? "拼写错误 · 取消释放"
       : !prefix
-        ? "刻痕有误 · ⌫ 修正"
+        ? "拼写错误 · 取消释放"
         : this.input.length
           ? `${this.input.length} / ${w.word.length}`
           : "键入单词";
@@ -696,7 +696,8 @@ export class InscriptionUI {
       this.audio.inscribe(this.input.length / w.word.length);
     }
     $("#word-input").classList.toggle("word-mistyped", !prefix);
-    if (matches(w, this.input)) this.finish(true, "正确");
+    if (!prefix) this.finish(false, "拼写错误");
+    else if (matches(w, this.input)) this.finish(true, "正确");
   }
   choose(i) {
     if (this.active && !this.active.result)
@@ -723,7 +724,7 @@ export class InscriptionUI {
     const w = BANK.get(a.q.wordId);
     $("#word-feedback").textContent = correct
       ? `${w.word} · ${w.meaning} · 解放`
-      : `${reason === "选择" ? "未选中" : reason} · ${w.word} = ${w.meaning}`;
+      : `${reason === "选择" ? "选择错误" : reason} · ${a.kind <= 4 ? "技能已取消 · " : ""}${w.word} = ${w.meaning}`;
     this.quarantine = new Set([...(this.entryHeld || []), ...this.held]);
     this.releaseHeld();
     // Feedback continues as a non-interactive afterimage, never holds the action.

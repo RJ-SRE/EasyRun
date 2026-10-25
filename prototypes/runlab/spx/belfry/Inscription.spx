@@ -19,7 +19,7 @@ func beginWord() {
  if kind==1 && !Hero.bowCharging {return}
  if kind==2 && !Hero.charging {return}
  if kind==3 && Hero.healTime<=0 {return}
- if kind==4 && (Hero.ultimateTime<=0 || segment!=wordSegment) {Hero.ultimateGated=true; return}
+ if kind==4 && (Hero.ultimateTime<=0 || segment!=wordSegment) {Hero.ultimateTime=0; return}
  if kind==5 && (chainOwner<0 || chainOwner!=wordOwner) {return}
  if kind==6 && (bindEnemy<0 || bindEnemy!=wordOwner) {return}
  wordPending=kind; wordSerial++; phase=5; hitStop=0; wordFocusAge=0; wordVisualPaused=false
@@ -39,13 +39,13 @@ func resolveWord(result int) {
  if success {event("wordok"); ring(Hero.px,Hero.py+30,0.7,1)} else {event("wordmiss")}
 }
 func applyInscription(kind int, success bool) {
- if kind==1 {if !success {Hero.bowCharge=0}; Hero.shootBow()}
- if kind==2 {Hero.releaseBlade(success)}
+ if kind==1 {if success {Hero.shootBow()} else {Hero.cancelAttack(); event("skillcancel")}}
+ if kind==2 {if success {Hero.releaseBlade(Hero.chargeTime>=0.55)} else {Hero.cancelAttack(); event("skillcancel")}}
  if kind==3 {
   Hero.healGated=true
   if !success {Hero.healTime=0; if embers<2 {embers++}; event("healrefund")}
  }
- if kind==4 {Hero.ultimateGated=true; if !success {Hero.ultimateStep=5; Hero.ultimateTime=math.Min(Hero.ultimateTime,0.16); event("chainmiss")}}
+ if kind==4 {if success {Hero.releaseUltimate()} else {Hero.ultimateTime=0; Hero.ultimateStep=0; Hero.ultimateGated=false; Hero.attackTime=0; event("skillcancel")}}
  if kind==5 {
   i:=chainOwner; breakChain("wordescape")
   if i>=0 {recovery:=0.25; if success {recovery=0.9}; enemyRecoverFor(i,recovery)}

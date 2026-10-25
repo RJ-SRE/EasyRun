@@ -36,7 +36,7 @@ onKey KeyF8, => {skillFixture()}
 onKey KeyF9, => {skillFixture(); enemyHP[0]=0; Hero.resetHero(480,500); Hero.grounded=false; Hero.vy=0; Hero.invulnerable=0}
 onKey KeyF10, => {skillFixture(); enemyHP[0]=0; Hero.invulnerable=0}
 onKey KeyF11, => {hurt(1)}
-onKey KeyF6, => {skillFixture(); Hero.resetHero(480,250); Hero.grounded=false; Hero.invulnerable=0; enemyBaseX[0]=480; enemyBaseY[0]=60; floorX[0]=80; floorW[0]=800; floorY[0]=120; floorKind[0]=4}
+onKey KeyF6, => {skillFixture(); Hero.resetHero(480,250); Hero.grounded=false; Hero.invulnerable=0; enemyBaseX[0]=480; enemyBaseY[0]=60; floorX[0]=80; floorW[0]=800; floorY[0]=120; floorKind[0]=0}
 // Opposite bob phases align these three foes at arrow height around full charge.
 onKey KeyF7, => {skillFixture(); enemyBaseY[0]=19; enemyBaseX[3]=560; enemyBaseY[3]=45; enemyHP[3]=40; enemyClock[3]=-100; enemyBaseX[6]=680; enemyBaseY[6]=19; enemyType[6]=0; enemyHP[6]=40; enemyClock[6]=-100}
 onKey KeyT`,
@@ -89,7 +89,7 @@ try {
     () => runEvents.some((e) => e.name === "marked") && foes[0]?.mark > 0,
   );
   assert.ok((await page.evaluate(() => foes[0].mark)) > 0);
-  assert.ok((await state()).bowCool > 2.4);
+  assert.equal((await state()).bowCool, 0);
   const beforeHeavy = await page.evaluate(() => foes[0].hp);
   await shot("l");
   await wait(
@@ -103,14 +103,16 @@ try {
     path: fileURLToPath(new URL("mark-break.png", out)),
   });
   const casts = (await events()).filter((e) => e.name === "heavy").length;
+  await wait(() => latestState.attackKind === 0);
   await shot("l", 150);
   await page.waitForTimeout(220);
   assert.equal(
     (await events()).filter((e) => e.name === "heavy").length,
-    casts,
+    casts + 1,
   );
   assert.equal((await state()).chargeTime, 0);
-  await save("blade cooldown blocks repeated charging and release");
+  assert.equal((await state()).bladeCool, 0);
+  await save("blade can be used again after recovery without a cooldown");
   await fixture();
   await shot("u", 60);
   await page.waitForTimeout(300);
@@ -119,13 +121,14 @@ try {
   await page.waitForTimeout(120);
   assert.equal(
     (await events()).filter((e) => e.name === "bowshot").length,
-    shots,
+    shots + 1,
   );
   await tap("Escape");
   await wait(() => latestState.phase === 4);
   const paused = await state();
   await page.waitForTimeout(500);
   assert.equal((await state()).bowCool, paused.bowCool);
+  assert.equal((await state()).elapsed, paused.elapsed);
   await tap("Escape");
   await wait(() => latestState.phase === 1);
   await wait(() => latestState.bowCool === 0);
@@ -133,9 +136,11 @@ try {
   await page.waitForTimeout(200);
   assert.equal(
     (await events()).filter((e) => e.name === "bowshot").length,
-    shots + 1,
+    shots + 2,
   );
-  await save("bow cooldown is three active seconds and freezes on pause");
+  await save(
+    "bow fires on successive inputs without cooldown; pause still freezes combat",
+  );
   await fixture("F7");
   await shot("u");
   await wait(() => foes[0]?.hp === 38 && foes[3]?.hp === 38);
@@ -244,7 +249,10 @@ try {
   await page.waitForTimeout(850);
   assert.equal((await state()).health, 5);
   assert.ok((await events()).some((e) => e.name === "healbreak"));
-  await save("jump cancels healing and keeps the committed cooldown");
+  assert.equal((await state()).healCool, 0);
+  await save(
+    "jump cancels healing, keeps the resource cost and has no cooldown",
+  );
   await fixture("F9");
   await tap("i");
   await page.waitForTimeout(100);
@@ -268,16 +276,16 @@ try {
   );
   assert.equal((await state()).ultimateTime, 0);
   assert.equal((await state()).attackTime, 0);
-  assert.ok((await state()).ultimateCool > 8);
+  assert.equal((await state()).ultimateCool, 0);
   assert.equal((await state()).embers, 2);
   await tap("q");
   await page.waitForTimeout(120);
   assert.equal(
     (await events()).filter((e) => e.name === "chainstart").length,
-    1,
+    2,
   );
   await save(
-    "ultimate emits four cuts and one finisher, earns embers only on hits, then recovers",
+    "ultimate emits five hits, earns embers on hits and can repeat after recovery without cooldown",
   );
   await fixture();
   await page.keyboard.down("w");

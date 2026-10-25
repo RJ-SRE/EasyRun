@@ -169,7 +169,8 @@ try {
   assert.equal((await read()).state.bladeCool, 0);
   assert.equal((await read()).word.count, 1);
   await answer();
-  await wait(() => latestState.bladeCool > 0);
+  await wait(() => runEvents.some((e) => e.name === "heavy"));
+  assert.equal((await read()).state.bladeCool, 0);
   assert.equal((await read()).word.count, 2);
   pass(
     "a successful arrow does not bypass the next charged sword challenge; only its own answer releases the blade",
@@ -181,7 +182,8 @@ try {
   assert.equal((await read()).state.bowCool, 0);
   assert.equal((await read()).word.count, 2);
   await answer();
-  await wait(() => latestState.bowCool > 0);
+  await wait(() => runEvents.filter((e) => e.name === "bowshot").length === 2);
+  assert.equal((await read()).state.bowCool, 0);
   assert.equal((await read()).word.count, 3);
   pass(
     "the following full bow charge also requires its own answer and records exactly one new settlement",
@@ -198,8 +200,14 @@ try {
     report.timing.failureReleaseMs < 350,
     "failure explanation must not hold combat for 650ms",
   );
+  assert.equal(
+    await p.evaluate(
+      () => runEvents.filter((e) => e.name === "bowshot").length,
+    ),
+    2,
+  );
   pass(
-    "wrong meaning resumes the fallback attack promptly and leaves only passive feedback",
+    "wrong meaning cancels the arrow, immediately restores movement and leaves passive feedback",
   );
   await wait(() => latestState.bowCool === 0);
   await charge();

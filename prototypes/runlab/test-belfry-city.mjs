@@ -164,13 +164,19 @@ try {
   await wait(() => latestState.bowCharge >= 0.6);
   await p.keyboard.up("u");
   await wait(() => latestState.phase === 5 && inscriptionDiagnostics.active);
-  await p.keyboard.press("f");
-  assert.equal((await state()).cityArchive, 0);
   assert.equal(await p.locator("#city-interaction").isVisible(), false);
   const questionLift = (await state()).cityLiftY;
   await p.waitForTimeout(250);
   assert.equal((await state()).cityLiftY, questionLift);
-  await p.keyboard.press("Backspace");
+  await p.keyboard.press("f");
+  await wait(() => latestState.phase === 1 && !inscriptionDiagnostics.active);
+  assert.equal((await state()).cityArchive, 0);
+  assert.equal(
+    await p.evaluate(() => runEvents.some((e) => e.name === "bowshot")),
+    false,
+  );
+  await p.keyboard.press("u", { delay: 90 });
+  await wait(() => latestState.phase === 5 && inscriptionDiagnostics.active);
   await answer();
   await wait(() => latestState.cityPrompt === 2);
   await p.keyboard.press("f");

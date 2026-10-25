@@ -92,11 +92,9 @@ async function answer(correct = true) {
   const a = (await diag()).active;
   const word = BANK.get(a.q.wordId);
   if (a.q.type === "spell") {
-    if (correct) await p.keyboard.type(word.word, { delay: 30 });
-    else {
-      await p.keyboard.press("Escape");
-      await p.locator("#word-abandon").click();
-    }
+    if (correct)
+      await p.keyboard.type(word.word.slice(a.input.length), { delay: 30 });
+    else await p.keyboard.press(word.word.startsWith("z") ? "x" : "z");
   } else {
     const i = a.q.options.indexOf(word.meaning);
     await p.keyboard.press(String((correct ? i : (i + 1) % 3) + 1));
@@ -144,9 +142,18 @@ try {
   );
   const prompt = (await diag()).active;
   assert.equal(prompt.q.type, "spell");
-  await p.keyboard.type("juqeil", { delay: 30 });
+  await p.keyboard.type(BANK.get(prompt.q.wordId).word.slice(0, 2), {
+    delay: 30,
+  });
   assert.equal((await state()).phase, 5);
-  for (let i = 0; i < 6; i++) await p.keyboard.press("Backspace");
+  assert.equal(
+    await p.evaluate(() =>
+      runEvents.some((e) =>
+        ["bowshot", "heavy", "chainstart", "hook"].includes(e.name),
+      ),
+    ),
+    false,
+  );
   await p.keyboard.press("Escape");
   const at = (await diag()).active.elapsed;
   await p.waitForTimeout(300);
@@ -155,23 +162,34 @@ try {
   await answer();
   await wait(() => runEvents.some((e) => e.name === "marked"));
   assert.equal((await diag()).count, 1);
-  assert.ok((await state()).bowCool > 0);
+  assert.equal((await state()).bowCool, 0);
   pass(
     "typing isolation, escape pause, full arrow and single progress settlement",
   );
   const serial = (await state()).wordSerial;
   await charge("l");
+  await focus(2);
+  assert.equal((await state()).wordSerial, serial + 1);
+  await answer();
   await wait(() => runEvents.some((e) => e.name === "markbreak"));
-  assert.equal((await state()).wordSerial, serial);
-  assert.equal((await diag()).count, 1);
-  pass("arrow mark links directly into charged sword without second question");
+  assert.equal((await diag()).count, 2);
+  pass("marked blade still requires its own answer before detonating the mark");
   await fixture();
   await charge("l");
   await focus(2);
   await answer(false);
-  assert.ok((await state()).bladeCool > 4);
+  await p.waitForTimeout(750);
+  assert.equal((await state()).bladeCool, 0);
+  assert.equal((await state()).attackKind, 0);
+  assert.equal(await p.evaluate(() => foes[1].hp), 100);
+  assert.equal(
+    await p.evaluate(() => runEvents.some((e) => e.name === "heavy")),
+    false,
+  );
   assert.equal((await diag()).count, 0);
-  pass("unlinked sword failure releases basic heavy attack and cooldown");
+  pass(
+    "one misspelled letter cancels the entire blade, with no fallback damage or cooldown",
+  );
   await fixture("F8");
   await p.keyboard.press("i", { delay: 50 });
   await focus(3);
@@ -182,8 +200,8 @@ try {
   await answer(false);
   assert.equal((await state()).health, hp);
   assert.equal((await state()).embers, 1);
-  assert.ok((await state()).healCool > 3);
-  pass("heal failure refunds once, no healing, cooldown retained");
+  assert.equal((await state()).healCool, 0);
+  pass("heal failure refunds once, with no healing or cooldown");
   await fixture("F8");
   await p.keyboard.press("i", { delay: 50 });
   await focus(3);
@@ -197,12 +215,24 @@ try {
   const before = await p.evaluate(
     () => runEvents.filter((e) => e.name === "chainhit").length,
   );
-  assert.equal(before, 3);
+  assert.equal(before, 0);
+  assert.equal(
+    await p.evaluate(() => runEvents.some((e) => e.name === "chainstart")),
+    false,
+  );
   const ultSerial = (await state()).wordSerial;
   await answer();
   await wait(() => runEvents.filter((e) => e.name === "chainhit").length === 5);
   assert.equal((await state()).wordSerial, ultSerial);
-  pass("one meaning question releases ultimate hits four and five");
+  await wait(() => latestState.ultimateTime === 0);
+  assert.equal((await state()).ultimateCool, 0);
+  await p.keyboard.press("q");
+  await focus(4);
+  assert.equal((await state()).wordSerial, ultSerial + 1);
+  await answer(false);
+  pass(
+    "ultimate asks before any hit, releases all five on success, and can be requested again without cooldown",
+  );
   await fixture();
   await p.keyboard.press("q", { delay: 50 });
   await focus(4);
@@ -212,15 +242,19 @@ try {
     await p.evaluate(
       () => runEvents.filter((e) => e.name === "chainhit").length,
     ),
-    3,
+    0,
   );
-  pass("failed ultimate retains first three hits and skips two finishers");
+  assert.equal((await state()).ultimateTime, 0);
+  pass("failed ultimate cancels all five hits and its release effects");
   await fixture("F8");
   await p.keyboard.press("q", { delay: 50 });
-  await p.waitForTimeout(1500);
-  assert.equal((await state()).phase, 1);
-  assert.equal((await diag()).active, null);
-  pass("empty ultimate does not summon a pointless question");
+  await focus(4);
+  await answer(false);
+  assert.equal(
+    await p.evaluate(() => runEvents.some((e) => e.name === "chainstart")),
+    false,
+  );
+  pass("even an empty ultimate requires an answer and cannot bypass the gate");
   await fixture("F10");
   await p.keyboard.press("f", { delay: 50 });
   await focus(5);
@@ -256,17 +290,74 @@ try {
   assert.equal((await diag()).count, 0);
   assert.equal((await state()).wordPending, 0);
   pass("restart cancels pending action without late release or credit");
-  await fixture("F8");
-  await p.keyboard.press("i", { delay: 50 });
-  await focus(3);
-  await wait(
-    () => !inscriptionDiagnostics.active && latestState.phase === 1,
-    null,
-    12000,
+  for (const [kind, key] of [
+    [1, "u"],
+    [2, "l"],
+    [3, "i"],
+    [4, "q"],
+  ]) {
+    await fixture();
+    if (kind < 3) await charge(key);
+    else await p.keyboard.press(key, { delay: 50 });
+    await focus(kind);
+    await wait(
+      () => !inscriptionDiagnostics.active && latestState.phase === 1,
+      null,
+      14000,
+    );
+    await p.waitForTimeout(900);
+    assert.equal((await state()).health, 5);
+    assert.equal((await state()).embers, 1);
+    assert.equal((await diag()).count, 0);
+    assert.equal(await p.evaluate(() => foes[1].hp), 100);
+    assert.equal(
+      await p.evaluate(() =>
+        runEvents.some((e) =>
+          ["bowshot", "heavy", "chainstart", "healcomplete"].includes(e.name),
+        ),
+      ),
+      false,
+    );
+    for (const field of ["bowCool", "bladeCool", "healCool", "ultimateCool"])
+      assert.equal((await state())[field], 0);
+    pass(
+      `timeout cancels skill ${kind} with no delayed damage, heal or cooldown`,
+    );
+  }
+  for (const [kind, key, event] of [
+    [1, "u", "bowshot"],
+    [2, "l", "heavy"],
+  ]) {
+    await fixture();
+    await p.keyboard.press(key, { delay: 90 });
+    await focus(kind);
+    assert.ok((await state())[kind === 1 ? "bowCharge" : "chargeTime"] < 0.55);
+    await answer(false);
+    assert.equal(
+      await p.evaluate((name) => runEvents.some((e) => e.name === name), event),
+      false,
+    );
+    await p.keyboard.press(key, { delay: 90 });
+    await focus(kind);
+    await answer();
+    await wait((name) => runEvents.some((e) => e.name === name), event);
+    assert.equal((await diag()).count, 1);
+    pass(
+      `short skill ${kind} requires an answer; a failed cast can immediately be retried`,
+    );
+  }
+  await fixture();
+  await charge("u");
+  await focus(1);
+  await p.keyboard.press("Escape");
+  await p.locator("#word-abandon").click();
+  await wait(() => latestState.phase === 1 && !inscriptionDiagnostics.active);
+  await p.waitForTimeout(250);
+  assert.equal(
+    await p.evaluate(() => runEvents.some((e) => e.name === "bowshot")),
+    false,
   );
-  assert.equal((await state()).embers, 1);
-  assert.equal((await diag()).count, 0);
-  pass("timeout is bounded, refunds heal and returns control");
+  pass("abandon cancels the pending skill without a fallback projectile");
   await p.waitForTimeout(500);
   await p.keyboard.press("F11");
   await wait(() => latestState.phase === 3);

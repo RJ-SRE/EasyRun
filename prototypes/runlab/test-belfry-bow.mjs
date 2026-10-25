@@ -33,14 +33,14 @@ func bowSync() {for i:=0;i<len(enemyHP);i++ {clearEnemyMotion(i); enemyState[i]=
 onKey KeyF8, => {bowFixture()}
 onKey KeyF9, => {bowFixture(); Hero.resetHero(450,0); enemyBaseX[0]=120; enemyBaseY[0]=120; bowSync()}
 onKey KeyF10, => {bowFixture(); enemyBaseX[0]=450; enemyBaseY[0]=45; enemyBaseX[3]=340; enemyBaseY[3]=195; enemyHP[3]=40; bowSync()}
-onKey KeyF6, => {bowFixture(); floorX[1]=80; floorW[1]=800; floorY[1]=120; floorKind[1]=4; enemyBaseX[3]=540; enemyBaseY[3]=45; enemyHP[3]=40; bowSync()}
+onKey KeyF6, => {bowFixture(); floorX[1]=80; floorW[1]=800; floorY[1]=120; floorKind[1]=0; enemyBaseX[3]=540; enemyBaseY[3]=45; enemyHP[3]=40; bowSync()}
 onKey KeyF7, => {bowFixture(); enemyType[0]=3; enemyBaseX[0]=450; enemyBaseY[0]=45; bossShield=2; enemyBaseX[3]=540; enemyBaseY[3]=45; enemyHP[3]=40; bowSync()}
 onKey KeyF5, => {bowFixture(); enemyBaseX[0]=950; enemyBaseY[0]=45; enemyBaseX[3]=340; enemyBaseY[3]=450; enemyHP[3]=40; bowSync()}
 onKey KeyF4, => {bowFixture(); enemyHP[0]=0; bowSync()}
 onKey KeyF3, => {enemyBaseX[3]=380; enemyBaseY[3]=45; bowSync()}
 onKey KeyF2, => {enemyBaseX[0]=550; enemyBaseY[0]=240; bowSync()}
 onKey KeyF11, => {if Hero.bowTarget>=0 {enemyHP[Hero.bowTarget]=0}}
-onKey KeyF12, => {floorX[1]=80; floorW[1]=800; floorY[1]=120; floorKind[1]=4}
+onKey KeyF12, => {floorX[1]=80; floorW[1]=800; floorY[1]=120; floorKind[1]=0}
 onKey KeyT`,
   );
   await route.fulfill({ json: data });
@@ -94,7 +94,7 @@ try {
   });
   await page.keyboard.up("u");
   await wait(() => foes[0]?.hp === 38 && latestState.bowTarget === -1);
-  assert.ok((await state()).bowCool > 2.4);
+  assert.equal((await state()).bowCool, 0);
   await save(
     "unprompted aim tracks a moving elevated foe and the charged arrow hits",
   );

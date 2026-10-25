@@ -1,0 +1,98 @@
+{
+  "recordedAt": "2026-10-25T03:58:53.466137+00:00",
+  "baseCommit": "d62f62a62328be8df9b443339b03a143dc4030ee",
+  "branch": "feat/inscription-v1",
+  "version": "0.8.1",
+  "scope": "Every valid U/L/I/Q cast asks in inscription mode; mistakes, timeout and abandon cancel without fallback. No skill cooldowns. Base movement and attack cadence remain.",
+  "rules": {
+    "passed": 18,
+    "failed": 0,
+    "report": "rules.txt"
+  },
+  "browserChecks": {
+    "flow": {
+      "cases": 24,
+      "errors": 0,
+      "report": "flow.json"
+    },
+    "motion": {
+      "cases": 9,
+      "errors": 0,
+      "report": "motion.json"
+    },
+    "skills": {
+      "cases": 17,
+      "errors": 0,
+      "report": "skills.json"
+    },
+    "bow": {
+      "cases": 9,
+      "errors": 0,
+      "report": "bow.json"
+    },
+    "resilience": {
+      "cases": 5,
+      "errors": 0,
+      "report": "resilience.json"
+    },
+    "city": {
+      "cases": 12,
+      "errors": 0,
+      "report": "city.json"
+    },
+    "achievements": {
+      "cases": 12,
+      "errors": 0,
+      "report": "achievements.json"
+    }
+  },
+  "browserCheckTotal": 88,
+  "routes": {
+    "inscription-hard": {
+      "passed": true,
+      "questions": 11,
+      "report": "route-1.json"
+    },
+    "action-traveler": {
+      "passed": true,
+      "deathRetryVerified": true,
+      "report": "route-0.json"
+    }
+  },
+  "build": {
+    "files": 401,
+    "sprites": 58,
+    "xbpEntries": 402,
+    "xbpZipIntegrity": true,
+    "sourceMatchesManifest": true
+  },
+  "checks": [
+    "Full game JavaScript ESLint",
+    "Changed source/docs Prettier",
+    "Git whitespace",
+    "Relative Markdown target files"
+  ],
+  "earlierFailure": {
+    "report": "skills-attempt-1.json",
+    "reason": "Old fixed-platform test fixture used kind 4, now an inactive unrepaired mirror bridge. Fixed skill/bow fixture to unconditional kind 0; actual collision assertions retained and passed. No production collision change."
+  },
+  "sourceSha256": {
+    "package.json": "615e2234707d7f78b3e7e2eb6668999d891762fe253d9265e85e695e33410e7e",
+    "prototypes/runlab/public/belfry.html": "88f7848484d60ae0c9e9675c1992254dd12d6f53eadc7e2beb2183b8d27515e9",
+    "prototypes/runlab/public/belfry.js": "976619ff9645a0a3797d9a2c7182beed58b0e72897cf438a7c9e4e1d957fb9de",
+    "prototypes/runlab/public/index.html": "88f7848484d60ae0c9e9675c1992254dd12d6f53eadc7e2beb2183b8d27515e9",
+    "prototypes/runlab/public/inscription-ui.js": "a47bf6112f279cdab7ff3e55a7e1f8e8d37e2a6bcf884abe1fa14a423ca17073",
+    "prototypes/runlab/spx/belfry/Hero.spx": "a8e3021e597dcad37d7706d2347a54a46e23fe27f462d6b7b29f7bd27ff74690",
+    "prototypes/runlab/spx/belfry/Inscription.spx": "fb04616f1d71a96ef71360363e743e0206f46a0cb6342c8ae41ac35d99830133",
+    "prototypes/runlab/test-belfry-bow.mjs": "d81cc4864fb7b3e97130a9c555ab1334ee21f430000baca5c4df0eab85c1a15a",
+    "prototypes/runlab/test-belfry-city.mjs": "306a65e46a85f941c68ded664d8731f0511804898ba94bbf351bf231b9e320e5",
+    "prototypes/runlab/test-belfry-inscription-motion.mjs": "747a801b5c35ae2a13b445423c8f947cfc0662f7b14b6c034f7ab3df11a20676",
+    "prototypes/runlab/test-belfry-inscription.mjs": "304644c0a6b801dc6a50e274ebc61a23daa1620f53d72e825ac19a3bee05db2a",
+    "prototypes/runlab/test-belfry-skills.mjs": "f5e69cbbd14ed3eb93a89ae2d660e94921a7632c6c366d698e4fe8beb2848999"
+  },
+  "limits": [
+    "Local Chromium, not remote CI or cross-device testing.",
+    "Flow/skills/bow/city use documented response-only fixtures; routes use production map and real keys.",
+    "Host rAF timings are not an engine GPU FPS guarantee."
+  ]
+}
