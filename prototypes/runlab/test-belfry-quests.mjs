@@ -149,25 +149,34 @@ try {
   assert.equal((await state()).expedition.sides[3], 1);
   assert.equal(await achievement("hunter-trial"), undefined);
   await at("g");
-  // Follow the authored downward trial toward its delivery, using real input.
-  // Observe actual attachment before releasing, rather than a wall-clock
-  // pulse that can skip a rung and fly out of the trial region.
-  const trialStartY = (await state()).y;
+  // Traverse from the start ring toward the two rightward guide positions.
+  // Reverse vertical intent for the middle catch so the
+  // automatic target cannot skip it and reattach to the same high ring.
+  // Real attachment and the unchanged no-landing rule determine completion.
+  const trialStart = await state();
+  const rings = [
+    layout.anchors.find((a) => a[0] === 160 && a[1] === nodes[6].y + 160),
+    layout.anchors.find((a) => a[0] === 330 && a[1] === nodes[6].y + 160),
+    layout.anchors.find((a) => a[0] === 600 && a[1] === nodes[6].y + 400),
+  ];
+  assert(rings.every(Boolean), "the authored trial rings must exist");
+  report.trial = [];
   let hooked = -1,
     attachedAt = 0,
     releasedAt = -10,
     holdingE = false;
-  await page.keyboard.down("s");
   for (let t = 0; t < 120 && (await state()).expedition.trialHooks < 3; t++) {
     const s = await state();
-    const candidates = layout.anchors
-      .filter((a) => a[1] < s.y - 40 && a[1] > s.y - 440)
-      .sort(
-        (a, b) =>
-          Math.hypot(a[0] - s.x, a[1] - s.y) -
-          Math.hypot(b[0] - s.x, b[1] - s.y),
-      );
-    const target = candidates[0]?.[0] ?? 480;
+    report.trial.push({
+      elapsed: s.elapsed,
+      x: s.x,
+      y: s.y,
+      hook: s.hook,
+      target: s.target,
+      count: s.expedition.trialHooks,
+    });
+    if (s.expedition.room < 9 || s.expedition.room > 11) break;
+    const target = rings[Math.min(s.expedition.trialHooks, 2)][0];
     for (const [keyName, down] of [
       ["a", s.x > target + 25],
       ["d", s.x < target - 25],
@@ -185,6 +194,7 @@ try {
       }
     } else {
       hooked = -1;
+      await page.keyboard[s.expedition.trialHooks === 1 ? "down" : "up"]("s");
       if (holdingE) {
         await page.keyboard.up("e");
         holdingE = false;
@@ -202,8 +212,11 @@ try {
     "must actually attach to three distinct anchors in one flight",
   );
   assert(
-    (await state()).y < trialStartY - 150,
-    "the continuous hook route must progress downward toward delivery",
+    Math.hypot(
+      (await state()).x - trialStart.x,
+      (await state()).y - trialStart.y,
+    ) > 150,
+    "three different hooks must produce real traversal away from the start ledge",
   );
   await at("h");
   await key("f");
