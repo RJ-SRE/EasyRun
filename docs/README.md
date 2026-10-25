@@ -1,6 +1,6 @@
 # 文档总目录
 
-整理日期：2026-10-25（Asia/Shanghai）。当前产品是倒悬钟城 v0.7，包含铭文远征与钟城铭录；最新交付分支为 `feat/inscription-v1`。
+整理日期：2026-10-25（Asia/Shanghai）。当前产品是倒悬钟城 v0.8 五区首版，保留铭文远征与钟城铭录；最新交付分支为 `feat/inscription-v1`。新增内容与未完成项见 [城市实现](CITY_V08.md)。
 
 本目录把正在实施的规则、历史记录和未实装提案分开。产品行为以 [PRD](PRD.md) 为当前需求入口，精确技术契约见对应实现文档；验证结论必须对应报告日期和源码，不能因为文档名称写着“完整”就推断所有平台均已验收。
 
@@ -40,8 +40,9 @@
 | 28% 聚焦表现、答题后立即交回动作       | 已实装；全局专注调度仍未实现 | [铭文实现](INSCRIPTION_V07.md)                          |
 | 15 项成就、称号、本机导出              | 已实装                       | [成就设计](ACHIEVEMENTS_V07.md)                         |
 | 五通道钩索关卡                         | 独立可玩实验，单独构建       | [通道模块](levels/README.md)                            |
-| 五区域十五房、语义机关、换境复核       | 未实装设计提案               | [三十词远征](planning/thirty-word-expedition/README.md) |
-| 角色语音、对白、AI 对话                | 当前停用；仅保留历史制作资料 | [音频制作资料](../production/audio-v06/README.md)       |
+| 五区环境、四项修复、供能分支与纪事     | 已实装，沿用原纵井主路       | [城市实现](CITY_V08.md)                                 |
+| 十五房拓扑、语义机关、换境复核         | 未实装设计提案               | [三十词远征](planning/thirty-word-expedition/README.md) |
+| 角色语音、旧对白系统、AI 对话          | 当前停用；仅保留历史制作资料 | [音频制作资料](../production/audio-v06/README.md)       |
 | GitHub Issue                           | 五条草稿保存在仓库，未发布   | [草稿与状态核对](issues/2026-10-25-backlog.md)          |
 
 ## 历史与来源
@@ -54,7 +55,7 @@
 - [铭文 v1.1 策划](planning/inscription-v1/DESIGN.md)：开发前设计及模块快照；阶段性“本轮不开发”不覆盖后续已实装状态。
 - [XBuilder 边界研究](../research/xbuilder-boundaries/README.md)：固定版本的技术证据，不是所有版本的性能保证。
 - [旧原型说明](../prototypes/runlab/README.md)：默认入口之后保留两个早期玩法的历史介绍。
-- 发布记录：[首次纳管](releases/2026-10-24-git-baseline.md)、[纵向单关](releases/2026-10-24-belfry.md)、[战斗版](releases/2026-10-25-combat.md)、[v0.7 当前交付](releases/2026-10-25-v07-handoff.md)。
+- 发布记录：[首次纳管](releases/2026-10-24-git-baseline.md)、[纵向单关](releases/2026-10-24-belfry.md)、[战斗版](releases/2026-10-25-combat.md)、[v0.7 交付快照](releases/2026-10-25-v07-handoff.md)。
 
 ## 文档维护方法
 

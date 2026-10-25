@@ -26,6 +26,7 @@ export default tseslint.config(
     files: [
       "prototypes/runlab/build-belfry.mjs",
       "prototypes/runlab/belfry-level.mjs",
+      "prototypes/runlab/belfry-city-art.mjs",
       "prototypes/runlab/test-belfry*.mjs",
     ],
     languageOptions: {

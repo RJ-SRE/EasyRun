@@ -60,6 +60,7 @@ try {
         { file: "test-belfry-inscription-resilience.mjs", words: true },
         { file: "test-belfry-inscription-motion.mjs", words: true },
         { file: "test-belfry-achievements.mjs", words: true },
+        { file: "test-belfry-city.mjs", words: true },
         { file: "test-belfry.mjs" },
         {
           file: "test-belfry-route.mjs",

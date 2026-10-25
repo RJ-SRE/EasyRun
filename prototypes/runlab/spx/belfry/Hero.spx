@@ -359,6 +359,7 @@ func update(dt float64) {
   } else {vx+=input*1100*dt}
   gravity:=1250.0; if grap && hook>=0 {gravity=460}; if ultimateTime>0.22 {gravity=280}
   vy-=gravity*dt
+  if practice==0 && cityWind==1 && px>640 && px<830 && py< -90 && py> -730 && hook<0 && !plunging {vy=math.Min(560,vy+1850*dt)}
  }
  if hook>=0 {
   hookAge+=dt
@@ -403,9 +404,8 @@ func update(dt float64) {
  if vy<=0 {
   for i:=0;i<len(floorX);i++ {
    top:=floorY[i]
-   active:=true; if segment==2 && floorKind[i]==1 {active=false}
-   if floorKind[i]==2 && enemyHP[2]<=0 {active=false}; if floorKind[i]==3 && enemyHP[6]<=0 {active=false}
-   solid:=floorKind[i]>=2 || i==14
+   active:=floorActive(i)
+   solid:=floorKind[i]==2 || floorKind[i]==3 || i==14
    if hook>=0 && hookY<py+20 && !solid {active=false}
    tolerance:=4.0; if solid {tolerance=14}
    if active && (dropTime<=0 || solid) && px+12>floorX[i] && px-12<floorX[i]+floorW[i] && oldY>=top-tolerance && py<=top {py=top; vy=0; grounded=true}

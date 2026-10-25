@@ -18,6 +18,9 @@ export const platforms = [
   [80, 800, -3590, 0],
   [80, 800, -1120, 2],
   [80, 800, -2230, 3],
+  [355, 200, -1360, 5], // counterweight lift, powered at the foundry
+  [335, 280, -2740, 4], // aligned mirror bridge
+  [340, 220, -1960, 6], // archive service shelf revealed by draining
 ];
 export const anchors = [
   [300, 140],

@@ -1,6 +1,6 @@
 # 倒悬钟城技术设计
 
-v0.7，2026-10-25，当前交付包括铭文与成就。铭文事务见 [实现说明](INSCRIPTION_V07.md)，成就规则见 [钟城铭录](ACHIEVEMENTS_V07.md)，可执行命令见 [运行手册](RUNBOOK.md)。基础关卡参数参见 [v0.4 技术设计](TECHNICAL_DESIGN-v0.4.md)。Node 24.22.1 / pnpm 11.9.0 / spx 3.3.0 / Playwright 1.64.1 保持锁定，无新增运行库。
+v0.8，2026-10-25，当前交付包括五区、城市修复、供能选择、铭文与成就。铭文事务见 [实现说明](INSCRIPTION_V07.md)，成就规则见 [钟城铭录](ACHIEVEMENTS_V07.md)，可执行命令见 [运行手册](RUNBOOK.md)。基础关卡参数参见 [v0.4 技术设计](TECHNICAL_DESIGN-v0.4.md)。Node 24.22.1 / pnpm 11.9.0 / spx 3.3.0 / Playwright 1.64.1 保持锁定，无新增运行库。
 
 ## 架构与入口
 
@@ -9,6 +9,14 @@ v0.7，2026-10-25，当前交付包括铭文与成就。铭文事务见 [实现�
 `Assassins.spx` 在构建时合入主场景，提供五类敌人的状态机；`EnemyTell.spx`、`Hazard.spx` 表现起手、动态锁链、近战刀弧与擒拿，`Enemy.spx` 与 `EnemyBlend.spx` 提供姿态与短交叠。所有实体克隆仍在 `initLevel` 完成后由主场景创建。
 
 `public/belfry-audio.js` 只管理动作音效、环境音乐与播放生命周期；角色语音/对白按用户要求停用。运行入口不导入 `belfry-dialogue.js`、`belfry-director.js`，不加载任何角色语音资源。`public/audio/sfx/` 包含 82 个动作/材质采样及来源清单；制作稿和试音保留在制作资料中。
+
+## 城市环境与叙事
+
+`City.spx` 在构建时合入主场景。`floorActive` 统一决定原钟门与三块新平台是否存在；升降台索引 17、镜桥 18、档案肩台 19，原锚点 / 敌人 / Boss 索引保持稳定。`updateCity(dt)` 只在有效模拟更新中运行，搬运站立乘客后进入 Hero 更新；表现时钟不推动碰撞体。
+
+四个修复标记、cityChoice、cityDepth 随检查点保存，恢复时校验并注入宿主配置。默认值兼容旧存档；普通死亡不重置城市，新局调用 resetCity。CityUI 只发 F/V 输入和读状态，不能通过网页直接写路线。
+
+`belfry-city-art.mjs` 将五个区域背景、配重、风柱、水面、碎镜和机关绘入 spx。`belfry-city.js` 管理非阻塞短笺、纪事、按状态选择的返程与结局；纪事的暂停确认与输入隔离同成就册。资产、阈值和测试夹具边界见 [CITY_V08](CITY_V08.md)。
 
 ## 战斗状态机
 

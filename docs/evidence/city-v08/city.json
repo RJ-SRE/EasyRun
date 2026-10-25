@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-25T03:34:16.858Z",
+  "cases": [
+    "five-area opening and spoiler-safe journal; real wind-valve interaction is optional and idempotent",
+    "wind valve changes real upward physics inside the visible wind column",
+    "restored foundry lift moves and physically carries a standing passenger",
+    "journal pauses the lift and combat, contains action keys and resumes only its own pause",
+    "archive reveals actual story and a service ledge; typing F during a word challenge never activates it",
+    "mirror repair activates an actual collision bridge; the unrepaired route has no invisible floor",
+    "the pre-boss choice advertises costs and locks once chosen",
+    "checkpoint reload preserves all repairs, explored districts and the final decision",
+    "leave-light choice changes actual core health and tide speed, then reaches its specific ending",
+    "new adventure resets repairs; carry-heart choice restores embers and has a distinct unread-archive ending",
+    "ending reflects whether the archive was read; journal remains bounded on narrow screens",
+    "fullscreen keeps the city journal accessible without restarting a finished run"
+  ],
+  "errors": [],
+  "fixture": "Real first-platform interaction; later fixtures only position the hero, remove enemies and arrange the boss finishing hit in response source. Normal engine input, physics, collisions, city rules, persistence and UI remain in use. This is not a full-route replay."
+}

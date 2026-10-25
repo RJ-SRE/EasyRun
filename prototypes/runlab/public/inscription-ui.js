@@ -280,7 +280,7 @@ export class InscriptionUI {
     const checkpoint = s && r.started && !r.won ? integer(s.checkpoint, 4) : -1;
     data["main.spx"] = data["main.spx"].replace(
       "// HOST_CONFIGURATION",
-      `wordMode=${this.book.settings.enabled ? 1 : 0}; hostCheckpoint=${checkpoint}; hostSegment=${integer(s?.segment, 2)}; hostElapsed=${finite(s?.elapsed)}; hostScore=${integer(s?.score, 10000000)}; difficulty=${integer(s?.difficulty, 1)}`,
+      `wordMode=${this.book.settings.enabled ? 1 : 0}; hostCheckpoint=${checkpoint}; hostSegment=${integer(s?.segment, 2)}; hostElapsed=${finite(s?.elapsed)}; hostScore=${integer(s?.score, 10000000)}; difficulty=${integer(s?.difficulty, 1)}; hostCityWind=${integer(s?.cityWind, 1)}; hostCityForge=${integer(s?.cityForge, 1)}; hostCityArchive=${integer(s?.cityArchive, 1)}; hostCityMirror=${integer(s?.cityMirror, 1)}; hostCityChoice=${integer(s?.cityChoice, 2)}; hostCityDepth=${finite(s?.cityDepth)}`,
     );
   }
   attach(w) {
@@ -472,6 +472,12 @@ export class InscriptionUI {
         elapsed: s.elapsed,
         score: s.score,
         difficulty: s.difficulty,
+        cityWind: s.cityWind,
+        cityForge: s.cityForge,
+        cityArchive: s.cityArchive,
+        cityMirror: s.cityMirror,
+        cityChoice: s.cityChoice,
+        cityDepth: s.cityDepth,
       };
     if (
       this.active &&

@@ -1,5 +1,6 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
+import { addCityArt } from "./belfry-city-art.mjs";
 import { chromium } from "@playwright/test";
 import {
   platforms,
@@ -373,13 +374,13 @@ for (const [prefix, frames] of [
       new URL(`art/belfry/frames/${prefix}-${i}.png`, root),
       Buffer.from(frames[i], "base64"),
     );
-const bg = await png("art/belfry/clockwell.png", 1510);
-sprite(
-  "Cathedral",
-  { scene: bg },
-  { x: 480, y: -120 },
-  "onStart => {for {waitNextFrame(); setXYpos 480,cameraY*0.96-80}}",
-);
+await mkdir(new URL("public/art/city/", root), { recursive: true });
+for (const name of ["wind", "forge", "archive", "mirror", "heart"])
+  await copyFile(
+    new URL(`art/belfry/city/${name}.png`, root),
+    new URL(`public/art/city/${name}.png`, root),
+  );
+await addCityArt({ sprite, png, vector });
 // Depth grading remains subtle so silhouettes, brass anchors and warnings read.
 sprite(
   "Depth",
@@ -403,13 +404,12 @@ function clockArt(r = 210) {
   s += `<path d="M${r} 36v${r - 36}l${r / 2} ${r / 3}" fill="none" stroke="#968567" stroke-width="5"/><circle cx="${r}" cy="${r}" r="12" fill="#18222a" stroke="#b4a381"/>`;
   return vector(r * 2, r * 2, s);
 }
-for (let i = 0; i < 5; i++)
-  sprite(
-    "Dial" + i,
-    { dial: clockArt() },
-    { x: i % 2 ? 750 : 195, y: -430 - i * 760, rotationStyle: "normal" },
-    `onStart => {for {waitNextFrame(); setHeading 90+visualTime*${i % 2 ? 0.8 : -0.8}; setGraphicEffect GhostEffect,68}}`,
-  );
+sprite(
+  "DialCore",
+  { dial: clockArt() },
+  { x: 480, y: -3460, rotationStyle: "normal" },
+  "onStart => {for {waitNextFrame(); setHeading 90+visualTime*0.8; setGraphicEffect GhostEffect,76}}",
+);
 // Foreground buttresses frame the vertical play field without obscuring routes.
 for (let side = 0; side < 2; side++) {
   let c =
@@ -420,6 +420,7 @@ for (let side = 0; side < 2; side++) {
     "Buttress" + side,
     { wall: vector(70, 4000, c) },
     { x: side ? 912 : 48, y: -1760 },
+    "onStart => {setGraphicEffect GhostEffect,45; setGraphicEffect BrightnessEffect,-15}",
   );
 }
 // One texture shared by all ledges; clones scale the drawing, while collision
@@ -435,11 +436,13 @@ sprite(
  for {
   dt:=float64(waitNextFrame()); x:=floorX[i]+floorW[i]/2; y:=floorY[i]; heading:=90.0; ghost:=0.0
   if floorKind[i]==1 && segment==2 {y-=clamp(returnTime*180,0,700); heading+=clamp(returnTime*10,0,35); ghost=clamp(returnTime*20,0,100)}
-  if floorKind[i]>=2 {
+  if floorKind[i]==2 || floorKind[i]==3 {
    guard:=2; if floorKind[i]==3 {guard=6}
    if phase==1 {if enemyHP[guard]<=0 {opening=clamp(opening+dt*1.3,0,1)} else {opening=0}}
    x+=opening*900; ghost=opening*70
   }
+  if !floorActive(i) && floorKind[i]>=4 {ghost=100}
+  if floorKind[i]==4 {setGraphicEffect ColorEffect,18} else if floorKind[i]==5 {setGraphicEffect BrightnessEffect,18}
   if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {setSize floorW[i]/1983}
   setXYpos x,y; setHeading heading; setGraphicEffect GhostEffect,ghost
  }
@@ -1007,6 +1010,7 @@ sprite(
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
 const initialization = `func initLevel() {
+ cityNodeX=[]float64{315,230,720,770,230}; cityNodeY=[]float64{0,-1050,-2100,-2630,-3150}
  anchorX=${floats(anchors.map((a) => a[0]))}; anchorY=${floats(anchors.map((a) => a[1]))}
  floorX=${floats(platforms.map((a) => a[0]))}; floorW=${floats(platforms.map((a) => a[1]))}; floorY=${floats(platforms.map((a) => a[2]))}; floorKind=${ints(platforms.map((a) => a[3]))}
  enemyBaseX=${floats(enemies.map((a) => a[0]))}; enemyBaseY=${floats(enemies.map((a) => a[1]))}; enemyX=${floats(enemies.map((a) => a[0]))}; enemyY=${floats(enemies.map((a) => a[1]))}; enemyType=${ints(enemies.map((a) => a[2]))}
@@ -1024,6 +1028,7 @@ files["main.spx"] = (await code("main")).replace(
   initialization +
     (await code("Assassins")) +
     (await code("Inscription")) +
+    (await code("City")) +
     "\nfunc dist(",
 );
 files["assets/index.json"] = JSON.stringify({

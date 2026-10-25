@@ -1,6 +1,6 @@
 # 本地运行、维护与交接手册
 
-适用：`feat/inscription-v1` 的倒悬钟城 v0.7。更新：2026-10-25。以下命令都从仓库根目录执行；Windows 原生脚本和跨平台兼容性尚未验收。
+适用：`feat/inscription-v1` 的倒悬钟城 v0.8 五区首版。更新：2026-10-25。以下命令都从仓库根目录执行；Windows 原生脚本和跨平台兼容性尚未验收。
 
 ## 1. 环境与第一次启动
 
@@ -146,3 +146,14 @@ python3 prototypes/runlab/passages-package.py
 ## 8. 本轮交接检查
 
 `a97d2f8` 的成就证据属于取消免题续招前的历史快照，不能当成当前代码的新验证。最新变更的实际复测范围与结果见 [验证文档](TESTING.md) 末尾。提交、CI 和回退见 [Git 流程](GIT_WORKFLOW.md)。
+
+## v0.8 城市专项与入口核对
+
+```sh
+bash scripts/with-env.sh node prototypes/runlab/build-belfry.mjs
+RUNLAB_URL='http://127.0.0.1:4184/?words=on' bash scripts/with-env.sh node prototypes/runlab/test-belfry-city.mjs
+```
+
+城市专项使用独立浏览器和响应副本中的可复现场地，不影响实际玩家存档；完整测试入口也包含此项。当前 Belfry 构建输出 401 文件 / 58 精灵。主页面标题栏为回声之城 / FIVE DISTRICTS，首台有可交互风阀和城中纪事按钮。若仍见旧版，先确认服务工作目录和重新构建，再刷新原标签页；不要仅凭端口或 URL 查询参数判断代码版本。
+
+当前协作工作树为 /Users/rj/.codex/worktrees/inscription-integration/七牛黑客松。同机其他目录属于并行工作，不能覆盖它们来更新此页面。

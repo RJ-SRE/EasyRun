@@ -160,7 +160,7 @@ export class AchievementUI {
     const nested = ["#guide", "#settings-panel", "#word-journal"].some(
       (id) => $(id) && !$(id).hidden,
     );
-    this.button.disabled = s.phase === 5 || nested;
+    this.button.disabled = s.phase === 5 || nested || !!$("#city-book")?.open;
     if (this.waitingPause && s.phase !== 1) {
       this.waitingPause = false;
       if (this.closeRequested) this.close();
@@ -172,6 +172,7 @@ export class AchievementUI {
       [1, 2].includes(s.phase) &&
       !document.hidden &&
       !this.dialog.open &&
+      !$("#city-book")?.open &&
       !nested &&
       !s.practice;
     if (!visible || !this.queue.length) {

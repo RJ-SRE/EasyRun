@@ -1,6 +1,6 @@
 {
   "name": "easyrun-rupture",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "description": "EasyRun / 裂隙 · 倒悬钟城：spx 纵向钩索动作冒险与可复现开发流程",
@@ -25,14 +25,15 @@
     "game:test": "node scripts/test-game.mjs",
     "game:test:legacy": "node scripts/test-game.mjs --legacy",
     "game:package": "python3 prototypes/runlab/package.py",
-    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js prototypes/runlab/public/inscription*.js prototypes/runlab/public/cet4-words.js --max-warnings 0",
+    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/belfry-city-art.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js prototypes/runlab/public/inscription*.js prototypes/runlab/public/cet4-words.js --max-warnings 0",
     "game:test:words": "node --test prototypes/runlab/test-inscription-core.mjs && node prototypes/runlab/test-belfry-inscription.mjs",
     "game:test:achievements": "node --test prototypes/runlab/test-belfry-achievements-core.mjs && node prototypes/runlab/test-belfry-achievements.mjs",
     "level:build": "node prototypes/runlab/build-passages.mjs",
     "level:dev": "node prototypes/runlab/server.mjs",
     "level:test": "node scripts/test-passages.mjs",
     "level:package": "python3 prototypes/runlab/passages-package.py",
-    "level:lint": "eslint -c prototypes/runlab/eslint-passages.config.mjs prototypes/runlab/*passages*.mjs prototypes/runlab/public/passages*.js scripts/test-passages.mjs --max-warnings 0"
+    "level:lint": "eslint -c prototypes/runlab/eslint-passages.config.mjs prototypes/runlab/*passages*.mjs prototypes/runlab/public/passages*.js scripts/test-passages.mjs --max-warnings 0",
+    "game:test:city": "node prototypes/runlab/test-belfry-city.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

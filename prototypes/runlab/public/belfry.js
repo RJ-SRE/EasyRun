@@ -1,4 +1,5 @@
 import { BelfryAudio } from "./belfry-audio.js";
+import { CityUI, DISTRICTS, endingFor } from "./belfry-city.js";
 const $ = (s) => document.querySelector(s);
 const fields = [
   "phase",
@@ -72,6 +73,15 @@ const fields = [
   "bladeLink",
   "wordVisualRate",
   "visualTime",
+  "cityDistrict",
+  "cityPrompt",
+  "cityWind",
+  "cityForge",
+  "cityArchive",
+  "cityMirror",
+  "cityChoice",
+  "cityLiftY",
+  "cityDepth",
 ];
 window.latestState = null;
 window.runtimeErrors = [];
@@ -81,7 +91,6 @@ let frame,
   loading = true,
   fault = false,
   toastTimer,
-  chapterTimer,
   guidePaused = false,
   recordedAttempt = -1;
 let soundOn = true;
@@ -184,6 +193,11 @@ try {
   notice.textContent = "成就册暂不可用";
   document.querySelector(".controls").append(notice);
 }
+const city = new CityUI({
+  send: (code, value) => key(code, value, true),
+  focus: focusGame,
+  lockInput: () => inscription.lockHeld?.(),
+});
 let records = [];
 try {
   const saved = JSON.parse(localStorage.getItem("easyrun-belfry-v1") || "[]");
@@ -225,6 +239,8 @@ function key(code, key = code, transport = false) {
     KeyR: 82,
     KeyT: 84,
     KeyM: 77,
+    KeyF: 70,
+    KeyV: 86,
     Digit1: 49,
     Digit2: 50,
     Digit3: 51,
@@ -260,25 +276,15 @@ function toast(t) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $("#toast").classList.remove("visible"), 2100);
 }
-function chapter(n, title, copy) {
-  $("#chapter-num").textContent = n;
-  $("#chapter-title").textContent = title;
-  $("#chapter-copy").textContent = copy;
-  $("#chapter").classList.add("visible");
-  clearTimeout(chapterTimer);
-  chapterTimer = setTimeout(
-    () => $("#chapter").classList.remove("visible"),
-    3300,
-  );
-}
 function initAudio() {
   soundscape.init();
 }
 function onEvent(name, t, x, y) {
   inscription.onEvent(name);
+  city.onEvent(name);
   window.runEvents.push({ name, time: Number(t), x: Number(x), y: Number(y) });
   if (window.runEvents.length > 800) window.runEvents.shift();
-  soundscape.onEvent(name, Number(x));
+  soundscape.onEvent(name.startsWith("city") ? "checkpoint" : name, Number(x));
   const labels = {
     wordlink: "裂印连携 · 满蓄断潮直接释放",
     healrefund: "铭文未完成 · 余烬已返还",
@@ -322,28 +328,7 @@ function onEvent(name, t, x, y) {
     window.runEvents = window.runEvents.slice(-1);
     window.foes = {};
     recordedAttempt = -1;
-    chapter(
-      "ACT I · DESCENT",
-      "落入钟城",
-      "金铜圆环是你的路。按住 E，松开后甩出。",
-    );
   }
-  if (name === "practice") {
-    $("#chapter").classList.remove("visible");
-    clearTimeout(chapterTimer);
-  }
-  if (name === "guardian")
-    chapter(
-      "ACT II · THE KEEPER",
-      "守心者",
-      "最后一位刺客，仍在守护钟城的心。",
-    );
-  if (name === "core")
-    chapter(
-      "ACT III · ASCENT",
-      "带它回到光里",
-      "失去钟心的城开始下沉。向上，别停下。",
-    );
   if (name === "hurt") {
     $("#damage").classList.add("flash");
     setTimeout(() => $("#damage").classList.remove("flash"), 100);
@@ -399,6 +384,7 @@ function receive(s) {
   window.latestState = s;
   soundscape.stateChanged(s);
   inscription.receive(s);
+  city.receive(s);
   achievements?.receive(s);
   $("#practice-controls").hidden = !(s.practice && s.phase === 1);
   document.querySelectorAll("[data-spar]").forEach((b) => {
@@ -485,7 +471,11 @@ function receive(s) {
   ][s.segment];
   $("#objective").textContent = s.practice
     ? "排练场 · 自由组合"
-    : ["寻找钟心", "打破守卫", "携心归来"][s.segment];
+    : s.segment === 2
+      ? `归途 · ${DISTRICTS[s.cityDistrict].name}`
+      : s.segment === 1
+        ? "守心机枢 · 解开钟锁"
+        : DISTRICTS[s.cityDistrict].name;
   $("#depth-marker").style.top =
     `${Math.max(0, Math.min(100, (-s.y / 3590) * 100))}%`;
   $("#hint").textContent = hint(s);
@@ -526,12 +516,12 @@ function receive(s) {
     overlay(
       "THE HOLLOW BELFRY",
       "倒悬钟城",
-      "钟城悬在深渊上方，已为无人之地守夜千年。\n你要潜入最深处，带走仍在跳动的钟心。",
+      "一份未写完的委托：穿过五个城区，带回仍在跳动的钟心。\n但那声求救，已经在空城里重复了千年。",
       "进入钟城",
     );
     $("#difficulty").hidden = false;
     $("#overlay-foot").textContent =
-      "电脑键盘操作 · 失败可从休整灯继续 · 按 1 / 2 切换难度";
+      "五区下潜 · 机关改变归途 · 机枢前厅选择留灯或携心";
   }
   if (s.phase === 1) {
     $("#overlay").hidden = true;
@@ -551,14 +541,8 @@ function receive(s) {
   if (s.phase === 2 || s.phase === 3) {
     const win = s.phase === 2;
     if (win) {
-      overlay(
-        "SOME HEARTS STILL BEAT",
-        "最后一声，为你。",
-        s.echoes === 3
-          ? "你带回钟心，也找回了三段失落的记忆。\n城里的灯，终于可以为自己亮一次。"
-          : "你带着钟心回到了光里。\n钟城深处，仍有尚未拾起的回声。",
-        "再入钟城",
-      );
+      const ending = endingFor(s);
+      overlay("WHAT WE LEAVE BEHIND", ending.title, ending.text, "再入钟城");
       $("#results").innerHTML =
         `<div><b>${formatTime(s.elapsed)}</b><span>旅程用时</span></div><div><b>${s.score}</b><span>总分</span></div><div><b>${s.bestCombo}</b><span>最高连击</span></div>`;
       $("#results").hidden = false;
@@ -588,6 +572,9 @@ function receive(s) {
         kills: s.kills,
         bestCombo: s.bestCombo,
         deaths: s.deaths,
+        cityChoice: s.cityChoice,
+        cityArchive: s.cityArchive,
+        cityRepairs: s.cityWind + s.cityForge + s.cityArchive + s.cityMirror,
       });
       records = records.slice(-50);
       try {
@@ -617,6 +604,7 @@ function resize() {
 }
 async function load() {
   achievements?.resetSession();
+  city.resetSession();
   loading = true;
   fault = false;
   previousPhase = -1;

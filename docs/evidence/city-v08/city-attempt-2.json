@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-25T03:23:51.502Z",
+  "cases": [
+    "five-area opening and spoiler-safe journal; real wind-valve interaction is optional and idempotent",
+    "wind valve changes real upward physics inside the visible wind column",
+    "restored foundry lift moves and physically carries a standing passenger",
+    "journal pauses the lift and combat, contains action keys and resumes only its own pause",
+    "archive reveals actual story and a service ledge; typing F during a word challenge never activates it",
+    "mirror repair activates an actual collision bridge; the unrepaired route has no invisible floor",
+    "the pre-boss choice advertises costs and locks once chosen"
+  ],
+  "errors": [
+    "latestState is not defined"
+  ],
+  "fixture": "Real first-platform interaction; later fixtures only position the hero, remove enemies and arrange the boss finishing hit in response source. Normal engine input, physics, collisions, city rules, persistence and UI remain in use. This is not a full-route replay.",
+  "failure": "page.waitForFunction: ReferenceError: latestState is not defined\n    at eval (eval at predicate (eval at evaluate (:370:30)), <anonymous>:1:32)\n    at predicate (eval at evaluate (:370:30), <anonymous>:7:27)\n    at next (eval at evaluate (:370:30), <anonymous>:29:33)\n    at eval (eval at evaluate (:370:30), <anonymous>:42:13)\n    at UtilityScript.evaluate (<anonymous>:372:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at wait (/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/test-belfry-city.mjs:54:41)\n    at /Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/test-belfry-city.mjs:218:9",
+  "state": null
+}
