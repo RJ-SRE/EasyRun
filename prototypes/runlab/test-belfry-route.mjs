@@ -278,10 +278,10 @@ try {
   console.log("RESULT", JSON.stringify(result.state), result.errors);
   assert.equal(result.state.phase, 2);
   assert.deepEqual(result.errors, []);
-  assert.equal(result.state.bossStage, 1);
+  assert.equal(result.state.bossStage, 2);
   assert.ok(result.state.gateOne <= 0 && result.state.gateTwo <= 0);
-  assert.ok(result.events.filter((e) => e.name === "seal").length >= 4);
-  assert.ok(result.events.some((e) => e.name === "enrage"));
+  assert.equal(result.events.filter((e) => e.name === "seal").length, 2);
+  assert.equal(result.events.filter((e) => e.name === "enrage").length, 2);
   assert.ok(result.state.hookCount > 8);
   if (process.env.RETURN_FAILURE === "1") assert.equal(voidVerified, true);
 } finally {

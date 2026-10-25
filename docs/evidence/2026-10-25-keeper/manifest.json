@@ -1,0 +1,13 @@
+{
+  "scope": "Boss response-fixture mechanics, not complete expedition or human playtest",
+  "cases": 16,
+  "hashes": {
+    "prototypes/runlab/spx/belfry/Keeper.spx": "1d015b7a7c274e0ef717091ba3d63cd5a86ff846950af30ebc2ee15a3c18ce78",
+    "prototypes/runlab/spx/belfry/KeeperLine.spx": "5a56e05bf0f79b444029763ad728aeb8ac475c92cd1db9e0dd0051bc1e8d7531",
+    "prototypes/runlab/spx/belfry/Hero.spx": "21fc96fd02b64a247dd46a12834102ebf39a1eda0168ac440d53dd759950e0f8",
+    "prototypes/runlab/spx/belfry/main.spx": "23eaed77a0769b7624fdbbe11e0d8427957e62d46569fb464e873d26b6187637",
+    "prototypes/runlab/test-belfry-keeper.mjs": "3198c69a4b1e609bde6135b5af0d1ce6b6e624cb155c7700a2178630064d4262",
+    "prototypes/runlab/art/belfry/keeper-v2-source.png": "8dee0734bda4a25cec7fb7e8f59e79dcab998a3fa2a822ca32c94e987528c5ae"
+  },
+  "regression": "Core/combat/music/enemies passed in v09-regression.log; ninja through final lifecycle passed in v09-regression-rest.log, exit 0. Whole routes use the original short map; they do not verify the planned expedition."
+}

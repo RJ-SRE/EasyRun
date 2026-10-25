@@ -1,0 +1,18 @@
+onCloned data => {
+ i:=data.(int)
+ for {
+  waitNextFrame()
+  if len(keeperLife)>i && keeperLife[i]>0 && segment==1 && enemyHP[keeperIndex]>0 {
+   age:=keeperAge[i]; delay:=keeperDelay[i]; live:=age>=delay && age<=delay+keeperLife[i]
+   dx:=keeperBX[i]-keeperAX[i]; dy:=keeperBY[i]-keeperAY[i]
+   show; setXYpos (keeperAX[i]+keeperBX[i])/2,(keeperAY[i]+keeperBY[i])/2; setHeading angle(dx,dy)
+   setCostume keeperStyle[i]*2; setGraphicEffect GhostEffect,35
+   if live {setCostume keeperStyle[i]*2+1; setGraphicEffect GhostEffect,0}
+   if keeperStyle[i]==2 && live {setGraphicEffect GhostEffect,75}
+   if age>delay+keeperLife[i] {setGraphicEffect GhostEffect,clamp((age-delay-keeperLife[i])/0.16*100,0,100)}
+   // Damaging capsules have fixed authored dimensions matching collision.
+   // Only the non-damaging movement guide changes its length.
+   setSize 1; if keeperStyle[i]==2 {setSize dist(dx,dy)/400}
+  } else {hide}
+ }
+}

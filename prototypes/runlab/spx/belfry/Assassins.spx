@@ -3,7 +3,7 @@
 // 4 holding a captured player, 5 committed footwork. All damaging moves reserve
 // the same two attack slots, including preparation and repositioning.
 func enemyMaxHP(kind int) int {
- if kind==0 || kind==2 {return 3}; if kind==4 {return 5}; if kind==3 {if difficulty==0 {return 16}; return 20}; return 4
+ if kind==0 || kind==2 {return 3}; if kind==4 {return 5}; if kind==3 {if difficulty==0 {return 36}; return 45}; return 4
 }
 func enemySupport(i int) int {
  best:=-1; distance:=100000.0
@@ -20,11 +20,12 @@ func clearEnemyMotion(i int) {
  enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]; enemyMoveX[i]=enemyX[i]; enemyMoveY[i]=enemyY[i]; enemyMoveTime[i]=0; enemyMoveArc[i]=0
 }
 func resetEnemies() {
+ resetKeeper()
  for i:=0;i<len(enemyHP);i++ {
   hp:=enemyMaxHP(enemyType[i]); if i>=11 {hp=0}
   clearEnemyMotion(i); enemyHP[i]=hp; enemyState[i]=0; enemyClock[i]=0.25+float64(i%4)*0.17; enemyFlash[i]=0
  }
- bossHP=enemyHP[10]
+ bossHP=enemyHP[keeperIndex]
 }
 func enterEnemyState(i,state int) {enemyState[i]=state; enemyClock[i]=0}
 func enemyRecoverFor(i int,duration float64) {
@@ -157,6 +158,9 @@ func updateEnemies(dt float64) {
    if practice==1 && enemyBaseY[i]>-6000 {enemyClock[i]+=dt; if enemyClock[i]>3 {enemyHP[i]=20; clearEnemyMotion(i); enemyState[i]=0; enemyClock[i]=0}}
    continue
   }
+  if i==keeperIndex && enemyType[i]==3 {updateKeeper(dt); if segment==1 {threatCount++};
+ continue
+}
   if enemyStun[i]>0 {enemyStun[i]=math.Max(0,enemyStun[i]-dt)}
   if enemyThrown[i]>0 {enemyThrown[i]-=dt}
   kind:=enemyType[i]; dx:=Hero.px-enemyX[i]; dy:=Hero.py+30-enemyY[i]; distance:=dist(dx,dy)

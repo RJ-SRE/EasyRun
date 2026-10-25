@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
+import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
 import {
   platforms,
@@ -347,6 +348,15 @@ try {
     true,
     true,
   );
+  assassinFrames.keeper = await importAtlas(
+    "art/belfry/keeper-v2-source.png",
+    6,
+    3,
+    384,
+    330,
+    true,
+    true,
+  );
 } finally {
   await browser.close();
 }
@@ -560,6 +570,14 @@ for (const [name, count] of [
       pivotX: 192,
       pivotY: 366,
     };
+for (let i = 0; i < 18; i++)
+  enemyImages[`keeper${i}`] = {
+    binary: Buffer.from(assassinFrames.keeper[i], "base64"),
+    w: 384,
+    h: 384,
+    pivotX: 192,
+    pivotY: 366,
+  };
 sprite(
   "EnemyBlend",
   enemyImages,
@@ -628,6 +646,7 @@ sprite(
   { visible: false, rotationStyle: "normal" },
   "onStart => {for {waitNextFrame(); if Hero.charging && (phase==1 || phase==5) {show; setXYpos Hero.px,Hero.py+30; setHeading 90+visualTime*120; setSize 0.45+Hero.chargeTime*0.4; setGraphicEffect BrightnessEffect,Hero.chargeTime*30} else {hide}}}",
 );
+addKeeperArt(sprite, vector, await code("KeeperLine"));
 sprite(
   "Echo",
   {
@@ -1010,6 +1029,7 @@ sprite(
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
 const initialization = `func initLevel() {
+ keeperIndex=${enemies.findIndex((enemy) => enemy[2] === 3)}
  cityNodeX=[]float64{315,230,720,770,230}; cityNodeY=[]float64{0,-1050,-2100,-2630,-3150}
  anchorX=${floats(anchors.map((a) => a[0]))}; anchorY=${floats(anchors.map((a) => a[1]))}
  floorX=${floats(platforms.map((a) => a[0]))}; floorW=${floats(platforms.map((a) => a[1]))}; floorY=${floats(platforms.map((a) => a[2]))}; floorKind=${ints(platforms.map((a) => a[3]))}
@@ -1027,6 +1047,7 @@ files["main.spx"] = (await code("main")).replace(
   "func dist(",
   initialization +
     (await code("Assassins")) +
+    (await code("Keeper")) +
     (await code("Inscription")) +
     (await code("City")) +
     "\nfunc dist(",

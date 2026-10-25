@@ -1,6 +1,27 @@
 import "math"
 
 var (
+ keeperIndex int
+ bossMaxHP int
+ bossMove int
+ bossLastMove int
+ bossDecision int
+ bossChain int
+ bossLocked int
+ keeperEpoch int
+ bossWindup float64
+ bossPoise float64
+ bossOpening int
+ keeperAX []float64
+ keeperAY []float64
+ keeperBX []float64
+ keeperBY []float64
+ keeperAge []float64
+ keeperDelay []float64
+ keeperLife []float64
+ keeperWidth []float64
+ keeperStyle []int
+ keeperSpent []int
  cityWind int
  cityForge int
  cityArchive int
@@ -165,7 +186,7 @@ func cutSeal(i int) {
  if i==14 && !sealLeft {sealLeft=true; cut=true}
  if i==15 && !sealRight {sealRight=true; cut=true}
  if cut {bossShield--; score+=100; ring(anchorX[i],anchorY[i],1.8,1); burst(anchorX[i],anchorY[i],20,1,320); shock=4; event("seal")}
- if cut && bossShield==0 {event("exposed"); enemyEvent("exposed",10); ring(enemyX[10],enemyY[10],2,0)}
+ if cut && bossShield==0 {clearKeeperDanger(); keeperRest(1.25); event("exposed"); enemyEvent("exposed",keeperIndex); ring(enemyX[keeperIndex],enemyY[keeperIndex],2,0)}
 }
 func enemyEvent(name string,i int) {println "@enemyEvent",name,i,enemyType[i],elapsed}
 func lineDistance(px,py,ax,ay,bx,by float64) float64 {
@@ -177,18 +198,18 @@ func lineDistance(px,py,ax,ay,bx,by float64) float64 {
 func hitEnemy(i,damage int) bool {
  if enemyHP[i]<=0 {return false}
  if enemyFlash[i]>0 {return false}
- if i==10 && bossShield>0 {enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],5,1,110); event("sealed"); return false}
+ if i==keeperIndex && bossShield>0 {enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],5,1,110); event("sealed"); return false}
  // A visible, scheduled stance can parry ONE frontal light hit. It never
  // reads input, blocks a heavy strike, or protects the assassin's back.
  guarding:=enemyType[i]==1 && enemyState[i]==1 && enemyMode[i]==1 && enemyClock[i]<0.32 && enemyStep[i]==0 && (Hero.px-enemyX[i])*enemyFacing[i]>0 && abs(Hero.py+30-enemyY[i])<85
  if guarding && damage==1 {enemyStep[i]=1; enemyFlash[i]=0.12; burst(enemyX[i]+enemyFacing[i]*24,enemyY[i],7,1,130); enemyEvent("parry",i); return false}
  if guarding && damage>=2 {enemyEvent("guardbreak",i)}
- if enemyType[i]==3 && enemyState[i]!=2 && damage<2 {
+ if enemyType[i]==3 && keeperBlocksLight(damage) {
   enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],6,1,110); event("armor"); return false
  }
  if embers<2 {emberHits++; if emberHits>=4 {embers++; emberHits=0; event("embergain")}}
  enemyHP[i]-=damage; enemyFlash[i]=0.14; enemyStun[i]=0.16; if enemyType[i]!=3 {if chainOwner==i {breakChain("chaincut")}; enemyRecoverFor(i,0.65)}; energy+=5; if energy>100 {energy=100}; enemyEvent("impact",i); shock=3; hitStop=0.035
- if i==10 && bossStage==0 && enemyHP[i]<=8 {enemyHP[i]=8; bossStage=1; bossShield=2; sealLeft=false; sealRight=false; event("enrage"); ring(enemyX[i],enemyY[i],2.5,2)}
+ if i==keeperIndex {enemyStun[i]=0; keeperAfterHit(damage)}
  burst(enemyX[i],enemyY[i],12,1,250); event("hit")
  if enemyHP[i]<=0 {
   enemyClock[i]=0; kills++; combo++; comboTime=4.5; if combo>bestCombo {bestCombo=combo}
@@ -197,9 +218,9 @@ func hitEnemy(i,damage int) bool {
   Hero.dashCool=0; Hero.airJump=true; Hero.vy=math.Max(Hero.vy,510)
   hitStop=0.065; event("kill"); enemyEvent("collapse",i)
   if i==2 || i==6 {event("gate"); shock=5}
-  if enemyType[i]==3 {segment=2; checkpoint=4; health=maxHealth; returnTime=0; riseY=-4020; energy=100; if cityChoice==1 {health=maxHealth-1} else {embers=2; emberHits=0}; event("core"); for j:=11;j<len(enemyHP);j++ {clearEnemyMotion(j); enemyHP[j]=enemyMaxHP(enemyType[j]); enemyState[j]=0; enemyClock[j]=0}}
+  if enemyType[i]==3 {clearKeeperDanger(); segment=2; checkpoint=4; health=maxHealth; returnTime=0; riseY=-4020; energy=100; if cityChoice==1 {health=maxHealth-1} else {embers=2; emberHits=0}; event("core"); for j:=11;j<len(enemyHP);j++ {clearEnemyMotion(j); enemyHP[j]=enemyMaxHP(enemyType[j]); enemyState[j]=0; enemyClock[j]=0}}
  }
- bossHP=enemyHP[10]; if bossHP<0 {bossHP=0}
+ bossHP=enemyHP[keeperIndex]; if bossHP<0 {bossHP=0}
  return true
 }
 func hurt(reason int) {
@@ -240,7 +261,8 @@ func retryCheckpoint() {
  if practice==1 {practiceEncounter(practiceKind); return}
  attempts++; embers=1; emberHits=0; bindEnemy=-1; bindTime=0; controlImmune=0; controlGrace=0; chainOwner=-1; chainTime=0; phase=1; health=maxHealth; energy=50; combo=0; shock=0; hitStop=0; failReason=0
  score-=100; if score<0 {score=0}
- if segment==1 {enemyHP[10]=20; if difficulty==0 {enemyHP[10]=16}; bossHP=enemyHP[10]; bossShield=2; bossStage=0; sealLeft=false; sealRight=false}
+ resetKeeper()
+ if segment==1 {enemyHP[keeperIndex]=bossMaxHP; bossHP=enemyHP[keeperIndex]; bossShield=2; bossStage=0; sealLeft=false; sealRight=false}
  if segment==2 {returnTime=0; riseY=-4020}
  for i:=0;i<len(enemyClock);i++ {clearEnemyMotion(i); enemyClock[i]=0; enemyState[i]=0; enemyFlash[i]=0}
  Hero.resetHero(checkpointX[checkpoint],checkpointY[checkpoint]); event("retry")
@@ -266,6 +288,7 @@ func updateWorld(dt float64) {
   if echoTaken[i]==0 && dist(Hero.px-echoX[i],Hero.py+24-echoY[i])<50 {echoTaken[i]=1; echoes++; score+=500; energy=100; embers=2; emberHits=0; ring(echoX[i],echoY[i],1.6,1); event("echo")}
  }
  updateEnemies(dt)
+ updateKeeperDanger(dt)
 }
 onKey KeyT, => {if phase==0 || phase==4 || phase==2 || phase==3 {startPractice()}}
 onKey Key1, => {if practice==1 {practiceEncounter(0)} else if phase==0 {difficulty=0; event("difficulty")}}
@@ -283,7 +306,7 @@ onKey KeyF5, => {
  if phase==0 && hostCheckpoint>=0 {
   startRun(); checkpoint=hostCheckpoint; segment=hostSegment; elapsed=hostElapsed; score=hostScore
   if checkpoint>=2 {enemyHP[2]=0}; if checkpoint>=3 {enemyHP[6]=0}
-  if segment==2 {enemyHP[10]=0; bossHP=0; bossShield=0; for j:=11;j<len(enemyHP);j++ {enemyHP[j]=enemyMaxHP(enemyType[j])}}
+  if segment==2 {enemyHP[keeperIndex]=0; bossHP=0; bossShield=0; for j:=11;j<len(enemyHP);j++ {enemyHP[j]=enemyMaxHP(enemyType[j])}}
   cityWind=hostCityWind; cityForge=hostCityForge; cityArchive=hostCityArchive; cityMirror=hostCityMirror; cityChoice=hostCityChoice; cityDepth=hostCityDepth
   retryCheckpoint(); event("restored")
  }
@@ -307,6 +330,7 @@ onStart => {
  for i:=0;i<len(echoX);i++ {Echo.clone i}
  for i:=0;i<24;i++ {Rope.clone i}
  for i:=0;i<28;i++ {SealCable.clone i}
+ for i:=0;i<8;i++ {KeeperLine.clone i}
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
   if phase==1 {
@@ -327,8 +351,9 @@ onStart => {
   if float64(timer)-lastState>0.07 {
    lastState=float64(timer)
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}
-   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[10],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordVisualRate,visualTime,cityDistrict,cityPrompt,cityWind,cityForge,cityArchive,cityMirror,cityChoice,floorY[17],cityDepth
+   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[keeperIndex],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordVisualRate,visualTime,cityDistrict,cityPrompt,cityWind,cityForge,cityArchive,cityMirror,cityChoice,floorY[17],cityDepth,bossMove,bossMaxHP,bossLocked,bossChain,bossWindup,keeperEpoch
    for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i],enemyFacing[i],enemyStep[i],enemyMark[i]}}
+   if segment==1 {for i:=0;i<len(keeperLife);i++ {println "@keeperLine",i,keeperAX[i],keeperAY[i],keeperBX[i],keeperBY[i],keeperAge[i],keeperDelay[i],keeperLife[i],keeperWidth[i],keeperStyle[i]}}
   }
  }
 }

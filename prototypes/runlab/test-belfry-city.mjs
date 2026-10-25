@@ -42,7 +42,7 @@ onKey KeyF8, => {cityFixture(2)}
 onKey KeyF9, => {cityFixture(3)}
 onKey KeyF10, => {cityFixture(4)}
 onKey KeyF11, => {Hero.resetHero(455,floorY[17]); Hero.grounded=true; health=5}
-onKey KeyF12, => {Hero.resetHero(480,-3590); phase=1; segment=1; bossStage=1; bossShield=0; enemyHP[10]=1; enemyFlash[10]=0; hitEnemy(10,2)}
+onKey KeyF12, => {Hero.resetHero(480,-3590); phase=1; segment=1; bossStage=2; bossShield=0; enemyState[10]=2; enemyHP[10]=1; enemyFlash[10]=0; hitEnemy(10,2)}
 onKey KeyB, => {Hero.resetHero(230,0)}
 onKey KeyN, => {Hero.resetHero(470,-2690)}
 onKey KeyG, => {Hero.resetHero(735,-450); cityWind=0; Hero.grounded=false}

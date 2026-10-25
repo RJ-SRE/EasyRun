@@ -403,7 +403,7 @@ export class BelfryAudio {
       -0.7,
       Math.min(0.7, ((f?.x ?? 480) - (s?.x ?? 480)) / 500),
     );
-    if (name === "tell")
+    if (name === "tell" || name === "keepertell")
       this.sample(kind === 2 || kind === 4 ? "tension" : "cloth", {
         bus: "danger",
         pan,
@@ -430,6 +430,10 @@ export class BelfryAudio {
       parry: "brass",
       guardbreak: "heavy",
       land: "cloth",
+      keepervault: "dash",
+      keeperfollow: "tension",
+      keeperform: "chaincut",
+      keeperstrike: "blade",
     };
     if (attacks[name]) this.sample(attacks[name], { pan, volume: 0.7 });
     if (name === "impact") {

@@ -1,0 +1,229 @@
+// The Heartkeeper owns its decisions, committed paths and danger geometry.
+// No key state is inspected here. Every target is a position already observed.
+func clearKeeperDanger() {
+ keeperEpoch++
+ for j:=0;j<len(keeperLife);j++ {keeperLife[j]=0; keeperSpent[j]=0}
+}
+func resetKeeper() {
+ bossMaxHP=36; if difficulty==1 {bossMaxHP=45}
+ bossMove=-1; bossLastMove=-1; bossDecision=0; bossChain=0; bossLocked=0; bossPoise=0; bossOpening=-1
+ keeperAX=[]float64{0,0,0,0,0,0,0,0}; keeperAY=[]float64{0,0,0,0,0,0,0,0}
+ keeperBX=[]float64{0,0,0,0,0,0,0,0}; keeperBY=[]float64{0,0,0,0,0,0,0,0}
+ keeperAge=[]float64{0,0,0,0,0,0,0,0}; keeperDelay=[]float64{0,0,0,0,0,0,0,0}
+ keeperLife=[]float64{0,0,0,0,0,0,0,0}; keeperWidth=[]float64{0,0,0,0,0,0,0,0}
+ keeperStyle=[]int{0,0,0,0,0,0,0,0}; keeperSpent=[]int{0,0,0,0,0,0,0,0}
+ clearKeeperDanger()
+}
+// Styles: 0 cutting line, 1 landing shock, 2 movement guide (never damage),
+// 3 descending blade. Geometry is shared by the renderer and collision.
+func keeperLine(ax,ay,bx,by,delay,life,width float64,style int) {
+ for j:=0;j<len(keeperLife);j++ {
+  if keeperLife[j]<=0 {
+   keeperAX[j]=ax; keeperAY[j]=ay; keeperBX[j]=bx; keeperBY[j]=by
+   keeperAge[j]=0; keeperDelay[j]=delay; keeperLife[j]=life; keeperWidth[j]=width; keeperStyle[j]=style; keeperSpent[j]=0
+   return
+  }
+ }
+}
+func updateKeeperDanger(dt float64) {
+ if segment!=1 || enemyHP[keeperIndex]<=0 {return}
+ for j:=0;j<len(keeperLife);j++ {
+  if keeperLife[j]<=0 {
+ continue
+}
+  keeperAge[j]+=dt
+  if keeperAge[j]>=keeperDelay[j] && keeperAge[j]<=keeperDelay[j]+keeperLife[j] && keeperStyle[j]!=2 && keeperSpent[j]==0 {
+   d:=lineDistance(Hero.px,Hero.py+28,keeperAX[j],keeperAY[j],keeperBX[j],keeperBY[j])
+   if d<keeperWidth[j]+15 {before:=health; hurt(1); if health<before {keeperSpent[j]=1}}
+  }
+  if keeperAge[j]>keeperDelay[j]+keeperLife[j]+0.16 {keeperLife[j]=0}
+ }
+}
+func keeperFloor(x,y float64) int {
+ best:=enemyFloor[keeperIndex]; top:=enemyBaseY[keeperIndex]-34
+ for j:=0;j<len(floorX);j++ {
+  if floorActive(j) && x>floorX[j]+28 && x<floorX[j]+floorW[j]-28 && floorY[j]>=top && floorY[j]<=y+14 && floorY[j]<=enemyBaseY[keeperIndex]+250 {best=j; top=floorY[j]}
+ }
+ return best
+}
+func keeperSetPosition(i int,x,y,dt float64) {
+ enemyVX[i]=(x-enemyX[i])/math.Max(dt,0.001); enemyVY[i]=(y-enemyY[i])/math.Max(dt,0.001)
+ enemyStride[i]+=abs(x-enemyX[i]); enemyX[i]=x; enemyY[i]=y
+ enemyOffX[i]=x-enemyBaseX[i]; enemyOffY[i]=y-enemyBaseY[i]
+}
+func keeperRest(duration float64) {
+ i:=keeperIndex; enemyVX[i]=0; enemyVY[i]=0; enemyStun[i]=0; enemyHazard[i]=0
+ enemyRecoverFor(i,duration); bossPoise=0; bossChain=0
+ enemyEvent("keeperopen",i)
+}
+func keeperAim() {
+ i:=keeperIndex
+ enemyAimX[i]=clamp(Hero.px+Hero.vx*0.12,125,835)
+ enemyAimY[i]=clamp(Hero.py+28,enemyBaseY[i]-6,enemyBaseY[i]+320)
+ enemyFacing[i]=1; if enemyAimX[i]<enemyX[i] {enemyFacing[i]=-1}
+}
+func keeperWindup(move int) float64 {
+ duration:=0.68
+ if move==1 {duration=0.78}; if move==2 {duration=0.86}; if move==3 {duration=0.8}; if move==4 {duration=0.72}; if move==5 {duration=0.78}; if move==6 {duration=1.05}
+ if difficulty==0 {duration+=0.12}
+ return duration
+}
+func beginKeeperTell(move int) {
+ i:=keeperIndex; bossMove=move; bossLocked=0; bossPoise=0; bossWindup=keeperWindup(move)
+ enemyMode[i]=move; enemySpent[i]=0; enemyStep[i]=0; enemyStun[i]=0; enemyVX[i]=0; enemyVY[i]=0
+ keeperAim(); enterEnemyState(i,1); enemyEvent("keepertell",i)
+}
+func keeperChoose() int {
+ i:=keeperIndex; dx:=abs(Hero.px-enemyX[i]); dy:=Hero.py+28-enemyY[i]
+ if bossShield>0 {return 3}
+ choices:=[]int{0,1,2,0,2}
+ if bossStage==1 {choices=[]int{4,2,3,5,1}}
+ if bossStage==2 {choices=[]int{6,4,5,3,2}}
+ move:=choices[bossDecision%len(choices)]
+ if abs(dy)>105 {move=3; if bossStage>0 && bossLastMove==3 {move=5}}
+ // Do not keep shooting through the Keeper's own supporting platform at a
+ // player below it: leave the perch or use the openly marked falling blades.
+ if dy< -105 && bossStage>0 {move=5; if bossLastMove==5 {move=2; if bossStage==2 {move=6}}}
+ if dx>310 && abs(dy)<105 {move=1; if bossStage>0 && bossLastMove==1 {move=5}}
+ if move==bossLastMove {move=choices[(bossDecision+1)%len(choices)]}
+ bossDecision++; bossLastMove=move
+ return move
+}
+func beginKeeperMove() {
+ prepareKeeperMove(keeperChoose())
+}
+func prepareKeeperMove(move int) {
+ i:=keeperIndex; bossChain=0
+ // Hunter/core forms visibly leave the current footing before the dive/rain.
+ // The leap is hittable, follows a curve, and cannot damage by mere contact.
+ if move==5 || move==6 {
+  bossMove=move; enemyMode[i]=move; enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]
+  enemyMoveX[i]=175; if Hero.px<480 {enemyMoveX[i]=785}
+  enemyMoveY[i]=enemyBaseY[i]+180; enemyMoveTime[i]=0.68; enemyMoveArc[i]=95
+  enemyVX[i]=0; enemyVY[i]=0; enterEnemyState(i,5); enemyEvent("keepervault",i)
+ } else {beginKeeperTell(move)}
+}
+func lockKeeperAttack() {
+ i:=keeperIndex; bossLocked=1
+ enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]
+ enemyMoveX[i]=enemyX[i]; enemyMoveY[i]=enemyY[i]
+ remain:=math.Max(0,bossWindup-enemyClock[i])
+ if bossMove==0 {
+  keeperLine(enemyX[i]+enemyFacing[i]*25,enemyY[i],enemyX[i]+enemyFacing[i]*165,enemyY[i],remain+0.10,0.22,22,0)
+ }
+ if bossMove==1 || bossMove==4 || bossMove==5 {
+  enemyMoveX[i]=clamp(enemyAimX[i]+enemyFacing[i]*65,125,835)
+  top:=keeperFloor(enemyMoveX[i],enemyAimY[i]-28)
+  enemyMoveY[i]=floorY[top]+34
+  if bossMove==1 {enemyMoveX[i]=enemyGroundLimit(i,enemyMoveX[i]); enemyMoveY[i]=enemyY[i]}
+  keeperLine(enemyX[i],enemyY[i],enemyMoveX[i],enemyMoveY[i],remain,0.48,13,2)
+ }
+ if bossMove==2 {
+  enemyMoveX[i]=enemyAimX[i]; top:=keeperFloor(enemyMoveX[i],enemyAimY[i]-28); enemyMoveY[i]=floorY[top]+34
+  keeperLine(enemyMoveX[i]-100,enemyMoveY[i]-12,enemyMoveX[i]+100,enemyMoveY[i]-12,remain+0.66,0.22,22,1)
+ }
+ if bossMove==6 {
+  // Three lanes only: stable gaps remain, and each blade has its own warning.
+  center:=clamp(enemyAimX[i],285,675)
+  for j:=0;j<3;j++ {
+   x:=center+float64(j-1)*155
+   keeperLine(x,enemyBaseY[i]+345,x,enemyBaseY[i]-8,remain+0.20+float64(j)*0.24,0.16,13,3)
+  }
+ }
+ enemyEvent("keeperlock",i)
+}
+func keeperProjectile(spread float64) {
+ i:=keeperIndex; dx:=enemyAimX[i]-enemyX[i]; dy:=enemyAimY[i]-enemyY[i]; d:=math.Max(1,dist(dx,dy))
+ speed:=390.0; if difficulty==1 {speed=470}
+ vx:=dx/d*speed; vy:=dy/d*speed
+ Bolt.clone []float64{enemyX[i],enemyY[i],vx-spread*vy,vy+spread*vx,float64(attempts),2,float64(keeperEpoch)}
+}
+func keeperContact(i int,ox,oy float64) {
+ if enemySpent[i]>0 {return}
+ if lineDistance(Hero.px,Hero.py+28,ox,oy,enemyX[i],enemyY[i])<43 {
+  before:=health; hurt(1); if health<before {enemySpent[i]=1}
+ }
+}
+func transformKeeper(stage int) {
+ i:=keeperIndex; bossStage=stage; bossShield=0; bossMove=-1; bossLocked=0; bossChain=0; bossPoise=0
+ clearKeeperDanger(); enemyMark[i]=0; enemyStun[i]=0; enemyHazard[i]=0; enemySpent[i]=0
+ enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]; enemyVX[i]=0; enemyVY[i]=0
+ enterEnemyState(i,6); event("enrage"); enemyEvent("keeperform",i); ring(enemyX[i],enemyY[i],2.1,2)
+}
+func keeperAfterHit(damage int) {
+ i:=keeperIndex; limit:=bossMaxHP*2/3; if bossStage==1 {limit=bossMaxHP/3}
+ if bossStage<2 && enemyHP[i]<=limit {enemyHP[i]=limit; transformKeeper(bossStage+1); return}
+ // Heavy hits can break a preparation, but do not cancel every committed move.
+ if damage>=2 && enemyState[i]==1 {
+  bossPoise+=float64(damage)
+  if bossPoise>=5 {clearKeeperDanger(); keeperRest(0.95); enemyEvent("guardbreak",i)}
+ }
+}
+func keeperBlocksLight(damage int) bool {
+ i:=keeperIndex
+ if enemyState[i]==6 {return true}
+ return damage==1 && bossStage==0 && enemyState[i]==1 && enemyClock[i]<bossWindup-0.24 && (Hero.px-enemyX[i])*enemyFacing[i]>0
+}
+func updateKeeper(dt float64) {
+ i:=keeperIndex; if enemyHP[i]<=0 {return}
+ // Ordinary assassins never execute this state machine, and the Keeper never
+ // consumes their generic backstep/three-hit AI. Hitstop is handled upstream.
+ enemyStun[i]=0; enemyThrown[i]=0
+ if segment!=1 || practice==1 {enemyVX[i]=0; enemyVY[i]=0; return}
+ enemyClock[i]+=dt; t:=enemyClock[i]; state:=enemyState[i]
+ if state==6 {
+  u:=clamp(t/1.1,0,1); ease:=u*u*(3-2*u)
+  keeperSetPosition(i,enemyFromX[i]+(480-enemyFromX[i])*ease,enemyFromY[i]+(enemyBaseY[i]-enemyFromY[i])*ease+sin(u*math.Pi)*110,dt)
+  if t>=1.15 {enemyFloor[i]=keeperFloor(480,enemyBaseY[i]-34); keeperRest(0.40); bossOpening=5; if bossStage==2 {bossOpening=6}}
+  return
+ }
+ if state==0 {
+  dx:=Hero.px-enemyX[i]; enemyFacing[i]=1; if dx<0 {enemyFacing[i]=-1}
+  target:=0.0; if abs(dx)>185 && abs(Hero.py+28-enemyY[i])<90 {target=enemyFacing[i]*115}; if abs(dx)<85 {target=-enemyFacing[i]*65}
+  v:=enemyVX[i]+(target-enemyVX[i])*math.Min(1,dt*6)
+  x:=enemyGroundLimit(i,enemyX[i]+v*dt); keeperSetPosition(i,x,enemyY[i],dt)
+  rest:=0.75; if bossStage>0 {rest=0.45}; if difficulty==0 {rest+=0.22}; if bossShield>0 {rest=1.65}
+  if t>=rest && bindTime<=0 && controlGrace<=0 && canEnemyAttack(i) {beginKeeperMove()}
+ } else if state==5 {
+  u:=clamp(t/enemyMoveTime[i],0,1); ease:=u*u*(3-2*u)
+  keeperSetPosition(i,enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease,enemyFromY[i]+(enemyMoveY[i]-enemyFromY[i])*ease+sin(u*math.Pi)*enemyMoveArc[i],dt)
+  if u>=1 {beginKeeperTell(bossMove)}
+ } else if state==1 {
+  if bossLocked==0 {keeperAim(); if t>=bossWindup-0.30 {lockKeeperAttack()}}
+  if t>=bossWindup {
+   enterEnemyState(i,3); enemyStep[i]=0; enemySpent[i]=0; enemyEvent("keeperstrike",i)
+   if bossMove==3 {keeperProjectile(-0.25); keeperProjectile(0); keeperProjectile(0.25); enemyEvent("arrow",i)}
+  }
+ } else if state==3 {
+  ox:=enemyX[i]; oy:=enemyY[i]
+  if bossMove==0 {if t>=0.10 && enemyStep[i]==0 {enemyStep[i]=1; skillFX(enemyX[i],enemyY[i],enemyFacing[i]*90,3,1.1); enemyEvent("cut",i)}; if t>0.43 {keeperRest(0.95)}}
+  if bossMove==1 || bossMove==4 || bossMove==5 {
+   duration:=0.48; arc:=0.0; if bossMove==4 {arc=50}; if bossMove==5 {duration=0.55}
+   u:=clamp(t/duration,0,1); ease:=u*u*(3-2*u)
+   keeperSetPosition(i,enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease,enemyFromY[i]+(enemyMoveY[i]-enemyFromY[i])*ease+sin(u*math.Pi)*arc,dt)
+   if t>0.04 && t<duration {keeperContact(i,ox,oy); enemyHazard[i]=0.1}
+   if t>=duration {
+    enemyHazard[i]=0; enemyFloor[i]=keeperFloor(enemyX[i],enemyY[i]-34)
+    if bossMove==4 && bossChain==0 {bossChain=1; beginKeeperTell(4); bossWindup=0.60; if difficulty==0 {bossWindup=0.72}; enemyEvent("keeperfollow",i)} else {keeperRest(1.05); enemyEvent("land",i)}
+   }
+  }
+  if bossMove==2 {
+   u:=clamp(t/0.66,0,1); ease:=u*u*(3-2*u)
+   keeperSetPosition(i,enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease,enemyFromY[i]+(enemyMoveY[i]-enemyFromY[i])*ease+sin(u*math.Pi)*220,dt)
+   if t>=0.66 && enemyStep[i]==0 {enemyStep[i]=1; enemyFloor[i]=keeperFloor(enemyX[i],enemyY[i]-34); ring(enemyX[i],enemyY[i]-18,1.5,2); burst(enemyX[i],enemyY[i]-26,12,1,210); shock=4; enemyEvent("land",i)}
+   if t>0.94 {keeperRest(1.2)}
+  }
+  if bossMove==3 && t>0.60 {keeperRest(0.9)}
+  if bossMove==6 && t>0.95 {
+   // Return along a visible drop after the last lane; the exposed landing is
+   // deliberately longer than the hunter recovery.
+   u:=clamp((t-0.95)/0.55,0,1); targetFloor:=keeperFloor(enemyX[i],enemyY[i]-34)
+   top:=floorY[targetFloor]+34; keeperSetPosition(i,enemyX[i],enemyY[i]+(top-enemyY[i])*math.Min(1,dt*8),dt)
+   if u>=1 {enemyY[i]=top; enemyFloor[i]=targetFloor; keeperRest(1.35)}
+  }
+ } else if state==2 {
+  enemyVX[i]=0; enemyVY[i]=0
+  if t>=enemyRecover[i] {if bossOpening>=0 {if canEnemyAttack(i) {move:=bossOpening; bossOpening=-1; bossLastMove=move; prepareKeeperMove(move)}} else {bossMove=-1; enterEnemyState(i,0)}}
+ }
+ bossHP=enemyHP[i]
+}

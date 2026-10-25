@@ -21,6 +21,8 @@ export const platforms = [
   [355, 200, -1360, 5], // counterweight lift, powered at the foundry
   [335, 280, -2740, 4], // aligned mirror bridge
   [340, 220, -1960, 6], // archive service shelf revealed by draining
+  [100, 190, -3410, 0], // Keeper's left upper footing; permanent grapple route
+  [670, 190, -3410, 0], // opposite footing supports the hunter/core forms
 ];
 export const anchors = [
   [300, 140],

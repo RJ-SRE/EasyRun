@@ -1,5 +1,6 @@
 import { BelfryAudio } from "./belfry-audio.js";
 import { CityUI, DISTRICTS, endingFor } from "./belfry-city.js";
+import { keeperStatus } from "./belfry-keeper.js";
 const $ = (s) => document.querySelector(s);
 const fields = [
   "phase",
@@ -82,6 +83,12 @@ const fields = [
   "cityChoice",
   "cityLiftY",
   "cityDepth",
+  "bossMove",
+  "bossMaxHP",
+  "bossLocked",
+  "bossChain",
+  "bossWindup",
+  "keeperEpoch",
 ];
 window.latestState = null;
 window.runtimeErrors = [];
@@ -95,6 +102,7 @@ let frame,
   recordedAttempt = -1;
 let soundOn = true;
 window.foes = {};
+window.keeperLines = {};
 const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
@@ -373,12 +381,7 @@ function hint(s) {
     if (s.y > -430) return "回到左上方的休整灯。最后一段，借锚点跃出井口。";
     return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
   }
-  if (s.segment === 1 && s.bossShield > 0)
-    return `钩住${!s.sealLeft && !s.sealRight ? "左右两侧" : !s.sealLeft ? "左侧" : "右侧"}红色吊环，抵达吊环时拉断钟锁。`;
-  if (s.segment === 1)
-    return s.bossState === 2
-      ? "守心者已露出破绽 · J 三连 / L 蓄力破甲 / S + J 坠星"
-      : "守心者护刃格挡 · 重击与回钩斩可破防，注意橙色预警。";
+  if (s.segment === 1) return keeperStatus(s).hint;
   if (s.gateOne > 0 && s.y < -850 && s.y > -1300)
     return "第一钟锁 · 击破右侧短锋，开启下方闸门。按住 E 回钩斩。";
   if (s.gateTwo > 0 && s.y < -1950 && s.y > -2400)
@@ -489,7 +492,9 @@ function receive(s) {
     : s.segment === 2
       ? `归途 · ${DISTRICTS[s.cityDistrict].name}`
       : s.segment === 1
-        ? "守心机枢 · 解开钟锁"
+        ? s.bossShield > 0
+          ? "守心机枢 · 解开钟锁"
+          : "守心机枢 · 守心者"
         : DISTRICTS[s.cityDistrict].name;
   $("#depth-marker").style.top =
     `${Math.max(0, Math.min(100, (-s.y / 3590) * 100))}%`;
@@ -505,15 +510,10 @@ function receive(s) {
           : "";
   $("#boss").hidden = !(s.segment === 1 && [1, 5].includes(s.phase));
   $("#boss-health").style.width =
-    `${(s.bossHP / (s.difficulty === 0 ? 16 : 20)) * 100}%`;
-  $("#boss-state").textContent =
-    s.bossShield > 0
-      ? `钟锁 ${s.bossShield} / 2 · 拉断两侧吊环`
-      : s.bossState === 2
-        ? "破绽 · 现在攻击"
-        : s.bossState === 1
-          ? "突进预警 · 准备闪避"
-          : "护刃 · 等待收招或重击破防";
+    `${Math.max(0, Math.min(100, (s.bossHP / s.bossMaxHP) * 100))}%`;
+  const keeper = keeperStatus(s);
+  $("#boss-name").textContent = keeper.name;
+  $("#boss-state").textContent = keeper.label;
   $("#status").textContent =
     s.segment === 2
       ? `钟城下沉中 · 距黑潮 ${Math.max(0, Math.round((s.y - s.riseY) / 10))} m`
@@ -712,7 +712,36 @@ async function load() {
               time: Number(m[4]),
             });
           }
-          if (!text.includes("@state") && !text.includes("@foe"))
+          m = text.match(/@keeperLine\s+(.+)/);
+          if (m) {
+            const values = m[1].trim().split(/\s+/).map(Number);
+            const keys = [
+              "id",
+              "ax",
+              "ay",
+              "bx",
+              "by",
+              "age",
+              "delay",
+              "life",
+              "width",
+              "style",
+            ];
+            if (
+              values.length === keys.length &&
+              values.every(Number.isFinite)
+            ) {
+              const line = Object.fromEntries(
+                keys.map((k, i) => [k, values[i]]),
+              );
+              window.keeperLines[line.id] = line;
+            }
+          }
+          if (
+            !text.includes("@state") &&
+            !text.includes("@foe") &&
+            !text.includes("@keeperLine")
+          )
             original(...args);
         };
         inscription.attach(w);

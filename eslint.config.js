@@ -27,6 +27,7 @@ export default tseslint.config(
       "prototypes/runlab/build-belfry.mjs",
       "prototypes/runlab/belfry-level.mjs",
       "prototypes/runlab/belfry-city-art.mjs",
+      "prototypes/runlab/belfry-keeper-art.mjs",
       "prototypes/runlab/test-belfry*.mjs",
     ],
     languageOptions: {
@@ -48,6 +49,7 @@ export default tseslint.config(
         fetch: "readonly",
         AudioContext: "readonly",
         foes: "readonly",
+        keeperLines: "readonly",
         inscriptionDiagnostics: "readonly",
         sessionStorage: "readonly",
         Storage: "readonly",

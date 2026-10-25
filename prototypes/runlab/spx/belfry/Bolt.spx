@@ -3,6 +3,7 @@ onCloned data => {
  setCostume kind; setXYpos x,y; setHeading angle(vx,vy); show
  for age<3.2 && int(p[4])==attempts && phase!=2 && phase!=3 {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
+  if len(p)>6 && (int(p[6])!=keeperEpoch || segment!=1) {die}
   if phase==1 && hitStop<=0 {
    age+=dt
    if !pinned {

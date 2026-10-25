@@ -18,7 +18,7 @@ onCloned data => {
     if kind==4 && state==3 {setCostume 3}
     if state==1 {setGraphicEffect GhostEffect,70}
    }
-   if (kind==1 || kind==3) && state==3 && enemyHazard[i]>0 {
+   if kind==1 && state==3 && enemyHazard[i]>0 {
     visible=true; setCostume 2; setXYpos enemyX[i]+enemyFacing[i]*20,enemyY[i]; setHeading enemyFacing[i]*90; setSize 0.52
     if t>0.7 {setXYpos enemyX[i]+enemyFacing[i]*30,enemyY[i]-23; setSize 0.60}
    }

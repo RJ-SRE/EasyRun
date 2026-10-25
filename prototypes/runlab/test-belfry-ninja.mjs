@@ -87,17 +87,21 @@ try {
   await wait(() => latestState.practice === 1 && latestState.phase === 1);
 
   await pick(0);
+  await wait(() => foes[0]?.state === 1 && foes[0]?.mode === 1);
+  const airOrigin = (await read()).foes[0];
   await wait(() => foes[0]?.state === 5);
   const air = await sampleWhile(0, 5);
-  assert.ok(Math.abs(air.at(-1).x - air[0].x) > 100);
-  assert.ok(Math.max(...air.map((f) => f.y)) - air[0].y > 35);
+  // At 70 ms telemetry intervals the first airborne sample may already be
+  // near the apex. Measure the arc from the observed pre-launch position.
+  assert.ok(Math.abs(air.at(-1).x - airOrigin.x) > 100);
+  assert.ok(Math.max(...air.map((f) => f.y)) - airOrigin.y > 35);
   assert.ok(air.every((f, i) => !i || Math.abs(f.x - air[i - 1].x) < 80));
   await wait(
     () => runEvents.filter((e) => e.name === "enemy_knife").length >= 3,
   );
   await save(
     "hover crosses a continuous aerial arc, then locks a second knife",
-    { samples: air },
+    { origin: airOrigin, samples: air },
   );
 
   await pick(1);

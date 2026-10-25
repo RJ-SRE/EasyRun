@@ -238,7 +238,7 @@ func nova() {
  releaseUltimate()
 }
 func releaseUltimate() {
- ultimateGated=true; lastMove=9; invulnerable=math.Max(invulnerable,1.0); vx*=0.2; vy*=0.4
+ ultimateGated=true; lastMove=9; invulnerable=math.Max(invulnerable,0.35); vx*=0.2; vy*=0.4
  skillFX(px,py+32,90,4,0.85); event("chainstart")
 }
 func updateSkills(dt float64) {
@@ -258,6 +258,9 @@ func updateSkills(dt float64) {
   if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
   threshold:=0.12+float64(ultimateStep)*0.17; if ultimateStep==4 {threshold=0.88}
   if ultimateStep<5 && age>=threshold {
+   // Protection follows the actual blade strokes, not the whole commitment.
+   // Gaps and the final recovery remain punishable; there is no cooldown.
+   invulnerable=math.Max(invulnerable,0.07)
    final:=ultimateStep==4; strikeX:=px; strikeY:=py+32; best:=260.0
    for i:=0;i<len(enemyHP);i++ {d:=dist(enemyX[i]-px,enemyY[i]-py-32); if enemyHP[i]>0 && d<best && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {best=d; strikeX=enemyX[i]; strikeY=enemyY[i]}}
    heading:=55.0; if ultimateStep%2==1 {heading=125}; size:=0.85; if final {heading=90-ultimateDir*65; size=1.35}
@@ -265,7 +268,7 @@ func updateSkills(dt float64) {
    attackTime=0.1
    for i:=0;i<len(enemyHP);i++ {
     if dist(enemyX[i]-strikeX,enemyY[i]-strikeY)<115 && dist(enemyX[i]-px,enemyY[i]-py-32)<285 && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {
-     damage:=1; if enemyType[i]==3 {damage=2}; if final {damage=3}
+     damage:=1; if final {damage=3}
      if hitEnemy(i,damage) {if enemyType[i]!=3 {enemyStun[i]=0.4; if final {enemyVX[i]=facing/90*270; enemyVY[i]=ultimateDir*420+80}}; if final {hitStop=0.07; shock=6}; event("chainhit")}
     }
    }
@@ -372,7 +375,7 @@ func update(dt float64) {
   closeRange:=64.0; if lightTarget>=0 {closeRange=85}
   if !valid {releaseHook(true)} else if d<closeRange {
    if hook<len(anchorX) {cutSeal(hook)}
-   if hook>=len(anchorX) {j:=hook-len(anchorX); hitEnemy(j,2); enemyStun[j]=0.65; enemyVY[j]=400; event("hookcut"); Slash.clone []float64{px,py+32,facing,5,float64(attempts)}}
+   if hook>=len(anchorX) {j:=hook-len(anchorX); hitEnemy(j,2); if enemyType[j]!=3 {enemyStun[j]=0.65; enemyVY[j]=400}; event("hookcut"); Slash.clone []float64{px,py+32,facing,5,float64(attempts)}}
    releaseHook(true)
   } else if lightTarget<0 {
    vx+=dx/d*2500*dt; vy+=dy/d*2500*dt
@@ -451,6 +454,7 @@ func render(dt float64) {
  if segment==2 {targetY=py+95+clamp(vy*0.1,0,80)}
  if practice==1 {targetY=120}
  targetY=clamp(targetY,-3350,220)
+ if segment==1 {targetY=clamp((py+enemyY[keeperIndex])/2+105,enemyBaseY[keeperIndex]+65,enemyBaseY[keeperIndex]+155)}
  cameraY+=(targetY-cameraY)*(1-exp(-7*dt))
  renderShock:=shock; if phase==5 {renderShock*=exp(-wordFocusAge*12)}
  cameraRenderX=480+sin(visualTime*81)*renderShock; cameraRenderY=cameraY+sin(visualTime*73)*renderShock*0.6
