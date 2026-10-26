@@ -7,9 +7,9 @@ var (
  nativeUiLogTime float64
 )
 func nativeButtonVisible(action int) bool {
- if action==6 {return true}
+ if action==6 {return phase!=1 && phase!=5}
  if nativeHelp {return action==9}
- if action==10 || action==11 {return phase==1}
+ if action==10 || action==11 {return false}
  if action==1 {return phase==0 || phase==2 || phase==3 || phase==4}
  if action==2 || action==4 || action==5 {return phase==0}
  if action==3 {return phase==0 || phase==4}

@@ -91,7 +91,7 @@ bash scripts/with-env.sh pnpm game:package
 
 ## 输出边界
 
-`.xbp` 含 spx 核心、敌人、动作和美术。从 v0.11.3 起，打包脚本将三首 MP3 和 NativeMusic.spx 控制器加入导出包，使用 spx 的 play / pausePlaying / resumePlaying / stopPlaying 管理阶段音乐；网页构建不注入该控制器，继续使用自己的音乐总线。v0.12.0 增加 14 个原生 UI 精灵（不额外占克隆数），构建阶段将中文菜单绘成高清 PNG；点击区域与按钮图共用布局数据。原生提供标题、难度、帮助、暂停、结算和简版 HUD，完整 HTML HUD、动作音效混音、网页设置与存储仍属于配套网页。`stretchMode:false` 保留物理像素比例，`fitViewport` 通过 `Camera.viewportRect` 与当前 zoom 计算等比容纳 960×600 的镜头缩放，原生 UI 跟随实际镜头中心；外侧遮罩限制画面在原始设计范围内。实际入口为本地 `/` 或 `/belfry.html`。生成图集是关键姿态图片动画，不是骨骼动画。
+`.xbp` 含 spx 核心、敌人、动作和美术。从 v0.11.3 起，打包脚本将三首 MP3 和 NativeMusic.spx 控制器加入导出包，使用 spx 的 play / pausePlaying / resumePlaying / stopPlaying 管理阶段音乐；网页构建不注入该控制器，继续使用自己的音乐总线。v0.12.0 增加 14 个原生 UI 精灵（不额外占克隆数），构建阶段将中文菜单绘成高清 PNG；点击区域与按钮图共用布局数据。原生提供标题、难度、帮助、暂停、结算和简版 HUD，完整 HTML HUD、动作音效混音、网页设置与存储仍属于配套网页。v0.12.1 在导出构建时预渲染 69 个 SVG 造型，保持中心点和比例，避免网站运行器大画布冷启动的 SVG 渲染错误。`stretchMode:false` 保留物理像素比例，`fitViewport` 先解除编辑器残留的镜头跟随，再按 `cameraRenderX/Y` 接管镜头，随后通过 `Camera.viewportRect` 与当前 zoom 计算等比容纳 960×600 的镜头缩放，原生 UI 跟随实际镜头中心；外侧遮罩限制画面在原始设计范围内。实际入口为本地 `/` 或 `/belfry.html`。生成图集是关键姿态图片动画，不是骨骼动画。
 
 ## v0.7 铭文与四技能集成
 

@@ -80,6 +80,8 @@ def package(game):
                 line = prefix + "=> {if !nativeHelp {" + body + "}"
             lines.append(line)
         main = "\n".join(lines) + "\n"
+        for relative in ui.get("removedFiles", []):
+            files.pop(relative, None)
         for relative in ui["files"]:
             if relative != "native-layout.spx":
                 files[relative] = (ui_root / relative).read_bytes()

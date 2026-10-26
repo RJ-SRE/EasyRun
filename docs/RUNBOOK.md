@@ -1,6 +1,6 @@
 # 本地运行、维护与交接手册
 
-> 当前本地工作版本为 [v0.12.0 原生菜单与窗口适配](XBUILDER_NATIVE.md)，分支 `feat/adaptive-wordbook-local`，未推送。以下保留 v0.10 猎战基线的工具入口。新增 `game:test:hunt` 检查地图、敌人与迁移；`game:test:scene` 检查当前猎战地图；`game:test:expedition` 检查当前真实按键路线。历史机关专项保留源码但退出默认测试。开发预览仍在本机 4184，实际端口可由 `RUNLAB_PORT` 指定。
+> 当前本地工作版本为 [v0.12.1 原生镜头纠偏与简化 HUD](XBUILDER_NATIVE.md)，分支 `feat/adaptive-wordbook-local`，未推送。以下保留 v0.10 猎战基线的工具入口。新增 `game:test:hunt` 检查地图、敌人与迁移；`game:test:scene` 检查当前猎战地图；`game:test:expedition` 检查当前真实按键路线。历史机关专项保留源码但退出默认测试。开发预览默认本机 4177，实际端口可由 `RUNLAB_PORT` 指定（历史验收也使用过 4184）。
 
 适用：`main` 的倒悬钟城 v0.10（已合入猎战重构、十五房、铭文、成就与场景音乐）。更新：2026-10-25。以下命令都从仓库根目录执行；Windows 原生脚本和跨平台兼容性尚未验收。
 

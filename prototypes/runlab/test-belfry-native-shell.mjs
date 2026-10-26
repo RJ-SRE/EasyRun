@@ -5,12 +5,27 @@ import { createReadStream } from "node:fs";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { resolve, join } from "node:path";
 const root = new URL("./", import.meta.url),
   out = new URL("test-results/native-shell/", root);
 await mkdir(out, { recursive: true });
+const onlineRuntime =
+  process.env.XBUILDER_RUNTIME_DIR && resolve(process.env.XBUILDER_RUNTIME_DIR);
+const modelUrl = process.env.XBUILDER_MODEL_URL;
+const runtimeFiles = onlineRuntime
+  ? {
+      "/ispx.wasm": join(onlineRuntime, "ispx.wasm"),
+      "/engineres.zip": join(onlineRuntime, "engineres.zip"),
+    }
+  : {};
+
 const archive = new URL("exports/belfry.xbp", root);
 const report = {
   date: new Date().toISOString(),
+  modelUrl,
+  runtime: onlineRuntime
+    ? "deployed XBuilder compiler and resources"
+    : "pinned npm runtime",
   cases: [],
   sizes: [],
   errors: [],
@@ -18,14 +33,17 @@ const report = {
     .update(await readFile(archive))
     .digest("hex"),
   fixture:
-    "Actual native archive without the web host. F8/F9 select only win/death for menu testing. Resize checks use the exported 480x360 run config, matching Builder; a second boot simulates 960x600. No online project overwritten.",
+    "Actual native archive without the web host. F8/F9 select only win/death; F6 moves to a deep room; F7 injects a stale Anchor follow target. Initial config also follows Anchor to reproduce the reported offset. Resize checks use the exported 480x360 run config, matching Builder; a second boot simulates 960x600. No online project overwritten.",
 };
 const server = createServer((req, res) => {
   res.writeHead(200, {
+    "Content-Type": req.url.endsWith(".wasm")
+      ? "application/wasm"
+      : "application/zip",
     "Access-Control-Allow-Origin": "*",
     "Cross-Origin-Resource-Policy": "cross-origin",
   });
-  createReadStream(archive).pipe(res);
+  createReadStream(runtimeFiles[req.url] || archive).pipe(res);
 });
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const url = `http://127.0.0.1:${server.address().port}/package.xbp`;
@@ -38,7 +56,10 @@ const pass = (name) => {
 };
 async function boot(run, deviceScaleFactor = 1) {
   page = await browser.newPage({
-    viewport: { width: 960, height: 600 },
+    viewport:
+      deviceScaleFactor === 2
+        ? { width: 1125, height: 844 }
+        : { width: 960, height: 600 },
     deviceScaleFactor,
   });
   page.on("pageerror", (e) => report.errors.push(e.message));
@@ -52,7 +73,13 @@ async function boot(run, deviceScaleFactor = 1) {
     window.nativeMusic = [];
     const log = console.log.bind(console);
     console.log = (...args) => {
-      const s = args.map(String).join(" ");
+      let s = args.map(String).join(" ");
+      // The deployed compiler wraps println in structured JSON logs.
+      try {
+        s = JSON.parse(s).msg?.trim() || s;
+      } catch {
+        /* plain npm log */
+      }
       if (s.startsWith("@state "))
         window.nativeState = s.slice(7).split(/\s+/).map(Number);
       if (s.startsWith("@nativeUI "))
@@ -74,30 +101,69 @@ async function boot(run, deviceScaleFactor = 1) {
   );
   await page.addScriptTag({ url: "/runtime/fflate.js" });
   await page.evaluate(
-    async ({ url, run }) => {
+    async ({ url, run, modelUrl, deployed }) => {
       window.onGameError((e) => window.nativeErrors.push(String(e)));
       window.onEngineCrash((e) => window.nativeErrors.push(String(e)));
       await window.initEngine(
         Object.fromEntries(
-          ["engine.zip", "game.zip", "engine.wasm", "ispx.wasm"].map((n) => [
+          [
+            "engine.zip",
+            deployed ? "engineres.zip" : "game.zip",
+            "engine.wasm",
+            "ispx.wasm",
+          ].map((n) => [
             n,
-            "/runtime/" + n,
+            deployed && ["ispx.wasm", "engineres.zip"].includes(n)
+              ? url.replace("package.xbp", n)
+              : "/runtime/" + n,
           ]),
         ),
       );
-      const files = window.fflate.unzipSync(
+      let files = window.fflate.unzipSync(
         new Uint8Array(await (await fetch(url)).arrayBuffer()),
       );
       const decoder = new window.TextDecoder(),
         encoder = new window.TextEncoder();
-      if (run) {
-        const config = JSON.parse(decoder.decode(files["assets/index.json"]));
-        config.run = run;
-        files["assets/index.json"] = encoder.encode(JSON.stringify(config));
+      const config = JSON.parse(decoder.decode(files["assets/index.json"]));
+      if (run) config.run = run;
+      config.camera = { on: "Anchor" };
+      files["assets/index.json"] = encoder.encode(JSON.stringify(config));
+      if (modelUrl) {
+        // Pinned public deployment bundle exports SpxProject as r and File as gn.
+        const { r: Project, gn: ModelFile } = await import(modelUrl);
+        const project = new Project();
+        await project.loadFiles(
+          Object.fromEntries(
+            Object.entries(files).map(([name, b]) => [
+              name,
+              new ModelFile(name.split("/").pop(), async () =>
+                b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength),
+              ),
+            ]),
+          ),
+        );
+        files = Object.fromEntries(
+          await Promise.all(
+            Object.entries(project.exportFiles()).map(async ([name, f]) => [
+              name,
+              new Uint8Array(await f.arrayBuffer()),
+            ]),
+          ),
+        );
+        const roundtrip = JSON.parse(
+          decoder.decode(files["assets/index.json"]),
+        );
+        if (roundtrip.camera.on !== "Anchor")
+          throw new Error("stale-follow fixture lost during model roundtrip");
+        window.nativeRoundtrip = {
+          run: roundtrip.run,
+          camera: roundtrip.camera,
+          map: roundtrip.map,
+        };
       }
       files["main.spx"] = encoder.encode(
         decoder.decode(files["main.spx"]) +
-          "\nonKey KeyF8, => {phase=2}\nonKey KeyF9, => {phase=3}\n",
+          "\nonKey KeyF6, => {Hero.resetHero(230,-6000)}\nonKey KeyF7, => {Camera.follow Anchor}\nonKey KeyF8, => {phase=2}\nonKey KeyF9, => {phase=3}\n",
       );
       await window.initGame(
         Object.fromEntries(
@@ -115,7 +181,7 @@ async function boot(run, deviceScaleFactor = 1) {
       );
       await window.startGame();
     },
-    { url, run },
+    { url, run, modelUrl, deployed: Boolean(onlineRuntime) },
   );
   await page.waitForFunction(
     () => window.nativeUI.length > 0 || window.nativeErrors.length > 0,
@@ -189,7 +255,63 @@ try {
   pass(
     "start button enters actual gameplay with the selected health and hides the title",
   );
-  await click(700, 51);
+  await page.waitForFunction(
+    () =>
+      Math.abs(window.nativeUI[2] - 480) < 2 &&
+      Math.abs(window.nativeUI[3] + 80) < 5,
+  );
+  report.cameraAtStart = await page.evaluate(() => window.nativeUI.slice(2));
+  report.roundtrip = await page.evaluate(() => window.nativeRoundtrip || null);
+  pass(
+    "camera owns its authored center after boot even if imported configuration follows the hidden Anchor sprite",
+  );
+  const musicBefore = await page.evaluate(() => window.nativeMusic.at(-1));
+  for (const x of [560, 700, 840]) await click(x, 51);
+  await state(1, -1);
+  assert.equal(
+    await page.evaluate(() => window.nativeMusic.at(-1)),
+    musicBefore,
+  );
+  assert.equal(await page.evaluate(() => window.nativeUI[1]), 0);
+  await tap("h");
+  await state(4, 2);
+  await tap("h");
+  await state(1, -1);
+  await tap("b");
+  await page.waitForFunction(() =>
+    window.nativeMusic.at(-1)?.endsWith("paused"),
+  );
+  await tap("b");
+  await page.waitForFunction(() =>
+    window.nativeMusic.at(-1)?.endsWith("playing"),
+  );
+  pass(
+    "gameplay guide/pause/music buttons and hit regions are absent; H and B remain functional",
+  );
+  await tap("F7");
+  await page.waitForTimeout(500);
+  assert.ok(
+    Math.abs((await page.evaluate(() => window.nativeUI[2])) - 480) < 2,
+  );
+  pass(
+    "runtime reacquires camera ownership after an external follow target is restored",
+  );
+  await tap("F6");
+  await page.waitForFunction(
+    () => window.nativeUI[3] < -5800 && Math.abs(window.nativeUI[2] - 480) < 2,
+  );
+  await page.waitForTimeout(300);
+  await shot("deep-room");
+  await tap("r");
+  await page.waitForFunction(
+    () =>
+      Math.abs(window.nativeUI[3] + 80) < 5 &&
+      Math.abs(window.nativeUI[2] - 480) < 2,
+  );
+  pass(
+    "deep-room camera movement and restart recover the intended world position without losing UI alignment",
+  );
+  await tap("Escape");
   await state(4, 3);
   const elapsed = await page.evaluate(() => window.nativeState[3]);
   await page.waitForTimeout(500);
@@ -286,11 +408,12 @@ try {
   await state(0, 0);
   await click(230, 402);
   await state(1, -1);
+  await page.waitForFunction(() => Math.abs(window.nativeUI[2] - 480) < 2);
   await shot("run-config-960");
   await tap("w");
   await page.waitForFunction(() => window.nativeState[13] > 45);
   pass(
-    "960x600 run config on a 2x display fits, starts and accepts real jump input without hardcoded half-scale assumptions",
+    "1125x844 window on a 2x display fits, starts and accepts real jump input with centered camera",
   );
   assert.deepEqual(await page.evaluate(() => window.nativeErrors), []);
   assert.deepEqual(report.errors, []);

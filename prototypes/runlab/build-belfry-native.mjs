@@ -20,8 +20,60 @@ const rects = {
 };
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
 let art;
+const vectorFiles = {},
+  removedFiles = [];
 try {
   const page = await browser.newPage();
+  // Builder's 480x360 run config can make runtime SVG rendering fail on a
+  // large/high-DPI canvas. Bake the vectors at their authored size, preserving
+  // pivots and sprite scale. Web builds continue to use the original SVGs.
+  const sceneConfig = JSON.parse(
+    await readFile(new URL("projects/belfry/assets/index.json", root), "utf8"),
+  );
+  for (const name of sceneConfig.zorder) {
+    const folder = `assets/sprites/${name}/`,
+      configPath = folder + "index.json";
+    const config = JSON.parse(
+      await readFile(new URL("projects/belfry/" + configPath, root), "utf8"),
+    );
+    let changed = false;
+    for (const costume of config.costumes || []) {
+      if (!costume.path.endsWith(".svg")) continue;
+      const original = folder + costume.path;
+      const source = await readFile(
+        new URL("projects/belfry/" + original, root),
+        "utf8",
+      );
+      const raster = await page.evaluate(async (svg) => {
+        const image = new Image();
+        image.src =
+          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+        await image.decode();
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        if (
+          !canvas.width ||
+          !canvas.height ||
+          Math.max(canvas.width, canvas.height) > 4096
+        )
+          throw new Error("Unsupported native vector dimensions");
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        return {
+          data: canvas.toDataURL("image/png").split(",")[1],
+          width: canvas.width,
+          height: canvas.height,
+        };
+      }, source);
+      costume.path = costume.path.replace(/\.svg$/, ".png");
+      costume.imageWidth = raster.width;
+      costume.imageHeight = raster.height;
+      vectorFiles[folder + costume.path] = Buffer.from(raster.data, "base64");
+      removedFiles.push(original);
+      changed = true;
+    }
+    if (changed) vectorFiles[configPath] = JSON.stringify(config);
+  }
   const background = (
     await readFile(new URL("art/belfry/clockwell.png", root))
   ).toString("base64");
@@ -263,8 +315,6 @@ try {
         ctx.fillStyle = bottom;
         ctx.fillRect(0, 510, 960, 90);
         text("THE THREADBEARER", 36, 31, 10, C.gold);
-        button(10, "暂停  Esc");
-        button(11, "指南  H");
         text(
           "W 跳跃   O 钩索   J 连击   K 冲刺   双击 S 下穿",
           36,
@@ -326,7 +376,7 @@ try {
 } finally {
   await browser.close();
 }
-const files = {},
+const files = { ...vectorFiles },
   zorder = [];
 function sprite(
   name,
@@ -402,7 +452,7 @@ sprite(
 sprite(
   "NativeMusicButton",
   ["music0", "music1"],
-  `func syncUI() {show; c:=0; if nativeMusicMuted {c=1}; setCostume c; ${pin(846, 51)}}`,
+  `func syncUI() {if phase!=1 && phase!=5 {show; c:=0; if nativeMusicMuted {c=1}; setCostume c; ${pin(846, 51)}} else {hide}}`,
 );
 sprite(
   "NativeHover",
@@ -435,7 +485,11 @@ for (const [p, content] of Object.entries(files)) {
 }
 await writeFile(
   new URL("manifest.json", out),
-  JSON.stringify({ files: Object.keys(files), zorder, rects }, null, 2),
+  JSON.stringify(
+    { files: Object.keys(files), removedFiles, zorder, rects },
+    null,
+    2,
+  ),
 );
 console.log(
   `Built native Belfry shell: ${Object.keys(files).length} files / ${zorder.length} sprites`,

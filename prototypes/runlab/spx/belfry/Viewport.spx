@@ -1,6 +1,10 @@
 // Keep the authored 960 x 600 field of view intact even when Builder rewrites
 // run to 480 x 360. stretchMode=false preserves physical pixels on host resize.
 func fitViewport() {
+ // SetXYpos alone does not cancel Builder's saved camera-follow target.
+ // ChangeXYpos clears that target before our authored camera takes ownership.
+ Camera.changeXYpos 0,0
+ Camera.setXYpos cameraRenderX,cameraRenderY
  x,y,w,h:=Camera.viewportRect()
  if w<=0 || h<=0 {return}
  zoom:=Camera.zoom
