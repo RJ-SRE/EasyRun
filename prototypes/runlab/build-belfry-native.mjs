@@ -27,8 +27,17 @@ const rects = {
   16: [738, 330, 142, 36],
   17: [656, 427, 224, 22],
   18: [656, 467, 224, 22],
-  19: [580, 510, 120, 40],
-  20: [716, 510, 120, 40],
+  19: [580, 516, 74, 30],
+  20: [670, 516, 84, 30],
+  21: [34, 64, 160, 28],
+  22: [204, 190, 160, 30],
+  23: [380, 190, 334, 30],
+  24: [724, 190, 30, 30],
+  25: [724, 62, 30, 30],
+  26: [204, 516, 180, 30],
+  27: [204, 224, 160, 30],
+  28: [204, 254, 160, 30],
+  29: [204, 284, 160, 30],
 };
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
 let art, lexicon;
@@ -228,7 +237,7 @@ try {
           button(13, "铭文");
           button(12, "词汇范围");
           button(14, "作答节奏");
-          button(15, "词册 · 30 ↗");
+          // NativeLedgerEntry reuses the web preview button.
           button(16, "换一组 ↻");
           text("随机抽词 · 错词优先 · 每次技能以词解放", 580, 385, 10, C.dim);
           soundPanel();
@@ -319,21 +328,6 @@ try {
           text("O 钩索   /   W 跳跃   /   J 连击", 64, 546, 13, C.dim);
           soundPanel();
         });
-      canvas("wordbook", 960, 600, () => {
-        base();
-        ctx.fillStyle = "#081216ee";
-        ctx.fillRect(48, 90, 864, 408);
-        text(
-          "本次远征的 30 枚铭文 · 新远征自动抽取 · 检查点保留词册",
-          64,
-          480,
-          12,
-          C.dim,
-        );
-        button(9, "返回准备   Esc");
-        button(19, "← 上页");
-        button(20, "下页 →");
-      });
       for (let mute = 0; mute < 2; mute++)
         canvas("music" + mute, 50, 28, () => {
           text(mute ? "静音" : "♫ B", 9, 19, 12, C.gold);
@@ -530,7 +524,7 @@ sprite(
 sprite(
   "NativeMusicButton",
   ["music0", "music1"],
-  `func syncUI() {if phase!=1 && phase!=5 {show; c:=0; if nativeMusicMuted || nativeMusicVolume==0 {c=1}; setCostume c; ${pin(899, 44)}} else {hide}}`,
+  `func syncUI() {if phase!=1 && phase!=5 && !nativePreview {show; c:=0; if nativeMusicMuted || nativeMusicVolume==0 {c=1}; setCostume c; ${pin(899, 44)}} else {hide}}`,
 );
 sprite(
   "NativeHover",
@@ -561,6 +555,37 @@ sprite(
   Array.from({ length: 23 }, (_, i) => "spelling-track" + i),
   `func syncUI() {if phase==5 && wordPending>0 && nativeQuestionMode==0 && !wordVisualPaused && !nativeHelp {show; n:=len(nativeWords[nativeWordIndex]); if len(nativeInput)>n {n=len(nativeInput)}; setCostume int(clamp(float64(n),0,22)); setXYpos viewCenterX+502-480,viewCenterY+300-110+nativeFocusOffset; setLayer Front} else {hide}}`,
 );
+sprite(
+  "NativeLedgerEntry",
+  ["ledger-entry"],
+  `func syncUI() {if phase==0 && !nativeHelp && !nativePreview {show; ${pin(651, 348)}} else {hide}}`,
+);
+sprite(
+  "NativeLedgerTools",
+  ["ledger-search0", "ledger-search1", "ledger-search2", "ledger-search3"],
+  `func syncUI() {NativeLedgerEntry.syncUI(); NativeLedgerPrevious.syncUI(); NativeLedgerNext.syncUI(); if nativePreview {show; c:=0; if nativeLedgerSearch {c=1}; if nativeLedgerQuery!="" {c+=2}; setCostume c; ${pin(547, 205)}} else {hide}}`,
+);
+sprite(
+  "NativeLedgerFilter",
+  ["ledger-filter"],
+  `func syncUI() {if nativePreview && nativeLedgerFilterOpen {show; ${pin(284, 269)}} else {hide}}`,
+);
+sprite(
+  "NativeLedgerPrevious",
+  ["ledger-prev0", "ledger-prev1"],
+  `func syncUI() {if nativePreview {show; c:=0; if nativePreviewPage>0 {c=1}; setCostume c; ${pin(617, 531)}} else {hide}}`,
+);
+sprite(
+  "NativeLedgerNext",
+  ["ledger-next0", "ledger-next1"],
+  `func syncUI() {if nativePreview {show; c:=0; if nativePreviewPage+1<len(nativeLedgerPages) {c=1}; setCostume c; ${pin(712, 531)}} else {hide}}`,
+);
+for (let group = 0; group < 10; group++)
+  sprite(
+    "NativeLedgerTally" + group,
+    Array.from({ length: 27 }, (_, i) => "ledger-tally" + i),
+    `func syncUI() {if nativePreview {show; setCostume nativeLedgerTally(${group}); ${pin(229 + group * 55, 148)}} else {hide}}`,
+  );
 zorder.push("NativeGlyph", "NativeSfx");
 for (let i = 0; i < 4; i++) {
   const offset = [

@@ -11,23 +11,27 @@ export async function buildNativeLexicon(page, words) {
   const rows = words.map((w) => ({
     word: w.word.toLowerCase(),
     meaning: trim(w.meaning),
+    pos: w.pos,
     a: trim(w.distractors[0]),
     b: trim(w.distractors[1]),
     aliases: w.accepted.map((x) => x.toLowerCase()).join("|"),
     level: w.levels.length === 2 ? 3 : w.levels[0] === "cet4" ? 1 : 2,
     spell: w.spellable && /^[a-z -]+$/.test(w.word.toLowerCase()) ? 1 : 0,
   }));
-  const source = await readFile(
-    new URL("spx/belfry/NativeWords.spx", root),
-    "utf8",
-  );
+  const source = (
+    await Promise.all(
+      ["NativeWords", "NativeLedger"].map((name) =>
+        readFile(new URL(`spx/belfry/${name}.spx`, root), "utf8"),
+      ),
+    )
+  ).join("\n");
   const chars = [
     ...new Set([
       ...Array.from({ length: 95 }, (_, i) => String.fromCharCode(32 + i)).join(
         "",
       ),
       ...source,
-      ...rows.map((w) => w.word + w.meaning + w.a + w.b).join(""),
+      ...rows.map((w) => w.word + w.meaning + w.a + w.b + w.pos).join(""),
     ]),
   ].filter((c) => c >= " ");
   const entries = chars.map((c) => ({ c, font: 0 }));
@@ -42,7 +46,15 @@ export async function buildNativeLexicon(page, words) {
         el.height = font ? 60 : 48;
         const ctx = el.getContext("2d");
         ctx.fillStyle =
-          font === 3 ? "#d99671" : font === 2 ? "#e3cf9f" : "#eee7d2";
+          c === "◐"
+            ? "#c7906b"
+            : c === "◆" || c === "✦"
+              ? "#dfc386"
+              : font === 3
+                ? "#d99671"
+                : font === 2
+                  ? "#e3cf9f"
+                  : "#eee7d2";
         ctx.font =
           font === 1
             ? '40px Georgia, "Times New Roman", serif'
@@ -112,6 +124,7 @@ onClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mou
   const arrays = [
     ["nativeWords", "word", "string"],
     ["nativeMeanings", "meaning", "string"],
+    ["nativeWordPOS", "pos", "string"],
     ["nativeDistractA", "a", "string"],
     ["nativeDistractB", "b", "string"],
     ["nativeAliases", "aliases", "string"],

@@ -43,7 +43,7 @@ def package(game):
     files = {relative: (ROOT / "projects" / game / relative).read_bytes() for relative in sorted(manifest)}
     instructions = "Enter 开始；A/D 移动；空格跳跃；E 特殊动作；S 滑行；R 重来；Esc 暂停。推荐使用配套本地试玩页面查看中文提示、分数与结算。"
     if game == "belfry":
-        main = files["main.spx"].decode().replace('import "math"', 'import "math"\nimport "fmt"')
+        main = files["main.spx"].decode().replace('import "math"', 'import "math"\nimport "fmt"\nimport "strings"')
         marker = "// EXPORT_NATIVE_MUSIC_TICK"
         assert main.count(marker) == 1, "Rebuild Belfry before packaging native music"
         main = main.replace(marker, "updateNativeMusic()")
@@ -52,7 +52,7 @@ def package(game):
         ui = json.loads((ui_root / "manifest.json").read_text())
         # Classfiles allow one field block, with all methods before event registration.
         methods = []
-        for source in ["NativeMusic", "NativeShell", "NativeWords"]:
+        for source in ["NativeMusic", "NativeShell", "NativeWords", "NativeLedger"]:
             native = (ROOT / f"spx/belfry/{source}.spx").read_text()
             declarations, native = native.split("\n)\n", 1)
             fields = declarations.split("var (\n", 1)[1]
@@ -71,7 +71,7 @@ def package(game):
         main = main.replace('func event(name string) {', 'func event(name string) {\n nativeSoundEvent(name)')
         main = main.replace('Hero.captureAttack()', 'if nativeInputLock<=0 {Hero.captureAttack()}')
         main = main.replace('Hero.update(dt)', 'if nativeInputLock<=0 {Hero.update(dt)}')
-        handlers = {"KeyEnter": "nativeConfirm()", "KeyEscape": "nativePause()", "KeyM": 'if phase==5 {nativeType("m")} else if nativeInputLock<=0 {nativeReturnTitle()}'}
+        handlers = {"KeyEnter": "nativeConfirm()", "KeyEscape": "nativePause()", "KeyM": 'if phase==5 || nativePreview {nativeType("m")} else if nativeInputLock<=0 {nativeReturnTitle()}'}
         lines = []
         for line in main.splitlines():
             key = next((key for key in handlers if line.startswith(f"onKey {key},")), None)
@@ -83,7 +83,7 @@ def package(game):
             elif any(line.startswith(f"onKey {key},") for key in ["KeyF", "KeyV"]):
                 prefix, body = line.split("=> {", 1)
                 letter = "f" if line.startswith("onKey KeyF,") else "v"
-                line = prefix + f'=> {{if phase==5 {{nativeType("{letter}")}} else if nativeInputLock<=0 {{' + body + "}"
+                line = prefix + f'=> {{if phase==5 || nativePreview {{nativeType("{letter}")}} else if nativeInputLock<=0 {{' + body + "}"
             elif any(line.startswith(f"onKey {key},") for key in ["KeyT", "KeyR", "Key1", "Key2", "Key3", "Key4", "Key5", "Key6", "Key7", "Key8", "Key9"]):
                 prefix, body = line.split("=> {", 1)
                 if any(line.startswith(f"onKey Key{n},") for n in [1, 2, 3]):
@@ -91,7 +91,7 @@ def package(game):
                     line = prefix + f"=> {{if phase==5 {{nativeChoose({n-1})}} else if !nativeHelp && !nativePreview && nativeInputLock<=0 {{" + body + "}"
                 elif line.startswith("onKey KeyT,") or line.startswith("onKey KeyR,"):
                     letter = "t" if line.startswith("onKey KeyT,") else "r"
-                    line = prefix + f'=> {{if phase==5 {{nativeType("{letter}")}} else if !nativeHelp && !nativePreview && nativeInputLock<=0 {{' + body + "}"
+                    line = prefix + f'=> {{if phase==5 || nativePreview {{nativeType("{letter}")}} else if !nativeHelp && !nativePreview && nativeInputLock<=0 {{' + body + "}"
                 else:
                     line = prefix + "=> {if phase!=5 && !nativeHelp && !nativePreview && nativeInputLock<=0 {" + body + "}"
             lines.append(line)
@@ -128,6 +128,7 @@ def package(game):
             "J 三连，W+J 挑空，S+J 坠星；U 蓄箭，L 蓄刀，蓄力时 W/S 向上/下瞄准；"
             "I 回息，P 连环剑刀；U/L/I 冷却 3 秒，P 冷却 5 秒。K/Shift 冲刺，W+K 向上；"
             "双击 S 下平台；R 重开；Esc 暂停；M 在暂停/结算返回标题；T 排练。"
+            "Tab 或点击铭文进度打开随行词册；支持本局/薄弱/完整词库范围与英文搜索，Esc/Tab 合上。战斗中查看会暂停，合上后继续；答题中不能打开词册。"
             "包内含 8815 条四、六级词汇，随机 30 词、拼写/三选一辨义、错题取消技能、错词本次运行优先。Enter 提交拼写，1/2/3 辨义，Esc 暂停答题。开始或暂停菜单可分别拖动音乐与音效滑条。运行内记忆保留，关闭或重新运行 XBuilder 后重置；网页版跨次存档与成就尚未迁入。角色语音保持关闭。"
         )
     metadata = {"type": "game", "displayName": name + " · 玩法原型", "description": description, "instructions": instructions}

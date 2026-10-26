@@ -2,6 +2,7 @@
 var (
  nativeWords []string
  nativeMeanings []string
+ nativeWordPOS []string
  nativeDistractA []string
  nativeDistractB []string
  nativeAliases []string
@@ -47,7 +48,7 @@ var (
 func nativeRand(n int) int {return int(rand(0,n-1))}
 
 func nativeShuffleDeck() {
- nativeDeck=[]int{}; nativeDone=[]int{}; nativeCursor=0; nativeDeckUsed=false; nativePreviewPage=0
+ nativeLedgerWon=false; nativeDeck=[]int{}; nativeDone=[]int{}; nativeCursor=0; nativeDeckUsed=false; nativePreviewPage=0
  for len(nativeDeck)<30 {
   best:=-1; weight:=-1
   for candidate:=0;candidate<4;candidate++ {
@@ -96,6 +97,7 @@ func nativeFinishQuestion(result int) {
  println "@nativeAnswer",result,nativeCompleted(),nativeWeak[i]
 }
 func nativeType(s string) {
+ if nativePreview {nativeLedgerType(s); return}
  if phase!=5 || wordVisualPaused || nativeQuestionAge<0.18 || nativeQuestionMode!=0 || wordSerial!=nativeWordSeen {return}
  if len(nativeInput)<48 {nativeInput+=s}
 }
@@ -161,11 +163,7 @@ func nativeNumber(n int) string {return fmt.Sprint(n)}
 func nativeRebuildText() {
  nativeTextCount=0
  if nativePreview {
-  nativeText("随行词册 / "+nativeNumber(nativePreviewPage+1)+" · 10",64,121,22)
-  for row:=0;row<3;row++ {slot:=nativePreviewPage*3+row; i:=nativeDeck[slot]; y:=167+float64(row)*92
-   nativeText(nativeNumber(slot+1)+"  "+nativeWords[i],64,y,18)
-   nativeText(nativeMeanings[i],400,y,15)
-  }
+  nativeDrawLedger()
  } else if phase==0 && !nativeHelp {
   scope:="四、六级混合"; if nativeScope==1 {scope="四级词汇"}; if nativeScope==2 {scope="六级词汇"}
   mode:="铭文开启"; if wordMode==0 {mode="纯动作模式"}
@@ -176,8 +174,8 @@ func nativeRebuildText() {
   nativeText(nativeNumber(nativeMusicVolume)+"%",882,438,12)
   nativeText(nativeNumber(nativeSfxVolume)+"%",882,478,12)
  }
- if (phase==1 || phase==5) && !nativeHelp {
-  if wordMode==1 && practice==0 {nativeText("铭文 "+nativeNumber(nativeCompleted())+" / 30",36,78,12)}
+ if (phase==1 || phase==5) && !nativeHelp && !nativePreview {
+  if wordMode==1 && practice==0 {nativeText("铭文 "+nativeNumber(nativeCompleted())+" / 30 ↗",36,78,12)}
   if phase==5 {
    i:=nativeWordIndex
    nativeFocusText(nativeNumber(int(math.Ceil(math.Max(0,nativeQuestionLimit-nativeQuestionAge))))+"s",267,120,11,2)
@@ -209,6 +207,7 @@ func nativeRebuildText() {
  nativeTextVersion++
 }
 func updateNativeWords(dt float64) {
+ if phase==2 {nativeLedgerWon=true}
  nativeFocusOffset=0
  if phase==5 {t:=clamp(nativeQuestionAge/0.16,0,1); nativeFocusOffset=8*(1-t)*(1-t)*(1-t)}
  if nativeInputLock>0 {nativeInputLock-=dt}
@@ -217,7 +216,7 @@ func updateNativeWords(dt float64) {
   if !wordVisualPaused {nativeQuestionAge+=dt; if nativeQuestionAge>=nativeQuestionLimit {nativeFinishQuestion(3)}}
  }
  if phase!=4 && !(phase==5 && wordVisualPaused) {nativeFeedbackTime=math.Max(0,nativeFeedbackTime-dt)}
- cache:=fmt.Sprint(phase,nativePreview,nativePreviewPage,nativeScope,nativePace,wordMode,nativeHelp,nativeMusicVolume,nativeSfxVolume,nativeWordSeen,nativeQuestionMode,wordVisualPaused,nativeInput,int(nativeQuestionAge),nativeCompleted(),nativeFeedbackTime>0)
+ cache:=fmt.Sprint(nativeLedgerRevision,nativeLedgerSearch,phase,nativePreview,nativePreviewPage,nativeScope,nativePace,wordMode,nativeHelp,nativeMusicVolume,nativeSfxVolume,nativeWordSeen,nativeQuestionMode,wordVisualPaused,nativeInput,int(nativeQuestionAge),nativeCompleted(),nativeFeedbackTime>0)
  if cache!=nativeTextCache {nativeTextCache=cache; nativeRebuildText()}
- broadcast "nativeText"
+ if nativePreview && nativeLedgerFilterOpen {broadcastAndWait "nativeText"} else {broadcast "nativeText"}
 }

@@ -79,6 +79,10 @@ async function boot(run, deviceScaleFactor = 1) {
     window.sfx = [];
     window.nativeRender = [];
     window.nativeLayout = [];
+    window.ledgerView = [];
+    window.ledgerRows = [];
+    window.ledgerBadges = [];
+    window.ledgerQuery = "";
     window.clonePeak = 0;
     window.nativeFrameSamples = [];
     const log = console.log.bind(console);
@@ -107,6 +111,19 @@ async function boot(run, deviceScaleFactor = 1) {
       if (s.startsWith("@nativeDeck ")) window.decks.push(s);
       if (s.startsWith("@nativeVolume "))
         window.mix = s.slice(14).split(/\s+/).map(Number);
+      if (s.startsWith("@nativeLedgerView ")) {
+        window.ledgerView = s.slice(18).split(/\s+/);
+        window.ledgerBadges = [];
+      }
+      if (s.startsWith("@nativeLedgerRows "))
+        window.ledgerRows = (s.match(/\[([^\]]*)\]/)?.[1] || "")
+          .split(" ")
+          .filter(Boolean)
+          .map(Number);
+      if (s.startsWith("@nativeLedgerBadge "))
+        window.ledgerBadges.push(s.slice(19).split(/\s+/).map(Number));
+      if (s.startsWith("@nativeLedger "))
+        window.ledgerQuery = s.split(/\s+/).slice(5).join(" ");
       if (s.startsWith("@nativeLayout ")) window.nativeLayout = [];
       if (s.startsWith("@nativeGlyph "))
         window.nativeLayout.push(s.slice(13).split(/\s+/).map(Number));
@@ -202,6 +219,14 @@ async function boot(run, deviceScaleFactor = 1) {
           .replace(
             "nativeTextVersion++",
             'nativeTextVersion++; println "@nativeLayout",nativeTextCount; for n:=0;n<nativeTextCount;n++ {if nativeTextFocus[n] {println "@nativeGlyph",nativeTextX[n],nativeTextY[n],nativeTextSize[n]}}',
+          )
+          .replace(
+            "func nativeDrawLedger() {",
+            'func nativeDrawLedger() {println "@nativeLedgerView",phase,nativeLedgerReturn,nativeLedgerFilter,len(nativeLedgerMatches),nativePreviewPage,len(nativeLedgerPages),nativeCompleted(),nativeLedgerWon; startProbe:=nativeLedgerPages[nativePreviewPage]; endProbe:=len(nativeLedgerMatches); if nativePreviewPage+1<len(nativeLedgerPages) {endProbe=nativeLedgerPages[nativePreviewPage+1]}; println "@nativeLedgerRows",nativeLedgerMatches[startProbe:endProbe]',
+          )
+          .replace(
+            "nativeLedgerText(badge,x-20",
+            'println "@nativeLedgerBadge",i,state; nativeLedgerText(badge,x-20',
           )
           .replace("var (", "var (\n nativeProbeFrames int")
           .replace(
@@ -320,9 +345,81 @@ try {
   await click(630, 350);
   await state(0, 6);
   await shot("wordbook");
-  await click(770, 530);
+  await page.waitForFunction(() => Number(window.ledgerView[3]) === 30);
+  const ledgerDeck = await page.evaluate(() => window.decks.at(-1));
+  const ledgerIDs = await page.evaluate(() => [...window.ledgerRows]);
+  const pageCount = await page.evaluate(() => Number(window.ledgerView[5]));
+  for (let n = 1; n < pageCount; n++) {
+    await click(710, 530);
+    await page.waitForFunction((n) => Number(window.ledgerView[4]) === n, n);
+    ledgerIDs.push(...(await page.evaluate(() => window.ledgerRows)));
+  }
+  assert.equal(new Set(ledgerIDs).size, 30);
+  assert.deepEqual(
+    [...ledgerIDs].sort((a, b) => a - b),
+    ledgerDeck
+      .match(/\[([^\]]+)\]/)[1]
+      .split(" ")
+      .map(Number)
+      .sort((a, b) => a - b),
+  );
+  await click(710, 530);
+  await page.waitForTimeout(100);
+  assert.equal(
+    await page.evaluate(() => Number(window.ledgerView[4])),
+    pageCount - 1,
+  );
+  await shot("wordbook-last-page");
+  await click(280, 205);
   await page.waitForTimeout(250);
-  await shot("wordbook-page2");
+  await shot("wordbook-filter");
+  await click(280, 269);
+  await page.waitForFunction(
+    () =>
+      Number(window.ledgerView[2]) === 1 && Number(window.ledgerView[3]) === 0,
+  );
+  await shot("wordbook-empty");
+  await click(280, 205);
+  await click(280, 299);
+  await page.waitForFunction(
+    () =>
+      Number(window.ledgerView[2]) === 2 &&
+      Number(window.ledgerView[3]) === 8815,
+  );
+  await click(500, 205);
+  for (const k of "rtbhfvm") await tap(k);
+  await state(0, 6);
+  await page.waitForFunction(() => window.ledgerQuery === "rtbhfvm");
+  for (let n = 0; n < 7; n++) await tap("Backspace");
+  for (const k of "telecommunications") await tap(k);
+  await page.waitForFunction(() => Number(window.ledgerView[3]) === 1);
+  assert.equal(
+    WORDS[(await page.evaluate(() => window.ledgerRows))[0]].word,
+    "telecommunications",
+  );
+  await shot("wordbook-search");
+  await page.setViewportSize({ width: 480, height: 360 });
+  await page.waitForFunction(
+    () => Math.abs(window.nativeUI[4] / window.nativeUI[5] - 4 / 3) < 0.01,
+  );
+  await page.waitForTimeout(250);
+  await shot("wordbook-small");
+  await page.setViewportSize({ width: 960, height: 600 });
+  await page.waitForFunction(
+    () => Math.abs(window.nativeUI[4] / window.nativeUI[5] - 1.6) < 0.01,
+  );
+  await click(738, 205);
+  await page.waitForFunction(() => Number(window.ledgerView[3]) === 8815);
+  await click(280, 205);
+  await click(280, 239);
+  await page.waitForFunction(
+    () =>
+      Number(window.ledgerView[2]) === 0 && Number(window.ledgerView[3]) === 30,
+  );
+  assert.equal(await page.evaluate(() => window.decks.at(-1)), ledgerDeck);
+  pass(
+    "ledger pages cover all 30 words without gaps or duplicates; weakness/full-bank filters and isolated live search work without reshuffling",
+  );
   await tap("Escape");
   await state(0, 0);
   pass(
@@ -346,6 +443,8 @@ try {
     q = await question("u", 1);
   }
   await tap("F10");
+  await tap("Tab");
+  await state(5, -1);
   await shot("spelling");
   const time = await page.evaluate(() => window.nativeState[3]);
   const music = await page.evaluate(() => window.nativeMusic.at(-1));
@@ -372,6 +471,32 @@ try {
   pass(
     "real charged arrow invokes spelling; typing combat/menu/mute keys is isolated; correct submission releases once and starts 3-second cooldown",
   );
+  await tap("Tab");
+  await state(4, 6);
+  await page.waitForFunction(() => Number(window.ledgerView[6]) === 1);
+  const frozen = await page.evaluate(() => window.nativeState[3]);
+  await page.waitForTimeout(400);
+  assert.equal(await page.evaluate(() => window.nativeState[3]), frozen);
+  assert.ok(
+    (await page.evaluate(() => window.ledgerBadges)).some(
+      ([, state]) => state === 2,
+    ),
+  );
+  await shot("wordbook-progress");
+  await tap("Escape");
+  await state(1, -1);
+  await page.waitForTimeout(220);
+  await tap("Escape");
+  await state(4, 3);
+  await tap("Tab");
+  await state(4, 6);
+  await tap("Escape");
+  await state(4, 3);
+  await tap("Escape");
+  await state(1, -1);
+  pass(
+    "gameplay ledger pauses combat, shows completed-word states and resumes; opening from pause returns to pause; an active question rejects Tab",
+  );
   const q2 = await question("l", 2);
   await tap("F11");
   await shot("meaning");
@@ -381,6 +506,28 @@ try {
   assert.ok((await page.evaluate(() => window.wordAnswers.at(-1)[2])) > 0);
   pass(
     "wrong meaning cancels charged blade without consuming cooldown and increases session weakness",
+  );
+  await tap("Tab");
+  await state(4, 6);
+  await click(280, 205);
+  await click(280, 269);
+  await page.waitForFunction(
+    () =>
+      Number(window.ledgerView[2]) === 1 && Number(window.ledgerView[3]) > 0,
+  );
+  assert.ok(
+    (await page.evaluate(() => window.ledgerRows)).includes(Number(q2[2])),
+  );
+  assert.ok(
+    (await page.evaluate(() => window.ledgerBadges)).some(
+      ([, state]) => state === 1,
+    ),
+  );
+  await shot("wordbook-review");
+  await tap("Escape");
+  await state(1, -1);
+  pass(
+    "a wrong answer becomes a review badge and enters the weakness ledger in the same session",
   );
   await question("p", 4);
   await tap("F10");

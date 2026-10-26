@@ -351,6 +351,11 @@ try {
   await tap("F8");
   await state(2, 5);
   await shot("victory-960");
+  await tap("Tab");
+  await state(2, 6);
+  await shot("victory-ledger");
+  await tap("Escape");
+  await state(2, 5);
   await click(160, 466);
   await state(0, 0);
   pass(
@@ -414,6 +419,14 @@ try {
   await page.waitForFunction(() => window.nativeState[13] > 45);
   pass(
     "1125x844 window on a 2x display fits, starts and accepts real jump input with centered camera",
+  );
+  await tap("Tab");
+  await state(4, 6);
+  await shot("ledger-retina");
+  await tap("Escape");
+  await state(1, -1);
+  pass(
+    "native ledger opens after a 2x-display boot, keeps all text inside the frame, and returns to gameplay; victory ledger preserves the result screen",
   );
   assert.deepEqual(await page.evaluate(() => window.nativeErrors), []);
   assert.deepEqual(report.errors, []);
