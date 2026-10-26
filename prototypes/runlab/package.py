@@ -61,6 +61,21 @@ def package(game):
             methods.append(native)
         methods.append((ui_root / "native-layout.spx").read_text())
         methods.append((ui_root / "native-word-data.spx").read_text())
+        # Keys held when a question opens/closes stay quarantined until key-up.
+        # Mask polling as well as events: a delayed jump/skill is still a leak.
+        keys = [f"Key{c}" for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"] + ["KeyLeft", "KeyRight", "KeyUp", "KeyDown", "KeyShift", "KeySpace", "KeyMinus", "KeyEnter", "KeyBackspace"]
+        assert len(keys) <= 64
+        methods.append("func nativeCaptureHeld() {\n" + "\n".join(
+            f" if keyPressed({key}) {{nativeHeld[{i}]=true}}" for i, key in enumerate(keys)
+        ) + "\n}\nfunc nativeReleaseHeld() {\n" + "\n".join(
+            f" if !keyPressed({key}) {{nativeHeld[{i}]=false}}" for i, key in enumerate(keys)
+        ) + "\n}\n" + "\n".join(
+            f"func native{key}() bool {{return !nativeHeld[{i}] && keyPressed({key})}}" for i, key in enumerate(keys)
+        ))
+        hero = files["Hero.spx"].decode()
+        for key in keys:
+            hero = hero.replace(f"keyPressed({key})", f"native{key}()")
+        files["Hero.spx"] = hero.encode()
         events = "onKey KeyT,"
         assert main.count(events) == 1
         main = main.replace(events, "\n".join(methods) + "\n" + (ROOT / "spx/belfry/NativeBindings.spx").read_text() + "\n" + events)
@@ -94,6 +109,10 @@ def package(game):
                     line = prefix + f'=> {{if phase==5 || nativePreview {{nativeType("{letter}")}} else if !nativeHelp && !nativePreview && nativeInputLock<=0 {{' + body + "}"
                 else:
                     line = prefix + "=> {if phase!=5 && !nativeHelp && !nativePreview && nativeInputLock<=0 {" + body + "}"
+            for i, key in enumerate(keys):
+                if line.startswith(f"onKey {key},"):
+                    line = line.replace("=> {", f"=> {{if nativeHeld[{i}] {{return}}; ", 1)
+                    break
             lines.append(line)
         main = "\n".join(lines) + "\n"
         # Native text uses dynamic clones; include them in the global 300-slot budget.
@@ -129,7 +148,7 @@ def package(game):
             "I 回息，P 连环剑刀；U/L/I 冷却 3 秒，P 冷却 5 秒。K/Shift 冲刺，W+K 向上；"
             "双击 S 下平台；R 重开；Esc 暂停；M 在暂停/结算返回标题；T 排练。"
             "Tab 或点击铭文进度打开随行词册；支持本局/薄弱/完整词库范围与英文搜索，Esc/Tab 合上。战斗中查看会暂停，合上后继续；答题中不能打开词册。"
-            "包内含 8815 条四、六级词汇，随机 30 词、拼写/三选一辨义、错题取消技能、错词本次运行优先。Enter 提交拼写，1/2/3 辨义，Esc 暂停答题。开始或暂停菜单可分别拖动音乐与音效滑条。运行内记忆保留，关闭或重新运行 XBuilder 后重置；网页版跨次存档与成就尚未迁入。角色语音保持关闭。"
+            "包内含 8815 条四、六级词汇，随机 30 词、拼写/三选一辨义、错题取消技能、错词本次运行优先。拼写始终显示中文释义，拼对自动释放、首个错字立即取消；完整提示/2 秒渐隐/1 秒回忆可在标题选择。1/2/3 辨义，Esc 暂停答题。开始或暂停菜单可分别拖动音乐与音效滑条。运行内记忆保留，关闭或重新运行 XBuilder 后重置；网页版跨次存档与成就尚未迁入。角色语音保持关闭。"
         )
     metadata = {"type": "game", "displayName": name + " · 玩法原型", "description": description, "instructions": instructions}
     files["builder-meta.json"] = json.dumps(metadata, ensure_ascii=False, indent=2).encode()

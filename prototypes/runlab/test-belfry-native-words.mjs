@@ -79,6 +79,10 @@ async function boot(run, deviceScaleFactor = 1) {
     window.sfx = [];
     window.nativeRender = [];
     window.nativeLayout = [];
+    window.spelling = [];
+    window.cue = "";
+    window.context = "";
+    window.typed = "";
     window.ledgerView = [];
     window.ledgerRows = [];
     window.ledgerBadges = [];
@@ -124,6 +128,11 @@ async function boot(run, deviceScaleFactor = 1) {
         window.ledgerBadges.push(s.slice(19).split(/\s+/).map(Number));
       if (s.startsWith("@nativeLedger "))
         window.ledgerQuery = s.split(/\s+/).slice(5).join(" ");
+      if (s.startsWith("@nativeSpelling "))
+        window.spelling = s.slice(16).split(/\s+/);
+      if (s.startsWith("@nativeCue ")) window.cue = s.slice(11);
+      if (s.startsWith("@nativeContext ")) window.context = s.slice(15);
+      if (s.startsWith("@nativeTyped ")) window.typed = s.slice(13);
       if (s.startsWith("@nativeLayout ")) window.nativeLayout = [];
       if (s.startsWith("@nativeGlyph "))
         window.nativeLayout.push(s.slice(13).split(/\s+/).map(Number));
@@ -218,7 +227,7 @@ async function boot(run, deviceScaleFactor = 1) {
           .decode(files["main.spx"])
           .replace(
             "nativeTextVersion++",
-            'nativeTextVersion++; println "@nativeLayout",nativeTextCount; for n:=0;n<nativeTextCount;n++ {if nativeTextFocus[n] {println "@nativeGlyph",nativeTextX[n],nativeTextY[n],nativeTextSize[n]}}',
+            'nativeTextVersion++; println "@nativeSpelling",nativeHint,nativeHintVisible(),nativeQuestionAge; println "@nativeCue",nativeCue(); println "@nativeContext",nativeWordPOS[nativeWordIndex],nativeMeanings[nativeWordIndex]; println "@nativeTyped",nativeInput; println "@nativeLayout",nativeTextCount; for n:=0;n<nativeTextCount;n++ {if nativeTextFocus[n] {println "@nativeGlyph",nativeTextX[n],nativeTextY[n],nativeTextSize[n]}}',
           )
           .replace(
             "func nativeDrawLedger() {",
@@ -238,6 +247,7 @@ async function boot(run, deviceScaleFactor = 1) {
             "Camera.zoom,nativeTextCount,nativeGlyphLive,nativeProbeFrames",
           ) +
           '\nonKey KeyF12, => {nativeWords[nativeWordIndex]="telecommunications"; nativeMeanings[nativeWordIndex]="探索探索探索探索探索探索探索探索探索探索探索探索探索探索"; nativeDistractA[nativeWordIndex]="练习练习练习练习练习练习练习练习练习练习练习练习练习练习"; nativeDistractB[nativeWordIndex]="旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程"; nativeQuestionLimit=60; nativeTextCache=""}\n' +
+          '\nonKey Key0, => {nativeWords[nativeWordIndex]="colour"; nativeAliases[nativeWordIndex]="color"; nativeMeanings[nativeWordIndex]="颜色；色彩"; nativeQuestionMode=0; nativeQuestionAge=0.3; nativeQuestionLimit=60; nativeTextCache=""}\n' +
           "\nonKey KeyF7, => {chainOwner=0; wordOwner=0; requestWord(5); beginWord()}\nonKey KeyF8, => {bindEnemy=0; requestWord(6); beginWord()}\nonKey KeyF9, => {if phase==1 {Hero.resetHero(230,0); health=6; embers=2; Hero.invulnerable=999; Hero.bowCool=0; Hero.bladeCool=0; Hero.healCool=0; Hero.ultimateCool=0}}\nonKey KeyF10, => {nativeQuestionMode=0}\nonKey KeyF11, => {nativeQuestionMode=1}\n",
       );
       await window.initGame(
@@ -433,6 +443,14 @@ try {
   pass(
     "music and action sliders independently set 50% and 25% without changing the other channel",
   );
+  assert.equal(await page.evaluate(() => Number(window.spelling[0])), 1);
+  await click(780, 384);
+  await shot("hint-settings");
+  await click(760, 266);
+  await page.waitForFunction(() => Number(window.spelling[0]) === 0);
+  pass(
+    "title offers full hints, 2-second first-letter challenge and 1-second independent recall; default is gradual challenge",
+  );
   const previewDeck = await page.evaluate(() => window.decks.at(-1));
   await tap("Enter");
   await state(1, -1);
@@ -448,15 +466,19 @@ try {
   await shot("spelling");
   const time = await page.evaluate(() => window.nativeState[3]);
   const music = await page.evaluate(() => window.nativeMusic.at(-1));
-  for (const k of ["r", "t", "b", "h", "j", "w", "p", "f", "v", "m"])
-    await tap(k);
-  await state(5, -1);
+  await page.waitForTimeout(2200);
+  assert.equal(await page.evaluate(() => window.cue), q.slice(6).join(" "));
+  assert.match(await page.evaluate(() => window.context), /[\u4e00-\u9fff]/);
   assert.equal(await page.evaluate(() => window.nativeState[3]), time);
   assert.equal(await page.evaluate(() => window.nativeMusic.at(-1)), music);
-  for (let i = 0; i < 10; i++) await tap("Backspace");
-  for (const letter of q.slice(6).join(" ")) await tap(letter);
-  await shot("typed");
+  const word = q.slice(6).join(" ");
+  await tap(word[0]);
+  await tap("Backspace");
   await tap("Enter");
+  await state(5, -1);
+  for (const letter of word.slice(0, -1)) await tap(letter);
+  await shot("typed");
+  await tap(word.at(-1));
   await state(1, -1);
   await page.waitForTimeout(200);
   assert.equal(await page.evaluate(() => window.wordAnswers.at(-1)[0]), 1);
@@ -469,7 +491,7 @@ try {
   );
   assert.ok(await page.evaluate(() => window.nativeUI[8] < 40));
   pass(
-    "real charged arrow invokes spelling; typing combat/menu/mute keys is isolated; correct submission releases once and starts 3-second cooldown",
+    "charged arrow shows Chinese and full hint beyond 2 seconds; Backspace/partial Enter do not resolve; last correct letter automatically releases once and starts 3-second cooldown",
   );
   await tap("Tab");
   await state(4, 6);
@@ -529,16 +551,53 @@ try {
   pass(
     "a wrong answer becomes a review badge and enters the weakness ledger in the same session",
   );
-  await question("p", 4);
-  await tap("F10");
-  await tap("z");
-  await tap("Enter");
-  await state(1, -1);
-  assert.equal(await page.evaluate(() => window.wordAnswers.at(-1)[0]), 2);
-  assert.equal(await page.evaluate(() => window.nativeState[56]), 0);
-  pass(
-    "misspelled submission cancels ultimate; invalid typing never directly casts a skill",
-  );
+  for (const [key, kind, cool] of [
+    ["u", 1, 53],
+    ["l", 2, 54],
+    ["i", 3, 55],
+    ["p", 4, 56],
+  ]) {
+    await question(key, kind);
+    await tap("0"); // deterministic colour/color fixture, only in test copy
+    const before = await page.evaluate(() => window.wordAnswers.length);
+    const arrowCount = await page.evaluate(() => window.nativeRender[5]);
+    if (kind > 1) {
+      for (const c of "col") await tap(c);
+      await state(5, -1);
+    }
+    await page.keyboard.down("w"); // first invalid letter, including inside a correct prefix; must not become jump
+    await state(1, -1);
+    await page.waitForTimeout(650);
+    assert.equal(
+      await page.evaluate(() => window.wordAnswers.length),
+      before + 1,
+    );
+    assert.equal(await page.evaluate(() => window.wordAnswers.at(-1)[0]), 2);
+    assert.equal(await page.evaluate((i) => window.nativeState[i], cool), 0);
+    assert.equal(await page.evaluate(() => window.nativeState[66]), 0);
+    assert.equal(await page.evaluate(() => window.nativeState[58]), 0);
+    assert.equal(await page.evaluate(() => window.nativeState[59]), 0);
+    assert.equal(await page.evaluate(() => window.nativeState[42]), 0);
+    assert.ok(
+      await page.evaluate(() => window.nativeState[15] <= 0),
+      "held wrong W never becomes a jump",
+    );
+    assert.equal(
+      await page.evaluate(() => window.nativeRender[5]),
+      arrowCount,
+      "failure creates no arrow",
+    );
+    if (kind === 3)
+      assert.equal(
+        await page.evaluate(() => window.nativeState[60]),
+        2,
+        "failed healing refunds ember",
+      );
+    await page.keyboard.up("w");
+    pass(
+      `first wrong letter instantly cancels skill ${key.toUpperCase()}, leaves cooldown untouched and quarantines held W until release`,
+    );
+  }
   const q3 = await question("i", 3);
   await answerMeaning(q3, true);
   await page.waitForFunction(
@@ -581,7 +640,7 @@ try {
   pass(
     "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
   );
-  const stress = await question("l", 2);
+  await question("l", 2);
   await tap("F12");
   await tap("F11");
   await page.waitForTimeout(250);
@@ -591,7 +650,7 @@ try {
     "28 Chinese characters in every option remain visible",
   );
   assert.ok(
-    layout.every(([x, y]) => x >= 252 && x <= 704 && y >= 32 && y <= 161),
+    layout.every(([x, y]) => x >= 287 && x <= 672 && y >= 32 && y <= 135),
     "all focus glyph centers stay inside the card",
   );
   await shot("meaning-long");
@@ -603,21 +662,61 @@ try {
   await shot("meaning-small");
   await page.setViewportSize({ width: 960, height: 600 });
   await tap("F10");
-  for (let i = 0; i < 48; i++) await tap("z");
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(200);
+  assert.match(await page.evaluate(() => window.context), /探索/);
+  await shot("spelling-long");
   layout = await page.evaluate(() => window.nativeLayout);
   assert.ok(
-    layout.every(([x, y]) => x >= 252 && x <= 704 && y >= 32 && y <= 161),
+    layout.every(([x, y]) => x >= 287 && x <= 672 && y >= 32 && y <= 135),
   );
-  assert.ok(
-    layout.length < 50,
-    "long input scrolls rather than consuming clone slots",
-  );
-  await shot("spelling-overflow");
-  await answerMeaning(stress, true);
+  await tap("0");
+  for (const c of "COLOR") await tap(c);
+  await state(1, -1);
+  assert.equal(await page.evaluate(() => window.wordAnswers.at(-1)[0]), 1);
   pass(
-    "long-word and 28-character option fixtures fit the card; 48 typed characters scroll within the input; 480x360 resize remains intact",
+    "long word and complete Chinese meaning fit compact card; 28-character options and 480x360 resize fit; regional alias color auto-accepts for colour",
   );
+
+  // Test the actual title settings and timer/pause interactions, not direct flag mutation.
+  for (const hint of [1, 2]) {
+    await tap("Escape");
+    await tap("m");
+    await state(0, 0);
+    await click(780, 384);
+    await click(760, 266 + hint * 40);
+    await page.waitForFunction((n) => Number(window.spelling[0]) === n, hint);
+    await tap("Enter");
+    await state(1, -1);
+    await question("u", 1);
+    await tap("0");
+    await page.waitForFunction(() => window.cue === "colour");
+    await tap("Escape");
+    const frozenHint = await page.evaluate(() => window.spelling[2]);
+    await page.waitForTimeout(2200);
+    assert.equal(await page.evaluate(() => window.spelling[2]), frozenHint);
+    await tap("Escape");
+    await page.waitForFunction(() => window.spelling[1] === "false");
+    assert.equal(
+      await page.evaluate(() => window.cue),
+      hint === 1 ? "c·····" : "······",
+    );
+    assert.match(await page.evaluate(() => window.context), /颜色/);
+    await shot(hint === 1 ? "spelling-hidden" : "spelling-recall");
+    for (const c of "colou") await tap(c);
+    await page.keyboard.down("r");
+    await state(1, -1);
+    const serial = await page.evaluate(() => window.wordQuestions.length);
+    await page.waitForTimeout(650);
+    assert.equal(
+      await page.evaluate(() => window.wordQuestions.length),
+      serial,
+    );
+    assert.equal(await page.evaluate(() => window.nativeState[0]), 1);
+    await page.keyboard.up("r");
+    pass(
+      `real title hint ${hint}: visible then hidden on schedule, Chinese remains, pause freezes reveal time, automatic finish isolates held R`,
+    );
+  }
   await tap("Escape");
   await tap("m");
   await state(0, 0);

@@ -1,0 +1,343 @@
+{
+  "date": "2026-10-26T12:25:49.048Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "all 121 world clones spawn before text; native glyphs do not consume missing enemy or platform slots",
+    "CET4 and CET6 scope selection draws only words belonging to the selected source level",
+    "ledger pages cover all 30 words without gaps or duplicates; weakness/full-bank filters and isolated live search work without reshuffling",
+    "8815-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
+    "music and action sliders independently set 50% and 25% without changing the other channel",
+    "title offers full hints, 2-second first-letter challenge and 1-second independent recall; default is gradual challenge",
+    "charged arrow shows Chinese and full hint beyond 2 seconds; Backspace/partial Enter do not resolve; last correct letter automatically releases once and starts 3-second cooldown",
+    "gameplay ledger pauses combat, shows completed-word states and resumes; opening from pause returns to pause; an active question rejects Tab",
+    "wrong meaning cancels charged blade without consuming cooldown and increases session weakness",
+    "a wrong answer becomes a review badge and enters the weakness ledger in the same session",
+    "first wrong letter instantly cancels skill U, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill L, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill I, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill P, leaves cooldown untouched and quarantines held W until release",
+    "healing gates before recovery; correct meaning restores one life and starts cooldown",
+    "question can pause/resume without losing input; correct ultimate starts its 5-second cooldown",
+    "timeout cancels the pending skill without cooldown and resumes combat",
+    "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
+    "long word and complete Chinese meaning fit compact card; 28-character options and 480x360 resize fit; regional alias color auto-accepts for colour",
+    "real title hint 1: visible then hidden on schedule, Chinese remains, pause freezes reveal time, automatic finish isolates held R",
+    "real title hint 2: visible then hidden on schedule, Chinese remains, pause freezes reveal time, automatic finish isolates held R",
+    "returning to title prepares a fresh preview deck; practice stays free of inscription questions",
+    "native text shrinks after answers, real arrows receive clone slots, and observed combined clone count stays below 300"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "f3fa37a3f7a4179971707812768fe879ee2db470f19aa8ace7dc69f511b76d24",
+  "fixture": "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states; F12 injects bounded long-text fixtures. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
+  "browser": "156.0.8078.4",
+  "frameRateSamples": [
+    49.52569622082238,
+    47.0912729753749,
+    23.84094095927765,
+    47.59725400457666,
+    36.23530299852269,
+    34.25635169737834,
+    32.6234863352569,
+    48.07884931218421,
+    30.9947773780646,
+    26.1100779574152,
+    30.668441520939997,
+    47.16146908108756,
+    44.82378648876491,
+    20.541343403703845,
+    24.348014284456298,
+    47.4937892739172,
+    48.784454022779904,
+    50.1814251520125,
+    53.404539384633544,
+    12.346926176655504,
+    15.014351954073748,
+    49.5776366715203,
+    47.61715804545459,
+    49.53764861709011,
+    47.479623326530024,
+    32.762268786580364,
+    48.9741661308397,
+    17.62425096868581,
+    16.664145118400885,
+    49.677980235681005,
+    55.51369998862903,
+    52.70092226495719,
+    46.94284708455127,
+    12.048300869132872,
+    49.031625402441996,
+    47.56155562644541,
+    49.99615414565649,
+    47.899778923045304,
+    35.598129480654826,
+    48.92538878108818,
+    23.65543134745292,
+    42.253063348893505,
+    51.28407432052908,
+    38.4905210315584,
+    45.65167770231742,
+    57.45915611495286,
+    50.06884465970175,
+    38.59630801969625,
+    29.020942237492296,
+    46.47830044305125,
+    49.54173891527974,
+    48.22860358143595,
+    13.396929855838831,
+    56.585623477480105,
+    44.61298237965144,
+    32.22564596643817,
+    48.27061248023722,
+    32.79664783732941,
+    51.033426891750096,
+    43.39100721263272,
+    29.831893250245994,
+    44.39511653522297,
+    47.70707853845634,
+    16.91836443950454,
+    16.672224074567303,
+    12.913118921630332
+  ],
+  "clonePeak": 244,
+  "worldRender": [
+    121,
+    121,
+    0,
+    38,
+    0,
+    3,
+    3,
+    0,
+    0
+  ],
+  "questions": [
+    [
+      "1",
+      "1",
+      "2478",
+      "1",
+      "2",
+      "9",
+      "drink"
+    ],
+    [
+      "2",
+      "2",
+      "1074",
+      "0",
+      "2",
+      "9",
+      "calcium"
+    ],
+    [
+      "3",
+      "1",
+      "2194",
+      "0",
+      "0",
+      "11.15",
+      "deteriorate"
+    ],
+    [
+      "4",
+      "2",
+      "3746",
+      "1",
+      "1",
+      "9",
+      "highlight"
+    ],
+    [
+      "5",
+      "3",
+      "5189",
+      "1",
+      "0",
+      "9",
+      "negate"
+    ],
+    [
+      "6",
+      "4",
+      "77",
+      "1",
+      "2",
+      "9",
+      "acknowledgement"
+    ],
+    [
+      "7",
+      "3",
+      "7760",
+      "0",
+      "1",
+      "9.850000000000001",
+      "suspicion"
+    ],
+    [
+      "8",
+      "4",
+      "3770",
+      "0",
+      "0",
+      "9",
+      "hive"
+    ],
+    [
+      "9",
+      "2",
+      "3500",
+      "1",
+      "2",
+      "9",
+      "gradually"
+    ],
+    [
+      "10",
+      "5",
+      "5334",
+      "0",
+      "1",
+      "9",
+      "oblige"
+    ],
+    [
+      "11",
+      "6",
+      "8519",
+      "1",
+      "1",
+      "9",
+      "void"
+    ],
+    [
+      "12",
+      "2",
+      "1178",
+      "1",
+      "2",
+      "9",
+      "celebrity"
+    ],
+    [
+      "13",
+      "1",
+      "2137",
+      "0",
+      "1",
+      "9",
+      "deprive"
+    ],
+    [
+      "14",
+      "1",
+      "4709",
+      "1",
+      "2",
+      "9",
+      "madam"
+    ]
+  ],
+  "answers": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      1,
+      2,
+      0
+    ],
+    [
+      1,
+      3,
+      0
+    ],
+    [
+      3,
+      3,
+      2
+    ],
+    [
+      1,
+      4,
+      0
+    ],
+    [
+      1,
+      5,
+      0
+    ],
+    [
+      1,
+      6,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ]
+  ],
+  "deckCount": 8,
+  "sfx": [
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healcomplete 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25"
+  ]
+}

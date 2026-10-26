@@ -24,6 +24,9 @@ var (
  nativeResolved int
  nativeScope int
  nativePace int
+ nativeHint int
+ nativeHintOpen bool
+ nativeHeld []bool
  nativePreview bool
  nativePreviewPage int
  nativeDeckUsed bool
@@ -64,17 +67,18 @@ func initNativeWords() {
  initNativeWordData(); initNativeGlyphData()
  nativeWeak=make([]int,len(nativeWords))
  nativeTextGlyph=make([]int,160); nativeTextX=make([]float64,160); nativeTextY=make([]float64,160); nativeTextSize=make([]float64,160); nativeTextFocus=make([]bool,160)
- wordMode=1; nativeShuffleDeck()
+ wordMode=1; nativeHint=1; nativeHeld=make([]bool,64); nativeShuffleDeck()
 }
 func nativeStartWords() {
  if nativeDeckUsed {nativeShuffleDeck()}; nativeDeckUsed=true; nativePreview=false
- nativeWordSeen=wordSerial; nativeInputLock=0; nativeFeedbackTime=0
+ nativeWordSeen=wordSerial; nativeInputLock=0; nativeFeedbackTime=0; nativeHintOpen=false
 }
 func nativeCompleted() int {n:=0; for _,v:=range nativeDone {n+=v}; return n}
 func nativeOpenQuestion() {
  nativeWordSeen=wordSerial; nativeWordIndex=nativeDeck[nativeCursor]
  nativeQuestionMode=nativeRand(2); if nativeSpellable[nativeWordIndex]==0 {nativeQuestionMode=1}
  nativeAnswer=nativeRand(3); nativeInput=""; nativeQuestionAge=0; nativeFeedbackTime=0
+ nativeCaptureHeld()
  nativeQuestionLimit=9; if nativeQuestionMode==0 {nativeQuestionLimit=math.Max(9,float64(len(nativeWords[nativeWordIndex]))*0.65+4)}
  if nativePace==1 {nativeQuestionLimit*=0.8}; if nativePace==2 {nativeQuestionLimit*=1.35}
  println "@nativeQuestion",wordSerial,wordPending,nativeWordIndex,nativeQuestionMode,nativeAnswer,nativeQuestionLimit,nativeWords[nativeWordIndex]
@@ -93,22 +97,40 @@ func nativeFinishQuestion(result int) {
  // Failed entries return after other words; never trap the player in one word.
  nativeCursor=(nativeCursor+1)%30
  if nativeCompleted()<30 {for nativeDone[nativeCursor]==1 {nativeCursor=(nativeCursor+1)%30}}
- resolveWord(result); nativeInputLock=0.18
+ nativeCaptureHeld(); resolveWord(result); nativeInputLock=0.18
  println "@nativeAnswer",result,nativeCompleted(),nativeWeak[i]
 }
 func nativeType(s string) {
  if nativePreview {nativeLedgerType(s); return}
  if phase!=5 || wordVisualPaused || nativeQuestionAge<0.18 || nativeQuestionMode!=0 || wordSerial!=nativeWordSeen {return}
- if len(nativeInput)<48 {nativeInput+=s}
+ if len(nativeInput)<48 {nativeInput+=s; nativeCheckSpelling()}
 }
-func nativeSubmit() {
+// Accept every prefix of canonical and regional spellings. One invalid letter
+// cancels anticipation immediately; a complete match releases without Enter.
+func nativeCheckSpelling() {
  if phase!=5 || wordVisualPaused || nativeQuestionMode!=0 || nativeQuestionAge<0.18 {return}
- good:=nativeInput==nativeWords[nativeWordIndex]
- // All dictionary aliases are normalized to lower case in the build.
- aliases:=nativeAliases[nativeWordIndex]; current:=""
- for _,c:=range aliases {if c=='|' {if current==nativeInput && current!="" {good=true}; current=""} else {current+=string(c)}}
- if current==nativeInput && current!="" {good=true}
- if good {nativeFinishQuestion(1)} else {nativeFinishQuestion(2)}
+ if nativeInput=="" {return}
+ valid:=false; good:=false
+ for _,word:=range strings.Split(nativeWords[nativeWordIndex]+"|"+nativeAliases[nativeWordIndex],"|") {
+  if word!="" && strings.HasPrefix(word,nativeInput) {valid=true; if word==nativeInput {good=true}}
+ }
+ if good {nativeFinishQuestion(1)} else if !valid {nativeFinishQuestion(2)}
+}
+func nativeSubmit() {nativeCheckSpelling()}
+func nativeSpellingTarget() string {
+ word:=nativeWords[nativeWordIndex]
+ if strings.HasPrefix(word,nativeInput) {return word}
+ for _,alias:=range strings.Split(nativeAliases[nativeWordIndex],"|") {if alias!="" && strings.HasPrefix(alias,nativeInput) {return alias}}
+ return word
+}
+func nativeHintVisible() bool {
+ return nativeHint==0 || nativeHint==1 && nativeQuestionAge<2 || nativeHint==2 && nativeQuestionAge<1
+}
+func nativeCue() string {
+ word:=nativeWords[nativeWordIndex]
+ if nativeQuestionMode!=0 || nativeHintVisible() {return word}
+ hidden:=""; for n:=0;n<len(word);n++ {if word[n]==' ' || word[n]=='-' || n==0 && nativeHint==1 {hidden+=string(word[n])} else {hidden+="·"}}
+ return hidden
 }
 func nativeChoose(option int) {
  if phase!=5 || wordVisualPaused || nativeQuestionMode!=1 || nativeQuestionAge<0.18 {return}
@@ -148,16 +170,16 @@ func nativeFocusText(s string,x,y,size float64,font int) {
   x+=nativeGlyphAdvance[g]*size
  }
 }
-func nativeWrapMeaning(s string,x,y float64) {
+func nativeWrapText(s string,x,y,width,size float64,maxRows int) {
  line:=""; row:=0
  for _,c:=range s {
   candidate:=line+string(c)
-  if nativeTextWidth(candidate,11,0)>104 && line!="" {
-   nativeFocusText(line,x,y+float64(row)*11,11,0); row++; line=""
+  if nativeTextWidth(candidate,size,0)>width && line!="" {
+   nativeFocusText(line,x,y+float64(row)*(size+1),size,0); row++; line=""
   }
-  if row>=4 {return}; line+=string(c)
+  if row>=maxRows {return}; line+=string(c)
  }
- nativeFocusText(line,x,y+float64(row)*11,11,0)
+ nativeFocusText(line,x,y+float64(row)*(size+1),size,0)
 }
 func nativeNumber(n int) string {return fmt.Sprint(n)}
 func nativeRebuildText() {
@@ -169,6 +191,8 @@ func nativeRebuildText() {
   mode:="铭文开启"; if wordMode==0 {mode="纯动作模式"}
   pace:="标准"; if nativePace==1 {pace="紧凑"}; if nativePace==2 {pace="从容"}
   nativeText(mode,720,214,15); nativeText(scope,720,256,15); nativeText(pace,790,298,15)
+  hint:="完整提示"; if nativeHint==1 {hint="渐隐挑战 · 2s"}; if nativeHint==2 {hint="独立回忆 · 1s"}
+  nativeText(hint,716,384,13)
  }
  if phase!=1 && phase!=5 && !nativeHelp && !nativePreview {
   nativeText(nativeNumber(nativeMusicVolume)+"%",882,438,12)
@@ -178,21 +202,21 @@ func nativeRebuildText() {
   if wordMode==1 && practice==0 {nativeText("铭文 "+nativeNumber(nativeCompleted())+" / 30 ↗",36,78,12)}
   if phase==5 {
    i:=nativeWordIndex
-   nativeFocusText(nativeNumber(int(math.Ceil(math.Max(0,nativeQuestionLimit-nativeQuestionAge))))+"s",267,120,11,2)
+   nativeFocusText(nativeNumber(int(math.Ceil(math.Max(0,nativeQuestionLimit-nativeQuestionAge))))+"s",298,99,11,2)
    if !wordVisualPaused {
-    word:=nativeWords[i]; size:=28.0; width:=nativeTextWidth(word,size,1); if width>356 {size*=356/width}
-    nativeFocusText(word,324,80,size,1)
+    word:=nativeCue(); size:=24.0; width:=nativeTextWidth(word,size,1); if width>320 {size*=320/width}
+    nativeFocusText(word,344,63,size,1)
     if nativeQuestionMode==0 {
+     nativeWrapText(nativeWordPOS[i]+" "+nativeMeanings[i],344,81,320,12,2)
      start:=0; if len(nativeInput)>22 {start=len(nativeInput)-22}
      for n:=start;n<len(nativeInput);n++ {
-      font:=2; if n>=len(word) || nativeInput[n]!=word[n] {font=3}
-      nativeFocusText(string(nativeInput[n]),324+float64(n-start)*16,116,17,font)
+      nativeFocusText(string(nativeInput[n]),344+float64(n-start)*14,116,16,2)
      }
      // Active letter uses the next slot; very long inputs scroll inside the card.
-     if len(nativeInput)-start<22 {nativeFocusText("_",324+float64(len(nativeInput)-start)*16,116,17,2)}
+     if len(nativeInput)-start<22 {nativeFocusText("_",344+float64(len(nativeInput)-start)*14,116,16,2)}
     } else {
      for option:=0;option<3;option++ {meaning:=nativeMeanings[i]; if option!=nativeAnswer {if option==(nativeAnswer+1)%3 {meaning=nativeDistractA[i]} else {meaning=nativeDistractB[i]}}
-      nativeWrapMeaning(meaning,330+float64(option)*122,125)
+      nativeWrapText(meaning,348+float64(option)*108,94,94,11,4)
      }
     }
    }
@@ -209,6 +233,7 @@ func nativeRebuildText() {
 func updateNativeWords(dt float64) {
  if phase==2 {nativeLedgerWon=true}
  nativeFocusOffset=0
+ nativeReleaseHeld()
  if phase==5 {t:=clamp(nativeQuestionAge/0.16,0,1); nativeFocusOffset=8*(1-t)*(1-t)*(1-t)}
  if nativeInputLock>0 {nativeInputLock-=dt}
  if phase==5 && wordPending>0 {
@@ -216,7 +241,7 @@ func updateNativeWords(dt float64) {
   if !wordVisualPaused {nativeQuestionAge+=dt; if nativeQuestionAge>=nativeQuestionLimit {nativeFinishQuestion(3)}}
  }
  if phase!=4 && !(phase==5 && wordVisualPaused) {nativeFeedbackTime=math.Max(0,nativeFeedbackTime-dt)}
- cache:=fmt.Sprint(nativeLedgerRevision,nativeLedgerSearch,phase,nativePreview,nativePreviewPage,nativeScope,nativePace,wordMode,nativeHelp,nativeMusicVolume,nativeSfxVolume,nativeWordSeen,nativeQuestionMode,wordVisualPaused,nativeInput,int(nativeQuestionAge),nativeCompleted(),nativeFeedbackTime>0)
+ cache:=fmt.Sprint(nativeLedgerRevision,nativeLedgerSearch,phase,nativePreview,nativePreviewPage,nativeScope,nativePace,nativeHint,nativeHintVisible(),wordMode,nativeHelp,nativeMusicVolume,nativeSfxVolume,nativeWordSeen,nativeQuestionMode,wordVisualPaused,nativeInput,int(nativeQuestionAge),nativeCompleted(),nativeFeedbackTime>0)
  if cache!=nativeTextCache {nativeTextCache=cache; nativeRebuildText()}
- if nativePreview && nativeLedgerFilterOpen {broadcastAndWait "nativeText"} else {broadcast "nativeText"}
+ if nativePreview && nativeLedgerFilterOpen || nativeHintOpen {broadcastAndWait "nativeText"} else {broadcast "nativeText"}
 }

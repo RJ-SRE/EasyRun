@@ -38,6 +38,10 @@ const rects = {
   27: [204, 224, 160, 30],
   28: [204, 254, 160, 30],
   29: [204, 284, 160, 30],
+  30: [580, 370, 300, 28],
+  31: [650, 246, 230, 40],
+  32: [650, 286, 230, 40],
+  33: [650, 326, 230, 40],
 };
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
 let art, lexicon;
@@ -175,7 +179,7 @@ try {
         if (primary) text("↘", x + w - 35, y + h / 2 + 7, 24, "#142128");
       }
       function soundPanel() {
-        text("S O U N D", 580, 403, 10, C.gold);
+        text("S O U N D", 580, 415, 10, C.gold);
         text("背景音乐", 580, 441, 12, C.dim);
         text("动作音效", 580, 481, 12, C.dim);
         [438, 478].forEach((y) => line(656, y, 880, y, "#65756b66"));
@@ -239,7 +243,7 @@ try {
           button(14, "作答节奏");
           // NativeLedgerEntry reuses the web preview button.
           button(16, "换一组 ↻");
-          text("随机抽词 · 错词优先 · 每次技能以词解放", 580, 385, 10, C.dim);
+          button(30, "拼写挑战");
           soundPanel();
         });
       canvas("guide", 960, 600, () => {
@@ -272,7 +276,13 @@ try {
           text(b, x, y + 41, 12, C.dim);
         });
         button(9, "返回   Enter / Esc", "", false, true);
-        text("铭文：拼写后 Enter 确认，辨义按 1 / 2 / 3", 516, 524, 12, C.gold);
+        text(
+          "铭文：拼对即释放，错字即取消；辨义 1 / 2 / 3",
+          516,
+          524,
+          12,
+          C.gold,
+        );
         text("答错或超时取消技能；Esc 暂停题目", 516, 546, 12, C.dim);
       });
       for (const [name, title, subtitle, primary] of [
@@ -543,17 +553,22 @@ for (const [name, volume, y] of [
 sprite(
   "NativeQuestion",
   ["question0", "question1", "question2"],
-  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; c:=nativeQuestionMode; if wordVisualPaused {c=2}; setCostume c; h:=154.0; if nativeQuestionMode==1 && !wordVisualPaused {h=180}; setXYpos viewCenterX,viewCenterY+300-22-h/2+nativeFocusOffset; setLayer Front;} else {hide}}`,
+  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; c:=nativeQuestionMode; if wordVisualPaused {c=2}; setCostume c; h:=138.0; if nativeQuestionMode==1 && !wordVisualPaused {h=148}; setXYpos viewCenterX,viewCenterY+300-14-h/2+nativeFocusOffset; setLayer Front;} else {hide}}`,
 );
 sprite(
   "NativeQuestionTimer",
   Array.from({ length: 61 }, (_, i) => "timer" + i),
-  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; setCostume int(clamp((1-nativeQuestionAge/nativeQuestionLimit)*60,0,60)); setXYpos viewCenterX+280-480,viewCenterY+300-83+nativeFocusOffset; setLayer Front;} else {hide}}`,
+  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; setSize 0.75; setCostume int(clamp((1-nativeQuestionAge/nativeQuestionLimit)*60,0,60)); setXYpos viewCenterX+308-480,viewCenterY+300-63+nativeFocusOffset; setLayer Front;} else {hide}}`,
 );
 sprite(
   "NativeSpellingTrack",
   Array.from({ length: 23 }, (_, i) => "spelling-track" + i),
-  `func syncUI() {if phase==5 && wordPending>0 && nativeQuestionMode==0 && !wordVisualPaused && !nativeHelp {show; n:=len(nativeWords[nativeWordIndex]); if len(nativeInput)>n {n=len(nativeInput)}; setCostume int(clamp(float64(n),0,22)); setXYpos viewCenterX+502-480,viewCenterY+300-110+nativeFocusOffset; setLayer Front} else {hide}}`,
+  `func syncUI() {if phase==5 && wordPending>0 && nativeQuestionMode==0 && !wordVisualPaused && !nativeHelp {show; n:=len(nativeSpellingTarget()); setCostume int(clamp(float64(n),0,22)); setXYpos viewCenterX+498-480,viewCenterY+300-110+nativeFocusOffset; setLayer Front} else {hide}}`,
+);
+sprite(
+  "NativeHintMenu",
+  ["hint-menu"],
+  `func syncUI() {if phase==0 && nativeHintOpen && !nativeHelp && !nativePreview {show; ${pin(765, 306)}} else {hide}}`,
 );
 sprite(
   "NativeLedgerEntry",
