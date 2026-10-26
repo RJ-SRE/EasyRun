@@ -2,7 +2,11 @@ import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { InscriptionBook, STORAGE_KEY } from "./public/inscription-core.js";
+import {
+  InscriptionBook,
+  STORAGE_KEY,
+  BANK,
+} from "./public/inscription-core.js";
 import { ACHIEVEMENT_KEY } from "./public/belfry-achievements-core.js";
 
 const out = new URL("./test-results/achievements/", import.meta.url);
@@ -80,10 +84,13 @@ try {
   assert.equal(await p.locator("#achievements-open").isDisabled(), true);
   assert.equal(await p.locator("#achievement-notice").isVisible(), false);
   assert.equal((await read()).achievements.count, 0);
-  await p.keyboard.type("create", { delay: 80 });
+  const q = (await read()).word.active.q;
+  const w = BANK.get(q.wordId);
+  if (q.type === "spell") await p.keyboard.type(w.word, { delay: 80 });
+  else await p.keyboard.press(String(q.options.indexOf(w.meaning) + 1));
   await wait(() => latestState.phase === 1 && !inscriptionDiagnostics.active);
   await wait(() => window.achievementDiagnostics.data.unlocked["first-word"]);
-  assert.deepEqual((await read()).achievements.data.words, ["create"]);
+  assert.deepEqual((await read()).achievements.data.words, [w.id]);
   await p.locator("#achievement-notice").waitFor({ state: "visible" });
   await p.screenshot({ path: fileURLToPath(new URL("unlock.png", out)) });
   pass(

@@ -1,0 +1,41 @@
+{
+  "officialHeadRows": 5377,
+  "unmatchedVariants": [
+    [
+      "celcius",
+      "Celsius/-cius",
+      39,
+      "head"
+    ],
+    [
+      "honourary",
+      "hono(u)rary",
+      77,
+      "derived"
+    ],
+    [
+      "instalation",
+      "instal(l)ation",
+      82,
+      "derived"
+    ],
+    [
+      "sobre",
+      "sober/-re",
+      125,
+      "head"
+    ]
+  ],
+  "officialDeclaredHeadwords": 5418,
+  "officialMappedRows": 5377,
+  "officialUrl": "https://www.neea.edu.cn/res/Home/1704/55b02330ac17274664f06d9d3db8249d.pdf",
+  "officialSha256": "9166d3c03b7bc43abd9d9df91bd2ef8085b4419286f1e5ca100dea68f3cfd1f1",
+  "dictionaryCommit": "ab22ad36302cafc6349a050e2b60894855208055",
+  "dictionarySha256": "d1ecbdf9ee2b920afb6f430ca6b6bb9f559588cf0dff86e04bd255f9390843cc",
+  "note": "同形词合并；变体与派生词分别规范；词性和释义取自 ECDICT，82 个既有词保留人工题面。",
+  "total": 8815,
+  "cet4": 6539,
+  "cet6": 2502,
+  "source": "CET 2016 词表 + ECDICT 固定版本",
+  "version": "cet46-2026-10-26.1"
+}

@@ -2,7 +2,11 @@ import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { InscriptionBook, STORAGE_KEY } from "./public/inscription-core.js";
+import {
+  InscriptionBook,
+  STORAGE_KEY,
+  BANK,
+} from "./public/inscription-core.js";
 const browser = await chromium.launch({ headless: true });
 const out = new URL("./test-results/inscription/", import.meta.url);
 await mkdir(out, { recursive: true });
@@ -60,9 +64,14 @@ try {
   pass("blocked storage is disclosed while play remains available");
   const p = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   p.on("pageerror", (e) => report.errors.push(e.message));
+  const fixtureBook = new InscriptionBook(null, 4);
+  fixtureBook.run.pool = [
+    "create",
+    ...[...BANK.keys()].filter((id) => id.length > 6).slice(0, 29),
+  ];
   await p.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
     key: STORAGE_KEY,
-    value: new InscriptionBook(null, 4).serialize(),
+    value: fixtureBook.serialize(),
   });
   await p.goto(url);
   await p.waitForFunction(

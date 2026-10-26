@@ -33,6 +33,10 @@ const report = {
 };
 p.on("pageerror", (e) => report.errors.push(e.message));
 const book = new InscriptionBook(null, 4); // create; final E must not become grapple
+book.run.pool = [
+  "create",
+  ...[...BANK.keys()].filter((id) => id.length > 6).slice(0, 29),
+];
 book.settings.hint = "guided";
 await p.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
   key: STORAGE_KEY,

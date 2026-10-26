@@ -1,0 +1,23 @@
+{
+  "a": {"pos":"art.","meaning":"一个；某个"},
+  "an": {"pos":"art.","meaning":"一个；某个"},
+  "am": {"pos":"v.","meaning":"是（用于 I 之后）"},
+  "app": {"pos":"n.","meaning":"应用程序"},
+  "bow": {"pos":"n.","meaning":"弓；蝴蝶结"},
+  "can": {"pos":"aux.","meaning":"能；可以"},
+  "cat": {"pos":"n.","meaning":"猫"},
+  "dog": {"pos":"n.","meaning":"狗"},
+  "due": {"pos":"adj.","meaning":"到期的；应得的"},
+  "eat": {"pos":"v.","meaning":"吃"},
+  "fan": {"pos":"n.","meaning":"风扇；爱好者"},
+  "fit": {"pos":"adj.","meaning":"合适的；健康的"},
+  "may": {"pos":"aux.","meaning":"可能；可以"},
+  "might": {"pos":"aux.","meaning":"可能；也许"},
+  "must": {"pos":"aux.","meaning":"必须；一定"},
+  "shall": {"pos":"aux.","meaning":"将要；应当"},
+  "should": {"pos":"aux.","meaning":"应该"},
+  "will": {"pos":"aux.","meaning":"将要；愿意"},
+  "would": {"pos":"aux.","meaning":"将会；愿意"},
+  "could": {"pos":"aux.","meaning":"能够；可能"},
+  "eraser": {"pos":"n.","meaning":"橡皮擦"}
+}

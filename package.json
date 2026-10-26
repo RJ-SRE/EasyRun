@@ -1,6 +1,6 @@
 {
   "name": "easyrun-rupture",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "private": true,
   "type": "module",
   "description": "EasyRun / 裂隙 · 倒悬钟城：spx 纵向钩索动作冒险与可复现开发流程",
@@ -36,7 +36,9 @@
     "game:test:city": "node prototypes/runlab/test-belfry-scene.mjs",
     "game:test:expedition": "node --test prototypes/runlab/test-hunt-data.mjs && node prototypes/runlab/test-belfry-route.mjs",
     "game:test:scene": "node --test prototypes/runlab/test-hunt-data.mjs && node prototypes/runlab/test-belfry-scene.mjs",
-    "game:test:hunt": "node --test prototypes/runlab/test-hunt-data.mjs && node prototypes/runlab/test-belfry-hunt.mjs"
+    "game:test:hunt": "node --test prototypes/runlab/test-hunt-data.mjs && node prototypes/runlab/test-belfry-hunt.mjs",
+    "words:build": "node scripts/build-wordbank.mjs",
+    "game:test:wordbook": "node --test prototypes/runlab/test-inscription-core.mjs && node prototypes/runlab/test-belfry-wordbook.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -862,7 +862,9 @@ $("#play").onclick = () => {
     return;
   }
   initAudio();
-  key("Enter", "Enter");
+  if (window.latestState?.phase === 2 && inscription.newAdventure)
+    inscription.newAdventure();
+  else key("Enter", "Enter");
 };
 $("#pause").onclick = () => {
   key("Escape", "Escape");
@@ -920,7 +922,12 @@ $("#export").onclick = () => {
 };
 window.addEventListener("keydown", (e) => {
   if (["Enter", "KeyT"].includes(e.code)) initAudio();
-  if (loading || e.repeat || e.target.closest("button")) return;
+  if (
+    loading ||
+    e.repeat ||
+    e.target.closest("button, input, select, textarea, summary")
+  )
+    return;
   if (
     [
       "Enter",

@@ -61,6 +61,7 @@ try {
         { file: "test-belfry-keeper.mjs" },
         { file: "test-belfry-bow.mjs" },
         { file: "test-belfry-inscription.mjs", words: true },
+        { file: "test-belfry-wordbook.mjs", words: true },
         { file: "test-belfry-inscription-resilience.mjs", words: true },
         { file: "test-belfry-inscription-motion.mjs", words: true },
         { file: "test-belfry-achievements.mjs", words: true },

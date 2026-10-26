@@ -1,0 +1,66 @@
+{
+  "version": "0.11.0",
+  "branch": "feat/adaptive-wordbook-local",
+  "remotePushed": false,
+  "unitGroups": 10,
+  "reports": {
+    "wordbook": {
+      "file": "wordbook.json",
+      "date": "2026-10-26T02:29:45.733Z",
+      "checks": 8
+    },
+    "inscription": {
+      "file": "inscription.json",
+      "date": "2026-10-26T02:30:46.675Z",
+      "checks": 24
+    },
+    "resilience": {
+      "file": "resilience.json",
+      "date": "2026-10-26T02:12:58.611Z",
+      "checks": 5
+    },
+    "motion": {
+      "file": "motion.json",
+      "date": "2026-10-26T02:32:12.876Z",
+      "checks": 9
+    },
+    "achievements": {
+      "file": "achievements.json",
+      "date": "2026-10-26T02:13:52.943Z",
+      "checks": 12
+    },
+    "skills": {
+      "file": "skills.json",
+      "date": "2026-10-26T02:20:27.739Z",
+      "checks": 19
+    },
+    "music": {
+      "file": "music.json",
+      "date": "2026-10-26T02:21:34.226Z",
+      "checks": 14
+    },
+    "route-normal": {
+      "file": "route-normal.json",
+      "date": "2026-10-26T02:31:23.251Z",
+      "phase": 2,
+      "wordsCorrect": 30,
+      "distinctWordsWithMainRouteImpact": 26
+    },
+    "route-hard": {
+      "file": "route-hard.json",
+      "date": "2026-10-26T02:19:23.822Z",
+      "phase": 2,
+      "wordsCorrect": 30,
+      "distinctWordsWithMainRouteImpact": 26
+    }
+  },
+  "sourceSha256": {
+    "prototypes/runlab/public/inscription-core.js": "6db54ce2a8fb30b239327ae9b0e53a162a54445083747c30817c2d9bc1e704e9",
+    "prototypes/runlab/public/inscription-ui.js": "ba1bbaa0d974dc843d496123ab01e90f6b1ec3c820a07660926ede0d4e0e4d7a",
+    "prototypes/runlab/public/inscription-storage.js": "9235dc6bc3e5b8b8109a34d1b7766eeb8151adf2485ad7c880f2c82de119f059",
+    "prototypes/runlab/public/inscription.css": "1d94f9a8c269c26ae91f57a1945ef73d4b2a3c6caa3ddc9a165b3424df8e7248",
+    "prototypes/runlab/public/cet4-words.js": "a2fcd5800d05f2e9812143b78ba058a56cb4e140f5cd6f7d2d10dd52b3fd3132",
+    "prototypes/runlab/public/belfry.js": "d3c6981f0f5a9549249b52b4ab4c15ac009742f6dec8d3bf6ab65452590d7197"
+  },
+  "browserChecks": 91
+}

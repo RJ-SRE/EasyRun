@@ -105,6 +105,7 @@ try {
   await p.goto(process.env.RUNLAB_URL || "http://127.0.0.1:4177");
   await wait(() => latestState || runtimeErrors.length, null, 45000);
   assert.deepEqual(await p.evaluate(() => runtimeErrors), []);
+  await p.locator("#word-advanced summary").click();
   await p.locator("#word-tier").selectOption("challenge");
   assert.equal((await diag()).pool.length, 30);
   await p.locator("#word-preview").click();
