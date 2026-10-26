@@ -440,6 +440,7 @@ onStart => {
  for i:=0;i<8;i++ {KeeperLine.clone i}
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
+  // EXPORT_NATIVE_MUSIC_TICK
   if phase!=1 {Hero.jumpChord=0; Hero.downTapTime=0}
   if phase==1 {
    Hero.captureAttack()

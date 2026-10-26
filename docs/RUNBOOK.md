@@ -107,6 +107,10 @@ git diff --check
 bash scripts/with-env.sh node scripts/build-game.mjs
 python3 prototypes/runlab/package.py
 
+# 只构建和打包当前 Belfry（内含三首完整背景音乐）
+bash scripts/with-env.sh node prototypes/runlab/build-belfry.mjs
+python3 prototypes/runlab/package.py --game belfry
+
 # 独立通道另行打包
 bash scripts/with-env.sh node prototypes/runlab/build-passages.mjs
 python3 prototypes/runlab/passages-package.py
@@ -114,7 +118,7 @@ python3 prototypes/runlab/passages-package.py
 
 输出在 `prototypes/runlab/exports/`。主打包生成 belfry / rupture / velocity / cinema 四个 `.xbp`，独立打包生成 passages。脚本验证 ZIP 与必要入口文件，不等于已经在完整 XBuilder 编辑器往返导入验证。
 
-配套网页提供中文界面、音频混音、铭文、成就和本机记录；这些不包含在单个 `.xbp`。没有正式线上部署产物或自动云同步。编辑器参考源码用 `bash scripts/setup-xbuilder-reference.sh` 按需安装，参考版本锁定于研究脚本，不替换运行库。
+Belfry `.xbp` 已包含开始 / 游戏 / 结束的三首完整 MP3 与原生循环播放控制。导入后点击舞台或按 Enter 解锁声音；Esc 暂停 / 继续同步暂停 / 恢复音乐，B 开关背景音乐。网页的中文 HUD、战斗音效混音、铭文、成就和本机记录仍不包含在单个 `.xbp`。没有正式线上部署产物或自动云同步。编辑器参考源码用 `bash scripts/setup-xbuilder-reference.sh` 按需安装，参考版本锁定于研究脚本，不替换运行库。
 
 ## 6. 玩家记录与恢复
 

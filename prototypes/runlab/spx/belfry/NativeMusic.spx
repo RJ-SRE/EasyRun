@@ -1,0 +1,26 @@
+// Included only in the standalone XBuilder export. The web host owns its music.
+var (
+ nativeMusicTrack string
+ nativeMusicPaused bool
+ nativeMusicMuted bool
+)
+func updateNativeMusic() {
+ next:=nativeMusicTrack
+ if phase==0 {next="BGM_Menu"}
+ if phase==1 || phase==5 {next="BGM_Gameplay"}
+ if phase==2 || phase==3 {next="BGM_Ending"}
+ if next=="" {next="BGM_Menu"}
+ if next!=nativeMusicTrack {
+  if nativeMusicTrack!="" {stopPlaying nativeMusicTrack}
+  nativeMusicTrack=next; nativeMusicPaused=false
+  setVolume 35
+  play nativeMusicTrack,true
+  println "@nativeMusic",nativeMusicTrack,"playing"
+ }
+ paused:=phase==4 || nativeMusicMuted || (phase==5 && wordVisualPaused)
+ if paused!=nativeMusicPaused {
+  nativeMusicPaused=paused
+  if paused {pausePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"paused"} else {resumePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"playing"}
+ }
+}
+onKey KeyB, => {nativeMusicMuted=!nativeMusicMuted}

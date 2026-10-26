@@ -29,9 +29,25 @@
 
 phase 0 对应标题，phase 1/5 对应游戏，phase 2/3 对应结束，phase 4 保持选曲并暂停。切曲定时器与播放 Promise 使用序号防止快速切换时旧结果覆盖新阶段；同时最多只有一个媒体播放器。`soundDiagnostics.music` 提供实际曲目、播放位置、时长、循环、暂停、增益和失败状态。
 
-本地静态服务增加 `audio/mpeg`、HEAD、Content-Length 和字节 Range 响应，支持浏览器定位及循环读取。若另行部署静态站点，也应正确提供 MP3 类型和范围请求。网页宿主音乐不包含在单独 `.xbp` 工程包内；需同时交付网页与 `public/audio/music/`。
+本地静态服务增加 `audio/mpeg`、HEAD、Content-Length 和字节 Range 响应，支持浏览器定位及循环读取。若另行部署静态站点，也应正确提供 MP3 类型和范围请求。网页宿主使用此播放器；v0.11.3 的 `.xbp` 另行内置原生背景音乐，方式见下节。
 
 更换曲目时同步更新播放器映射、资源清单、此文档并重跑专项测试。不要运行程序化音效生成器来重建这些第三方录音。
+
+## XBuilder 导入包（v0.11.3）
+
+`package.py --game belfry` 将原始三首 MP3 放入 `assets/sounds/BGM_Menu/`、`BGM_Gameplay/`、`BGM_Ending/`，每首配套 `index.json`。打包前验证清单大小和 SHA-256，打包后逐文件核对 ZIP 内容；不会裁剪或重新编码交付录音。
+
+`spx/belfry/NativeMusic.spx` 在导出时合入 `main.spx` 的字段和方法区域，并在帧循环的专用标记处接入更新。使用原生 `play sound, true` 循环，阶段变化先 `stopPlaying` 旧曲；暂停用 `pausePlaying`，继续用 `resumePlaying`。默认音量 35%，B 暂停 / 恢复背景音乐，静音跨阶段保留。题目阶段不降音量；普通暂停和题目主动暂停保留音乐位置。同一阶段不会逐帧重复创建播放器，也不会因重试或换城区重播。
+
+导入后点击舞台或按 Enter 允许浏览器播放声音。网页的淡入淡出、独立音量面板、后台自动暂停与重试 UI 没有移植到原生包；原生包切曲直接停止并切换，后台行为由 XBuilder / 浏览器自身管理。网页的战斗音效混音、词册和成就也仍在网页宿主中。原生音乐代码不进入网页生成清单，避免双重播放。
+
+复现打包及验收（先启动本地服务，默认验收连接 4184）：
+
+```sh
+RUNLAB_URL='http://127.0.0.1:4184/' bash scripts/with-env.sh pnpm game:test:native-music
+```
+
+该命令构建、打包，并从实际 `.xbp` 解压到固定版本的 SPX 引擎中编译运行。测试通过 Web Audio 分析器检查真实引擎输出，使用响应内阶段夹具验证切换；单独以 1 秒短片段加速验证原生循环，交付包中的完整音轨保持原样。需要 ffmpeg 制作短测试片段，不需要它运行游戏。未代替线上 XBuilder 编辑器导入验收。
 
 ## 验证
 
@@ -40,3 +56,5 @@ RUNLAB_URL='http://127.0.0.1:4184/?words=on' bash scripts/with-env.sh node proto
 ```
 
 已加入统一 `scripts/test-game.mjs`。专项使用实际 MP3 和 Web Audio 检查三曲播放、文件末尾循环、暂停续播、音量、静音、铭文期间正常音量、前后台、快速切换、排练与资源恢复；胜负由仅作用于测试响应的夹具触发，不冒充整关通关测试。具体结果见 [测试记录](TESTING.md) 与 [初版证据](evidence/scene-music/verification.json)、[正常音量修订](evidence/scene-music-normal-volume.json)。
+
+原生导出验收与网页回归见 [v0.11.3 验证记录](evidence/2026-10-26-native-music/verification.json)。

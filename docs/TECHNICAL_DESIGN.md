@@ -91,7 +91,7 @@ bash scripts/with-env.sh pnpm game:package
 
 ## 输出边界
 
-`.xbp` 含 spx 核心、敌人、动作和美术。HTML HUD、动作音效、背景音乐、设置与存储属于配套网页；没有声称这些能力随 XBuilder 包独立运行。实际入口为本地 `/` 或 `/belfry.html`。生成图集是关键姿态图片动画，不是骨骼动画。
+`.xbp` 含 spx 核心、敌人、动作和美术。从 v0.11.3 起，打包脚本将三首 MP3 和 NativeMusic.spx 控制器加入导出包，使用 spx 的 play / pausePlaying / resumePlaying / stopPlaying 管理阶段音乐；网页构建不注入该控制器，继续使用自己的音乐总线。HTML HUD、动作音效混音、网页设置与存储属于配套网页。实际入口为本地 `/` 或 `/belfry.html`。生成图集是关键姿态图片动画，不是骨骼动画。
 
 ## v0.7 铭文与四技能集成
 
