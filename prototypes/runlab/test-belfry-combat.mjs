@@ -103,9 +103,9 @@ try {
   await save("holding light attack does not auto-repeat");
   await practice();
   await approach();
-  await page.keyboard.down("ArrowUp");
+  await page.keyboard.down("w");
   await tap("j");
-  await page.keyboard.up("ArrowUp");
+  await page.keyboard.up("w");
   await page.waitForTimeout(170);
   await tap("j");
   await page.waitForTimeout(230);
@@ -152,7 +152,10 @@ try {
   await save("light recovery cancels into dash");
   await practice();
   await tap("p");
-  await page.waitForTimeout(1350);
+  await wait(() => latestState.ultimateCool > 0);
+  await wait(
+    () => latestState.ultimateTime === 0 && latestState.attackTime === 0,
+  );
   assert.equal((await state()).ultimateTime, 0);
   assert.equal((await state()).attackTime, 0);
   await save("five-hit ultimate active window expires without another input");

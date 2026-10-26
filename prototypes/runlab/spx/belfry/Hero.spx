@@ -14,6 +14,10 @@ var (
  airJump bool
  coyote float64
  buffer float64
+ jumpChord float64
+ jumpCut bool
+ downTapTime float64
+ prevDown bool
  dropTime float64
  hook int
  target int
@@ -84,7 +88,7 @@ var (
 func resetHero(x,y float64) {
  healGated=false; ultimateGated=false; bladeLink=-1; skillWord=0
  bowTarget=-1; bowInputX=0; bowInputY=0; bowRecoil=0; basicCool=0; airAttacks=0; airHitSlow=false; bowCool=0; bladeCool=0; healCool=0; ultimateCool=0; bowCharging=false; bowCharge=0; prevBow=false; prevHeal=false; healTime=0; ultimateTime=0; ultimateStep=0; aimX=1; aimY=0; bladeX=1; bladeY=0; ultimateDir=0
- px=x; py=y; vx=0; vy=0; facing=90; grounded=true; airJump=true; coyote=0.12; buffer=0; dropTime=0; hook=-1; target=-1; hookCool=0
+ px=x; py=y; vx=0; vy=0; facing=90; grounded=true; airJump=true; coyote=0.12; buffer=0; jumpChord=0; jumpCut=false; downTapTime=0; prevDown=false; dropTime=0; hook=-1; target=-1; hookCool=0
  attackKind=0; attackAge=0; attackDuration=0; attackBuffer=0; bufferTime=0; chainStep=0; chainWindow=0; chargeTime=0; charging=false; prevHeavy=false; attackApplied=false; charged=false; attackFacing=90
  dashTime=0; dashCool=0; attackTime=0; attackCool=0; invulnerable=1.0; plunging=false
  prevJump=false; prevHook=false; prevAttack=false; attackPressed=false; prevDash=false; prevBurst=false; runDistance=0; pose=0; blendTime=0; bodyOffset=0; bodyVelocity=0; renderY=y; landing=0; trailAt=0
@@ -125,7 +129,8 @@ func cancelAttack() {wordWanted=0; bladeLink=-1; attackKind=0; attackCool=0; att
 func canMoveCancel() bool {return ultimateTime<=0 && (attackKind==0 || (attackKind!=7 && attackAge>=attackWindup+0.04))}
 func beginAttack(kind int) {
  if kind!=7 && (basicCool>0 || (!grounded && airAttacks>=2)) {return}
- if kind==4 && !grounded {kind=1}
+ if kind==4 && !grounded && jumpChord<=0 {kind=1}
+ if kind==4 {jumpChord=0; jumpCut=false}
  if kind==1 {
   if !grounded {kind=5; if chainWindow>0 && chainStep==5 {kind=6}} else {if chainWindow>0 && chainStep<3 {kind=chainStep+1}}
  }
@@ -198,7 +203,7 @@ func updateCooldowns(dt float64) {
 func readAim() {
  aimX=0; aimY=0
  if keyPressed(KeyA)||keyPressed(KeyLeft) {aimX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {aimX+=1}
- if keyPressed(KeyUp) {aimY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {aimY-=1}
+ if keyPressed(KeyW)||keyPressed(KeyUp) {aimY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {aimY-=1}
  if aimX==0 && aimY==0 {aimX=facing/90}
  d:=dist(aimX,aimY); aimX/=d; aimY/=d
  if aimX!=0 && (charging || bowCharging || (attackKind==0 && ultimateTime<=0)) {facing=90; if aimX<0 {facing=-90}}
@@ -214,7 +219,7 @@ func validBowTarget(i int) bool {
 func aimBow() {
  inputX:=0.0; inputY:=0.0
  if keyPressed(KeyA)||keyPressed(KeyLeft) {inputX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {inputX+=1}
- if keyPressed(KeyUp) {inputY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {inputY-=1}
+ if keyPressed(KeyW)||keyPressed(KeyUp) {inputY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {inputY-=1}
  manual:=inputX!=0 || inputY!=0
  changed:=manual && (inputX!=bowInputX || inputY!=bowInputY)
  if !validBowTarget(bowTarget) || changed {
@@ -244,7 +249,7 @@ func releaseBlade(full bool) {bladeCool=3; charged=full; charging=false; chargeT
 func nova() {
  if ultimateCool>0 || ultimateTime>0 || healTime>0 || attackKind==7 {return}
  cancelAttack(); releaseHook(false); dashTime=0; ultimateTime=1.08; ultimateStep=0; ultimateGated=false; ultimateDir=0
- if keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
+ if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
  if wordMode==1 && practice==0 {requestWord(4); return}
  releaseUltimate()
 }
@@ -266,7 +271,7 @@ func updateSkills(dt float64) {
  if ultimateTime>0 {
   if wordMode==1 && practice==0 && !ultimateGated {return}
   ultimateTime=math.Max(0,ultimateTime-dt); age:=1.08-ultimateTime
-  if keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
+  if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
   threshold:=0.12+float64(ultimateStep)*0.17; if ultimateStep==4 {threshold=0.88}
   if ultimateStep<5 && age>=threshold {
    // Protection follows the actual blade strokes, not the whole commitment.
@@ -290,10 +295,12 @@ func updateSkills(dt float64) {
 }
 func captureAttack() {held:=keyPressed(KeyJ); if held && !prevAttack {attackPressed=true}; prevAttack=held}
 func update(dt float64) {
+ jumpChord=math.Max(0,jumpChord-dt); downTapTime=math.Max(0,downTapTime-dt)
  updateCooldowns(dt)
  if controlImmune>0 {controlImmune=math.Max(0,controlImmune-dt)}
  if controlGrace>0 {controlGrace=math.Max(0,controlGrace-dt)}
  if bindTime>0 {
+  buffer=0; jumpChord=0; jumpCut=false; downTapTime=0; prevDown=keyPressed(KeyS)||keyPressed(KeyDown)
   bindTime=math.Max(0,bindTime-dt); px=bindX; py=bindY; vx=0; vy=0; grounded=true
   prevJump=keyPressed(KeyW); prevHook=keyPressed(KeyO); prevAttack=keyPressed(KeyJ); prevHeavy=keyPressed(KeyL); prevDash=keyPressed(KeyK)||keyPressed(KeyShift); prevBurst=keyPressed(KeyP); prevBow=keyPressed(KeyU); prevHeal=keyPressed(KeyI); attackPressed=false
   if bindTime<=0 {if wordMode==1 && practice==0 {bindTime=0.0001; requestWord(6)} else {releaseBind()}}; return
@@ -302,21 +309,42 @@ func update(dt float64) {
  if invulnerable>0 {invulnerable-=dt}; if hookCool>0 {hookCool-=dt}; if dashCool>0 {dashCool-=dt};  if dropTime>0 {dropTime-=dt}; if landing>0 {landing-=dt}
  updateSkills(dt)
  if wordWanted>0 {return}
+ // Accept J then W during the light strike's anticipation as the same chord.
+ if keyPressed(KeyW) && keyPressed(KeyJ) && !prevJump && grounded && attackKind==1 && !attackApplied && attackAge<attackWindup {
+  attackKind=4; chainStep=4; attackWindup=0.11; attackDuration=0.33; jumpCut=false
+ }
  updateAttack(dt)
  chooseTarget()
  jump:=keyPressed(KeyW); grap:=keyPressed(KeyO); dash:=keyPressed(KeyK)||keyPressed(KeyShift); special:=keyPressed(KeyP); heavy:=keyPressed(KeyL); bow:=keyPressed(KeyU); heal:=keyPressed(KeyI)
- if jump && !prevJump {buffer=0.13}; if buffer>0 {buffer-=dt}
+ // W is immediate jump alone, but directional while a combat key is held.
+ // Consume the jump edge for a chord; never defer it until charging ends.
+ directional:=keyPressed(KeyJ)||heavy||bow||dash||special||charging||bowCharging||ultimateTime>0
+ down:=keyPressed(KeyS)||keyPressed(KeyDown)
+ if jump && !prevJump && !directional {buffer=0.13}
+ if directional {buffer=0}
+ if buffer>0 {buffer-=dt}
+ dropPressed:=false
+ if down && !prevDown {
+  if grounded && !directional && hook<0 && healTime<=0 && attackKind==0 {
+   if downTapTime>0 {dropPressed=true; downTapTime=0} else {downTapTime=0.24}
+  } else {downTapTime=0}
+ }
+ if directional || !grounded || hook>=0 {downTapTime=0}
+ prevDown=down
  if grounded {coyote=0.12; airJump=true; airAttacks=0; airHitSlow=false} else {coyote-=dt}
- if buffer>0 && canMoveCancel() {
-  down:=keyPressed(KeyS)||keyPressed(KeyDown)
-  if grounded && down {dropTime=0.25; py-=8; grounded=false; vy=-120; coyote=0; buffer=0} else if coyote>0 || airJump || px<102 || px>858 {
+ if (buffer>0 || dropPressed) && canMoveCancel() {
+  if grounded && (down || dropPressed) {dropTime=0.25; py-=8; grounded=false; vy=-120; coyote=0; buffer=0; jumpChord=0; jumpCut=false; downTapTime=0} else if buffer>0 && (coyote>0 || airJump || px<102 || px>858) {
+   jumpChord=0; if coyote>0 {jumpChord=0.16}
    if coyote<=0 {airJump=false}
-   cancelAttack(); releaseHook(false); vy=560; grounded=false; coyote=0; buffer=0; plunging=false; bodyVelocity=-30
+   cancelAttack(); releaseHook(false); vy=560; grounded=false; coyote=0; buffer=0; plunging=false; bodyVelocity=-30; jumpCut=true
    if px<102 {vx=360}; if px>858 {vx=-360}
    ring(px,py+4,0.65,0); burst(px,py,5,0,110); event("jump")
   }
  }
- if !jump && prevJump && vy>270 && hook<0 && dashTime<=0 {vy*=0.72}
+ if !jump && prevJump {
+  if jumpCut && vy>270 && hook<0 && dashTime<=0 {vy*=0.72}
+  jumpCut=false
+ }
  if grap && !prevHook && hookCool<=0 && canMoveCancel() {
   cancelAttack()
   if target>=0 {hook=target; hookAge=0; hookCount++; hookX=anchorX[0]; hookY=anchorY[0]; grounded=false; plunging=false; event("hook"); ropeLength=475} else {event("nohook")}
@@ -325,7 +353,7 @@ func update(dt float64) {
  if attackPressed && !charging && !bowCharging && healTime<=0 && ultimateTime<=0 {
   if (keyPressed(KeyS)||keyPressed(KeyDown)) && !grounded && canMoveCancel() && basicCool<=0 && airAttacks<2 {
    cancelAttack(); basicCool=0.28; airAttacks++; plunging=true; hook=-1; vy=-1050; vx*=0.4; ring(px,py+20,0.7,1); lastMove=8; event("plunge")
-  } else {kind:=1; if keyPressed(KeyUp) {kind=4}; requestAttack(kind)}
+  } else {kind:=1; if keyPressed(KeyW)||keyPressed(KeyUp) {kind=4}; requestAttack(kind)}
  }
  attackPressed=false
  if heavy && !prevHeavy && bladeCool<=0 && canMoveCancel() && !bowCharging && healTime<=0 {cancelAttack(); charging=true; chargeTime=0; event("charge")}
@@ -351,10 +379,10 @@ func update(dt float64) {
  prevHeavy=heavy
  if special && !prevBurst {nova(); if wordWanted>0 {return}}
  if dash && !prevDash && dashCool<=0 && canMoveCancel() {
-  cancelAttack(); lastMove=10
+  cancelAttack(); jumpChord=0; jumpCut=false; lastMove=10
   releaseHook(false); dashTime=0.18; dashCool=0.8; invulnerable=0.25; plunging=false; grounded=false
   dx:=facing/90; dy:=0.0
-  if keyPressed(KeyUp) {dy=1; if !keyPressed(KeyA)&&!keyPressed(KeyD)&&!keyPressed(KeyLeft)&&!keyPressed(KeyRight) {dx=0}}
+  if keyPressed(KeyW)||keyPressed(KeyUp) {dy=1; if !keyPressed(KeyA)&&!keyPressed(KeyD)&&!keyPressed(KeyLeft)&&!keyPressed(KeyRight) {dx=0}}
   if keyPressed(KeyS)||keyPressed(KeyDown) {dy=-1}
   d:=dist(dx,dy); vx=dx/d*850; vy=dy/d*850; burst(px,py+28,10,0,240); event("dash")
  }

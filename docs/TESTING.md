@@ -1,11 +1,13 @@
 # 验证与证据
 
-当前本地 v0.11.1 的键位增量验收见 [键位测试记录](evidence/2026-10-26-controls/verification.json)；v0.11 的词册验收见 [自适应词册测试](evidence/2026-10-26-wordbook/README.md)。下文按版本保留历史报告，不把历史通过项自动计为本轮重跑。
+当前本地 v0.11.2 的组合操作验收见 [组合操作测试](evidence/2026-10-26-ergonomic-controls/verification.json)；v0.11.1 的键位验收见 [键位测试记录](evidence/2026-10-26-controls/verification.json)；v0.11 的词册验收见 [自适应词册测试](evidence/2026-10-26-wordbook/README.md)。下文按版本保留历史报告，不把历史通过项自动计为本轮重跑。
 
 
 v0.10 历史基线：主分支 `main` 为猎战重构，2026-10-25，完整结果见 [猎战验收账本](planning/hunt-v10/IMPLEMENTATION.md)。本次合并保留已验收源码，仅同步交付文档，不将既有测试记录称为重新执行。前面章节保留历史基线，不累计冒充本轮覆盖。测试结果分为运行正确性、画面观感、性能观察和真人可玩性，不能用其中一项替代其它项。
 
 ## 当前结果速查
+
+- v0.11.2 组合操作：59 项浏览器专项检查和 1 条无畏铭文整关路线通过。覆盖 W 即时跳跃 / 挑空衔接 / 冲刺 / 蓄力瞄准、双击 S 与防误触、旧键兼容、空中攻击上限、词题末字母隔离及 3/3/3/5 秒冷却；构建、定向 ESLint、Git 空白检查通过。仅本地验收，见 [测试记录](evidence/2026-10-26-ergonomic-controls/verification.json)。
 
 - v0.11.1 新键位：70 项浏览器专项检查和 1 条无畏铭文完整路线通过；覆盖 O 钩索、P 终式、W 跳跃、↑ 组合动作、S + W 下穿、旧键停用与 O / W / P 末字母隔离。构建、定向 ESLint 与 Git 空白检查通过。仅本地验收，见 [测试记录](evidence/2026-10-26-controls/verification.json)。
 

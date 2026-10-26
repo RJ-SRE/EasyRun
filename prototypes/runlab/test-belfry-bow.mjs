@@ -50,7 +50,7 @@ const wait = (fn, timeout = 10000) => page.waitForFunction(fn, {}, { timeout });
 const tap = (key) => page.keyboard.press(key, { delay: 35 });
 async function fixture(key = "F8") {
   await page.keyboard.up("u");
-  await page.keyboard.up("ArrowUp");
+  await page.keyboard.up("w");
   await tap(key);
   await page.waitForTimeout(200);
 }
@@ -110,9 +110,9 @@ try {
 
   await fixture("F10");
   await draw(0);
-  await page.keyboard.down("ArrowUp");
+  await page.keyboard.down("w");
   await wait(() => latestState.bowTarget === 3);
-  await page.keyboard.up("ArrowUp");
+  await page.keyboard.up("w");
   await wait(() => latestState.bowCharge >= 0.6);
   assert.equal((await state()).bowTarget, 3);
   assert.ok((await state()).aimY > 0.9);
@@ -157,7 +157,7 @@ try {
   await fixture("F5");
   await draw(-1);
   assert.equal((await state()).aimX, 1);
-  await page.keyboard.down("ArrowUp");
+  await page.keyboard.down("w");
   await wait(() => latestState.aimY === 1);
   assert.equal((await state()).bowTarget, -1);
   assert.match(await page.locator("#combat-focus").innerText(), /自由瞄准/);

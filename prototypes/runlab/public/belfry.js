@@ -337,7 +337,7 @@ function onEvent(name, t, x, y) {
     healbreak: "回息中断",
     healcomplete: "回息 · 生命 +1",
     embergain: "余烬 +1",
-    chainstart: "连环剑刀 · ↑ 上挑 / S 下压收势",
+    chainstart: "连环剑刀 · W 上挑 / S 下压收势",
     armor: "护架挡住了攻击 · 绕背、重斩破架或先处理缝魂师",
     guardbreak: "护架已碎 · 追击窗口",
     wardbreak: "牵线已断 · 守卫失去掩护",
@@ -400,7 +400,7 @@ function hint(s) {
   if (s.y > -1850) return "墙中弓手会先搭箭；缚索抛链后，J 可斩断连接。";
   if (s.y > -2900)
     return "U 满蓄贯夜留下裂印，L 满蓄断潮引爆；金色回声补充余烬。";
-  return "钟声来自更深处。S + W 穿过脚下的平台。";
+  return "钟声来自更深处。双击 S 穿过脚下的平台。";
 }
 function receive(s) {
   s.expedition = window.expeditionState;

@@ -519,7 +519,7 @@ try {
       if (tick % 9 < 7) keys.push("o");
       if (tick % 8 === 0 && s.hook < 0) keys.push("w");
       if (s.vy < 50 && s.hook < 0 && s.dashCool <= 0 && tick % 5 === 0) {
-        keys.push("ArrowUp", "k");
+        keys.push("w", "k");
       }
       if (tick % 5 === 0) keys.push("j");
       if (

@@ -34,7 +34,7 @@ try {
   );
   await page.locator("#help").click();
   const guide = await page.locator("#guide").innerText();
-  for (const text of ["按住 O", "↑ + J", "↑ + K", "S + W"])
+  for (const text of ["按住 O", "W + J", "W + K", "双击 S"])
     assert.ok(guide.includes(text), text);
   assert.ok(!guide.includes("按住 E"));
   await page.locator("#close-guide").click();
@@ -97,6 +97,102 @@ try {
   pass(
     "up-arrow preserves launcher and vertical dash without the W jump conflict",
   );
+
+  await restart();
+  await tap("s");
+  assert.equal((await state()).y, initial.y, "a single S must not drop");
+  await tap("s");
+  await page.waitForFunction((y) => latestState.y < y - 20, initial.y);
+  pass("double S drops through without the awkward S + W chord");
+
+  await restart();
+  await page.keyboard.down("s");
+  await page.waitForTimeout(400);
+  assert.equal((await state()).y, initial.y);
+  await page.keyboard.up("s");
+  await tap("s");
+  assert.equal((await state()).y, initial.y, "expired first tap must not drop");
+  pass("holding S and widely separated taps do not accidentally drop");
+
+  await restart();
+  await page.keyboard.down("u");
+  await wait(() => latestState.bowCharge > 0);
+  await tap("s");
+  await tap("s");
+  assert.equal((await state()).y, initial.y);
+  assert.ok((await state()).bowCharge > 0);
+  await page.keyboard.up("u");
+  pass(
+    "downward aim taps during charging never count as a platform-drop gesture",
+  );
+
+  await restart();
+  await tap("s");
+  await tap("Escape");
+  await wait(() => latestState.phase === 4);
+  await tap("Escape");
+  await wait(() => latestState.phase === 1);
+  await tap("s");
+  assert.equal((await state()).y, initial.y);
+  pass("pause clears the pending double-tap gesture");
+
+  for (const [first, second] of [
+    ["w", "j"],
+    ["j", "w"],
+  ]) {
+    await restart();
+    await page.keyboard.down(first);
+    await page.waitForTimeout(35);
+    await page.keyboard.down(second);
+    await wait(() => runEvents.some((event) => event.name === "launcher"));
+    await page.keyboard.up(second);
+    await page.keyboard.up(first);
+    assert.equal(
+      await page.evaluate(
+        () => runEvents.filter((event) => event.name === "launcher").length,
+      ),
+      1,
+    );
+    pass(
+      `${first.toUpperCase()} then ${second.toUpperCase()} produces one launcher without waiting to jump`,
+    );
+  }
+
+  await restart();
+  await page.keyboard.down("w");
+  await page.waitForTimeout(45);
+  await page.keyboard.down("k");
+  await wait(() => latestState.vy > 600);
+  assert.ok(Math.abs((await state()).vx) < 10);
+  await page.keyboard.up("k");
+  await page.keyboard.up("w");
+  pass("W + K dashes upward from the left-hand movement cluster");
+
+  for (const skill of ["u", "l"]) {
+    await restart();
+    await page.keyboard.down(skill);
+    await wait(() => latestState.bowCharge > 0 || latestState.chargeTime > 0);
+    await page.keyboard.down("w");
+    await wait(() => latestState.aimY > 0.9);
+    assert.equal(
+      (await state()).y,
+      initial.y,
+      "aiming must not jump or cancel charge",
+    );
+    await page.keyboard.up(skill);
+    await wait(() => latestState.bowCool > 0 || latestState.bladeCool > 0);
+    await page.waitForTimeout(150);
+    assert.equal(
+      await page.evaluate(
+        () => runEvents.filter((event) => event.name === "jump").length,
+      ),
+      0,
+    );
+    await page.keyboard.up("w");
+    pass(
+      `${skill.toUpperCase()} + W aims upward and releases with no deferred jump`,
+    );
+  }
 
   // Hold the final typed gameplay key through the release transition. It must
   // remain quarantined until keyup; a subsequent fresh press must work.

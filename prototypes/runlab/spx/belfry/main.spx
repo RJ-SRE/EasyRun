@@ -440,6 +440,7 @@ onStart => {
  for i:=0;i<8;i++ {KeeperLine.clone i}
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
+  if phase!=1 {Hero.jumpChord=0; Hero.downTapTime=0}
   if phase==1 {
    Hero.captureAttack()
    if hitStop>0 {hitStop-=dt} else {

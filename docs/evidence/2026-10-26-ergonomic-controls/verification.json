@@ -1,0 +1,135 @@
+{
+  "version": "0.11.2",
+  "date": "2026-10-26T06:39:26.065305+00:00",
+  "localOnly": true,
+  "bindings": {
+    "jump": "W alone",
+    "launcher": "W + J",
+    "upDash": "W + K / Shift",
+    "upAim": "W while charging U / L",
+    "dropThrough": "double S within 240ms",
+    "compatible": [
+      "ArrowUp direction",
+      "S + W drop"
+    ],
+    "unchanged": [
+      "O grapple",
+      "P ultimate"
+    ]
+  },
+  "checks": {
+    "build": "445 files / 46 sprites",
+    "targetedEslint": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "suites": [
+    {
+      "script": "test-belfry-controls.mjs",
+      "cases": [
+        "guide uses new controls; old Space, E and Q do not trigger gameplay",
+        "W jumps and performs a second airborne jump",
+        "O grabs an anchor and release launches the hero",
+        "P releases the ultimate and starts its five-second cooldown",
+        "S + W drops through an ordinary platform",
+        "up-arrow preserves launcher and vertical dash without the W jump conflict",
+        "double S drops through without the awkward S + W chord",
+        "holding S and widely separated taps do not accidentally drop",
+        "downward aim taps during charging never count as a platform-drop gesture",
+        "pause clears the pending double-tap gesture",
+        "W then J produces one launcher without waiting to jump",
+        "J then W produces one launcher without waiting to jump",
+        "W + K dashes upward from the left-hand movement cluster",
+        "U + W aims upward and releases with no deferred jump",
+        "L + W aims upward and releases with no deferred jump",
+        "held final O does not leak from spelling; fresh input works",
+        "held final W does not leak from spelling; fresh input works",
+        "held final P does not leak from spelling; fresh input works"
+      ],
+      "errors": []
+    },
+    {
+      "script": "test-belfry-combat.mjs",
+      "cases": [
+        "three-step buffered chain causes damage at strike frames",
+        "holding light attack does not auto-repeat",
+        "launcher lifts enemy and player into aerial follow-up",
+        "charge freezes during pause, releases into heavy strike on resume",
+        "heavy strike throws an enemy into another enemy",
+        "light recovery cancels into dash",
+        "five-hit ultimate active window expires without another input",
+        "full restart clears charge, combo and practice",
+        "sound settings retain only effects and music; former voice controls are absent",
+        "blade effects play and global mute clears active sources",
+        "all 82 retained effects decode without loading any voice pack",
+        "reload preserves music/effects preferences and never fetches dialogue or speech",
+        "failed effects decoding leaves gameplay operational and cannot create dialogue"
+      ],
+      "errors": []
+    },
+    {
+      "script": "test-belfry-bow.mjs",
+      "cases": [
+        "unprompted aim tracks a moving elevated foe and the charged arrow hits",
+        "a foe behind the hero is acquired and hit without a direction key",
+        "upward intent switches from the nearest foe and releasing it keeps the new lock",
+        "valid locks stay stable when another foe moves closer; death reacquires a valid foe",
+        "an occluding platform excludes the otherwise nearby upper foe",
+        "auto-aim selects a plate guard but the actual frontal arrow respects its armor",
+        "out-of-range and off-screen foes leave directional free aim available",
+        "a newly obstructed lock is dropped immediately while charging",
+        "bow lock is independent of grapple selection, freezes on pause and clears on cancellation"
+      ],
+      "errors": []
+    },
+    {
+      "script": "test-belfry-skills.mjs",
+      "cases": [
+        "full bow marks; charged blade consumes mark for five damage",
+        "blade rejects repeat inputs until its three-second cooldown expires",
+        "bow blocks repeat shots, freezes cooldown on pause and fires after recovery",
+        "charged arrow pierces two distinct targets and stops before the third",
+        "downward arrow is blocked by a closed platform before reaching the enemy",
+        "dash cancels bow anticipation without firing or spending cooldown",
+        "dash cancel retains the basic attack interval instead of resetting it",
+        "air whiffs and W + J spam allow only two cuts and fall to ground",
+        "healing channels on ground, freezes on pause and consumes a finite ember",
+        "incoming damage interrupts healing with no delayed completion or refund",
+        "jump cancels healing, keeps the resource cost and has no cooldown",
+        "airborne healing rejected before resource or cooldown consumption",
+        "ultimate emits five hits and rejects repeats until its five-second cooldown expires",
+        "ultimate up finisher produces a bounded launch",
+        "downward ultimate finisher drives the fall; empty cuts grant no ember",
+        "restart clears all cooldowns, charge state, healing and ultimate",
+        "four independent cooldowns last 3/3/3/5 simulation seconds and HUD masks clear on readiness",
+        "healing cooldown blocks a second available ember without consuming it",
+        "four skill indicators and new local sound cues work with speech still disabled"
+      ],
+      "errors": []
+    }
+  ],
+  "browserCaseCount": 59,
+  "route": {
+    "script": "test-belfry-route.mjs",
+    "mode": 1,
+    "words": true,
+    "result": "passed",
+    "phase": 2,
+    "bossHP": 0,
+    "simulationSeconds": 190.2907438722997,
+    "deaths": 0,
+    "errors": []
+  },
+  "sourceSha256": {
+    "prototypes/runlab/spx/belfry/Hero.spx": "6ea59c8b5a3638a506c4275b559968bb295cb5013372e7322a7aa1856df150b3",
+    "prototypes/runlab/spx/belfry/main.spx": "d224a1c415beac8e9b18ecf01b8a5f3293598268e17931523e2946ff147a2535",
+    "prototypes/runlab/public/belfry.html": "5780a3e88ca5b0acba046642aae90d5fb100a36202c1ebe65b5fb156e649baec",
+    "prototypes/runlab/public/belfry.js": "12405aaa1662d531dd3497ebf7ca458f3cf812322ff1587fac6b98df8970568c"
+  },
+  "notes": [
+    "Real Chromium. Controls use the real opening platform; word input uses seeded vocabulary. Combat/bow/skills use response-only scene fixtures, production input and mechanics.",
+    "Full route uses real keyboard input including W + K, with automatic answers only; no position, health or win-state mutations.",
+    "Compatibility arrows and S + W remain, while HUD/guide teach the primary WASD controls.",
+    "No remote push. Automated correctness does not certify subjective comfort or every keyboard/device.",
+    "Initial legacy test failures came from fixed wall-clock waits, counting the next grounded combo as part of the previous airborne interval, and starting a blade before the bow-release sample arrived. Final tests use state snapshots and explicit action transitions; cooldown precision and two-air-hit assertions remain intact."
+  ]
+}
