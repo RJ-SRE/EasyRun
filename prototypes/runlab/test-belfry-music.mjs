@@ -18,7 +18,10 @@ const manifest = JSON.parse(
     "utf8",
   ),
 );
-const browser = await chromium.launch({ headless: true, channel: "chromium" });
+const browser = await chromium.launch({
+  headless: true,
+  channel: "chromium",
+});
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const report = {
   date: new Date().toISOString(),
@@ -34,6 +37,15 @@ page.on("console", (m) => {
 });
 const book = new InscriptionBook(null, 4);
 book.settings.hint = "guided";
+await page.addInitScript(() => {
+  const Original = window.AudioContext;
+  window.AudioContext = class extends Original {
+    constructor(...args) {
+      super(...args);
+      window.testMusicContext = this;
+    }
+  };
+});
 await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
   key: STORAGE_KEY,
   value: book.serialize(),
@@ -171,8 +183,10 @@ try {
   pass(
     "old quiet-effects preset migrates once; custom volumes and explicit mute remain intact",
   );
-  assert.equal(await music(), null);
-  await page.locator("#music-start").click();
+  assert.equal((await music()).stage, "menu");
+  if (await page.locator("#music-start").isVisible())
+    await page.locator("#music-start").click();
+  else await page.locator("#overlay-title").click();
   await playing("menu");
   assert.equal(await page.evaluate(() => latestState.phase), 0);
   assert.ok(
@@ -180,7 +194,7 @@ try {
       0.1,
   );
   pass(
-    "a title-screen gesture starts Cleaning out the Rooms without starting a run",
+    "the menu plays Cleaning out the Rooms after autoplay or a title-screen gesture, without starting a run",
   );
   await page.locator("#scene-music").evaluate((audio) => {
     audio.currentTime = audio.duration - 0.2;
@@ -200,6 +214,14 @@ try {
   );
   pass(
     "starting the game switches to Melancholy Of The Boot and retains only one media element",
+  );
+  await page.evaluate(() => window.testMusicContext.suspend());
+  await page.waitForFunction(() => soundDiagnostics.context === "suspended");
+  await page.frameLocator("#stage iframe").locator("#game-canvas").press("x");
+  await page.waitForFunction(() => soundDiagnostics.context === "running");
+  await playing("gameplay");
+  pass(
+    "trusted gameplay iframe input resumes an interrupted music context without restarting the run",
   );
   await page.keyboard.press("Escape");
   await wait(() => latestState.phase === 4);

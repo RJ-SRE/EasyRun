@@ -297,7 +297,7 @@ function unlockAudio(event) {
   if (
     event.isTrusted &&
     soundOn &&
-    (!soundscape.music?.unlocked || soundscape.music?.blocked)
+    (soundscape.needsGesture() || !soundscape.ready)
   )
     initAudio();
 }
@@ -407,8 +407,7 @@ function receive(s) {
   window.latestState = s;
   soundscape.stateChanged(s);
   const music = soundscape.music?.diagnostics();
-  $("#music-start").hidden =
-    !soundOn || (!!music?.unlocked && !music.blocked && !music.failed);
+  $("#music-start").hidden = !soundOn || !soundscape.needsGesture();
   $("#music-start").textContent = music?.failed ? "重试音乐" : "播放音乐";
   $("#music-track").textContent = music?.failed
     ? "音乐暂不可用，动作音效与游戏仍可继续。"
@@ -799,6 +798,8 @@ async function load() {
         inscription.attach(w);
         w.onGameError(fail);
         w.onEngineCrash(fail);
+        w.addEventListener("pointerdown", unlockAudio, { capture: true });
+        w.addEventListener("keydown", unlockAudio, { capture: true });
         w.addEventListener("keydown", (e) => {
           if (["Enter", "KeyT"].includes(e.code)) initAudio();
           if (

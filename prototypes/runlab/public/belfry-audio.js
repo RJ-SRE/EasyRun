@@ -66,7 +66,16 @@ export class BelfryAudio {
   path(cue, variant) {
     return `/audio/sfx/${cue}-${variant}.m4a`;
   }
-  async init() {
+  needsGesture() {
+    return (
+      this.enabled &&
+      (this.ctx?.state !== "running" ||
+        !this.music?.unlocked ||
+        this.music.blocked ||
+        this.music.failedStage === this.music.stage)
+    );
+  }
+  async init({ preloadEffects = true } = {}) {
     if (!this.enabled) return;
     try {
       if (!this.ctx) {
@@ -89,6 +98,8 @@ export class BelfryAudio {
           this.buses[k] = g;
         }
         this.music = new BelfryMusic(a, this.buses.music, (e) => this.error(e));
+      }
+      if (preloadEffects && !this.ready) {
         const paths = Object.entries(counts).flatMap(([k, n]) =>
           Array.from({ length: n }, (_, i) => this.path(k, i + 1)),
         );
@@ -96,10 +107,15 @@ export class BelfryAudio {
           paths.map((path) => this.buffer(path).catch((e) => this.error(e))),
         );
       }
+      // Request both context resume and media play in the same trusted gesture.
+      // A pending autoplay resume must not block a later click from retrying.
+      const resume =
+        this.enabled && !document.hidden && this.ctx.state !== "running"
+          ? this.ctx.resume()
+          : null;
       this.syncMusic();
       this.music.unlock();
-      if (this.enabled && !document.hidden && this.ctx.state !== "running")
-        await this.ctx.resume();
+      if (resume) await resume;
     } catch (e) {
       this.error(e);
     }
@@ -187,6 +203,19 @@ export class BelfryAudio {
     if (![1, 5].includes(s.phase) || (old && old.attempts !== s.attempts))
       this.endFocus();
     this.syncMusic();
+    // Try once on the title when autoplay is allowed. Otherwise keep the
+    // existing gesture entry visible; never repeatedly create/resume contexts.
+    // Short effects wait for interaction, keeping initial menu loading light.
+    if (
+      s.phase === 0 &&
+      this.enabled &&
+      !document.hidden &&
+      !this.ctx &&
+      !this.menuAutoplayAttempted
+    ) {
+      this.menuAutoplayAttempted = true;
+      void this.init({ preloadEffects: false });
+    }
   }
   beginFocus() {
     this.stopAll(0.12);
