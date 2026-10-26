@@ -1,6 +1,6 @@
 # 本地运行、维护与交接手册
 
-> 当前工作版本为 [v0.10 猎战重构](HUNT_V10.md)，交付分支 `main`。新增 `game:test:hunt` 检查地图、敌人与迁移；`game:test:scene` 检查当前猎战地图；`game:test:expedition` 检查当前真实按键路线。历史机关专项保留源码但退出默认测试。开发预览仍在本机 4184，实际端口可由 `RUNLAB_PORT` 指定。
+> 当前本地工作版本为 [v0.12.0 原生菜单与窗口适配](XBUILDER_NATIVE.md)，分支 `feat/adaptive-wordbook-local`，未推送。以下保留 v0.10 猎战基线的工具入口。新增 `game:test:hunt` 检查地图、敌人与迁移；`game:test:scene` 检查当前猎战地图；`game:test:expedition` 检查当前真实按键路线。历史机关专项保留源码但退出默认测试。开发预览仍在本机 4184，实际端口可由 `RUNLAB_PORT` 指定。
 
 适用：`main` 的倒悬钟城 v0.10（已合入猎战重构、十五房、铭文、成就与场景音乐）。更新：2026-10-25。以下命令都从仓库根目录执行；Windows 原生脚本和跨平台兼容性尚未验收。
 
@@ -118,7 +118,7 @@ python3 prototypes/runlab/passages-package.py
 
 输出在 `prototypes/runlab/exports/`。主打包生成 belfry / rupture / velocity / cinema 四个 `.xbp`，独立打包生成 passages。脚本验证 ZIP 与必要入口文件，不等于已经在完整 XBuilder 编辑器往返导入验证。
 
-Belfry `.xbp` 已包含开始 / 游戏 / 结束的三首完整 MP3 与原生循环播放控制。导入后点击舞台或按 Enter 解锁声音；Esc 暂停 / 继续同步暂停 / 恢复音乐，B 开关背景音乐。网页的中文 HUD、战斗音效混音、铭文、成就和本机记录仍不包含在单个 `.xbp`。没有正式线上部署产物或自动云同步。编辑器参考源码用 `bash scripts/setup-xbuilder-reference.sh` 按需安装，参考版本锁定于研究脚本，不替换运行库。
+Belfry `.xbp` 已包含原生开始 / 难度 / 帮助 / 暂停 / 结算菜单、生命和技能 HUD，以及三首完整 MP3 与原生循环播放控制。原生菜单和窗口验收可运行 `RUNLAB_URL=http://127.0.0.1:4184/ bash scripts/with-env.sh pnpm game:test:native-shell`。导入后点击舞台或按 Enter 解锁声音；Esc 暂停 / 继续同步暂停 / 恢复音乐，B 开关背景音乐。网页的完整战斗信息面板、战斗音效混音、铭文词册、成就和本机记录仍由网页提供。原生菜单 / 窗口适配的范围和导入步骤见 [原生版说明](XBUILDER_NATIVE.md)。没有正式线上部署产物或自动云同步。编辑器参考源码用 `bash scripts/setup-xbuilder-reference.sh` 按需安装，参考版本锁定于研究脚本，不替换运行库。
 
 ## 6. 玩家记录与恢复
 

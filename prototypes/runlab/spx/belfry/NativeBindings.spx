@@ -1,0 +1,2 @@
+onKey KeyB, => {nativeMusicMuted=!nativeMusicMuted}
+onKey KeyH, => {nativeToggleHelp()}

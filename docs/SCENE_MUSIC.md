@@ -37,6 +37,8 @@ phase 0 对应标题，phase 1/5 对应游戏，phase 2/3 对应结束，phase 4
 
 `package.py --game belfry` 将原始三首 MP3 放入 `assets/sounds/BGM_Menu/`、`BGM_Gameplay/`、`BGM_Ending/`，每首配套 `index.json`。打包前验证清单大小和 SHA-256，打包后逐文件核对 ZIP 内容；不会裁剪或重新编码交付录音。
 
+v0.12.0 原生开始 / 暂停 / 结算界面会驱动同一套阶段音乐，菜单右上角提供可点击的音乐开关；详见 [原生导入版](XBUILDER_NATIVE.md)。
+
 `spx/belfry/NativeMusic.spx` 在导出时合入 `main.spx` 的字段和方法区域，并在帧循环的专用标记处接入更新。使用原生 `play sound, true` 循环，阶段变化先 `stopPlaying` 旧曲；暂停用 `pausePlaying`，继续用 `resumePlaying`。默认音量 35%，B 暂停 / 恢复背景音乐，静音跨阶段保留。题目阶段不降音量；普通暂停和题目主动暂停保留音乐位置。同一阶段不会逐帧重复创建播放器，也不会因重试或换城区重播。
 
 导入后点击舞台或按 Enter 允许浏览器播放声音。网页的淡入淡出、独立音量面板、后台自动暂停与重试 UI 没有移植到原生包；原生包切曲直接停止并切换，后台行为由 XBuilder / 浏览器自身管理。网页的战斗音效混音、词册和成就也仍在网页宿主中。原生音乐代码不进入网页生成清单，避免双重播放。

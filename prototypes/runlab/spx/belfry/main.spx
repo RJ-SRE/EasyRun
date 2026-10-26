@@ -1,6 +1,10 @@
 import "math"
 
 var (
+ viewCenterX float64
+ viewCenterY float64
+ viewWidth float64
+ viewHeight float64
  enemyTurn []float64
  enemyArmor []float64
  enemyPressure []int
@@ -430,6 +434,7 @@ onStart => {
  difficulty=0; maxHealth=8; health=8; fxSeed=137; cameraX=480; cameraY=-120; riseY=worldBottom-430; attempts=0
  // HOST_CONFIGURATION
  resetEnemies(); Hero.resetHero(230,0)
+ fitViewport()
  initScene(); updateScene()
  for i:=0;i<len(sceneFloors);i++ {Ledge.clone i}
  for i:=0;i<len(sceneAnchors);i++ {Anchor.clone i}
@@ -458,6 +463,8 @@ onStart => {
   if phase==0 || phase==1 || phase==5 {visualTime+=visualDt}
   updateScene()
   if phase==0 || phase==1 || phase==5 && !wordVisualPaused {Hero.render(visualDt)}
+  fitViewport()
+  // EXPORT_NATIVE_SHELL_TICK
   if float64(timer)-lastState>0.07 {
    lastState=float64(timer)
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}

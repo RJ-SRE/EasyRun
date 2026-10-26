@@ -14,7 +14,7 @@ const report = {
   cases: [],
   errors: [],
   scope:
-    "Production renderer/clone births and real input/arrow collision. Response-only camera fixtures visit all rooms in both directions; effect stress deliberately requests more decoration than the pool admits. This is not a natural-route or frame-rate benchmark.",
+    "Production renderer/clone births and real input/arrow collision. Response-only camera fixtures visit all rooms in both directions; effect stress deliberately requests more decoration than the pool admits; the response-only stress fixture gives the player 120 seconds of protection so cooldown-respecting bow tests cannot be interrupted by unrelated enemy damage. This is not a natural-route or frame-rate benchmark.",
 };
 page.on("pageerror", (e) => report.errors.push(e.message));
 await page.route("**/belfry.json", async (route) => {
@@ -26,7 +26,7 @@ await page.route("**/belfry.json", async (route) => {
       `
 onKey KeyF7, => {phase=4; sceneTestRoom=(sceneTestRoom+1)%15; Hero.resetHero(checkpointX[sceneTestRoom],checkpointY[sceneTestRoom]); cameraY=roomTop[sceneTestRoom]-420; Camera.setXYpos 480,cameraY}
 onKey KeyF8, => {expeditionReturn()}
-onKey KeyF9, => {startPractice(); for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0; enemyBaseY[i]=-7000}; enemyHP[0]=400; enemyBaseX[0]=600; enemyBaseY[0]=45; enemyClock[0]=-1000; clearEnemyMotion(0); Hero.resetHero(310,0)}
+onKey KeyF9, => {startPractice(); for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0; enemyBaseY[i]=-7000}; enemyHP[0]=400; enemyBaseX[0]=600; enemyBaseY[0]=45; enemyClock[0]=-1000; clearEnemyMotion(0); Hero.resetHero(310,0); Hero.invulnerable=120}
 onKey KeyF10, => {burst(Hero.px,Hero.py+30,240,1,300)}
 onKey KeyT`,
     );
@@ -93,10 +93,31 @@ try {
   await check(
     "charged arrow actually exists and hits after excess decoration requests",
   );
-  for (let i = 0; i < 32; i++) {
-    if (i % 6 === 0) await tap("F10");
+  // Since v0.10.1 the bow has a real 3-second cooldown. Spam must be
+  // rejected during it; clone stress must use accepted casts, not assume
+  // every keypress emits an arrow or disable the production cooldown.
+  const blockedBaseline = (await render()).arrowsRequested;
+  await wait(() => latestState.bowCool > 1);
+  for (let i = 0; i < 8; i++) {
     await tap("u");
     await page.waitForTimeout(30);
+  }
+  assert.equal((await render()).arrowsRequested, blockedBaseline);
+  await check("bow spam during cooldown creates no extra projectiles");
+  for (let i = 0; i < 20; i++) {
+    await wait(() => latestState.phase === 1 && latestState.bowCool <= 0);
+    const requested = (await render()).arrowsRequested;
+    if (i % 6 === 0) await tap("F10");
+    await page.keyboard.down("u");
+    await wait(() => latestState.bowCharge > 0);
+    await page.keyboard.up("u");
+    await page.waitForFunction(
+      (before) =>
+        window.renderState.arrowsRequested > before &&
+        window.renderState.arrowsBorn === window.renderState.arrowsRequested,
+      requested,
+      { timeout: 10000 },
+    );
   }
   await wait(
     () =>
@@ -107,7 +128,7 @@ try {
   assert.equal(after.arrowsRequested, after.arrowsBorn);
   assert.equal(after.boltsRequested, after.boltsBorn);
   await check(
-    "rapid real bow inputs never lose arrows and all transient clones retire",
+    "20 cooldown-respecting bow casts never lose arrows and all transient clones retire",
   );
   for (let i = 0; i < 6; i++) {
     await tap("r");

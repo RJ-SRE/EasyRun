@@ -1,0 +1,79 @@
+// Export-only menu, lifecycle controls and HUD. Art/hit regions share one layout.
+var (
+ nativeHelp bool
+ nativeHelpReturn int
+ nativeHover int
+ nativePanel int
+ nativeUiLogTime float64
+)
+func nativeButtonVisible(action int) bool {
+ if action==6 {return true}
+ if nativeHelp {return action==9}
+ if action==10 || action==11 {return phase==1}
+ if action==1 {return phase==0 || phase==2 || phase==3 || phase==4}
+ if action==2 || action==4 || action==5 {return phase==0}
+ if action==3 {return phase==0 || phase==4}
+ if action==7 {return phase==2 || phase==3 || phase==4}
+ if action==8 {return phase==2 || phase==3}
+ return false
+}
+func nativeActionAt(x,y float64) int {
+ for a:=1;a<=11;a++ {
+  if nativeButtonVisible(a) {
+   bx,by,bw,bh:=nativeButtonRect(a)
+   if x>=bx && x<=bx+bw && y>=by && y<=by+bh {return a}
+  }
+ }
+ return 0
+}
+func nativeCloseHelp() {nativeHelp=false; phase=nativeHelpReturn}
+func nativeToggleHelp() {
+ if nativeHelp {nativeCloseHelp(); return}
+ nativeHelpReturn=phase; nativeHelp=true
+ if phase==1 {phase=4}
+}
+func nativeConfirm() {
+ if nativeHelp {nativeCloseHelp(); return}
+ if phase==4 {phase=1} else if phase==3 {retryCheckpoint()} else if phase==0 || phase==2 {startRun()}
+}
+func nativePause() {
+ if nativeHelp {nativeCloseHelp(); return}
+ if phase==1 {phase=4} else if phase==4 {phase=1}
+}
+func nativeReturnTitle() {
+ if phase==4 || phase==2 || phase==3 {
+  nativeHelp=false; practice=0; resetInscription(); Hero.cancelAttack(); phase=0; event("menu")
+ }
+}
+func nativeActivate(action int) {
+ if action==0 {return}
+ println "@nativeAction",action
+ if action==1 {nativeConfirm()}
+ if action==2 {startPractice()}
+ if action==3 || action==11 {nativeToggleHelp()}
+ if action==4 {difficulty=0; event("difficulty")}
+ if action==5 {difficulty=1; event("difficulty")}
+ if action==6 {nativeMusicMuted=!nativeMusicMuted}
+ if action==7 {nativeReturnTitle()}
+ if action==8 {startRun()}
+ if action==9 {nativeCloseHelp()}
+ if action==10 {nativePause()}
+}
+func updateNativeShell(dt float64) {
+ nativePanel=-1
+ if phase==0 {nativePanel=difficulty}
+ if phase==4 {nativePanel=3}
+ if phase==3 {nativePanel=4}
+ if phase==2 {nativePanel=5}
+ if nativeHelp {nativePanel=2}
+ nativeHover=nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mouseY+300)
+ NativeHUD.syncUI(); NativeHealth.syncUI(); NativeObjective.syncUI()
+ NativeSkill0.syncUI(); NativeSkill1.syncUI(); NativeSkill2.syncUI(); NativeSkill3.syncUI()
+ NativePanel.syncUI(); NativeMusicButton.syncUI(); NativeHover.syncUI()
+ NativeMatte0.syncUI(); NativeMatte1.syncUI(); NativeMatte2.syncUI(); NativeMatte3.syncUI()
+ nativeUiLogTime+=dt
+ if nativeUiLogTime>0.25 {
+  nativeUiLogTime=0
+  println "@nativeUI",nativePanel,nativeHover,viewCenterX,viewCenterY,viewWidth,viewHeight,Camera.zoom
+ }
+}

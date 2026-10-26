@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -46,20 +47,53 @@ def package(game):
         marker = "// EXPORT_NATIVE_MUSIC_TICK"
         assert main.count(marker) == 1, "Rebuild Belfry before packaging native music"
         main = main.replace(marker, "updateNativeMusic()")
-        # Classfiles allow one field block; all methods precede event registrations.
-        native = (ROOT / "spx/belfry/NativeMusic.spx").read_text()
-        declarations, native = native.split("\n)\n", 1)
-        fields = declarations.split("var (\n", 1)[1]
-        assert main.count("var (\n") == 1
-        main = main.replace("var (\n", "var (\n" + fields + "\n", 1)
+        subprocess.run(["bash", str(ROOT.parent.parent / "scripts/with-env.sh"), "node", str(ROOT / "build-belfry-native.mjs")], check=True)
+        ui_root = ROOT / "projects/belfry-native"
+        ui = json.loads((ui_root / "manifest.json").read_text())
+        # Classfiles allow one field block, with all methods before event registration.
+        methods = []
+        for source in ["NativeMusic", "NativeShell"]:
+            native = (ROOT / f"spx/belfry/{source}.spx").read_text()
+            declarations, native = native.split("\n)\n", 1)
+            fields = declarations.split("var (\n", 1)[1]
+            assert main.count("var (\n") == 1
+            main = main.replace("var (\n", "var (\n" + fields + "\n", 1)
+            methods.append(native)
+        methods.append((ui_root / "native-layout.spx").read_text())
         events = "onKey KeyT,"
         assert main.count(events) == 1
-        main = main.replace(events, native + "\n" + events)
+        main = main.replace(events, "\n".join(methods) + "\n" + (ROOT / "spx/belfry/NativeBindings.spx").read_text() + "\n" + events)
+        shell_marker = "// EXPORT_NATIVE_SHELL_TICK"
+        assert main.count(shell_marker) == 1, "Rebuild Belfry before packaging the menu"
+        main = main.replace(shell_marker, "updateNativeShell(dt)")
+        handlers = {"KeyEnter": "nativeConfirm()", "KeyEscape": "nativePause()", "KeyM": "nativeReturnTitle()"}
+        lines = []
+        for line in main.splitlines():
+            key = next((key for key in handlers if line.startswith(f"onKey {key},")), None)
+            if key:
+                line = f"onKey {key}, => {{" + handlers[key] + "}"
+            elif line.startswith("onKey KeyF4,"):
+                # Browser-only word mode has no question host in the native package.
+                continue
+            elif any(line.startswith(f"onKey {key},") for key in ["KeyT", "KeyR", "Key1", "Key2", "Key3", "Key4", "Key5", "Key6", "Key7", "Key8", "Key9"]):
+                prefix, body = line.split("=> {", 1)
+                line = prefix + "=> {if !nativeHelp {" + body + "}"
+            lines.append(line)
+        main = "\n".join(lines) + "\n"
+        for relative in ui["files"]:
+            if relative != "native-layout.spx":
+                files[relative] = (ui_root / relative).read_bytes()
+        config = json.loads(files["assets/index.json"])
+        config["stretchMode"] = False
+        config["run"] = {"width": 480, "height": 360}
+        config["camera"] = {"on": ""}
+        config["zorder"].extend(ui["zorder"])
+        files["assets/index.json"] = json.dumps(config).encode()
         files["main.spx"] = main.encode()
         files.update(native_music_files())
         instructions = (
-            "本 XBuilder 包默认纯动作，内置三首完整背景音乐。首次运行后点击舞台或按 Enter 解锁浏览器声音；"
-            "开始、游戏、胜利或失败各自单曲循环。Esc 暂停时音乐暂停，继续时从原位置播放；B 开关背景音乐。"
+            "本 XBuilder 包内置开始界面、难度选择、操作指南、暂停与结算菜单、生命/技能 HUD，以及三首完整背景音乐。首次点击舞台解锁声音，点击进入钟城或按 Enter 开始；"
+            "开始、游戏、胜利或失败各自单曲循环。Esc 暂停/继续；B 音乐开关；H 操作指南。窗口按比例完整显示，宽窄比例不同会留边。"
             "1/2 选难度；Enter 开始或续关；A/D 移动；W 跳跃/二段跳；O 牵引后松开甩出；"
             "J 三连，W+J 挑空，S+J 坠星；U 蓄箭，L 蓄刀，蓄力时 W/S 向上/下瞄准；"
             "I 回息，P 连环剑刀；U/L/I 冷却 3 秒，P 冷却 5 秒。K/Shift 冲刺，W+K 向上；"

@@ -1031,12 +1031,14 @@ files["main.spx"] = (await code("main")).replace(
     (await code("HuntCombat")) +
     (await code("HuntExpedition")) +
     (await code("Scene")) +
+    (await code("Viewport")) +
     "\nfunc dist(",
 );
 files["assets/index.json"] = JSON.stringify({
   map: { width: 4000, height: Math.max(12000, layout.depth * 2 + 3000) },
   run: { width: 960, height: 600 },
   maxFPS: 60,
+  stretchMode: false,
   physics: false,
   autoSetCollisionLayer: true,
   zorder,

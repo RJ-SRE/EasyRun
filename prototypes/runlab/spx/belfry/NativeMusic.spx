@@ -23,4 +23,3 @@ func updateNativeMusic() {
   if paused {pausePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"paused"} else {resumePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"playing"}
  }
 }
-onKey KeyB, => {nativeMusicMuted=!nativeMusicMuted}
