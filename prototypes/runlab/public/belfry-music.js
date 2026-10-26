@@ -1,9 +1,9 @@
 export const MUSIC_TRACKS = {
-  menu: { title: "Melancholy Of The Boot", file: "/audio/music/menu.mp3" },
-  gameplay: {
+  menu: {
     title: "Cleaning out the Rooms (Wandering Horn)",
     file: "/audio/music/gameplay.mp3",
   },
+  gameplay: { title: "Melancholy Of The Boot", file: "/audio/music/menu.mp3" },
   ending: { title: "Strange Sports", file: "/audio/music/ending.mp3" },
 };
 

@@ -11,6 +11,9 @@ const root = new URL("./", import.meta.url);
 const out = new URL("test-results/native-music/", root);
 await mkdir(out, { recursive: true });
 const archive = new URL("exports/belfry.xbp", root);
+const musicManifest = JSON.parse(
+  await readFile(new URL("public/audio/music/manifest.json", root), "utf8"),
+);
 const report = {
   date: new Date().toISOString(),
   cases: [],
@@ -313,7 +316,12 @@ try {
       "-ss",
       "30",
       "-i",
-      fileURLToPath(new URL("public/audio/music/menu.mp3", root)),
+      fileURLToPath(
+        new URL(
+          "public" + musicManifest.tracks.find((t) => t.stage === "menu").file,
+          root,
+        ),
+      ),
       "-t",
       "1",
       "-c:a",

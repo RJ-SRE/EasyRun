@@ -1,10 +1,10 @@
-# XBuilder 原生导入版 · v0.15.1
+# XBuilder 原生导入版 · v0.15.2
 
-本版调整背景音乐与动作音效的平衡：默认音乐 40%、动作 85%，取消动作通道额外衰减。保留上一版待机风动、运行性能优化、极简界面和完整单词机制。所有功能在 `.xbp` 内独立运行，不需要网页宿主；继续本地交付，不推送 GitHub。性能实测及边界见 [v0.15 说明](PERFORMANCE_V15.md)。
+本版交换开始菜单与游戏音乐：开始菜单播放 Cleaning out the Rooms (Wandering Horn)，游戏 / 排练播放 Melancholy Of The Boot，结束仍为 Strange Sports。沿用默认音乐 40%、动作 85% 的混音及上一版功能。所有功能在 `.xbp` 内独立运行，不需要网页宿主；继续本地交付，不推送 GitHub。性能实测及边界见 [v0.15 说明](PERFORMANCE_V15.md)。
 
 ## 导入与游玩
 
-1. 在 XBuilder 的项目菜单选择「导入项目文件」，选择 `EasyRun-XBuilder-v0.15.1-audio-balance.xbp`。建议新建导入，保留原工程。
+1. 在 XBuilder 的项目菜单选择「导入项目文件」，选择 `EasyRun-XBuilder-v0.15.2-music-swap.xbp`。建议新建导入，保留原工程。
 2. 点击运行后停留标题。左侧选旅人 / 无畏；右侧可切换铭文开关、四级 / 六级 / 混合词库、标准 / 紧凑 / 从容节奏，以及独立的拼写提示难度。
 3. 「随行词册 30 ↗」预览本次 30 个不重复词条，双列分页；「换一组」重新抽取。点击进入钟城或 Enter 使用当前预览词册。新远征生成新词册，检查点重试保留当前词册。
 4. U 蓄箭、L 蓄刀、I 治疗、P 连环剑刀进入原有铭文关口；链条和束缚解救也接入。拼写用字母键输入，正确的完整单词立即自动释放技能，不用按 Enter；第一处错误字母立即取消技能前摇，不能在错误发生后用 Backspace 挽回。正确前缀可用 Backspace 删除，输入未完成时 Enter 不结束题目；辨义用 1 / 2 / 3。输入大小写统一，支持词库中的有效拼写变体。
@@ -109,9 +109,11 @@ python3 prototypes/runlab/package.py --game belfry
 RUNLAB_URL='http://127.0.0.1:4184/' bash scripts/with-env.sh node prototypes/runlab/test-belfry-native-shell.mjs
 ```
 
-输出为 `prototypes/runlab/exports/belfry.xbp`。本次桌面交付为 `EasyRun-XBuilder-v0.15.1-audio-balance.xbp`；文件数、大小与 SHA-256 见最新验收 JSON。新打包步骤使用项目锁定的 Node / Playwright 与本机 ffmpeg；Python 负责 ZIP，不再是单纯复制已生成文件。菜单使用本机字体栅格化，当前验收环境为 macOS；其他系统重建字体外观仍需复核，已经交付的 PNG 不受导入机器字体影响。
+输出为 `prototypes/runlab/exports/belfry.xbp`。本次桌面交付为 `EasyRun-XBuilder-v0.15.2-music-swap.xbp`；文件数、大小与 SHA-256 见最新验收 JSON。新打包步骤使用项目锁定的 Node / Playwright 与本机 ffmpeg；Python 负责 ZIP，不再是单纯复制已生成文件。菜单使用本机字体栅格化，当前验收环境为 macOS；其他系统重建字体外观仍需复核，已经交付的 PNG 不受导入机器字体影响。
 
 ## 验证范围
+
+v0.15.2 重新通过网页 16 项和实际原生包 13 项音频检查；两首完整 MP3 按字节精确互换，所有其它游戏文件不变，见 [选曲互换验收](evidence/2026-10-27-music-swap/README.md)。
 
 v0.15.1 通过网页 16 项与原生音频 13 项检查；原生测试读取真实引擎输出，验证默认混音、音效峰值随音量变化、混合采样不满幅、两通道静音隔离和音乐生命周期。见 [本轮混音验收](evidence/2026-10-27-audio-balance/README.md)。
 

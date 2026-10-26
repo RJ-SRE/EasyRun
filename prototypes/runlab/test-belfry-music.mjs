@@ -180,7 +180,7 @@ try {
       0.1,
   );
   pass(
-    "a title-screen gesture starts Melancholy Of The Boot without starting a run",
+    "a title-screen gesture starts Cleaning out the Rooms without starting a run",
   );
   await page.locator("#scene-music").evaluate((audio) => {
     audio.currentTime = audio.duration - 0.2;
@@ -199,7 +199,7 @@ try {
       0.1,
   );
   pass(
-    "starting the game switches to Cleaning out the Rooms and retains only one media element",
+    "starting the game switches to Melancholy Of The Boot and retains only one media element",
   );
   await page.keyboard.press("Escape");
   await wait(() => latestState.phase === 4);
@@ -220,7 +220,7 @@ try {
   });
   assert.equal(
     await page.locator("#music-track").textContent(),
-    "Sea Power · Cleaning out the Rooms (Wandering Horn) · 单曲循环",
+    "Sea Power · Melancholy Of The Boot · 单曲循环",
   );
   await page.locator("#close-settings").click();
   await playing("gameplay");
@@ -334,7 +334,7 @@ try {
 
   const fallback = await browser.newPage();
   fallback.on("pageerror", (e) => report.errors.push(e.message));
-  await fallback.route("**/audio/music/menu.mp3", (route) =>
+  await fallback.route("**" + manifest.tracks[0].file, (route) =>
     route.fulfill({ status: 404, body: "Missing audio fixture" }),
   );
   await fallback.goto(base);
@@ -353,7 +353,7 @@ try {
     await fallback.locator("#music-start").textContent(),
     "重试音乐",
   );
-  await fallback.unroute("**/audio/music/menu.mp3");
+  await fallback.unroute("**" + manifest.tracks[0].file);
   await fallback.locator("#music-start").click();
   await fallback.waitForFunction(
     () =>
