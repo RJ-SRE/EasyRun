@@ -1,0 +1,71 @@
+{
+  "version": "0.13.0",
+  "date": "2026-10-26T10:54:05.262833+00:00",
+  "delivery": "/Users/rj/Desktop/EasyRun-XBuilder-v0.13.0-inscription-ui.xbp",
+  "bytes": 104176006,
+  "MiB": 99.35,
+  "sha256": "c0e4cc048708e08e5c6b89509b50b2e67b630b5af8f6b6dca634d45da40fd1c4",
+  "files": 4054,
+  "sprites": 66,
+  "costumeReferences": 3877,
+  "wordEntries": 8815,
+  "glyphCostumes": 3059,
+  "nativeActionSamples": 16,
+  "checks": {
+    "native-words": {
+      "passed": 13,
+      "report": "native-words.json",
+      "testedArchiveSha256": "88b4602d35bbb7dc4836c78261f4289cc7fe3482f7dcf7abb99bdc7f18dd8919"
+    },
+    "native-shell": {
+      "passed": 14,
+      "report": "deployed-shell.json",
+      "testedArchiveSha256": "88b4602d35bbb7dc4836c78261f4289cc7fe3482f7dcf7abb99bdc7f18dd8919"
+    },
+    "native-music": {
+      "passed": 10,
+      "report": "native-music.json",
+      "testedArchiveSha256": "88b4602d35bbb7dc4836c78261f4289cc7fe3482f7dcf7abb99bdc7f18dd8919"
+    },
+    "music": {
+      "passed": 14,
+      "report": "web-music.json",
+      "testedArchiveSha256": null
+    }
+  },
+  "totalPassed": 51,
+  "packagingOnlyDelta": {
+    "testedArchiveSha256": "88b4602d35bbb7dc4836c78261f4289cc7fe3482f7dcf7abb99bdc7f18dd8919",
+    "addedFiles": [
+      "docs/WORD_BANK.md",
+      "docs/evidence/inscription-v1/ECDICT-LICENSE.txt"
+    ],
+    "allPreviouslyTestedFileBytesUnchanged": true
+  },
+  "observedClonePeak": 179,
+  "worldClones": [
+    121,
+    121,
+    0
+  ],
+  "sampledEngineFpsMedian": 59.19,
+  "frameRateScope": "Local automated Chromium samples, not a low-end hardware or full-level performance benchmark.",
+  "deployedCompilerSha256": "b57b2a103bd10d42d7dd2761b8f3a5609cc256b00c66dc0dfee52df6a60d81b2",
+  "nativeSources": {
+    "prototypes/runlab/build-belfry-native.mjs": "0147dcbda963db161fd482e697cd16e557ec1a21f04d8f9510ec2287a467e4bd",
+    "prototypes/runlab/build-belfry-native-lexicon.mjs": "1b6224b7a44eccb321fb1b3fff69a5bf8e257071f6e2e20e79ca8d181a4618b6",
+    "prototypes/runlab/package.py": "aec03a88af0e69a9a7d547c181068ee8dc979c6c73afa6b34b3156931607c891",
+    "prototypes/runlab/spx/belfry/NativeWords.spx": "73b654d79dfab2ef8218cdd590f3d900f7c656a58a704a182ad34f0ad0e62da4",
+    "prototypes/runlab/spx/belfry/NativeMusic.spx": "83949ffdfa82c589d608d892e70f2bd14bcf362c82570cef5a7e30755a5cf7cd",
+    "prototypes/runlab/spx/belfry/NativeShell.spx": "c8ef058eea20bffa426c25149b8519d5c93517a486bdb727b0a5fd5aad015c8b",
+    "prototypes/runlab/spx/belfry/NativeBindings.spx": "f28fd5c3a8ed44fef4095388efac0180f7b69b57cc8de740744681a2e5f94c51",
+    "prototypes/runlab/public/belfry-audio.js": "c2232c2a82bcfae5c1eb584b4c348f9052205b2d2de0f956892b1eb96a963c28"
+  },
+  "limits": [
+    "Native word weights and volume are session-only; XBuilder rerun/refresh resets them.",
+    "Native shell and word tests load/export the deployed XBuilder model and compile locally. No account project was uploaded or overwritten.",
+    "Skill tests use explicit test-only resources, question-type selection and trap setup; no complete native playthrough claim.",
+    "Native music loop test uses an isolated short MP3 fixture. Delivered MP3 bytes match all three full originals.",
+    "Only local Git and artifact delivery; no remote push."
+  ]
+}

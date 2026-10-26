@@ -3,8 +3,14 @@ var (
  nativeMusicTrack string
  nativeMusicPaused bool
  nativeMusicMuted bool
+ nativeMusicApplied int
+ nativeMusicVolume int
+ nativeSfxVolume int
+ nativeSfxTime float64
 )
 func updateNativeMusic() {
+ if nativeMusicVolume!=nativeMusicApplied {setVolume float64(nativeMusicVolume); nativeMusicApplied=nativeMusicVolume}
+ NativeSfx.syncChannel()
  next:=nativeMusicTrack
  if phase==0 {next="BGM_Menu"}
  if phase==1 || phase==5 {next="BGM_Gameplay"}
@@ -13,13 +19,28 @@ func updateNativeMusic() {
  if next!=nativeMusicTrack {
   if nativeMusicTrack!="" {stopPlaying nativeMusicTrack}
   nativeMusicTrack=next; nativeMusicPaused=false
-  setVolume 35
   play nativeMusicTrack,true
   println "@nativeMusic",nativeMusicTrack,"playing"
  }
- paused:=phase==4 || nativeMusicMuted || (phase==5 && wordVisualPaused)
+ paused:=phase==4 || nativeMusicMuted || nativeMusicVolume==0 || (phase==5 && wordVisualPaused)
  if paused!=nativeMusicPaused {
   nativeMusicPaused=paused
   if paused {pausePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"paused"} else {resumePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"playing"}
  }
+}
+
+func nativeSoundEvent(name string) {
+ if name=="start" {nativeStartWords()}
+ if name=="menu" && nativeDeckUsed {nativeShuffleDeck()}
+ if phase!=1 || nativeSfxVolume<=0 || float64(timer)-nativeSfxTime<0.045 {return}
+ cue:=""
+ if name=="light1" || name=="light2" || name=="finisher" || name=="aircut" || name=="launcher" {cue="blade"}
+ if name=="heavy" {cue="heavycut"}
+ if name=="bowdraw" {cue="bowdraw"}; if name=="bowshot" {cue="bowshot"}; if name=="arrowhit" {cue="arrowhit"}
+ if name=="healstart" {cue="healstart"}; if name=="healcomplete" {cue="healcomplete"}
+ if name=="swordcut" {cue="chaincut"}; if name=="chainfinish" {cue="chainfinish"}
+ if name=="hook" {cue="hook"}; if name=="hookattach" {cue="attach"}; if name=="sling" {cue="sling"}
+ if name=="dash" {cue="dash"}; if name=="land" || name=="hardland" {cue="land"}
+ if name=="jump" || name=="wordok" || name=="wordmiss" {cue="cloth"}
+ if cue!="" {nativeSfxTime=float64(timer); NativeSfx.cue("SFX_"+cue); println "@nativeSfx",cue,nativeSfxVolume}
 }

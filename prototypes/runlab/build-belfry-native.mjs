@@ -3,23 +3,34 @@
 import { chromium } from "@playwright/test";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { Buffer } from "node:buffer";
+import { WORDS } from "./public/cet4-words.js";
+import { buildNativeLexicon } from "./build-belfry-native-lexicon.mjs";
 const root = new URL("./", import.meta.url);
 const out = new URL("projects/belfry-native/", root);
 const rects = {
-  1: [64, 376, 390, 54],
-  2: [64, 445, 188, 42],
-  3: [266, 445, 188, 42],
-  4: [64, 286, 188, 66],
-  5: [266, 286, 188, 66],
-  6: [770, 35, 152, 32],
-  7: [64, 445, 188, 42],
-  8: [266, 445, 188, 42],
-  9: [64, 508, 390, 50],
+  1: [64, 392, 360, 52],
+  2: [64, 462, 172, 32],
+  3: [252, 462, 172, 32],
+  4: [64, 286, 172, 48],
+  5: [252, 286, 172, 48],
+  6: [874, 30, 50, 28],
+  7: [64, 462, 172, 32],
+  8: [252, 462, 172, 32],
+  9: [64, 510, 360, 40],
   10: [640, 35, 116, 32],
   11: [510, 35, 116, 32],
+  12: [580, 240, 300, 32],
+  13: [580, 198, 300, 32],
+  14: [580, 282, 300, 32],
+  15: [580, 330, 142, 36],
+  16: [738, 330, 142, 36],
+  17: [656, 427, 224, 22],
+  18: [656, 467, 224, 22],
+  19: [580, 510, 120, 40],
+  20: [716, 510, 120, 40],
 };
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
-let art;
+let art, lexicon;
 const vectorFiles = {},
   removedFiles = [];
 try {
@@ -74,6 +85,7 @@ try {
     }
     if (changed) vectorFiles[configPath] = JSON.stringify(config);
   }
+  lexicon = await buildNativeLexicon(page, WORDS);
   const background = (
     await readFile(new URL("art/belfry/clockwell.png", root))
   ).toString("base64");
@@ -120,25 +132,44 @@ try {
         ctx.fillStyle = primary
           ? "#c7b180"
           : selected
-            ? "#283131"
-            : "#0b151bd9";
-        ctx.fillRect(x, y, w, h);
-        ctx.strokeStyle = selected || primary ? C.gold : C.line;
-        ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
-        text(
-          label,
-          x + 18,
-          y + (hint ? 26 : h / 2 + 6),
-          primary ? 21 : 17,
-          primary ? "#142128" : C.ivory,
-          primary ? serif : sans,
+            ? "#c7b18020"
+            : "#08121788";
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + w - 9, y);
+        ctx.lineTo(x + w, y + 9);
+        ctx.lineTo(x + w, y + h);
+        ctx.lineTo(x, y + h);
+        ctx.closePath();
+        ctx.fill();
+        line(
+          x,
+          y + h,
+          x + w,
+          y + h,
+          selected || primary ? C.gold : "#72847b55",
         );
-        if (hint) text(hint, x + 18, y + 49, 12, C.dim);
-        if (primary) text("↘", x + w - 37, y + h / 2 + 8, 25, "#142128");
         if (selected) {
           ctx.fillStyle = C.gold;
-          ctx.fillRect(x, y + 13, 3, h - 26);
+          ctx.fillRect(x, y + 12, 2, h - 24);
         }
+        text(
+          label,
+          x + 14,
+          y + (hint ? 20 : h / 2 + 5),
+          primary ? 20 : 14,
+          primary ? "#142128" : selected ? C.ivory : C.dim,
+          primary ? serif : sans,
+        );
+        if (hint) text(hint, x + 14, y + 37, 10, C.dim);
+        if (primary) text("↘", x + w - 35, y + h / 2 + 7, 24, "#142128");
+      }
+      function soundPanel() {
+        text("S O U N D", 580, 403, 10, C.gold);
+        text("背景音乐", 580, 441, 12, C.dim);
+        text("动作音效", 580, 481, 12, C.dim);
+        [438, 478].forEach((y) => line(656, y, 880, y, "#65756b66"));
+        text("音乐与音效独立调节 · B 静音音乐", 580, 515, 10, C.dim);
       }
       function base(painted = true) {
         if (painted) {
@@ -158,24 +189,25 @@ try {
         ctx.fillStyle = fade;
         ctx.fillRect(0, 0, 960, 600);
         ctx.strokeStyle = "#b59c6540";
-        ctx.strokeRect(22.5, 22.5, 915, 555);
+        line(34, 32, 150, 32, "#b59c6560");
+        line(810, 568, 926, 568, "#b59c6560");
         text("R U P T U R E   /   裂 隙", 64, 67, 13, C.gold);
         text("THE HOLLOW BELFRY", 64, 119, 12, C.dim);
         line(64, 246, 454, 246);
         ctx.save();
-        ctx.translate(722, 300);
+        ctx.translate(742, 124);
         ctx.strokeStyle = "#c7b18050";
-        [109, 128, 140].forEach((r) => {
+        [46, 58, 64].forEach((r) => {
           ctx.beginPath();
           ctx.arc(0, 0, r, -0.9, 4.9);
           ctx.stroke();
         });
         ctx.beginPath();
-        ctx.moveTo(0, -86);
-        ctx.lineTo(0, 83);
-        ctx.moveTo(-33, 48);
-        ctx.lineTo(0, 83);
-        ctx.lineTo(33, 48);
+        ctx.moveTo(0, -26);
+        ctx.lineTo(0, 27);
+        ctx.moveTo(-12, 15);
+        ctx.lineTo(0, 27);
+        ctx.lineTo(12, 15);
         ctx.stroke();
         ctx.restore();
       }
@@ -184,15 +216,21 @@ try {
           base();
           text("倒悬钟城", 61, 180, 58, C.ivory, serif);
           text("向下夺心，向上逃生。", 64, 214, 18, C.gold);
-          button(4, "旅人  ·  1", "8 格生命 · 从容探索", difficulty === 0);
-          button(5, "无畏  ·  2", "5 格生命 · 更快的追击", difficulty === 1);
+          button(4, "旅人", "8 格生命 · 从容探索", difficulty === 0);
+          button(5, "无畏", "5 格生命 · 紧密追击", difficulty === 1);
           button(1, "进入钟城   Enter", "", false, true);
           button(2, "排练场   T");
           button(3, "操作指南   H");
           text("O 钩索   /   W 跳跃   /   J 连击", 64, 540, 13, C.dim);
           text("纵向动作冒险", 64, 562, 12, "#758480");
-          text("DESCEND", 681, 474, 12, C.gold);
-          text("借钩索归来。", 675, 501, 14, C.ivory, serif);
+          text("远征准备", 580, 181, 15, C.gold, serif);
+          button(13, "铭文");
+          button(12, "词汇范围");
+          button(14, "作答节奏");
+          button(15, "词册 · 30 ↗");
+          button(16, "换一组 ↻");
+          text("随机抽词 · 错词优先 · 每次技能以词解放", 580, 385, 10, C.dim);
+          soundPanel();
         });
       canvas("guide", 960, 600, () => {
         base();
@@ -224,6 +262,8 @@ try {
           text(b, x, y + 41, 12, C.dim);
         });
         button(9, "返回   Enter / Esc", "", false, true);
+        text("铭文：拼写后 Enter 确认，辨义按 1 / 2 / 3", 516, 524, 12, C.gold);
+        text("答错或超时取消技能；Esc 暂停题目", 516, 546, 12, C.dim);
       });
       for (const [name, title, subtitle, primary] of [
         [
@@ -276,20 +316,64 @@ try {
             name === "pause" ? "操作指南   H" : "重新远征   R",
           );
           text("O 钩索   /   W 跳跃   /   J 连击", 64, 546, 13, C.dim);
+          soundPanel();
         });
+      canvas("wordbook", 960, 600, () => {
+        base();
+        ctx.fillStyle = "#081216ee";
+        ctx.fillRect(48, 90, 864, 408);
+        text(
+          "本次远征的 30 枚铭文 · 新远征自动抽取 · 检查点保留词册",
+          64,
+          480,
+          12,
+          C.dim,
+        );
+        button(9, "返回准备   Esc");
+        button(19, "← 上页");
+        button(20, "下页 →");
+      });
       for (let mute = 0; mute < 2; mute++)
-        canvas("music" + mute, 152, 32, () => {
-          ctx.fillStyle = "#0b151bdd";
-          ctx.fillRect(0, 0, 152, 32);
-          ctx.strokeStyle = C.line;
-          ctx.strokeRect(0.5, 0.5, 151, 31);
+        canvas("music" + mute, 50, 28, () => {
+          text(mute ? "静音" : "♫ B", 9, 19, 12, C.gold);
+        });
+      for (let n = 0; n <= 100; n++)
+        canvas("volume" + n, 224, 22, () => {
+          line(0, 11, 224, 11, "#65756b66");
+          line(0, 11, (224 * n) / 100, 11, C.gold);
+          ctx.fillStyle = C.ivory;
+          ctx.beginPath();
+          ctx.arc((224 * n) / 100, 11, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      for (let mode = 0; mode < 3; mode++)
+        canvas("question" + mode, 568, 176, () => {
+          const fill = ctx.createLinearGradient(0, 0, 568, 0);
+          fill.addColorStop(0, "#08161cf5");
+          fill.addColorStop(1, "#08161ce8");
+          ctx.fillStyle = fill;
+          ctx.fillRect(0, 0, 568, 176);
+          line(0, 0, 165, 0, C.gold);
+          line(0, 0, 0, 176, "#bca26c66");
+          line(0, 176, 568, 176, "#bca26c66");
           text(
-            mute ? "音乐 关  ·  B" : "音乐 开  ·  B",
-            17,
+            ["誊写铭文", "辨认词义", "已暂停 · Esc 继续"][mode],
+            22,
             22,
             13,
-            mute ? C.dim : C.gold,
+            C.gold,
           );
+          if (mode === 0)
+            text("Enter 确认 · Backspace 修改 · Esc 暂停", 22, 140, 12, C.dim);
+          text("INSCRIPTION", 452, 22, 10, C.gold);
+          line(22, 72, 546, 72, "#bca26c33");
+        });
+      for (let n = 0; n <= 60; n++)
+        canvas("timer" + n, 524, 3, () => {
+          ctx.fillStyle = "#68837b33";
+          ctx.fillRect(0, 0, 524, 3);
+          ctx.fillStyle = n < 15 ? "#d18c70" : C.gold;
+          ctx.fillRect(0, 0, (524 * n) / 60, 3);
         });
       for (const [id, [, , w, h]] of Object.entries(rects))
         canvas("hover" + id, w, h, () => {
@@ -352,21 +436,42 @@ try {
         ["P", "连环剑刀"],
       ];
       skills.forEach(([key, name], i) => {
-        for (let cool = 0; cool <= 5; cool++)
-          canvas(`skill${i}-${cool}`, 112, 42, () => {
-            ctx.fillStyle = cool ? "#0a111bcc" : "#182429d9";
-            ctx.fillRect(0, 0, 112, 42);
-            ctx.strokeStyle = cool ? "#4a4b48" : "#9e8e66";
-            ctx.strokeRect(0.5, 0.5, 111, 41);
-            text(key, 9, 26, 17, cool ? C.dim : C.gold);
-            text(name, 32, 17, 13, C.ivory);
-            text(
-              cool ? `${cool} 秒` : "就绪",
-              32,
-              33,
-              10,
-              cool ? C.dim : C.gold,
+        const duration = i === 3 ? 5 : 3;
+        for (let step = 0; step <= duration * 10; step++)
+          canvas(`skill${i}-${step}`, 92, 34, () => {
+            const cooling = step > 0;
+            const shade = ctx.createLinearGradient(0, 0, 92, 0);
+            shade.addColorStop(0, "#07121bea");
+            shade.addColorStop(1, "#07121b88");
+            ctx.fillStyle = shade;
+            ctx.fillRect(0, 0, 92, 34);
+            ctx.strokeStyle = "#c7b18040";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(17, 17, 13, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.strokeStyle = cooling ? "#a9cbb8" : C.gold;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(
+              17,
+              17,
+              13,
+              -Math.PI / 2,
+              -Math.PI / 2 +
+                Math.PI * 2 * (cooling ? 1 - step / (duration * 10) : 1),
             );
+            ctx.stroke();
+            text(key, 12, 21, 12, cooling ? C.dim : C.ivory);
+            text(name, 36, 14, i === 3 ? 10 : 12, cooling ? C.dim : C.ivory);
+            text(
+              cooling ? (step / 10).toFixed(1) + "s" : "READY",
+              36,
+              28,
+              9,
+              cooling ? "#a9cbb8" : C.gold,
+            );
+            if (!cooling) line(36, 33, 86, 33, "#c7b18080");
           });
       });
       return images;
@@ -376,7 +481,7 @@ try {
 } finally {
   await browser.close();
 }
-const files = { ...vectorFiles },
+const files = { ...vectorFiles, ...lexicon.files },
   zorder = [];
 function sprite(
   name,
@@ -440,25 +545,45 @@ for (const [i, cool] of [
 ].entries())
   sprite(
     "NativeSkill" + i,
-    Array.from({ length: 6 }, (_, n) => `skill${i}-${n}`),
-    `func syncUI() {if ${active} {show; setCostume int(clamp(Hero.${cool}+0.999,0,5)); ${pin(92 + i * 122, 544)}} else {hide}}`,
+    Array.from({ length: i === 3 ? 51 : 31 }, (_, n) => `skill${i}-${n}`),
+    `func syncUI() {if ${active} {show; setCostume int(clamp(Hero.${cool}*10+0.999,0,${i === 3 ? 50 : 30})); ${pin(82 + i * 100, 550)}} else {hide}}`,
   );
 sprite(
   "NativePanel",
-  ["title0", "title1", "guide", "pause", "defeat", "victory"],
+  ["title0", "title1", "guide", "pause", "defeat", "victory", "wordbook"],
   `func syncUI() {if nativePanel>=0 {show; setCostume nativePanel; ${pin(480, 300)}} else {hide}}`,
   { visible: true },
 );
 sprite(
   "NativeMusicButton",
   ["music0", "music1"],
-  `func syncUI() {if phase!=1 && phase!=5 {show; c:=0; if nativeMusicMuted {c=1}; setCostume c; ${pin(846, 51)}} else {hide}}`,
+  `func syncUI() {if phase!=1 && phase!=5 {show; c:=0; if nativeMusicMuted || nativeMusicVolume==0 {c=1}; setCostume c; ${pin(899, 44)}} else {hide}}`,
 );
 sprite(
   "NativeHover",
   Object.keys(rects).map((id) => "hover" + id),
   `func syncUI() {if nativeHover>0 {show; setCostume nativeHover-1; x,y,w,h:=nativeButtonRect(nativeHover); setXYpos viewCenterX+x+w/2-480,viewCenterY+300-y-h/2; setLayer Front} else {hide}}`,
 );
+for (const [name, volume, y] of [
+  ["NativeMusicSlider", "nativeMusicVolume", 438],
+  ["NativeSfxSlider", "nativeSfxVolume", 478],
+])
+  sprite(
+    name,
+    Array.from({ length: 101 }, (_, i) => "volume" + i),
+    `func syncUI() {if phase!=1 && phase!=5 && !nativeHelp && !nativePreview {show; setCostume ${volume}; ${pin(768, y)}} else {hide}}`,
+  );
+sprite(
+  "NativeQuestion",
+  ["question0", "question1", "question2"],
+  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; c:=nativeQuestionMode; if wordVisualPaused {c=2}; setCostume c; ${pin(480, 148)}} else {hide}}`,
+);
+sprite(
+  "NativeQuestionTimer",
+  Array.from({ length: 61 }, (_, i) => "timer" + i),
+  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; setCostume int(clamp((1-nativeQuestionAge/nativeQuestionLimit)*60,0,60)); ${pin(480, 223)}} else {hide}}`,
+);
+zorder.push("NativeGlyph", "NativeSfx");
 for (let i = 0; i < 4; i++) {
   const offset = [
     "0,300+span/2",

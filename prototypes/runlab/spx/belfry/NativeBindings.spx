@@ -1,2 +1,24 @@
-onKey KeyB, => {nativeMusicMuted=!nativeMusicMuted}
-onKey KeyH, => {nativeToggleHelp()}
+onKey KeyB, => {if phase==5 {nativeType("b")} else if phase!=5 && nativeInputLock<=0 {nativeMusicMuted=!nativeMusicMuted}}
+onKey KeyH, => {if phase==5 {nativeType("h")} else if phase!=5 && nativeInputLock<=0 {nativeToggleHelp()}}
+onKey KeyBackspace, => {if phase==5 && !wordVisualPaused && len(nativeInput)>0 {nativeInput=nativeInput[:len(nativeInput)-1]}}
+onKey KeyA, => {nativeType("a")}
+onKey KeyC, => {nativeType("c")}
+onKey KeyD, => {nativeType("d")}
+onKey KeyE, => {nativeType("e")}
+onKey KeyG, => {nativeType("g")}
+onKey KeyI, => {nativeType("i")}
+onKey KeyJ, => {nativeType("j")}
+onKey KeyK, => {nativeType("k")}
+onKey KeyL, => {nativeType("l")}
+onKey KeyN, => {nativeType("n")}
+onKey KeyO, => {nativeType("o")}
+onKey KeyP, => {nativeType("p")}
+onKey KeyQ, => {nativeType("q")}
+onKey KeyS, => {nativeType("s")}
+onKey KeyU, => {nativeType("u")}
+onKey KeyW, => {nativeType("w")}
+onKey KeyX, => {nativeType("x")}
+onKey KeyY, => {nativeType("y")}
+onKey KeyZ, => {nativeType("z")}
+onKey KeySpace, => {nativeType(" ")}
+onKey KeyMinus, => {nativeType("-")}

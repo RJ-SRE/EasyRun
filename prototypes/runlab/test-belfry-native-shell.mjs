@@ -228,11 +228,11 @@ try {
   await state(0, 1);
   await page.waitForFunction(() => window.nativeState[2] === 1);
   pass("native difficulty cards are clickable and select Veteran");
-  await click(840, 51);
+  await click(899, 44);
   await page.waitForFunction(() =>
     window.nativeMusic.at(-1)?.endsWith("paused"),
   );
-  await click(840, 51);
+  await click(899, 44);
   await page.waitForFunction(() =>
     window.nativeMusic.at(-1)?.endsWith("playing"),
   );

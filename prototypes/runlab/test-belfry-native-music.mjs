@@ -129,7 +129,7 @@ async function boot(shortLoop = false) {
         encoder = new window.TextEncoder();
       let main = decoder.decode(files["main.spx"]);
       main +=
-        "\nonKey KeyF8, => {phase=2}\nonKey KeyF9, => {phase=3}\nonKey KeyF10, => {phase=0}\nonKey KeyF11, => {phase=5; wordVisualPaused=false}\nonKey KeyF12, => {phase=1}\n";
+        '\nonKey KeyF8, => {phase=2}\nonKey KeyF9, => {phase=3}\nonKey KeyF10, => {phase=0}\nonKey KeyF11, => {phase=5; wordVisualPaused=false}\nonKey KeyF12, => {phase=1}\nonKey KeyF1, => {nativeMusicVolume=0; nativeSfxVolume=30}\nonKey KeyF2, => {nativeMusicVolume=0; nativeSfxVolume=0}\nonKey KeyF3, => {nativeMusicVolume=65; nativeSfxVolume=0}\nonKey KeyF4, => {NativeSfx.cue("SFX_blade")}\n';
       files["main.spx"] = encoder.encode(main);
       await window.initGame(
         Object.fromEntries(
@@ -189,6 +189,29 @@ try {
   await tap("Enter");
   await playing("BGM_Gameplay");
   pass("Enter switches to the full gameplay track");
+  await tap("F1");
+  await page.waitForFunction(() => window.nativeRms() < 0.000001, null, {
+    timeout: 10000,
+  });
+  await tap("F4");
+  await page.waitForFunction(() => window.nativeRms() > 0.00001, null, {
+    timeout: 5000,
+  });
+  pass(
+    "zero music volume leaves independently controlled action audio audible",
+  );
+  await tap("F2");
+  await page.waitForTimeout(600);
+  await tap("F4");
+  await page.waitForTimeout(100);
+  assert.ok(await page.evaluate(() => window.nativeRms() < 0.000001));
+  await tap("F3");
+  await playing("BGM_Gameplay");
+  await tap("F4");
+  await playing("BGM_Gameplay");
+  pass(
+    "zero action volume silences action samples without muting background music; both zero is silent",
+  );
   await tap("Escape");
   await paused();
   await tap("Enter");

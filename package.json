@@ -1,6 +1,6 @@
 {
   "name": "easyrun-rupture",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "private": true,
   "type": "module",
   "description": "EasyRun / 裂隙 · 倒悬钟城：spx 纵向钩索动作冒险与可复现开发流程",
@@ -25,7 +25,7 @@
     "game:test": "node scripts/test-game.mjs",
     "game:test:legacy": "node scripts/test-game.mjs --legacy",
     "game:package": "python3 prototypes/runlab/package.py",
-    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/build-belfry-native.mjs prototypes/runlab/belfry-hunt.mjs prototypes/runlab/hunt-init.mjs prototypes/runlab/test-hunt-data.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/belfry-scene.mjs prototypes/runlab/belfry-city-art.mjs prototypes/runlab/belfry-keeper-art.mjs prototypes/runlab/belfry-expedition*.mjs prototypes/runlab/expedition-init.mjs prototypes/runlab/test-expedition*.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js prototypes/runlab/public/inscription*.js prototypes/runlab/public/expedition*.js prototypes/runlab/public/cet4-words.js --max-warnings 0",
+    "game:lint": "eslint prototypes/runlab/build-belfry.mjs prototypes/runlab/build-belfry-native*.mjs prototypes/runlab/belfry-hunt.mjs prototypes/runlab/hunt-init.mjs prototypes/runlab/test-hunt-data.mjs prototypes/runlab/belfry-level.mjs prototypes/runlab/belfry-scene.mjs prototypes/runlab/belfry-city-art.mjs prototypes/runlab/belfry-keeper-art.mjs prototypes/runlab/belfry-expedition*.mjs prototypes/runlab/expedition-init.mjs prototypes/runlab/test-expedition*.mjs prototypes/runlab/test-belfry*.mjs prototypes/runlab/public/belfry*.js prototypes/runlab/public/inscription*.js prototypes/runlab/public/expedition*.js prototypes/runlab/public/cet4-words.js --max-warnings 0",
     "game:test:words": "node --test prototypes/runlab/test-inscription-core.mjs && node prototypes/runlab/test-belfry-inscription.mjs",
     "game:test:achievements": "node --test prototypes/runlab/test-belfry-achievements-core.mjs && node prototypes/runlab/test-belfry-achievements.mjs",
     "level:build": "node prototypes/runlab/build-passages.mjs",
@@ -40,7 +40,8 @@
     "words:build": "node scripts/build-wordbank.mjs",
     "game:test:wordbook": "node --test prototypes/runlab/test-inscription-core.mjs && node prototypes/runlab/test-belfry-wordbook.mjs",
     "game:test:native-music": "node prototypes/runlab/build-belfry.mjs && python3 prototypes/runlab/package.py --game belfry && node prototypes/runlab/test-belfry-native-music.mjs",
-    "game:test:native-shell": "node prototypes/runlab/build-belfry.mjs && python3 prototypes/runlab/package.py --game belfry && node prototypes/runlab/test-belfry-native-shell.mjs"
+    "game:test:native-shell": "node prototypes/runlab/build-belfry.mjs && python3 prototypes/runlab/package.py --game belfry && node prototypes/runlab/test-belfry-native-shell.mjs",
+    "game:test:native-words": "node prototypes/runlab/build-belfry.mjs && python3 prototypes/runlab/package.py --game belfry && node prototypes/runlab/test-belfry-native-words.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

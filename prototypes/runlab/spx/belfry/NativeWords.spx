@@ -1,0 +1,170 @@
+// Native question host. Combat effects remain owned by Inscription.spx.
+var (
+ nativeWords []string
+ nativeMeanings []string
+ nativeDistractA []string
+ nativeDistractB []string
+ nativeAliases []string
+ nativeLevels []int
+ nativeSpellable []int
+ nativeWeak []int
+ nativeDeck []int
+ nativeDone []int
+ nativeCursor int
+ nativeWordIndex int
+ nativeWordSeen int
+ nativeQuestionMode int
+ nativeAnswer int
+ nativeInput string
+ nativeQuestionAge float64
+ nativeQuestionLimit float64
+ nativeFeedback string
+ nativeFeedbackTime float64
+ nativeResolved int
+ nativeScope int
+ nativePace int
+ nativePreview bool
+ nativePreviewPage int
+ nativeDeckUsed bool
+ nativeInputLock float64
+ nativeGlyphs map[rune]int
+ nativeTextGlyph []int
+ nativeTextX []float64
+ nativeTextY []float64
+ nativeTextSize []float64
+ nativeTextCount int
+ nativeGlyphCount int
+ nativeGlyphLive int
+ nativeTextCache string
+ nativeTextVersion int
+)
+func nativeRand(n int) int {return int(rand(0,n-1))}
+
+func nativeShuffleDeck() {
+ nativeDeck=[]int{}; nativeDone=[]int{}; nativeCursor=0; nativeDeckUsed=false; nativePreviewPage=0
+ for len(nativeDeck)<30 {
+  best:=-1; weight:=-1
+  for candidate:=0;candidate<4;candidate++ {
+   i:=nativeRand(len(nativeWords)); eligible:=nativeScope==0 || nativeScope==1 && nativeLevels[i]!=2 || nativeScope==2 && nativeLevels[i]!=1
+   used:=false; for _,v:=range nativeDeck {if v==i {used=true}}
+   if eligible && !used && nativeWeak[i]>weight {best=i; weight=nativeWeak[i]}
+  }
+  if best>=0 {nativeDeck=append(nativeDeck,best); nativeDone=append(nativeDone,0)}
+ }
+ println "@nativeDeck",nativeScope,nativeDeck
+}
+func initNativeWords() {
+ initNativeWordData(); initNativeGlyphData()
+ nativeWeak=make([]int,len(nativeWords))
+ nativeTextGlyph=make([]int,160); nativeTextX=make([]float64,160); nativeTextY=make([]float64,160); nativeTextSize=make([]float64,160)
+ wordMode=1; nativeShuffleDeck()
+}
+func nativeStartWords() {
+ if nativeDeckUsed {nativeShuffleDeck()}; nativeDeckUsed=true; nativePreview=false
+ nativeWordSeen=wordSerial; nativeInputLock=0; nativeFeedbackTime=0
+}
+func nativeCompleted() int {n:=0; for _,v:=range nativeDone {n+=v}; return n}
+func nativeOpenQuestion() {
+ nativeWordSeen=wordSerial; nativeWordIndex=nativeDeck[nativeCursor]
+ nativeQuestionMode=nativeRand(2); if nativeSpellable[nativeWordIndex]==0 {nativeQuestionMode=1}
+ nativeAnswer=nativeRand(3); nativeInput=""; nativeQuestionAge=0; nativeFeedbackTime=0
+ nativeQuestionLimit=9; if nativeQuestionMode==0 {nativeQuestionLimit=math.Max(9,float64(len(nativeWords[nativeWordIndex]))*0.65+4)}
+ if nativePace==1 {nativeQuestionLimit*=0.8}; if nativePace==2 {nativeQuestionLimit*=1.35}
+ println "@nativeQuestion",wordSerial,wordPending,nativeWordIndex,nativeQuestionMode,nativeAnswer,nativeQuestionLimit,nativeWords[nativeWordIndex]
+}
+func nativeFinishQuestion(result int) {
+ if phase!=5 || wordPending==0 {return}
+ i:=nativeWordIndex
+ nativeResolved=result; nativeFeedbackTime=1.4
+ if result==1 {
+  nativeDone[nativeCursor]=1; if nativeWeak[i]>0 {nativeWeak[i]--}
+  nativeFeedback="铭文已解 · 技能释放"; if wordPending>=5 {nativeFeedback="束缚已解 · 重返战场"}
+ } else {
+  nativeWeak[i]=int(clamp(float64(nativeWeak[i]+2),0,8))
+  nativeFeedback="释放取消 · "+nativeWords[i]+" · "+nativeMeanings[i]; if wordPending>=5 {nativeFeedback="脱困失衡 · "+nativeWords[i]+" · "+nativeMeanings[i]}
+ }
+ // Failed entries return after other words; never trap the player in one word.
+ nativeCursor=(nativeCursor+1)%30
+ if nativeCompleted()<30 {for nativeDone[nativeCursor]==1 {nativeCursor=(nativeCursor+1)%30}}
+ resolveWord(result); nativeInputLock=0.18
+ println "@nativeAnswer",result,nativeCompleted(),nativeWeak[i]
+}
+func nativeType(s string) {
+ if phase!=5 || wordVisualPaused || nativeQuestionAge<0.18 || nativeQuestionMode!=0 || wordSerial!=nativeWordSeen {return}
+ if len(nativeInput)<48 {nativeInput+=s}
+}
+func nativeSubmit() {
+ if phase!=5 || wordVisualPaused || nativeQuestionMode!=0 || nativeQuestionAge<0.18 {return}
+ good:=nativeInput==nativeWords[nativeWordIndex]
+ // All dictionary aliases are normalized to lower case in the build.
+ aliases:=nativeAliases[nativeWordIndex]; current:=""
+ for _,c:=range aliases {if c=='|' {if current==nativeInput && current!="" {good=true}; current=""} else {current+=string(c)}}
+ if current==nativeInput && current!="" {good=true}
+ if good {nativeFinishQuestion(1)} else {nativeFinishQuestion(2)}
+}
+func nativeChoose(option int) {
+ if phase!=5 || wordVisualPaused || nativeQuestionMode!=1 || nativeQuestionAge<0.18 {return}
+ if option==nativeAnswer {nativeFinishQuestion(1)} else {nativeFinishQuestion(2)}
+}
+func nativeText(s string,x,y,size float64) {
+ for _,c:=range s {
+  if nativeTextCount>=160 {return}
+  if c!=' ' {g,ok:=nativeGlyphs[c]; if ok {
+   n:=nativeTextCount; nativeTextGlyph[n]=g; nativeTextX[n]=x+size/2; nativeTextY[n]=y; nativeTextSize[n]=size/20; nativeTextCount++
+  }}
+  if c<128 {x+=size*0.58} else {x+=size}
+ }
+}
+func nativeNumber(n int) string {return fmt.Sprint(n)}
+func nativeRebuildText() {
+ nativeTextCount=0
+ if nativePreview {
+  nativeText("随行词册 / "+nativeNumber(nativePreviewPage+1)+" · 10",64,121,22)
+  for row:=0;row<3;row++ {slot:=nativePreviewPage*3+row; i:=nativeDeck[slot]; y:=167+float64(row)*92
+   nativeText(nativeNumber(slot+1)+"  "+nativeWords[i],64,y,18)
+   nativeText(nativeMeanings[i],400,y,15)
+  }
+ } else if phase==0 && !nativeHelp {
+  scope:="四、六级混合"; if nativeScope==1 {scope="四级词汇"}; if nativeScope==2 {scope="六级词汇"}
+  mode:="铭文开启"; if wordMode==0 {mode="纯动作模式"}
+  pace:="标准"; if nativePace==1 {pace="紧凑"}; if nativePace==2 {pace="从容"}
+  nativeText(mode,720,214,15); nativeText(scope,720,256,15); nativeText(pace,790,298,15)
+ }
+ if phase!=1 && phase!=5 && !nativeHelp && !nativePreview {
+  nativeText(nativeNumber(nativeMusicVolume)+"%",882,438,12)
+  nativeText(nativeNumber(nativeSfxVolume)+"%",882,478,12)
+ }
+ if (phase==1 || phase==5) && !nativeHelp {
+  if wordMode==1 && practice==0 {nativeText("铭文 "+nativeNumber(nativeCompleted())+" / 30",36,78,12)}
+  if phase==5 {
+   i:=nativeWordIndex
+   nativeText(nativeNumber(int(math.Ceil(math.Max(0,nativeQuestionLimit-nativeQuestionAge))))+"s",370,82,13)
+   nativeText(nativeWords[i],218,113,24)
+   if nativeQuestionMode==0 {
+    nativeText(nativeInput+"_",218,155,22)
+   } else {
+    for option:=0;option<3;option++ {meaning:=nativeMeanings[i]; if option!=nativeAnswer {if option==(nativeAnswer+1)%3 {meaning=nativeDistractA[i]} else {meaning=nativeDistractB[i]}}
+     nativeText(nativeNumber(option+1)+"  "+meaning,218,148+float64(option)*26,14)
+    }
+   }
+  }
+  if nativeFeedbackTime>0 {nativeText(nativeFeedback,218,257,14)}
+ }
+ // Reclaim only surplus decorative effects; never remove enemies or projectiles.
+ broadcastAndWait "nativeCullFX"
+ broadcastAndWait "nativeTextResize"
+ if nativeTextCount>nativeGlyphCount {for i:=nativeGlyphCount;i<nativeTextCount;i++ {NativeGlyph.clone i}}
+ nativeGlyphCount=nativeTextCount
+ nativeTextVersion++
+}
+func updateNativeWords(dt float64) {
+ if nativeInputLock>0 {nativeInputLock-=dt}
+ if phase==5 && wordPending>0 {
+  if nativeWordSeen!=wordSerial {nativeOpenQuestion()}
+  if !wordVisualPaused {nativeQuestionAge+=dt; if nativeQuestionAge>=nativeQuestionLimit {nativeFinishQuestion(3)}}
+ }
+ if phase!=4 && !(phase==5 && wordVisualPaused) {nativeFeedbackTime=math.Max(0,nativeFeedbackTime-dt)}
+ cache:=fmt.Sprint(phase,nativePreview,nativePreviewPage,nativeScope,nativePace,wordMode,nativeHelp,nativeMusicVolume,nativeSfxVolume,nativeWordSeen,nativeQuestionMode,wordVisualPaused,nativeInput,int(nativeQuestionAge),nativeCompleted(),nativeFeedbackTime>0)
+ if cache!=nativeTextCache {nativeTextCache=cache; nativeRebuildText()}
+ broadcast "nativeText"
+}

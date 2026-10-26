@@ -1,7 +1,7 @@
 import { BelfryMusic } from "./belfry-music.js";
 
 // Action effects omit bell/drum layers. Scene music is supplied by the user.
-const defaults = { sfx: 0.8, music: 0.35 };
+const defaults = { sfx: 0.3, music: 0.65 };
 const counts = {
   bowdraw: 2,
   bowshot: 3,
