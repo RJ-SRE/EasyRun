@@ -215,7 +215,7 @@ try {
   assert.equal((await state()).embers, 0);
   pass("correct heal completes remaining channel and restores one HP");
   await fixture();
-  await p.keyboard.press("q", { delay: 50 });
+  await p.keyboard.press("p", { delay: 50 });
   await focus(4);
   const before = await p.evaluate(
     () => runEvents.filter((e) => e.name === "chainhit").length,
@@ -231,12 +231,12 @@ try {
   assert.equal((await state()).wordSerial, ultSerial);
   await wait(() => latestState.ultimateTime === 0);
   assert.ok((await state()).ultimateCool > 0);
-  await p.keyboard.press("q");
+  await p.keyboard.press("p");
   await p.waitForTimeout(250);
   assert.equal((await state()).phase, 1);
   assert.equal((await state()).wordSerial, ultSerial);
   await wait(() => latestState.ultimateCool === 0);
-  await p.keyboard.press("q");
+  await p.keyboard.press("p");
   await focus(4);
   assert.equal((await state()).wordSerial, ultSerial + 1);
   await answer(false);
@@ -244,7 +244,7 @@ try {
     "ultimate asks before any hit, releases all five and suppresses repeat questions during cooldown",
   );
   await fixture();
-  await p.keyboard.press("q", { delay: 50 });
+  await p.keyboard.press("p", { delay: 50 });
   await focus(4);
   await answer(false);
   await p.waitForTimeout(350);
@@ -257,7 +257,7 @@ try {
   assert.equal((await state()).ultimateTime, 0);
   pass("failed ultimate cancels all five hits and its release effects");
   await fixture("F8");
-  await p.keyboard.press("q", { delay: 50 });
+  await p.keyboard.press("p", { delay: 50 });
   await focus(4);
   await answer(false);
   assert.equal(
@@ -304,7 +304,7 @@ try {
     [1, "u"],
     [2, "l"],
     [3, "i"],
-    [4, "q"],
+    [4, "p"],
   ]) {
     await fixture();
     if (kind < 3) await charge(key);

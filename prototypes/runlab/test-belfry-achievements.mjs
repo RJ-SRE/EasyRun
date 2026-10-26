@@ -97,9 +97,9 @@ try {
     "correct real inscription unlocks once after resolution; no achievement obstruction during typing",
   );
 
-  await p.keyboard.down("e");
+  await p.keyboard.down("o");
   await wait(() => runEvents.some((e) => e.name === "hookattach"));
-  await p.keyboard.up("e");
+  await p.keyboard.up("o");
   await wait(() => window.achievementDiagnostics.data.unlocked["first-sling"]);
   await open();
   await wait(() => latestState.phase === 4);
@@ -201,9 +201,9 @@ try {
   await p.locator("#practice").click();
   await wait(() => latestState.practice === 1);
   const practiceProgress = (await read()).achievements.data;
-  await p.keyboard.down("e");
+  await p.keyboard.down("o");
   await p.waitForTimeout(240);
-  await p.keyboard.up("e");
+  await p.keyboard.up("o");
   await p.waitForTimeout(200);
   assert.deepEqual((await read()).achievements.data, practiceProgress);
   pass("practice arena actions do not change persistent achievements");

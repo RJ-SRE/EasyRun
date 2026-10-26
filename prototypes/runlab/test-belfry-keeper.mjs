@@ -108,7 +108,7 @@ try {
   await fixture("F10");
   await wait(() => latestState.bossLocked === 1);
   const aim = (await snapshot()).boss.aimX;
-  await page.keyboard.down("Space");
+  await page.keyboard.down("w");
   await page.keyboard.down("a");
   await page.waitForTimeout(160);
   await page.keyboard.up("a");
@@ -118,7 +118,7 @@ try {
     "locked target must not follow later input",
   );
   await wait(() => latestState.bossState === 2);
-  await page.keyboard.up("Space");
+  await page.keyboard.up("w");
   assert.equal((await state()).health, health);
   await pass(
     "thrust commits its endpoint and a real jump avoids the swept body hit",
@@ -130,9 +130,9 @@ try {
       latestState.bossState === 3 &&
       Object.values(foes).find((f) => f.kind === 3)?.clock > 0.18,
   );
-  await page.keyboard.down("Space");
+  await page.keyboard.down("w");
   await wait(() => latestState.bossState === 2);
-  await page.keyboard.up("Space");
+  await page.keyboard.up("w");
   assert.equal((await state()).health, health);
   await pass("jumping above the landing shock avoids slam damage");
 
@@ -184,7 +184,7 @@ try {
   await page.waitForTimeout(240);
   await page.keyboard.up("d");
   await wait(() => latestState.bossState === 2);
-  await page.keyboard.up("Space");
+  await page.keyboard.up("w");
   assert.equal((await state()).health, health);
   await pass(
     "core blades arrive in three warned lanes with a traversable safe gap",
@@ -229,7 +229,7 @@ try {
   while ((await state()).elapsed - pressureStart < 14) {
     const s = await state();
     if (s.phase !== 1 || s.segment !== 1) break;
-    if (s.ultimateTime <= 0) await page.keyboard.press("q", { delay: 65 });
+    if (s.ultimateTime <= 0) await page.keyboard.press("p", { delay: 65 });
     await page.waitForTimeout(85);
   }
   assert.ok(

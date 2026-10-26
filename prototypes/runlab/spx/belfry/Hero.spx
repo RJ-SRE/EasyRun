@@ -198,7 +198,7 @@ func updateCooldowns(dt float64) {
 func readAim() {
  aimX=0; aimY=0
  if keyPressed(KeyA)||keyPressed(KeyLeft) {aimX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {aimX+=1}
- if keyPressed(KeyW)||keyPressed(KeyUp) {aimY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {aimY-=1}
+ if keyPressed(KeyUp) {aimY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {aimY-=1}
  if aimX==0 && aimY==0 {aimX=facing/90}
  d:=dist(aimX,aimY); aimX/=d; aimY/=d
  if aimX!=0 && (charging || bowCharging || (attackKind==0 && ultimateTime<=0)) {facing=90; if aimX<0 {facing=-90}}
@@ -214,7 +214,7 @@ func validBowTarget(i int) bool {
 func aimBow() {
  inputX:=0.0; inputY:=0.0
  if keyPressed(KeyA)||keyPressed(KeyLeft) {inputX-=1}; if keyPressed(KeyD)||keyPressed(KeyRight) {inputX+=1}
- if keyPressed(KeyW)||keyPressed(KeyUp) {inputY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {inputY-=1}
+ if keyPressed(KeyUp) {inputY+=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {inputY-=1}
  manual:=inputX!=0 || inputY!=0
  changed:=manual && (inputX!=bowInputX || inputY!=bowInputY)
  if !validBowTarget(bowTarget) || changed {
@@ -244,7 +244,7 @@ func releaseBlade(full bool) {bladeCool=3; charged=full; charging=false; chargeT
 func nova() {
  if ultimateCool>0 || ultimateTime>0 || healTime>0 || attackKind==7 {return}
  cancelAttack(); releaseHook(false); dashTime=0; ultimateTime=1.08; ultimateStep=0; ultimateGated=false; ultimateDir=0
- if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
+ if keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
  if wordMode==1 && practice==0 {requestWord(4); return}
  releaseUltimate()
 }
@@ -256,7 +256,7 @@ func updateSkills(dt float64) {
  bowRecoil=math.Max(0,bowRecoil-dt); basicCool=math.Max(0,basicCool-dt)
  readAim()
  if healTime>0 {
-  moving:=keyPressed(KeyA)||keyPressed(KeyD)||keyPressed(KeyLeft)||keyPressed(KeyRight)||keyPressed(KeySpace)||keyPressed(KeyK)||keyPressed(KeyShift)
+  moving:=keyPressed(KeyA)||keyPressed(KeyD)||keyPressed(KeyLeft)||keyPressed(KeyRight)||keyPressed(KeyW)||keyPressed(KeyK)||keyPressed(KeyShift)
   if !grounded || moving {healTime=0; event("healbreak")} else {
    if wordMode==1 && practice==0 && !healGated && healTime-dt<=0.15 {healTime=0.15; requestWord(3); return}
    healTime=math.Max(0,healTime-dt); vx=0
@@ -266,7 +266,7 @@ func updateSkills(dt float64) {
  if ultimateTime>0 {
   if wordMode==1 && practice==0 && !ultimateGated {return}
   ultimateTime=math.Max(0,ultimateTime-dt); age:=1.08-ultimateTime
-  if keyPressed(KeyW)||keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
+  if keyPressed(KeyUp) {ultimateDir=1}; if keyPressed(KeyS)||keyPressed(KeyDown) {ultimateDir=-1}
   threshold:=0.12+float64(ultimateStep)*0.17; if ultimateStep==4 {threshold=0.88}
   if ultimateStep<5 && age>=threshold {
    // Protection follows the actual blade strokes, not the whole commitment.
@@ -295,7 +295,7 @@ func update(dt float64) {
  if controlGrace>0 {controlGrace=math.Max(0,controlGrace-dt)}
  if bindTime>0 {
   bindTime=math.Max(0,bindTime-dt); px=bindX; py=bindY; vx=0; vy=0; grounded=true
-  prevJump=keyPressed(KeySpace); prevHook=keyPressed(KeyE); prevAttack=keyPressed(KeyJ); prevHeavy=keyPressed(KeyL); prevDash=keyPressed(KeyK)||keyPressed(KeyShift); prevBurst=keyPressed(KeyQ); prevBow=keyPressed(KeyU); prevHeal=keyPressed(KeyI); attackPressed=false
+  prevJump=keyPressed(KeyW); prevHook=keyPressed(KeyO); prevAttack=keyPressed(KeyJ); prevHeavy=keyPressed(KeyL); prevDash=keyPressed(KeyK)||keyPressed(KeyShift); prevBurst=keyPressed(KeyP); prevBow=keyPressed(KeyU); prevHeal=keyPressed(KeyI); attackPressed=false
   if bindTime<=0 {if wordMode==1 && practice==0 {bindTime=0.0001; requestWord(6)} else {releaseBind()}}; return
  }
 
@@ -304,7 +304,7 @@ func update(dt float64) {
  if wordWanted>0 {return}
  updateAttack(dt)
  chooseTarget()
- jump:=keyPressed(KeySpace); grap:=keyPressed(KeyE); dash:=keyPressed(KeyK)||keyPressed(KeyShift); special:=keyPressed(KeyQ); heavy:=keyPressed(KeyL); bow:=keyPressed(KeyU); heal:=keyPressed(KeyI)
+ jump:=keyPressed(KeyW); grap:=keyPressed(KeyO); dash:=keyPressed(KeyK)||keyPressed(KeyShift); special:=keyPressed(KeyP); heavy:=keyPressed(KeyL); bow:=keyPressed(KeyU); heal:=keyPressed(KeyI)
  if jump && !prevJump {buffer=0.13}; if buffer>0 {buffer-=dt}
  if grounded {coyote=0.12; airJump=true; airAttacks=0; airHitSlow=false} else {coyote-=dt}
  if buffer>0 && canMoveCancel() {
@@ -325,7 +325,7 @@ func update(dt float64) {
  if attackPressed && !charging && !bowCharging && healTime<=0 && ultimateTime<=0 {
   if (keyPressed(KeyS)||keyPressed(KeyDown)) && !grounded && canMoveCancel() && basicCool<=0 && airAttacks<2 {
    cancelAttack(); basicCool=0.28; airAttacks++; plunging=true; hook=-1; vy=-1050; vx*=0.4; ring(px,py+20,0.7,1); lastMove=8; event("plunge")
-  } else {kind:=1; if keyPressed(KeyW)||keyPressed(KeyUp) {kind=4}; requestAttack(kind)}
+  } else {kind:=1; if keyPressed(KeyUp) {kind=4}; requestAttack(kind)}
  }
  attackPressed=false
  if heavy && !prevHeavy && bladeCool<=0 && canMoveCancel() && !bowCharging && healTime<=0 {cancelAttack(); charging=true; chargeTime=0; event("charge")}
@@ -354,7 +354,7 @@ func update(dt float64) {
   cancelAttack(); lastMove=10
   releaseHook(false); dashTime=0.18; dashCool=0.8; invulnerable=0.25; plunging=false; grounded=false
   dx:=facing/90; dy:=0.0
-  if keyPressed(KeyW)||keyPressed(KeyUp) {dy=1; if !keyPressed(KeyA)&&!keyPressed(KeyD)&&!keyPressed(KeyLeft)&&!keyPressed(KeyRight) {dx=0}}
+  if keyPressed(KeyUp) {dy=1; if !keyPressed(KeyA)&&!keyPressed(KeyD)&&!keyPressed(KeyLeft)&&!keyPressed(KeyRight) {dx=0}}
   if keyPressed(KeyS)||keyPressed(KeyDown) {dy=-1}
   d:=dist(dx,dy); vx=dx/d*850; vy=dy/d*850; burst(px,py+28,10,0,240); event("dash")
  }

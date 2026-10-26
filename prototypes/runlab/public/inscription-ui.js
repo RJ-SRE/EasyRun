@@ -120,7 +120,7 @@ export class InscriptionUI {
       </div>
       <div class="word-actions"><button id="word-preview"><span>随行词册</span><b>30 <i>↗</i></b></button><button id="word-shuffle" aria-label="更换本次远征的 30 个单词">换一组</button></div>
       <div id="word-composition" aria-label="本局选词组成"></div>
-      <p class="word-note">新远征自动选词 · 重试保留本组。<br>U / L / I 冷却 3 秒 · Q 冷却 5 秒。</p>
+      <p class="word-note">新远征自动选词 · 重试保留本组。<br>U / L / I 冷却 3 秒 · P 冷却 5 秒。</p>
       <button id="word-continue" class="secondary" hidden>续行上次远征 ↗</button>
       <p id="word-storage" role="status"></p>`;
     $("#viewport").append(menu);

@@ -317,16 +317,16 @@ function onEvent(name, t, x, y) {
     wordescape: "锁链已解 · 夺回主动",
     chaincut: "锁链已斩断 · 缚索正在收势",
     chainfree: "已脱离锁链",
-    tether: "被锁链牵引 · J 斩链 / E 抓锚点 / 冲向链手",
+    tether: "被锁链牵引 · J 斩链 / O 抓锚点 / 冲向链手",
     bind: "封脉 · 暂时无法行动",
     bindrelease: "已脱离封脉 · 抓住收招破绽",
-    launchhit: "挑空 → J 空中追击 → E 接钩索",
+    launchhit: "挑空 → J 空中追击 → O 接钩索",
     charged: "蓄力破甲 · 可将轻敌撞向其他敌人",
     collision: "借敌破敌",
     practice:
       "排练场 · 1–5 刺客 / 6 组合 / 7 裂甲 / 8 猎兽 / 9 缝魂；R 开始冒险",
     enrage: "守心者正在变形 · 调整站位，留意新的追击轨迹",
-    hook: "牵引 · 松开 E 上甩 / 按住 S 松开 E 下甩",
+    hook: "牵引 · 松开 O 上甩 / 按住 S 松开 O 下甩",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
     marked: "裂印 · 满蓄断潮可引爆",
     markbreak: "裂印破碎 · 断潮追加伤害",
@@ -337,7 +337,7 @@ function onEvent(name, t, x, y) {
     healbreak: "回息中断",
     healcomplete: "回息 · 生命 +1",
     embergain: "余烬 +1",
-    chainstart: "连环剑刀 · W 上挑 / S 下压收势",
+    chainstart: "连环剑刀 · ↑ 上挑 / S 下压收势",
     armor: "护架挡住了攻击 · 绕背、重斩破架或先处理缝魂师",
     guardbreak: "护架已碎 · 追击窗口",
     wardbreak: "牵线已断 · 守卫失去掩护",
@@ -373,14 +373,14 @@ function hint(s) {
       : "封脉锁身 · 控制结束后恢复行动。";
   if (s.chainOwner >= 0)
     return s.wordMode
-      ? "缚索牵引中 · J 斩链 / E 抓锚 / F 铭文解链。"
-      : "缚索牵引中 · J 斩链 / E 抓锚 / 冲向链手。";
+      ? "缚索牵引中 · J 斩链 / O 抓锚 / F 铭文解链。"
+      : "缚索牵引中 · J 斩链 / O 抓锚 / 冲向链手。";
   if (s.practice)
     return [
       "悬刃 · 首刀后可能空中换位再追刀；看清第二次起手，再钩索追击。",
       "短锋 · 撤步架势可挡一次正面轻击；L 重斩破架，闪过飞踢后反击。",
       "壁弓 · 除了定点射击，还会蹬墙腾空放箭；J 可击落箭矢。",
-      "缚索 · 跳过低位横扫，再防追锁；被牵引时 J 斩链 / E 抓锚。",
+      "缚索 · 跳过低位横扫，再防追锁；被牵引时 J 斩链 / O 抓锚。",
       "封脉 · 会绕到另一侧再锁定突进方向；跳开或打断，落空后反击。",
       "组合遭遇 · 先处理缝魂师，再拆开空地夹击。",
       "裂甲卫 · 正面护架，L 重斩破架；也可跳过或绕背攻击。",
@@ -390,17 +390,17 @@ function hint(s) {
   if (s.expedition && s.segment !== 1) return expeditionHint(s);
   if (s.segment === 2) {
     if (s.y > -430) return "回到左上方的休整灯。最后一段，借锚点跃出井口。";
-    return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
+    return "向上逃离 · 按住 O 牵引，松开甩出；击杀恢复空中动作。";
   }
   if (s.segment === 1) return keeperStatus(s).hint;
-  if (s.hook >= 0) return "松开 E 甩出 → 空格二段跳 → 再次抓住锚点。";
+  if (s.hook >= 0) return "松开 O 甩出 → W 二段跳 → 再次抓住锚点。";
   if (s.y > -230)
-    return "D 向右跃入井中 · 按住 E 抓住高亮锚点；松开时借力起飞。";
+    return "D 向右跃入井中 · 按住 O 抓住高亮锚点；松开时借力起飞。";
   if (s.y > -900) return "接近敌人按 J；钩住敌人也能回钩斩。S + J 向下坠星。";
   if (s.y > -1850) return "墙中弓手会先搭箭；缚索抛链后，J 可斩断连接。";
   if (s.y > -2900)
     return "U 满蓄贯夜留下裂印，L 满蓄断潮引爆；金色回声补充余烬。";
-  return "钟声来自更深处。S + 空格穿过脚下的平台。";
+  return "钟声来自更深处。S + W 穿过脚下的平台。";
 }
 function receive(s) {
   s.expedition = window.expeditionState;

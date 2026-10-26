@@ -66,7 +66,7 @@ try {
   p.on("pageerror", (e) => report.errors.push(e.message));
   const fixtureBook = new InscriptionBook(null, 4);
   fixtureBook.run.pool = [
-    "create",
+    "echo",
     ...[...BANK.keys()].filter((id) => id.length > 6).slice(0, 29),
   ];
   await p.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
@@ -138,23 +138,23 @@ try {
     "background visibility pauses the challenge and requires a conscious resume",
   );
   const word = await p.evaluate(() => inscriptionDiagnostics.active.q.wordId);
-  assert.equal(word, "create");
+  assert.equal(word, "echo");
   await p.keyboard.type(word.slice(0, -1), { delay: 25 });
-  await p.keyboard.down("e");
+  await p.keyboard.down("o");
   await p.waitForFunction(
     () => latestState.phase === 1 && !inscriptionDiagnostics.active,
   );
   await p.waitForTimeout(150);
   assert.equal(await p.evaluate(() => latestState.hook), -1);
   assert.equal(await p.evaluate(() => inscriptionDiagnostics.count), 1);
-  await p.keyboard.press("Space", { delay: 70 });
+  await p.keyboard.press("w", { delay: 70 });
   await p.waitForFunction(() => latestState.y > 15); // a new key works while the last letter remains held
-  await p.keyboard.up("e");
-  await p.keyboard.down("e");
+  await p.keyboard.up("o");
+  await p.keyboard.down("o");
   await p.waitForFunction(() => latestState.hook >= 0);
-  await p.keyboard.up("e");
+  await p.keyboard.up("o");
   pass(
-    "held final E cannot leak into grapple; a new jump responds before E is released",
+    "held final O cannot leak into grapple; a new jump responds before O is released",
   );
   assert.deepEqual(report.errors, []);
   assert.deepEqual(await p.evaluate(() => runtimeErrors), []);

@@ -32,9 +32,9 @@ const report = {
   note: "Real opening platform, real keyboard inputs; seeded vocabulary only. Frame timings are local headless measurements, not a device-wide performance guarantee.",
 };
 p.on("pageerror", (e) => report.errors.push(e.message));
-const book = new InscriptionBook(null, 4); // create; final E must not become grapple
+const book = new InscriptionBook(null, 4); // echo; final O must not become grapple
 book.run.pool = [
-  "create",
+  "echo",
   ...[...BANK.keys()].filter((id) => id.length > 6).slice(0, 29),
 ];
 book.settings.hint = "guided";
@@ -112,7 +112,7 @@ try {
   pass(
     "live focus motion and tension audio while damage, physics and cooldowns remain frozen",
   );
-  await p.keyboard.type("cre", { delay: 150 });
+  await p.keyboard.type("ec", { delay: 150 });
   assert.equal((await read()).word.motion.progress, 0.5);
   await p.screenshot({ path: fileURLToPath(new URL("focus.png", out)) });
   pass("correct letters charge the hero effect without advancing combat");
@@ -136,8 +136,8 @@ try {
   assert.equal(paused.audio.focusActive, false);
   assert.equal(paused.audio.activeSources, 0);
   await p.locator("#word-resume").click();
-  await p.keyboard.type("at", { delay: 150 });
-  await p.keyboard.down("e");
+  await p.keyboard.type("h", { delay: 150 });
+  await p.keyboard.down("o");
   await wait(() => !inscriptionDiagnostics.active && latestState.phase === 1);
   report.timing.successReleaseMs = (await read()).word.lastRelease.responseMs;
   await wait(() => soundDiagnostics.fx.some((e) => e.cue === "bowshot"));
@@ -147,12 +147,12 @@ try {
   );
   assert.equal((await read()).state.hook, -1);
   assert.equal((await read()).word.count, 1);
-  await p.keyboard.press("Space", { delay: 35 });
+  await p.keyboard.press("w", { delay: 35 });
   await wait(() => latestState.y > 10);
   await p.screenshot({ path: fileURLToPath(new URL("release.png", out)) });
-  await p.keyboard.up("e");
+  await p.keyboard.up("o");
   pass(
-    "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final E",
+    "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final O",
   );
   await wait(() => inscriptionDiagnostics.motion.mode === "idle");
   assert.equal(

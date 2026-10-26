@@ -103,9 +103,9 @@ try {
   await save("holding light attack does not auto-repeat");
   await practice();
   await approach();
-  await page.keyboard.down("w");
+  await page.keyboard.down("ArrowUp");
   await tap("j");
-  await page.keyboard.up("w");
+  await page.keyboard.up("ArrowUp");
   await page.waitForTimeout(170);
   await tap("j");
   await page.waitForTimeout(230);
@@ -151,7 +151,7 @@ try {
   assert.ok((await events()).some((e) => e.name === "dash"));
   await save("light recovery cancels into dash");
   await practice();
-  await tap("q");
+  await tap("p");
   await page.waitForTimeout(1350);
   assert.equal((await state()).ultimateTime, 0);
   assert.equal((await state()).attackTime, 0);
