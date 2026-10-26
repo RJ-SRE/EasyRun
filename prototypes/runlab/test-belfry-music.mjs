@@ -133,6 +133,44 @@ try {
     45000,
   );
   assert.deepEqual(await page.evaluate(() => runtimeErrors), []);
+  assert.deepEqual(await page.evaluate(() => soundDiagnostics.settings), {
+    sfx: 0.85,
+    music: 0.4,
+  });
+  pass("new players start with the action-forward 85% effects / 40% music mix");
+  const migration = await page.evaluate(async () => {
+    const { BelfryAudio } = await import("/belfry-audio.js");
+    const key = "belfry-audio-v2",
+      previous = localStorage.getItem(key);
+    const results = [];
+    try {
+      for (const saved of [
+        { sfx: 0.3, music: 0.65 },
+        { sfx: 0.55, music: 0.2 },
+        { sfx: 0, music: 0.65 },
+      ]) {
+        localStorage.setItem(key, JSON.stringify(saved));
+        const audio = new BelfryAudio();
+        results.push({
+          settings: audio.settings,
+          saved: JSON.parse(localStorage.getItem(key)),
+        });
+        window.clearInterval(audio.timer);
+      }
+    } finally {
+      if (previous === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, previous);
+    }
+    return results;
+  });
+  assert.deepEqual(migration, [
+    { settings: { sfx: 0.85, music: 0.4 }, saved: { sfx: 0.85, music: 0.4 } },
+    { settings: { sfx: 0.55, music: 0.2 }, saved: { sfx: 0.55, music: 0.2 } },
+    { settings: { sfx: 0, music: 0.65 }, saved: { sfx: 0, music: 0.65 } },
+  ]);
+  pass(
+    "old quiet-effects preset migrates once; custom volumes and explicit mute remain intact",
+  );
   assert.equal(await music(), null);
   await page.locator("#music-start").click();
   await playing("menu");

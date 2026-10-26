@@ -82,7 +82,7 @@ def package(game):
         shell_marker = "// EXPORT_NATIVE_SHELL_TICK"
         assert main.count(shell_marker) == 1, "Rebuild Belfry before packaging the menu"
         main = main.replace(shell_marker, "updateNativeShell(dt)")
-        main = main.replace("// HOST_CONFIGURATION", "initNativeWords(); nativeMusicVolume=65; nativeSfxVolume=30")
+        main = main.replace("// HOST_CONFIGURATION", "initNativeWords(); nativeMusicVolume=40; nativeSfxVolume=85")
         main = main.replace('func event(name string) {', 'func event(name string) {\n nativeSoundEvent(name)')
         main = main.replace('Hero.captureAttack()', 'if nativeInputLock<=0 {Hero.captureAttack()}')
         main = main.replace('Hero.update(dt)', 'if nativeInputLock<=0 {Hero.update(dt)}')

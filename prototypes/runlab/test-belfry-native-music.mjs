@@ -90,6 +90,18 @@ async function boot(shortLoop = false) {
           );
         }),
       );
+    window.nativePeak = () =>
+      Math.max(
+        0,
+        ...window.nativeMeters.map((meter) => {
+          const values = new Float32Array(meter.fftSize);
+          meter.getFloatTimeDomainData(values);
+          return values.reduce(
+            (peak, value) => Math.max(peak, Math.abs(value)),
+            0,
+          );
+        }),
+      );
     const log = console.log.bind(console);
     console.log = (...args) => {
       const text = args.map(String).join(" ");
@@ -97,6 +109,9 @@ async function boot(shortLoop = false) {
       if (match) window.nativeLog.push({ track: match[1], state: match[2] });
       const state = text.match(/@state\s+(.+)/);
       if (state) window.nativeState = state[1].split(/\s+/).map(Number);
+      const mix = text.match(/@nativeMix\s+(\d+)\s+(\d+)/);
+      if (mix)
+        window.nativeMix = { music: Number(mix[1]), sfx: Number(mix[2]) };
       log(...args);
     };
   });
@@ -129,7 +144,7 @@ async function boot(shortLoop = false) {
         encoder = new window.TextEncoder();
       let main = decoder.decode(files["main.spx"]);
       main +=
-        '\nonKey KeyF8, => {phase=2}\nonKey KeyF9, => {phase=3}\nonKey KeyF10, => {phase=0}\nonKey KeyF11, => {phase=5; wordVisualPaused=false}\nonKey KeyF12, => {phase=1}\nonKey KeyF1, => {nativeMusicVolume=0; nativeSfxVolume=30}\nonKey KeyF2, => {nativeMusicVolume=0; nativeSfxVolume=0}\nonKey KeyF3, => {nativeMusicVolume=65; nativeSfxVolume=0}\nonKey KeyF4, => {NativeSfx.cue("SFX_blade")}\n';
+        '\nonKey KeyF8, => {phase=2}\nonKey KeyF9, => {phase=3}\nonKey KeyF10, => {phase=0}\nonKey KeyF11, => {phase=5; wordVisualPaused=false}\nonKey KeyF12, => {phase=1}\nonKey KeyF1, => {nativeMusicVolume=0; nativeSfxVolume=85}\nonKey KeyF2, => {nativeMusicVolume=0; nativeSfxVolume=0}\nonKey KeyF3, => {nativeMusicVolume=40; nativeSfxVolume=0}\nonKey KeyF4, => {NativeSfx.cue("SFX_blade")}\nonKey KeyF5, => {nativeSfxVolume=30}\nonKey KeyF7, => {println "@nativeMix",nativeMusicVolume,nativeSfxVolume}\n';
       files["main.spx"] = encoder.encode(main);
       await window.initGame(
         Object.fromEntries(
@@ -180,25 +195,61 @@ async function paused() {
 async function tap(key) {
   await page.keyboard.press(key, { delay: 80 });
 }
+function samplePeaks() {
+  return page.evaluate(async () => {
+    const peaks = [];
+    for (let i = 0; i < 90; i++) {
+      peaks.push(window.nativePeak());
+      await new Promise((resolve) => window.setTimeout(resolve, 10));
+    }
+    return Math.max(...peaks);
+  });
+}
 try {
   await boot();
   await playing("BGM_Menu");
   pass(
     "actual export compiles without the web host and the full menu MP3 produces nonzero engine audio",
   );
+  await tap("F7");
+  assert.deepEqual(await page.evaluate(() => window.nativeMix), {
+    music: 40,
+    sfx: 85,
+  });
+  pass("the exported title initializes music at 40% and action effects at 85%");
   await tap("Enter");
   await playing("BGM_Gameplay");
   pass("Enter switches to the full gameplay track");
+  const mixedRecording = samplePeaks();
+  await page.keyboard.down("j");
+  const mixedPeak = await mixedRecording;
+  await page.keyboard.up("j");
+  assert.ok(mixedPeak > 0.01 && mixedPeak < 0.99, `mixed peak ${mixedPeak}`);
+  report.defaultMixPeak = mixedPeak;
+  pass(
+    "real J attacks and gameplay music both run under the new mix without full-scale clipping in the sampled opening combat",
+  );
   await tap("F1");
   await page.waitForFunction(() => window.nativeRms() < 0.000001, null, {
     timeout: 10000,
   });
+  const highRecording = samplePeaks();
   await tap("F4");
-  await page.waitForFunction(() => window.nativeRms() > 0.00001, null, {
-    timeout: 5000,
-  });
+  const highPeak = await highRecording;
+  assert.ok(highPeak > 0.2, `action peak ${highPeak}`);
   pass(
     "zero music volume leaves independently controlled action audio audible",
+  );
+  await page.waitForTimeout(500);
+  await tap("F5");
+  const lowRecording = samplePeaks();
+  await tap("F4");
+  const lowPeak = await lowRecording;
+  const ratio = highPeak / lowPeak;
+  assert.ok(ratio > 2.3 && ratio < 3.4, `85% / 30% output peak ratio ${ratio}`);
+  report.actionLevels = { highPeak, lowPeak, ratio };
+  pass(
+    "85% action output is measurably louder than 30%; the independent level control still works",
   );
   await tap("F2");
   await page.waitForTimeout(600);

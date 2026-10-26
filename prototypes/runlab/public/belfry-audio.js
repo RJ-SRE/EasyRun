@@ -1,7 +1,7 @@
 import { BelfryMusic } from "./belfry-music.js";
 
 // Action effects omit bell/drum layers. Scene music is supplied by the user.
-const defaults = { sfx: 0.3, music: 0.65 };
+const defaults = { sfx: 0.85, music: 0.4 };
 const counts = {
   bowdraw: 2,
   bowshot: 3,
@@ -45,6 +45,12 @@ export class BelfryAudio {
       for (const k of Object.keys(defaults))
         if (Number.isFinite(saved?.[k]))
           this.settings[k] = Math.min(1, Math.max(0, saved[k]));
+      // Upgrade the old quiet-effects preset, while respecting custom/muted
+      // preferences. Otherwise returning players never hear the new balance.
+      if (saved?.sfx === 0.3 && saved?.music === 0.65) {
+        this.settings = { ...defaults };
+        localStorage.setItem("belfry-audio-v2", JSON.stringify(this.settings));
+      }
     } catch {
       /* Storage is optional; former voice preferences are ignored. */
     }

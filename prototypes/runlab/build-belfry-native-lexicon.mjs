@@ -237,9 +237,9 @@ func syncChannel() {
  blocked:=nativeSfxVolume<=0 || phase==4 || phase==5 && wordVisualPaused
  if blocked && !muted {${cues.map((c) => `stopPlaying "SFX_${c}"`).join("; ")}}
  muted=blocked
- if applied!=nativeSfxVolume {applied=nativeSfxVolume; setVolume float64(applied)*0.55}
+ if applied!=nativeSfxVolume {applied=nativeSfxVolume; setVolume float64(applied)}
 }
-func cue(name string) {if nativeSfxVolume<=0 || phase==4 || phase==5 && wordVisualPaused {return}; setVolume float64(nativeSfxVolume)*0.55; play name}
+func cue(name string) {if nativeSfxVolume<=0 || phase==4 || phase==5 && wordVisualPaused {return}; setVolume float64(nativeSfxVolume); play name}
 onStart => {hide}
 `;
   console.log(

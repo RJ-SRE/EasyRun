@@ -1,0 +1,32 @@
+{
+  "version": "0.15.1",
+  "date": "2026-10-27",
+  "archive": {
+    "name": "EasyRun-XBuilder-v0.15.1-audio-balance.xbp",
+    "sha256": "6540e59a9801aaf476bf6a6346bc655b4e3097a979c9c06f7e3c061dad846612",
+    "bytes": 105618628,
+    "files": 4720
+  },
+  "baselineSha256": "e3807e52420415f3c7cc80552743e3d7b3f27f99be58c9fb24fdd720f8e9a5a2",
+  "changedArchiveFiles": [
+    "NativeSfx.spx",
+    "main.spx"
+  ],
+  "audioAndArtworkUnchanged": true,
+  "testCounts": {
+    "web-music": 16,
+    "native-music": 13
+  },
+  "defaultMix": {
+    "music": 40,
+    "sfx": 85,
+    "nativeSfxAdditionalGain": 1
+  },
+  "defaultMixedOutputPeak": 0.3159712553024292,
+  "actionOutput": {
+    "highPeak": 0.28422272205352783,
+    "lowPeak": 0.10031390935182571,
+    "ratio": 2.833333122894138
+  },
+  "remotePushed": false
+}
