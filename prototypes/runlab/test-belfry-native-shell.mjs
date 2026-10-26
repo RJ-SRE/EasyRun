@@ -313,6 +313,7 @@ try {
   );
   await tap("Escape");
   await state(4, 3);
+  await shot("pause-960");
   const elapsed = await page.evaluate(() => window.nativeState[3]);
   await page.waitForTimeout(500);
   assert.equal(await page.evaluate(() => window.nativeState[3]), elapsed);

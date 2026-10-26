@@ -178,14 +178,15 @@ try {
         if (hint) text(hint, x + 14, y + 37, 10, C.dim);
         if (primary) text("↘", x + w - 35, y + h / 2 + 7, 24, "#142128");
       }
-      function soundPanel() {
-        text("S O U N D", 580, 415, 10, C.gold);
+      function soundPanel(compact = false) {
+        if (!compact) text("S O U N D", 580, 415, 10, C.gold);
         text("背景音乐", 580, 441, 12, C.dim);
         text("动作音效", 580, 481, 12, C.dim);
         [438, 478].forEach((y) => line(656, y, 880, y, "#65756b66"));
-        text("音乐与音效独立调节 · B 静音音乐", 580, 515, 10, C.dim);
+        if (!compact)
+          text("音乐与音效独立调节 · B 静音音乐", 580, 515, 10, C.dim);
       }
-      function base(painted = true) {
+      function base(painted = true, minimal = false) {
         if (painted) {
           const scale = Math.max(960 / image.width, 600 / image.height);
           ctx.drawImage(
@@ -205,9 +206,11 @@ try {
         ctx.strokeStyle = "#b59c6540";
         line(34, 32, 150, 32, "#b59c6560");
         line(810, 568, 926, 568, "#b59c6560");
-        text("R U P T U R E   /   裂 隙", 64, 67, 13, C.gold);
-        text("THE HOLLOW BELFRY", 64, 119, 12, C.dim);
-        line(64, 246, 454, 246);
+        if (!minimal) {
+          text("R U P T U R E   /   裂 隙", 64, 67, 13, C.gold);
+          text("THE HOLLOW BELFRY", 64, 119, 12, C.dim);
+          line(64, 246, 454, 246);
+        }
         ctx.save();
         ctx.translate(742, 124);
         ctx.strokeStyle = "#c7b18050";
@@ -227,16 +230,15 @@ try {
       }
       for (let difficulty = 0; difficulty < 2; difficulty++)
         canvas("title" + difficulty, 960, 600, () => {
-          base();
-          text("倒悬钟城", 61, 180, 58, C.ivory, serif);
-          text("向下夺心，向上逃生。", 64, 214, 18, C.gold);
+          base(true, true);
+          text("裂", 60, 202, 90, C.ivory, serif);
+          text("隙", 172, 202, 90, C.ivory, serif);
+          line(64, 240, 320, 240, "#c7b18060");
           button(4, "旅人", "8 格生命 · 从容探索", difficulty === 0);
           button(5, "无畏", "5 格生命 · 紧密追击", difficulty === 1);
           button(1, "进入钟城   Enter", "", false, true);
           button(2, "排练场   T");
           button(3, "操作指南   H");
-          text("O 钩索   /   W 跳跃   /   J 连击", 64, 540, 13, C.dim);
-          text("纵向动作冒险", 64, 562, 12, "#758480");
           text("远征准备", 580, 181, 15, C.gold, serif);
           button(13, "铭文");
           button(12, "词汇范围");
@@ -286,12 +288,7 @@ try {
         text("答错或超时取消技能；Esc 暂停题目", 516, 546, 12, C.dim);
       });
       for (const [name, title, subtitle, primary] of [
-        [
-          "pause",
-          "在此歇息。",
-          "钟城暂时静止。准备好后，再借风而行。",
-          "继续冒险   Enter",
-        ],
+        ["pause", "暂停", "", "继续   Enter"],
         [
           "defeat",
           "坠落并非终点。",
@@ -306,37 +303,31 @@ try {
         ],
       ])
         canvas(name, 960, 600, () => {
-          base(false);
-          text(title, 62, 180, 42, C.ivory, serif);
-          text(subtitle, 64, 216, 16, C.dim);
-          text(
-            name === "pause"
-              ? "TAKE A BREATH"
-              : name === "defeat"
-                ? "ANOTHER WAY UP"
-                : "THE HEART RETURNS",
-            64,
-            305,
-            13,
-            C.gold,
-          );
-          text(
-            name === "pause"
-              ? "保留此刻的位置与进度。"
-              : "钩索、站位和技能，都还有新的组合。",
-            64,
-            334,
-            15,
-            C.ivory,
-          );
+          base(false, name === "pause");
+          if (name === "pause") {
+            text("暂停", 62, 278, 48, C.ivory, serif);
+            line(64, 318, 424, 318, "#c7b18050");
+          } else {
+            text(title, 62, 180, 42, C.ivory, serif);
+            text(subtitle, 64, 216, 16, C.dim);
+            text(
+              name === "defeat" ? "ANOTHER WAY UP" : "THE HEART RETURNS",
+              64,
+              305,
+              13,
+              C.gold,
+            );
+            text("钩索、站位和技能，都还有新的组合。", 64, 334, 15, C.ivory);
+          }
           button(1, primary, "", false, true);
           button(7, "返回标题   M");
           button(
             name === "pause" ? 3 : 8,
             name === "pause" ? "操作指南   H" : "重新远征   R",
           );
-          text("O 钩索   /   W 跳跃   /   J 连击", 64, 546, 13, C.dim);
-          soundPanel();
+          if (name !== "pause")
+            text("O 钩索   /   W 跳跃   /   J 连击", 64, 546, 13, C.dim);
+          soundPanel(name === "pause");
         });
       for (let mute = 0; mute < 2; mute++)
         canvas("music" + mute, 50, 28, () => {
@@ -375,13 +366,6 @@ try {
         ctx.fillStyle = bottom;
         ctx.fillRect(0, 510, 960, 90);
         text("THE THREADBEARER", 36, 31, 10, C.gold);
-        text(
-          "W 跳跃   O 钩索   J 连击   K 冲刺   双击 S 下穿",
-          36,
-          585,
-          12,
-          C.dim,
-        );
       });
       for (const max of [8, 5])
         for (let hp = 0; hp <= 8; hp++)
@@ -414,40 +398,41 @@ try {
       skills.forEach(([key, name], i) => {
         const duration = i === 3 ? 5 : 3;
         for (let step = 0; step <= duration * 10; step++)
-          canvas(`skill${i}-${step}`, 92, 34, () => {
+          canvas(`skill${i}-${step}`, 76, 28, () => {
             const cooling = step > 0;
-            const shade = ctx.createLinearGradient(0, 0, 92, 0);
+            const shade = ctx.createLinearGradient(0, 0, 76, 0);
             shade.addColorStop(0, "#07121bea");
             shade.addColorStop(1, "#07121b88");
             ctx.fillStyle = shade;
-            ctx.fillRect(0, 0, 92, 34);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(70, 0);
+            ctx.lineTo(76, 6);
+            ctx.lineTo(76, 28);
+            ctx.lineTo(0, 28);
+            ctx.closePath();
+            ctx.fill();
             ctx.strokeStyle = "#c7b18040";
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.arc(17, 17, 13, 0, Math.PI * 2);
+            ctx.arc(13, 14, 10, 0, Math.PI * 2);
             ctx.stroke();
             ctx.strokeStyle = cooling ? "#a9cbb8" : C.gold;
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.arc(
-              17,
-              17,
               13,
+              14,
+              10,
               -Math.PI / 2,
               -Math.PI / 2 +
                 Math.PI * 2 * (cooling ? 1 - step / (duration * 10) : 1),
             );
             ctx.stroke();
-            text(key, 12, 21, 12, cooling ? C.dim : C.ivory);
-            text(name, 36, 14, i === 3 ? 10 : 12, cooling ? C.dim : C.ivory);
-            text(
-              cooling ? (step / 10).toFixed(1) + "s" : "READY",
-              36,
-              28,
-              9,
-              cooling ? "#a9cbb8" : C.gold,
-            );
-            if (!cooling) line(36, 33, 86, 33, "#c7b18080");
+            text(key, 9, 18, 11, cooling ? C.dim : C.ivory);
+            text(name, 28, 12, 10, cooling ? C.dim : C.ivory);
+            if (cooling) text((step / 10).toFixed(1), 28, 24, 9, "#a9cbb8");
+            else line(28, 23, 70, 23, "#c7b18080");
           });
       });
       return images;
@@ -523,7 +508,7 @@ for (const [i, cool] of [
   sprite(
     "NativeSkill" + i,
     Array.from({ length: i === 3 ? 51 : 31 }, (_, n) => `skill${i}-${n}`),
-    `func syncUI() {if ${active} {show; setCostume int(clamp(Hero.${cool}*10+0.999,0,${i === 3 ? 50 : 30})); ${pin(82 + i * 100, 550)}} else {hide}}`,
+    `func syncUI() {if ${active} {show; setCostume int(clamp(Hero.${cool}*10+0.999,0,${i === 3 ? 50 : 30})); ${pin(74 + i * 84, 562)}} else {hide}}`,
   );
 sprite(
   "NativePanel",
