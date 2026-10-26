@@ -30,29 +30,52 @@ export async function buildNativeLexicon(page, words) {
       ...rows.map((w) => w.word + w.meaning + w.a + w.b).join(""),
     ]),
   ].filter((c) => c >= " ");
+  const entries = chars.map((c) => ({ c, font: 0 }));
+  for (const font of [1, 2, 3])
+    for (let i = 32; i < 127; i++)
+      entries.push({ c: String.fromCharCode(i), font });
   const glyphs = await page.evaluate(
-    (chars) =>
-      chars.map((c) => {
+    (entries) =>
+      entries.map(({ c, font }) => {
         const el = document.createElement("canvas");
-        el.width = 40;
-        el.height = 48;
+        el.width = font ? 56 : 40;
+        el.height = font ? 60 : 48;
         const ctx = el.getContext("2d");
-        ctx.fillStyle = "#eee7d2";
-        ctx.font = '36px "PingFang SC", "Microsoft YaHei", sans-serif';
+        ctx.fillStyle =
+          font === 3 ? "#d99671" : font === 2 ? "#e3cf9f" : "#eee7d2";
+        ctx.font =
+          font === 1
+            ? '40px Georgia, "Times New Roman", serif'
+            : font
+              ? "40px ui-monospace, monospace"
+              : '36px "PingFang SC", "Microsoft YaHei", sans-serif';
         ctx.textAlign = "center";
-        ctx.fillText(c, 20, 36);
-        return el.toDataURL("image/png").split(",")[1];
+        ctx.fillText(c, font ? 28 : 20, font ? 46 : 36);
+        return {
+          data: el.toDataURL("image/png").split(",")[1],
+          advance: font
+            ? ctx.measureText(c).width / 40
+            : c.charCodeAt(0) < 128
+              ? 0.58
+              : 1,
+        };
       }),
-    chars,
+    entries,
   );
   const files = {},
-    costumes = chars.map((c, i) => {
+    costumes = entries.map(({ font }, i) => {
       const name = `g${i}`;
       files[`assets/sprites/NativeGlyph/${name}.png`] = Buffer.from(
-        glyphs[i],
+        glyphs[i].data,
         "base64",
       );
-      return { name, path: name + ".png", x: 20, y: 24, bitmapResolution: 2 };
+      return {
+        name,
+        path: name + ".png",
+        x: font ? 28 : 20,
+        y: font ? 30 : 24,
+        bitmapResolution: 2,
+      };
     });
   const spriteConfig = {
     x: 0,
@@ -76,7 +99,8 @@ export async function buildNativeLexicon(page, words) {
 func syncText() {
  if slot>=nativeTextCount {hide; return}
  if version!=nativeTextVersion {version=nativeTextVersion; setCostume nativeTextGlyph[slot]; setSize nativeTextSize[slot]}
- setXYpos viewCenterX+nativeTextX[slot]-480,viewCenterY+300-nativeTextY[slot]
+ offset:=0.0; if nativeTextFocus[slot] {offset=nativeFocusOffset}
+ setXYpos viewCenterX+nativeTextX[slot]-480,viewCenterY+300-nativeTextY[slot]+offset
  show; setLayer Front
 }
 onStart => {hide}
@@ -102,11 +126,16 @@ onClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mou
           `${name}=[]${type}{${rows.map((w) => (type === "string" ? quote(w[key]) : w[key])).join(",")}}`,
       )
       .join("\n") +
-    "\n}\nfunc initNativeGlyphData() {\n nativeGlyphs=map[rune]int{}\n" +
-    chars
-      .map((c, i) => `nativeGlyphs[[]rune(${quote(c)})[0]]=${i}`)
+    "\n}\nfunc initNativeGlyphData() {\n nativeGlyphs=map[rune]int{}; nativeSerifGlyphs=map[rune]int{}; nativeMonoGlyphs=map[rune]int{}; nativeErrorGlyphs=map[rune]int{}\n" +
+    entries
+      .map(
+        ({ c, font }, i) =>
+          `${["nativeGlyphs", "nativeSerifGlyphs", "nativeMonoGlyphs", "nativeErrorGlyphs"][font]}[[]rune(${quote(c)})[0]]=${i}`,
+      )
       .join("\n") +
-    "\n}\n";
+    "\n nativeGlyphAdvance=[]float64{" +
+    glyphs.map((g) => g.advance.toFixed(5)).join(",") +
+    "}\n}\n";
   const cues = [
     "blade",
     "bowdraw",
@@ -170,7 +199,7 @@ onClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mou
     files: nativeSfx,
   });
   files["assets/sprites/NativeSfx/pixel.png"] = Buffer.from(
-    glyphs[chars.indexOf(" ")],
+    glyphs[chars.indexOf(" ")].data,
     "base64",
   );
   files["assets/sprites/NativeSfx/index.json"] = JSON.stringify({
@@ -194,7 +223,7 @@ func cue(name string) {if nativeSfxVolume<=0 || phase==4 || phase==5 && wordVisu
 onStart => {hide}
 `;
   console.log(
-    `Native wordbank: ${rows.length} entries / ${chars.length} glyphs / ${cues.length} action samples`,
+    `Native wordbank: ${rows.length} entries / ${entries.length} glyph costumes / ${cues.length} action samples`,
   );
   return { files };
 }

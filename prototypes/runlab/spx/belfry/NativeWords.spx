@@ -27,6 +27,12 @@ var (
  nativePreviewPage int
  nativeDeckUsed bool
  nativeInputLock float64
+ nativeFocusOffset float64
+ nativeTextFocus []bool
+ nativeGlyphAdvance []float64
+ nativeSerifGlyphs map[rune]int
+ nativeMonoGlyphs map[rune]int
+ nativeErrorGlyphs map[rune]int
  nativeGlyphs map[rune]int
  nativeTextGlyph []int
  nativeTextX []float64
@@ -56,7 +62,7 @@ func nativeShuffleDeck() {
 func initNativeWords() {
  initNativeWordData(); initNativeGlyphData()
  nativeWeak=make([]int,len(nativeWords))
- nativeTextGlyph=make([]int,160); nativeTextX=make([]float64,160); nativeTextY=make([]float64,160); nativeTextSize=make([]float64,160)
+ nativeTextGlyph=make([]int,160); nativeTextX=make([]float64,160); nativeTextY=make([]float64,160); nativeTextSize=make([]float64,160); nativeTextFocus=make([]bool,160)
  wordMode=1; nativeShuffleDeck()
 }
 func nativeStartWords() {
@@ -110,10 +116,46 @@ func nativeText(s string,x,y,size float64) {
  for _,c:=range s {
   if nativeTextCount>=160 {return}
   if c!=' ' {g,ok:=nativeGlyphs[c]; if ok {
-   n:=nativeTextCount; nativeTextGlyph[n]=g; nativeTextX[n]=x+size/2; nativeTextY[n]=y; nativeTextSize[n]=size/20; nativeTextCount++
+   n:=nativeTextCount; nativeTextGlyph[n]=g; nativeTextX[n]=x+size/2; nativeTextY[n]=y; nativeTextSize[n]=size/20; nativeTextFocus[n]=false; nativeTextCount++
   }}
   if c<128 {x+=size*0.58} else {x+=size}
  }
+}
+// Proportional serif cues and monospaced input match the web focus card.
+// Only focus text follows the entrance easing; HUD/menu text stays fixed.
+func nativeFocusGlyph(c rune,font int) int {
+ g:=nativeGlyphs[c]
+ if font==1 {if v,ok:=nativeSerifGlyphs[c]; ok {g=v}}
+ if font==2 {if v,ok:=nativeMonoGlyphs[c]; ok {g=v}}
+ if font==3 {if v,ok:=nativeErrorGlyphs[c]; ok {g=v}}
+ return g
+}
+func nativeTextWidth(s string,size float64,font int) float64 {
+ w:=0.0; for _,c:=range s {w+=nativeGlyphAdvance[nativeFocusGlyph(c,font)]*size}; return w
+}
+func nativeFocusText(s string,x,y,size float64,font int) {
+ for _,c:=range s {
+  if nativeTextCount>=160 {return}
+  g:=nativeFocusGlyph(c,font)
+  if c!=' ' {
+   n:=nativeTextCount; nativeTextGlyph[n]=g; nativeTextSize[n]=size/20; nativeTextFocus[n]=true
+   nativeTextX[n]=x+size/2; nativeTextY[n]=y-size*0.3
+   if font>0 && c<128 {nativeTextX[n]=x+nativeGlyphAdvance[g]*size/2; nativeTextY[n]=y-size*0.4}
+   nativeTextCount++
+  }
+  x+=nativeGlyphAdvance[g]*size
+ }
+}
+func nativeWrapMeaning(s string,x,y float64) {
+ line:=""; row:=0
+ for _,c:=range s {
+  candidate:=line+string(c)
+  if nativeTextWidth(candidate,11,0)>104 && line!="" {
+   nativeFocusText(line,x,y+float64(row)*11,11,0); row++; line=""
+  }
+  if row>=4 {return}; line+=string(c)
+ }
+ nativeFocusText(line,x,y+float64(row)*11,11,0)
 }
 func nativeNumber(n int) string {return fmt.Sprint(n)}
 func nativeRebuildText() {
@@ -138,17 +180,26 @@ func nativeRebuildText() {
   if wordMode==1 && practice==0 {nativeText("铭文 "+nativeNumber(nativeCompleted())+" / 30",36,78,12)}
   if phase==5 {
    i:=nativeWordIndex
-   nativeText(nativeNumber(int(math.Ceil(math.Max(0,nativeQuestionLimit-nativeQuestionAge))))+"s",370,82,13)
-   nativeText(nativeWords[i],218,113,24)
-   if nativeQuestionMode==0 {
-    nativeText(nativeInput+"_",218,155,22)
-   } else {
-    for option:=0;option<3;option++ {meaning:=nativeMeanings[i]; if option!=nativeAnswer {if option==(nativeAnswer+1)%3 {meaning=nativeDistractA[i]} else {meaning=nativeDistractB[i]}}
-     nativeText(nativeNumber(option+1)+"  "+meaning,218,148+float64(option)*26,14)
+   nativeFocusText(nativeNumber(int(math.Ceil(math.Max(0,nativeQuestionLimit-nativeQuestionAge))))+"s",267,120,11,2)
+   if !wordVisualPaused {
+    word:=nativeWords[i]; size:=28.0; width:=nativeTextWidth(word,size,1); if width>356 {size*=356/width}
+    nativeFocusText(word,324,80,size,1)
+    if nativeQuestionMode==0 {
+     start:=0; if len(nativeInput)>22 {start=len(nativeInput)-22}
+     for n:=start;n<len(nativeInput);n++ {
+      font:=2; if n>=len(word) || nativeInput[n]!=word[n] {font=3}
+      nativeFocusText(string(nativeInput[n]),324+float64(n-start)*16,116,17,font)
+     }
+     // Active letter uses the next slot; very long inputs scroll inside the card.
+     if len(nativeInput)-start<22 {nativeFocusText("_",324+float64(len(nativeInput)-start)*16,116,17,2)}
+    } else {
+     for option:=0;option<3;option++ {meaning:=nativeMeanings[i]; if option!=nativeAnswer {if option==(nativeAnswer+1)%3 {meaning=nativeDistractA[i]} else {meaning=nativeDistractB[i]}}
+      nativeWrapMeaning(meaning,330+float64(option)*122,125)
+     }
     }
    }
   }
-  if nativeFeedbackTime>0 {nativeText(nativeFeedback,218,257,14)}
+  if nativeFeedbackTime>0 {nativeText(nativeFeedback,240,220,12)}
  }
  // Reclaim only surplus decorative effects; never remove enemies or projectiles.
  broadcastAndWait "nativeCullFX"
@@ -158,6 +209,8 @@ func nativeRebuildText() {
  nativeTextVersion++
 }
 func updateNativeWords(dt float64) {
+ nativeFocusOffset=0
+ if phase==5 {t:=clamp(nativeQuestionAge/0.16,0,1); nativeFocusOffset=8*(1-t)*(1-t)*(1-t)}
  if nativeInputLock>0 {nativeInputLock-=dt}
  if phase==5 && wordPending>0 {
   if nativeWordSeen!=wordSerial {nativeOpenQuestion()}

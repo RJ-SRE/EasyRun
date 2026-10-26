@@ -5,6 +5,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { Buffer } from "node:buffer";
 import { WORDS } from "./public/cet4-words.js";
 import { buildNativeLexicon } from "./build-belfry-native-lexicon.mjs";
+import { buildNativeWordStyle } from "./build-belfry-native-style.mjs";
 const root = new URL("./", import.meta.url);
 const out = new URL("projects/belfry-native/", root);
 const rects = {
@@ -346,35 +347,6 @@ try {
           ctx.arc((224 * n) / 100, 11, 3, 0, Math.PI * 2);
           ctx.fill();
         });
-      for (let mode = 0; mode < 3; mode++)
-        canvas("question" + mode, 568, 176, () => {
-          const fill = ctx.createLinearGradient(0, 0, 568, 0);
-          fill.addColorStop(0, "#08161cf5");
-          fill.addColorStop(1, "#08161ce8");
-          ctx.fillStyle = fill;
-          ctx.fillRect(0, 0, 568, 176);
-          line(0, 0, 165, 0, C.gold);
-          line(0, 0, 0, 176, "#bca26c66");
-          line(0, 176, 568, 176, "#bca26c66");
-          text(
-            ["誊写铭文", "辨认词义", "已暂停 · Esc 继续"][mode],
-            22,
-            22,
-            13,
-            C.gold,
-          );
-          if (mode === 0)
-            text("Enter 确认 · Backspace 修改 · Esc 暂停", 22, 140, 12, C.dim);
-          text("INSCRIPTION", 452, 22, 10, C.gold);
-          line(22, 72, 546, 72, "#bca26c33");
-        });
-      for (let n = 0; n <= 60; n++)
-        canvas("timer" + n, 524, 3, () => {
-          ctx.fillStyle = "#68837b33";
-          ctx.fillRect(0, 0, 524, 3);
-          ctx.fillStyle = n < 15 ? "#d18c70" : C.gold;
-          ctx.fillRect(0, 0, (524 * n) / 60, 3);
-        });
       for (const [id, [, , w, h]] of Object.entries(rects))
         canvas("hover" + id, w, h, () => {
           ctx.fillStyle = "#f3e8bf18";
@@ -478,6 +450,7 @@ try {
     },
     { background, rects },
   );
+  Object.assign(art, await buildNativeWordStyle(browser));
 } finally {
   await browser.close();
 }
@@ -576,12 +549,17 @@ for (const [name, volume, y] of [
 sprite(
   "NativeQuestion",
   ["question0", "question1", "question2"],
-  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; c:=nativeQuestionMode; if wordVisualPaused {c=2}; setCostume c; ${pin(480, 148)}} else {hide}}`,
+  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; c:=nativeQuestionMode; if wordVisualPaused {c=2}; setCostume c; h:=154.0; if nativeQuestionMode==1 && !wordVisualPaused {h=180}; setXYpos viewCenterX,viewCenterY+300-22-h/2+nativeFocusOffset; setLayer Front;} else {hide}}`,
 );
 sprite(
   "NativeQuestionTimer",
   Array.from({ length: 61 }, (_, i) => "timer" + i),
-  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; setCostume int(clamp((1-nativeQuestionAge/nativeQuestionLimit)*60,0,60)); ${pin(480, 223)}} else {hide}}`,
+  `func syncUI() {if phase==5 && wordPending>0 && !nativeHelp {show; setCostume int(clamp((1-nativeQuestionAge/nativeQuestionLimit)*60,0,60)); setXYpos viewCenterX+280-480,viewCenterY+300-83+nativeFocusOffset; setLayer Front;} else {hide}}`,
+);
+sprite(
+  "NativeSpellingTrack",
+  Array.from({ length: 23 }, (_, i) => "spelling-track" + i),
+  `func syncUI() {if phase==5 && wordPending>0 && nativeQuestionMode==0 && !wordVisualPaused && !nativeHelp {show; n:=len(nativeWords[nativeWordIndex]); if len(nativeInput)>n {n=len(nativeInput)}; setCostume int(clamp(float64(n),0,22)); setXYpos viewCenterX+502-480,viewCenterY+300-110+nativeFocusOffset; setLayer Front} else {hide}}`,
 );
 zorder.push("NativeGlyph", "NativeSfx");
 for (let i = 0; i < 4; i++) {

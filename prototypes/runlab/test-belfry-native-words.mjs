@@ -34,7 +34,7 @@ const report = {
     .update(await readFile(archive))
     .digest("hex"),
   fixture:
-    "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
+    "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states; F12 injects bounded long-text fixtures. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
 };
 const server = createServer((req, res) => {
   res.writeHead(200, {
@@ -78,6 +78,7 @@ async function boot(run, deviceScaleFactor = 1) {
     window.mix = [];
     window.sfx = [];
     window.nativeRender = [];
+    window.nativeLayout = [];
     window.clonePeak = 0;
     window.nativeFrameSamples = [];
     const log = console.log.bind(console);
@@ -106,6 +107,9 @@ async function boot(run, deviceScaleFactor = 1) {
       if (s.startsWith("@nativeDeck ")) window.decks.push(s);
       if (s.startsWith("@nativeVolume "))
         window.mix = s.slice(14).split(/\s+/).map(Number);
+      if (s.startsWith("@nativeLayout ")) window.nativeLayout = [];
+      if (s.startsWith("@nativeGlyph "))
+        window.nativeLayout.push(s.slice(13).split(/\s+/).map(Number));
       if (s.startsWith("@nativeSfx ")) window.sfx.push(s);
       if (s.startsWith("@render ")) {
         window.nativeRender = s.slice(8).split(/\s+/).map(Number);
@@ -195,6 +199,10 @@ async function boot(run, deviceScaleFactor = 1) {
       files["main.spx"] = encoder.encode(
         decoder
           .decode(files["main.spx"])
+          .replace(
+            "nativeTextVersion++",
+            'nativeTextVersion++; println "@nativeLayout",nativeTextCount; for n:=0;n<nativeTextCount;n++ {if nativeTextFocus[n] {println "@nativeGlyph",nativeTextX[n],nativeTextY[n],nativeTextSize[n]}}',
+          )
           .replace("var (", "var (\n nativeProbeFrames int")
           .replace(
             "nativeUiLogTime+=dt",
@@ -204,6 +212,7 @@ async function boot(run, deviceScaleFactor = 1) {
             "Camera.zoom,nativeTextCount,nativeGlyphLive",
             "Camera.zoom,nativeTextCount,nativeGlyphLive,nativeProbeFrames",
           ) +
+          '\nonKey KeyF12, => {nativeWords[nativeWordIndex]="telecommunications"; nativeMeanings[nativeWordIndex]="探索探索探索探索探索探索探索探索探索探索探索探索探索探索"; nativeDistractA[nativeWordIndex]="练习练习练习练习练习练习练习练习练习练习练习练习练习练习"; nativeDistractB[nativeWordIndex]="旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程"; nativeQuestionLimit=60; nativeTextCache=""}\n' +
           "\nonKey KeyF7, => {chainOwner=0; wordOwner=0; requestWord(5); beginWord()}\nonKey KeyF8, => {bindEnemy=0; requestWord(6); beginWord()}\nonKey KeyF9, => {if phase==1 {Hero.resetHero(230,0); health=6; embers=2; Hero.invulnerable=999; Hero.bowCool=0; Hero.bladeCool=0; Hero.healCool=0; Hero.ultimateCool=0}}\nonKey KeyF10, => {nativeQuestionMode=0}\nonKey KeyF11, => {nativeQuestionMode=1}\n",
       );
       await window.initGame(
@@ -424,6 +433,43 @@ try {
   await answerMeaning(trap, true);
   pass(
     "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
+  );
+  const stress = await question("l", 2);
+  await tap("F12");
+  await tap("F11");
+  await page.waitForTimeout(250);
+  let layout = await page.evaluate(() => window.nativeLayout);
+  assert.ok(
+    layout.length >= 104,
+    "28 Chinese characters in every option remain visible",
+  );
+  assert.ok(
+    layout.every(([x, y]) => x >= 252 && x <= 704 && y >= 32 && y <= 161),
+    "all focus glyph centers stay inside the card",
+  );
+  await shot("meaning-long");
+  await page.setViewportSize({ width: 480, height: 360 });
+  await page.waitForFunction(
+    () => Math.abs(window.nativeUI[4] / window.nativeUI[5] - 4 / 3) < 0.01,
+  );
+  await page.waitForTimeout(300);
+  await shot("meaning-small");
+  await page.setViewportSize({ width: 960, height: 600 });
+  await tap("F10");
+  for (let i = 0; i < 48; i++) await tap("z");
+  await page.waitForTimeout(150);
+  layout = await page.evaluate(() => window.nativeLayout);
+  assert.ok(
+    layout.every(([x, y]) => x >= 252 && x <= 704 && y >= 32 && y <= 161),
+  );
+  assert.ok(
+    layout.length < 50,
+    "long input scrolls rather than consuming clone slots",
+  );
+  await shot("spelling-overflow");
+  await answerMeaning(stress, true);
+  pass(
+    "long-word and 28-character option fixtures fit the card; 48 typed characters scroll within the input; 480x360 resize remains intact",
   );
   await tap("Escape");
   await tap("m");

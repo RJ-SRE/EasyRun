@@ -95,7 +95,7 @@ func updateNativeShell(dt float64) {
  NativeHUD.syncUI(); NativeHealth.syncUI(); NativeObjective.syncUI()
  NativeSkill0.syncUI(); NativeSkill1.syncUI(); NativeSkill2.syncUI(); NativeSkill3.syncUI()
  NativePanel.syncUI(); NativeMusicButton.syncUI(); NativeHover.syncUI()
- NativeMusicSlider.syncUI(); NativeSfxSlider.syncUI(); NativeQuestion.syncUI(); NativeQuestionTimer.syncUI()
+ NativeMusicSlider.syncUI(); NativeSfxSlider.syncUI(); NativeQuestion.syncUI(); NativeQuestionTimer.syncUI(); NativeSpellingTrack.syncUI()
  updateNativeWords(dt)
  NativeMatte0.syncUI(); NativeMatte1.syncUI(); NativeMatte2.syncUI(); NativeMatte3.syncUI()
  nativeUiLogTime+=dt
