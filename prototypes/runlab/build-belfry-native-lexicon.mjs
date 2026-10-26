@@ -107,16 +107,23 @@ export async function buildNativeLexicon(page, words) {
  slot int
  version int
  cloned bool
+ layer int
+ glyph int
+ scale float64
 )
 func syncText() {
  if slot>=nativeTextCount {hide; return}
- if version!=nativeTextVersion {version=nativeTextVersion; setCostume nativeTextGlyph[slot]; setSize nativeTextSize[slot]}
+ if version!=nativeTextVersion {
+  version=nativeTextVersion
+  if glyph!=nativeTextGlyph[slot] {glyph=nativeTextGlyph[slot]; setCostume glyph}
+  if scale!=nativeTextSize[slot] {scale=nativeTextSize[slot]; setSize scale}
+ }
  offset:=0.0; if nativeTextFocus[slot] {offset=nativeFocusOffset}
  setXYpos viewCenterX+nativeTextX[slot]-480,viewCenterY+300-nativeTextY[slot]+offset
- show; setLayer Front
+ show; if layer!=nativeLayerVersion {layer=nativeLayerVersion; setLayer Front}
 }
 onStart => {hide}
-onCloned data => {slot=data.(int); version=-1; cloned=true; nativeGlyphLive++; hide}
+onCloned data => {slot=data.(int); version=-1; glyph=-1; layer=-1; cloned=true; nativeGlyphLive++; hide}
 onMsg "nativeTextResize", => {if cloned && slot>=nativeTextCount {cloned=false; nativeGlyphLive--; destroy}}
 onMsg "nativeText", => {if cloned {syncText()}}
 onClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mouseY+300))}

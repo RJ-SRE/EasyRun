@@ -84,6 +84,8 @@ var (
  renderY float64
  trailAt float64
  landing float64
+ idleTime float64
+ idleFrame int
 )
 func resetHero(x,y float64) {
  healGated=false; ultimateGated=false; bladeLink=-1; skillWord=0
@@ -92,6 +94,7 @@ func resetHero(x,y float64) {
  attackKind=0; attackAge=0; attackDuration=0; attackBuffer=0; bufferTime=0; chainStep=0; chainWindow=0; chargeTime=0; charging=false; prevHeavy=false; attackApplied=false; charged=false; attackFacing=90
  dashTime=0; dashCool=0; attackTime=0; attackCool=0; invulnerable=1.0; plunging=false
  prevJump=false; prevHook=false; prevAttack=false; attackPressed=false; prevDash=false; prevBurst=false; runDistance=0; pose=0; blendTime=0; bodyOffset=0; bodyVelocity=0; renderY=y; landing=0; trailAt=0
+ idleTime=0; idleFrame=-1
  cameraY=y-100; cameraRenderY=cameraY; cameraRenderX=480; Camera.setXYpos 480,cameraY; setXYpos px,py; show
 }
 func chooseTarget() {
@@ -103,8 +106,13 @@ func chooseTarget() {
  for i:=0;i<len(anchorX)+len(enemyHP);i++ {
   x:=0.0; y:=0.0; valid:=true
   if i<len(anchorX) {x=anchorX[i]; y=anchorY[i]} else {j:=i-len(anchorX); x=enemyX[j]; y=enemyY[j]; valid=enemyHP[j]>0}
-  dx:=x-px; dy:=y-py-28; d:=dist(dx,dy)
-  if valid && d<475 && d>55 {
+  dx:=x-px; dy:=y-py-28
+  if !valid || abs(dx)>=475 || abs(dy)>=475 {
+   continue
+  }
+  distanceSquared:=dx*dx+dy*dy
+  if distanceSquared<475*475 && distanceSquared>55*55 {
+   d:=math.Sqrt(distanceSquared)
    cost:=d-(dy*wantY+dx*wantX)*0.72
    if dy*wantY < -30 {cost+=420}
    if i>=len(anchorX) {cost-=45}
@@ -481,6 +489,12 @@ func render(dt float64) {
   duration:=0.055; if next>=1 && next<=12 && pose>=1 && pose<=12 {duration=0.025}
   if takeFX(90) {PoseBlend.clone []float64{float64(pose),duration,float64(attempts),facing}}; pose=next; blendTime=duration; blendDuration=duration; setCostume pose
  }
+ // Logical pose remains idle: wind frames never create blend/trail clones.
+ // The presentation clock respects pause and inscription slow motion.
+ if next==0 {
+  idleTime+=dt; frame:=int(idleTime*10)%24
+  if frame!=idleFrame {idleFrame=frame; setCostume 40+frame}
+ } else {idleTime=0; idleFrame=-1}
  if attackKind==0 && !charging && !bowCharging && ultimateTime<=0 {if vx < -20 {facing=-90} else if vx>20 {facing=90}}; setHeading facing
  bodyVelocity+=(-210*bodyOffset-23*bodyVelocity)*dt; bodyOffset+=bodyVelocity*dt; renderY=py+bodyOffset
  if charging {renderY+=sin(visualTime*43)*chargeTime*1.8}; if bindTime>0 {renderY+=sin(visualTime*35)*1.2}

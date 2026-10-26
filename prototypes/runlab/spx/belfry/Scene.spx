@@ -11,14 +11,24 @@ func sceneWanted(kind,i int,ys []float64) bool {
  return true
 }
 func fillScene(slots []int,kind int,ys []float64) {
- for s:=0;s<len(slots);s++ {i:=slots[s]; if i>=0 && !sceneWanted(kind,i,ys) {slots[s]=-1}}
+ // Reuse a generation-stamped membership table; preserve slot order without
+ // rescanning every slot for each candidate. Never cull collision/world data.
+ if len(sceneMembership)<len(ys) {sceneMembership=make([]int,len(ys))}
+ sceneGeneration++
+ for s:=0;s<len(slots);s++ {
+  i:=slots[s]
+  if i>=0 {if !sceneWanted(kind,i,ys) {slots[s]=-1} else {sceneMembership[i]=sceneGeneration}}
+ }
+ free:=0
  for i:=0;i<len(ys);i++ {
+  if sceneMembership[i]==sceneGeneration {
+   continue
+  }
   if !sceneWanted(kind,i,ys) {
    continue
   }
-  found:=false; free:=-1
-  for s:=0;s<len(slots);s++ {if slots[s]==i {found=true}; if slots[s]<0 && free<0 {free=s}}
-  if !found {if free>=0 {slots[free]=i} else {sceneMissing++}}
+  for free<len(slots) && slots[free]>=0 {free++}
+  if free<len(slots) {slots[free]=i; sceneMembership[i]=sceneGeneration; free++} else {sceneMissing++}
  }
 }
 func updateScene() {

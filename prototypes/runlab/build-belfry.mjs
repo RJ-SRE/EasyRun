@@ -6,6 +6,7 @@ import { chromium } from "@playwright/test";
 import { buildHuntLayout } from "./belfry-hunt.mjs";
 import { huntInit } from "./hunt-init.mjs";
 import { sceneInit, SCENE_SPRITES } from "./belfry-scene.mjs";
+import { buildIdleCloth } from "./belfry-idle-cloth.mjs";
 const layout = buildHuntLayout();
 const { platforms, anchors, echoes, checkpoints } = layout;
 const enemies = layout.enemies.map((e) => [e.x, e.y, e.kind, +e.returnOnly]);
@@ -64,7 +65,7 @@ await copyFile(
 );
 // Source atlases remain untouched. Build imports alpha-isolated, registered cells.
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
-let actionFrames, combatFrames, skillFrames;
+let actionFrames, combatFrames, skillFrames, idleCloth;
 const assassinFrames = {};
 const assassinKinds = ["hover", "fighter", "archer", "chain", "binder"];
 try {
@@ -350,7 +351,15 @@ try {
     true,
   );
   for (const name of ["warden", "hound", "weaver"])
-    assassinFrames[name] = await importAtlas(`art/belfry/hunt-${name}-source.png`,3,2,384,330,true,true);
+    assassinFrames[name] = await importAtlas(
+      `art/belfry/hunt-${name}-source.png`,
+      3,
+      2,
+      384,
+      330,
+      true,
+      true,
+    );
   assassinFrames.keeper = await importAtlas(
     "art/belfry/keeper-v2-source.png",
     6,
@@ -360,6 +369,15 @@ try {
     true,
     true,
   );
+  idleCloth = await buildIdleCloth(
+    page,
+    "data:image/png;base64," +
+      (await readFile(new URL("art/rupture-v2/frames/0.png", root))).toString(
+        "base64",
+      ),
+  );
+  if (idleCloth.anchoredDifferences !== 0 || idleCloth.changedPixels < 1000)
+    throw new Error("Idle cloth must move fabric while pinning hood and soles");
 } finally {
   await browser.close();
 }
@@ -455,7 +473,7 @@ sprite(
   },
   { visible: false, rotationStyle: "normal" },
   `onCloned data => {
- slot:=data.(int); opening:=0.0; view:=-1
+ slot:=data.(int); opening:=0.0; view:=-1; previousCostume:=-1; previousSize:=-1.0
  for {
   dt:=float64(waitNextFrame()); i:=sceneFloors[slot]
   if i<0 {hide
@@ -471,10 +489,12 @@ sprite(
   }
   if !floorActive(i) && floorKind[i]>=4 {ghost=100}
   if floorKind[i]==4 {setGraphicEffect ColorEffect,18} else if floorKind[i]==5 {setGraphicEffect BrightnessEffect,18}
-  setCostume 0
-  if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {
-   if floorKind[i]==23 || floorKind[i]==43 {setCostume 1; setSize floorW[i]/240} else {setSize floorW[i]/1983}
+  costume:=0; scale:=floorW[i]/1983
+  if practice==1 {if i==0 {scale=800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {
+   if floorKind[i]==23 || floorKind[i]==43 {costume=1; scale=floorW[i]/240}
   }
+  if costume!=previousCostume {previousCostume=costume; setCostume costume}
+  if scale!=previousSize {previousSize=scale; setSize scale}
   setXYpos x,y; setHeading heading; setGraphicEffect GhostEffect,ghost
  }
 }`,
@@ -550,7 +570,14 @@ for (let i = 0; i < 18; i++)
     pivotY: 366,
   };
 for (const name of ["warden", "hound", "weaver"])
-  for(let i=0;i<6;i++) enemyImages[`hunt-${name}-${i}`]={binary:Buffer.from(assassinFrames[name][i],"base64"),w:384,h:384,pivotX:192,pivotY:366};
+  for (let i = 0; i < 6; i++)
+    enemyImages[`hunt-${name}-${i}`] = {
+      binary: Buffer.from(assassinFrames[name][i], "base64"),
+      w: 384,
+      h: 384,
+      pivotX: 192,
+      pivotY: 366,
+    };
 sprite(
   "EnemyBlend",
   enemyImages,
@@ -737,6 +764,17 @@ sprite(
   { visible: false, rotationStyle: "left-right" },
   await code("PoseBlend"),
 );
+// Keep the original 40 action indices, trails and transitions unchanged.
+if (Object.keys(hero).length !== 40)
+  throw new Error("Update idle costume base after changing the action atlas");
+for (const [i, data] of idleCloth.frames.entries())
+  hero["idle-wind" + i] = {
+    binary: Buffer.from(data, "base64"),
+    w: idleCloth.width,
+    h: idleCloth.height,
+    pivotX: idleCloth.pivotX,
+    pivotY: idleCloth.pivotY,
+  };
 sprite(
   "Hero",
   hero,
@@ -1062,4 +1100,7 @@ console.log(
   `Built Belfry: ${Object.keys(files).length} files / ${zorder.length} sprites`,
 );
 
-await copyFile(new URL("public/belfry.html",root),new URL("public/index.html",root));
+await copyFile(
+  new URL("public/belfry.html", root),
+  new URL("public/index.html", root),
+);

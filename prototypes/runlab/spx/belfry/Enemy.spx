@@ -39,12 +39,12 @@ onCloned data => {
     if enemyElite[i]>0 {size*=1.18}
    }
    if kind<7 && kind!=3 && enemyElite[i]>0 {size*=1.16}
-   if lastAttempt!=attempts {previous=costume; lastAttempt=attempts; blend=0; trailAt=0}
+   if lastAttempt!=attempts {previous=-1; lastAttempt=attempts; blend=0; trailAt=0}
    if costume!=previous {
     if previous>=0 && takeFX(80) { EnemyBlend.clone []float64{float64(i),float64(previous),enemyFacing[i]*90,size,float64(attempts)}}
     previous=costume; blend=0.065; setCostume costume
    }
-   setCostume costume; setHeading enemyFacing[i]*90
+   setHeading enemyFacing[i]*90
    breath:=0.0; if state==0 {breath=sin(visualTime*2.3+float64(i))*0.004}
    setSize size*(1+breath); setXYpos enemyX[i],enemyY[i]-34
    // Stationary silhouettes mark actual past positions; they never hit or hide

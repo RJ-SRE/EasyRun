@@ -6,6 +6,11 @@ var (
  nativePanel int
  nativeUiLogTime float64
  nativeDragging int
+ nativeLayerVersion int
+ nativeLayerCache string
+ nativeHitCache string
+ nativeHitX float64
+ nativeHitY float64
 )
 func nativeButtonVisible(action int) bool {
  if nativeHintOpen && phase==0 && !nativeHelp && !nativePreview {return action>=30 && action<=33}
@@ -97,6 +102,8 @@ func nativeAdjustVolume(action int) {
 }
 func updateNativeShell(dt float64) {
  if nativeDragging>0 {if mousePressed && nativeButtonVisible(nativeDragging) {nativeAdjustVolume(nativeDragging)} else {nativeDragging=0}}
+ // Rebuild text before the layer pass; newly cloned glyphs share this epoch.
+ updateNativeWords(dt)
  nativePanel=-1
  if phase==0 {nativePanel=difficulty}
  if phase==4 {nativePanel=3}
@@ -104,14 +111,25 @@ func updateNativeShell(dt float64) {
  if phase==2 {nativePanel=5}
  if nativeHelp {nativePanel=2}
  if nativePreview {nativePanel=6}
- nativeHover=nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mouseY+300)
+ pointerX:=mouseX-viewCenterX+480; pointerY:=viewCenterY-mouseY+300
+ hitCache:=fmt.Sprint(nativePanel,phase,nativeHelp,nativePreview,nativePreviewPage,len(nativeLedgerPages),nativeLedgerFilterOpen,nativeHintOpen,wordMode,practice)
+ if hitCache!=nativeHitCache || pointerX!=nativeHitX || pointerY!=nativeHitY {
+  nativeHitCache=hitCache; nativeHitX=pointerX; nativeHitY=pointerY
+  nativeHover=nativeActionAt(pointerX,pointerY)
+ }
+ layerCache:=fmt.Sprint(nativePanel,nativeHover,nativePreview,nativeHelp,nativeHintOpen,nativeLedgerFilterOpen,nativeTextVersion,phase,wordVisualPaused)
+ if layerCache!=nativeLayerCache {nativeLayerCache=layerCache; nativeLayerVersion++}
  NativeHUD.syncUI(); NativeHealth.syncUI(); NativeObjective.syncUI()
  NativeSkill0.syncUI(); NativeSkill1.syncUI(); NativeSkill2.syncUI(); NativeSkill3.syncUI()
- NativePanel.syncUI(); NativeLedgerTools.syncUI(); NativeMusicButton.syncUI(); NativeHover.syncUI()
+ NativePanel.syncUI(); NativeLedgerTools.syncUI(); NativeMusicButton.syncUI()
+ // Paint the hover once in its final layer; cached Front calls cannot be
+ // repeated below and above a dropdown in the same epoch.
+ overlayHover:=nativeHintOpen || nativeLedgerFilterOpen && nativeHover>=27
+ if !overlayHover {NativeHover.syncUI()}
  NativeMusicSlider.syncUI(); NativeSfxSlider.syncUI(); NativeQuestion.syncUI(); NativeQuestionTimer.syncUI(); NativeSpellingTrack.syncUI()
- updateNativeWords(dt)
- NativeLedgerFilter.syncUI(); if nativeLedgerFilterOpen && nativeHover>=27 {NativeHover.syncUI()}
- NativeHintMenu.syncUI(); if nativeHintOpen {NativeHover.syncUI()}
+ nativePaintText()
+ NativeLedgerFilter.syncUI(); NativeHintMenu.syncUI()
+ if overlayHover {NativeHover.syncUI()}
  NativeLedgerTally0.syncUI(); NativeLedgerTally1.syncUI(); NativeLedgerTally2.syncUI(); NativeLedgerTally3.syncUI(); NativeLedgerTally4.syncUI(); NativeLedgerTally5.syncUI(); NativeLedgerTally6.syncUI(); NativeLedgerTally7.syncUI(); NativeLedgerTally8.syncUI(); NativeLedgerTally9.syncUI();
  NativeMatte0.syncUI(); NativeMatte1.syncUI(); NativeMatte2.syncUI(); NativeMatte3.syncUI()
  nativeUiLogTime+=dt

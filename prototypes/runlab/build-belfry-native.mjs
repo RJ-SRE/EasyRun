@@ -477,7 +477,34 @@ function sprite(
     costumeIndex: 0,
   });
   files[name + ".spx"] =
-    source +
+    // spx marks costumes dirty even when the index is unchanged. Cache only
+    // engine mutations; camera-relative placement and game logic stay live.
+    `var (
+ uiCostumeIndex int
+ uiCostumeKnown bool
+ uiScale float64
+ uiScaleKnown bool
+ uiX float64
+ uiY float64
+ uiPositionKnown bool
+ uiVisible bool
+ uiVisibleKnown bool
+ uiLayer int
+)
+func uiCostume(c int) {if !uiCostumeKnown || c!=uiCostumeIndex {uiCostumeKnown=true; uiCostumeIndex=c; setCostume c}}
+func uiSize(s float64) {if !uiScaleKnown || s!=uiScale {uiScaleKnown=true; uiScale=s; setSize s}}
+func uiPosition(x,y float64) {if !uiPositionKnown || x!=uiX || y!=uiY {uiPositionKnown=true; uiX=x; uiY=y; setXYpos x,y}}
+func uiShow() {if !uiVisibleKnown || !uiVisible {uiVisibleKnown=true; uiVisible=true; show}}
+func uiHide() {if !uiVisibleKnown || uiVisible {uiVisibleKnown=true; uiVisible=false; hide}}
+func uiFront() {if uiLayer!=nativeLayerVersion {uiLayer=nativeLayerVersion; setLayer Front}}
+` +
+    source
+      .replaceAll("setCostume ", "uiCostume ")
+      .replaceAll("setSize ", "uiSize ")
+      .replaceAll("setXYpos ", "uiPosition ")
+      .replaceAll("setLayer Front", "uiFront()")
+      .replace(/\bshow\b/g, "uiShow()")
+      .replace(/\bhide\b/g, "uiHide()") +
     "\nonStart => {}\nonClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mouseY+300))}\n";
   zorder.push(name);
 }

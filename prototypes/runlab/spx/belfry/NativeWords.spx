@@ -47,6 +47,11 @@ var (
  nativeGlyphLive int
  nativeTextCache string
  nativeTextVersion int
+ nativeTextPaintVersion int
+ nativeTextPaintLayer int
+ nativeTextPaintX float64
+ nativeTextPaintY float64
+ nativeTextPaintOffset float64
 )
 func nativeRand(n int) int {return int(rand(0,n-1))}
 
@@ -243,5 +248,11 @@ func updateNativeWords(dt float64) {
  if phase!=4 && !(phase==5 && wordVisualPaused) {nativeFeedbackTime=math.Max(0,nativeFeedbackTime-dt)}
  cache:=fmt.Sprint(nativeLedgerRevision,nativeLedgerSearch,phase,nativePreview,nativePreviewPage,nativeScope,nativePace,nativeHint,nativeHintVisible(),wordMode,nativeHelp,nativeMusicVolume,nativeSfxVolume,nativeWordSeen,nativeQuestionMode,wordVisualPaused,nativeInput,int(nativeQuestionAge),nativeCompleted(),nativeFeedbackTime>0)
  if cache!=nativeTextCache {nativeTextCache=cache; nativeRebuildText()}
- if nativePreview && nativeLedgerFilterOpen || nativeHintOpen {broadcastAndWait "nativeText"} else {broadcast "nativeText"}
+}
+func nativePaintText() {
+ layerChanged:=nativeTextPaintLayer!=nativeLayerVersion
+ if nativeTextPaintVersion==nativeTextVersion && !layerChanged && nativeTextPaintX==viewCenterX && nativeTextPaintY==viewCenterY && nativeTextPaintOffset==nativeFocusOffset {return}
+ nativeTextPaintVersion=nativeTextVersion; nativeTextPaintLayer=nativeLayerVersion
+ nativeTextPaintX=viewCenterX; nativeTextPaintY=viewCenterY; nativeTextPaintOffset=nativeFocusOffset
+ if layerChanged || nativePreview && nativeLedgerFilterOpen || nativeHintOpen {broadcastAndWait "nativeText"} else {broadcast "nativeText"}
 }

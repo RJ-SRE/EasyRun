@@ -1,6 +1,8 @@
 import "math"
 
 var (
+ sceneMembership []int
+ sceneGeneration int
  viewCenterX float64
  viewCenterY float64
  viewWidth float64

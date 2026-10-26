@@ -68,7 +68,7 @@ def package(game):
         methods.append("func nativeCaptureHeld() {\n" + "\n".join(
             f" if keyPressed({key}) {{nativeHeld[{i}]=true}}" for i, key in enumerate(keys)
         ) + "\n}\nfunc nativeReleaseHeld() {\n" + "\n".join(
-            f" if !keyPressed({key}) {{nativeHeld[{i}]=false}}" for i, key in enumerate(keys)
+            f" if nativeHeld[{i}] && !keyPressed({key}) {{nativeHeld[{i}]=false}}" for i, key in enumerate(keys)
         ) + "\n}\n" + "\n".join(
             f"func native{key}() bool {{return !nativeHeld[{i}] && keyPressed({key})}}" for i, key in enumerate(keys)
         ))
