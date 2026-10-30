@@ -6,7 +6,7 @@
 
 **demo视频**：https://www.bilibili.com/video/BV1HcnU6bE5S/?vd_source=638bf0a9b7b4b137eefb790a6b71f46d
 
-
+**在线体验**：https://x.qiniu.com/project/RJ/easyrun
 
 **向下夺心，向上逃生。用钩索改变战场，用判断决定下一次出手。**
 
