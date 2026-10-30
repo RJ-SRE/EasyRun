@@ -17,7 +17,7 @@ func updateExpedition(dt float64) {
  if practice==1 {expPrompt=-1; return}
  expRoom=roomAt(Hero.py); expPrompt=-1
  if segment==0 {
-  if expRoom>checkpoint {checkpoint=expRoom; event("checkpoint"); if expRoom%3==0 || expRoom==14 {health=maxHealth; event("restored")}}
+  if expRoom>checkpoint {checkpoint=expRoom; event("checkpoint"); saveStageProgress(); if expRoom%3==0 || expRoom==14 {health=maxHealth; event("restored")}}
   for r:=0;r<14;r++ {
    alive:=false
    for i:=0;i<len(enemyHP);i++ {if enemyRoom[i]==r && enemyReturnOnly[i]==0 && enemyHP[i]>0 {alive=true}}
@@ -33,7 +33,7 @@ func expeditionReturn() {
   enemyHP[j]=0
   if enemyReturnOnly[j]==1 {clearEnemyMotion(j); enemyHP[j]=enemyMaxHP(enemyType[j]); enemyState[j]=0; enemyClock[j]=0}
  }
- event("core")
+ event("core"); saveStageProgress()
 }
 func restoreExpedition() {
  for i:=0;i<len(roomFlags);i++ {roomFlags[i]=0; roomDone[i]=hostRoomDone[i]}

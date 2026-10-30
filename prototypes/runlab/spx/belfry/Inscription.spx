@@ -6,7 +6,7 @@ func presentationDelta(dt float64) float64 {
  if phase==1 || phase==5 {return dt*wordVisualRate}
  return dt
 }
-func resetInscription() {wordVisualPaused=false; wordVisualRate=1; wordFocusAge=0; wordWanted=0; wordPending=0; wordOwner=-1; wordSegment=segment}
+func resetInscription() {wordVisualPaused=false; wordVisualRate=1; wordFocusAge=0; wordWanted=0; wordPending=0; wordOwner=-1; wordSegment=segment; wordTimer=0; wordInputLen=0; wordType=0; wordIndex=0; wordChoice=0; wordKeys=0; if stageHost==1 {Hero.say " "}}
 func requestWord(kind int) {
  if wordMode==0 || practice==1 || phase!=1 || wordPending>0 || wordWanted>0 {return}
  wordWanted=kind; wordOwner=-1; wordSegment=segment
@@ -25,6 +25,7 @@ func beginWord() {
  wordPending=kind; wordSerial++; phase=5; hitStop=0; wordFocusAge=0; wordVisualPaused=false
  Hero.attackBuffer=0; Hero.attackPressed=false; Hero.buffer=0
  println "@word",attempts,wordSerial,kind
+ beginStageWord(kind)
 }
 func resolveWord(result int) {
  if phase!=5 || wordPending<=0 {return}
@@ -37,6 +38,7 @@ func resolveWord(result int) {
  applyInscription(kind,success)
  println "@wordResolved",attempts,wordSerial,kind,result
  if success {event("wordok"); ring(Hero.px,Hero.py+30,0.7,1)} else {event("wordmiss")}
+ if stageHost==1 {hudText=""; Hero.say " "}
 }
 func applyInscription(kind int, success bool) {
  if success && kind<=4 {Hero.skillWord=wordSerial}
@@ -60,4 +62,88 @@ func applyInscription(kind int, success bool) {
 // one useful cast. IDs are captured by projectiles before another cast begins.
 func skillImpact(serial,kind,target int) {
  if wordMode==1 && practice==0 && serial>0 {println "@skillImpact",attempts,serial,kind,target,elapsed}
+}
+func initStageWords() {
+ // STAGE_WORD_BANK
+}
+func itoa(n int) string {
+ if n<=0 {return "0"}
+ d:="0123456789"; s:=""
+ for n>0 {s=d[n%10:n%10+1]+s; n=n/10}
+ return s
+}
+func saveStageProgress() {
+ if stageHost==0 || practice==1 {return}
+ hostCheckpoint=checkpoint; hostSegment=segment; hostElapsed=elapsed; hostScore=score
+ hostCityWind=cityWind; hostCityForge=cityForge; hostCityArchive=cityArchive; hostCityMirror=cityMirror; hostCityChoice=cityChoice; hostCityDepth=cityDepth
+}
+func stageContinue() {
+ if stageHost==0 || phase!=0 || hostCheckpoint<0 {return}
+ startRun(); checkpoint=hostCheckpoint; segment=hostSegment; elapsed=hostElapsed; score=hostScore
+ restoreExpedition()
+ if segment==2 {enemyHP[keeperIndex]=0; bossHP=0; bossShield=0; for j:=0;j<len(enemyHP);j++ {if enemyReturnOnly[j]==1 {enemyHP[j]=enemyMaxHP(enemyType[j])}}}
+ cityWind=hostCityWind; cityForge=hostCityForge; cityArchive=hostCityArchive; cityMirror=hostCityMirror; cityChoice=hostCityChoice; cityDepth=hostCityDepth
+ retryCheckpoint(); event("restored")
+}
+func beginStageWord(kind int) {
+ if stageHost==0 {return}
+ if len(wordText)==0 {initStageWords()}
+ if len(wordText)==0 {resolveWord(1); return}
+ wordIndex=(wordSerial*17+attempts*13)%len(wordText)
+ wordType=0; if kind>=3 {wordType=1}
+ if wordType==0 && (wordSerial+attempts)%2==0 {wordType=1}
+ wordInputLen=0; wordTimer=0; wordKeys=0; wordChoice=wordSerial%3; hudText=""
+ wordLimit=5.5; if wordType==0 {wordLimit=3+0.45*float64(len(wordText[wordIndex])); if wordLimit<5 {wordLimit=5}; if wordLimit>9 {wordLimit=9}}
+ if kind>=5 {wordLimit=4.5}
+ updateStageHud()
+}
+func stageWordPrompt() string {
+ if len(wordText)==0 {return "铭文"}
+ w:=wordText[wordIndex]; m:=wordMean[wordIndex]; a:=wordMissA[wordIndex]; b:=wordMissB[wordIndex]
+ if wordType==0 {return "刻写 "+m+" "+itoa(wordInputLen)+"/"+itoa(len(w))}
+ o0:=m; o1:=a; o2:=b
+ if wordChoice==1 {o0=a; o1=m; o2=b}
+ if wordChoice==2 {o0=a; o1=b; o2=m}
+ return "辨义 "+w+" 1."+o0+" 2."+o1+" 3."+o2
+}
+func stageType(letter string) {
+ if stageHost==0 || phase!=5 || wordPending<=0 || wordType!=0 {return}
+ want:=wordText[wordIndex]
+ if wordInputLen>=len(want) {resolveWord(2); return}
+ if letter!=want[wordInputLen:wordInputLen+1] {resolveWord(2); return}
+ wordInputLen++; hudText=""
+ if wordInputLen>=len(want) {resolveWord(1)} else {updateStageHud()}
+}
+func stageChoose(n int) {
+ if stageHost==0 || phase!=5 || wordPending<=0 || wordType==0 {return}
+ if n==wordChoice {resolveWord(1)} else {resolveWord(2)}
+}
+func pollStageLetter(bit int, letter string, pressed bool) {
+ mask:=int(math.Pow(2,float64(bit)))
+ down:=wordKeys/mask%2==1
+ if pressed {if !down {stageType(letter); wordKeys+=mask}} else {if down {wordKeys-=mask}}
+}
+func pollStageLetters() {
+ if stageHost==0 || phase!=5 || wordPending<=0 || wordType!=0 {return}
+ pollStageLetter(0,"a",keyPressed(KeyA)); pollStageLetter(1,"b",keyPressed(KeyB)); pollStageLetter(2,"c",keyPressed(KeyC)); pollStageLetter(3,"d",keyPressed(KeyD))
+ pollStageLetter(4,"e",keyPressed(KeyE)); pollStageLetter(5,"f",keyPressed(KeyF)); pollStageLetter(6,"g",keyPressed(KeyG)); pollStageLetter(7,"h",keyPressed(KeyH))
+ pollStageLetter(8,"i",keyPressed(KeyI)); pollStageLetter(9,"j",keyPressed(KeyJ)); pollStageLetter(10,"k",keyPressed(KeyK)); pollStageLetter(11,"l",keyPressed(KeyL))
+ pollStageLetter(12,"m",keyPressed(KeyM)); pollStageLetter(13,"n",keyPressed(KeyN)); pollStageLetter(14,"o",keyPressed(KeyO)); pollStageLetter(15,"p",keyPressed(KeyP))
+ pollStageLetter(16,"q",keyPressed(KeyQ)); pollStageLetter(17,"r",keyPressed(KeyR)); pollStageLetter(18,"s",keyPressed(KeyS)); pollStageLetter(19,"t",keyPressed(KeyT))
+ pollStageLetter(20,"u",keyPressed(KeyU)); pollStageLetter(21,"v",keyPressed(KeyV)); pollStageLetter(22,"w",keyPressed(KeyW)); pollStageLetter(23,"x",keyPressed(KeyX))
+ pollStageLetter(24,"y",keyPressed(KeyY)); pollStageLetter(25,"z",keyPressed(KeyZ))
+}
+func updateStageHud() {
+ if stageHost==0 {return}
+ next:=""
+ if phase==0 {
+  d:="旅人"; if difficulty==1 {d="无畏"}
+  w:="关"; if wordMode==1 {w="开"}
+  s:="关"; if soundOn==1 {s="开"}
+  c:=""; if hostCheckpoint>=0 {c=" C续关"}
+  next="倒悬钟城 1旅人 2无畏 现"+d+" F4铭文"+w+" N声音"+s+" Enter开始"+c
+ } else if phase==4 {next="暂停 Enter继续 M菜单"} else if phase==3 {next="倒下 Enter检查点 R重开"} else if phase==2 {next="归来 Enter再入"} else if phase==5 {next=stageWordPrompt()}
+ if next==hudText {return}
+ hudText=next
+ if phase==5 {Hero.say hudText} else {Hero.say " "; if next=="" {StageHud.say " "} else {StageHud.say hudText}}
 }
