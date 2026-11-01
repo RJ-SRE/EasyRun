@@ -4,23 +4,31 @@
 
 **副作者**：翁庆、孟得有（负责游戏的动作指导、和构图测试、游戏流畅度优化）
 
-**demo视频**：https://www.bilibili.com/video/BV1HcnU6bE5S/?vd_source=638bf0a9b7b4b137eefb790a6b71f46d
+**演示视频**：[Bilibili 演示](https://www.bilibili.com/video/BV1HcnU6bE5S/)
 
-**在线体验**：https://x.qiniu.com/project/RJ/easyrun
+**在线体验**：[XBuilder 作品](https://x.qiniu.com/project/RJ/easyrun)（作品发布独立于 Git 推送，在线版本可能与下述源码版本不同）
 
 **向下夺心，向上逃生。用钩索改变战场，用判断决定下一次出手。**
 
 EasyRun 是一款面向成年玩家的二维纵向动作冒险原型。玩家穿过倒悬旧城的五个区域，以钩索、连招和四种技能对抗各有弱点的猎手，击破守心者，再带着钟心逃离上涨的黑潮。英语以可选的「铭文」模式融入技能释放；关闭后可以体验完整的纯动作冒险。
 
-默认主分支：`main` · 本修订分支：`feat/skill-cooldowns` · 版本：`0.10.1 / 技能冷却` · 文档更新：2026-10-25。
+> **版本与获取方式**：本文介绍已发布的 **v0.22.2-local.1** 开发版本，完整源码位于 [`feat/adaptive-wordbook-local`](https://github.com/RJ-SRE/EasyRun/tree/feat/adaptive-wordbook-local)。当前 `main` 先同步本 README，游戏代码尚未合入；请按下方命令克隆开发分支。文档更新：2026-11-01。
+
+当前版本的主要更新：
+
+- **Boss 重构**：守铠、断锋、缚心三种结构造型，九种招式与可打断的回血机制。[实现与验证](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/BOSS_AND_COMMON_V220.md)。
+- **词库与学习记忆**：3,816 个常用／进阶词头，普通、困难、挑战、随机四种选择；拼写与辨义分别记忆。
+- **英语成就与进度**：24 项英语成就、随行词册、本局与累计学习进度，采用与钟城一致的铭牌样式。[成就设计](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/ACHIEVEMENT_ARCHIVE_V221.md)。
+- **本地存档与清除**：网页和 `.xbp` 保存本机学习记录；远征设置提供带确认的档案清除入口，保留其他档案并防止旧窗口写回。[使用与验证](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/LOCAL_RESET_V222.md)。
+- **菜单、音频与性能**：静水圣庭原画配局部水纹、披风与薄雾动态；音乐和动作音效独立调节，原生界面复用与刷新开销已优化。
 
 **目前已完成单机可玩闭环，尚处于产品验证阶段。** 局域网联机、更多章节、账号同步和商业化功能均未实现。本文中的未来规划不代表已交付功能。
 
 [快速启动](#快速启动) · [玩法与内容](#玩法与内容) · [操作指南](#操作指南) · [技术设计](#技术设计) · [商业价值与验证](#商业价值与验证) · [待开发路线](#待开发路线) · [完整文档](#完整文档)
 
-![倒悬钟城中使用重斩打破裂甲卫护架](docs/evidence/2026-10-25-hunt-v10/warden-break.png)
+![倒悬钟城中使用重斩打破裂甲卫护架](https://raw.githubusercontent.com/RJ-SRE/EasyRun/refs/heads/feat/adaptive-wordbook-local/docs/evidence/2026-10-25-hunt-v10/warden-break.png)
 
-_当前渲染器的裂甲卫破架画面，来自自动化布置的排练测试场景。更多截图与测试条件见 [v0.10 验收证据](docs/evidence/2026-10-25-hunt-v10/README.md)。_
+_v0.10 历史验收中的裂甲卫破架画面，来自自动化布置的排练测试场景；旧截图不代表当前菜单或 HUD 样式。更多截图与测试条件见 [v0.10 验收证据](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/evidence/2026-10-25-hunt-v10/README.md)。_
 
 ## 项目定位与意义
 
@@ -38,23 +46,27 @@ EasyRun 希望验证：**一款动作游戏能否先凭移动、战斗与世界�
 
 1. **准备**：选择旅人 / 无畏战斗难度；决定是否开启铭文，开启时预览本局 30 个词。
 2. **下潜**：穿越五区十五段，利用平台与钩点改变高度，选择交战、绕行或先处理支援敌人。
-3. **破局**：击败三场精英，挑战拥有三个形态、七种招式的守心者。
+3. **破局**：击败三场精英，挑战拥有三个结构形态、九种招式的守心者。
 4. **撤离**：取得钟心后向上返程，应对追兵并甩开黑潮；下潜时熟悉的空间成为逃生路线。
 5. **结算与再挑战**：查看战绩、实际完成的词和成就；通过检查点续行或排练提高操作熟练度。
 
 例如，裂甲卫在前方持盾推进，缝魂师在后方保护同伴。玩家可以先远射支援者、重斩破架，也可以借钩索绕背。战斗深度来自可读的敌人行为和位置关系，普通攻击仍有用，站桩连按 J 无法解决全部局面。
 
+菜单采用「静水圣庭」原画，保留小体量主角与宏大建筑，只让局部披风、水面和雾轻微流动；远征设置使用微透细线面板。网页与 `.xbp` 共用素材，原生版的表现和存储实现另见 [菜单设计](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/MENU_V161.md) 与 [原生版说明](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/XBUILDER_NATIVE.md)。
+
+菜单音乐为《Melancholy Of The Boot》，游戏与排练场为《Cleaning out the Rooms (Wandering Horn)》，结束为《Strange Sports》，均为 Sea Power 曲目，按场景单曲循环。默认音乐 75%、动作音效 85%，可分别调节；Tab 查看词册时音乐继续。详见 [场景音乐](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/SCENE_MUSIC.md)。
+
 ### 当前已经实现
 
-| 系统       | v0.10 的实际内容                                                                   |
+| 系统       | 当前实际内容                                                                   |
 | ---------- | ---------------------------------------------------------------------------------- |
 | 世界与关卡 | 风钟门、铸钟炉、沉水档案、碎镜唱廊、守心机枢；共十五段建筑路线，下潜与返程共用空间 |
 | 敌人与精英 | 八类普通敌人，40 名普通敌人、三场精英战（4 个体）、1 名三形态 Boss、3 名返程追兵   |
 | 移动       | 跳跃、二段跳、蹬墙、方向冲刺、平台下穿、钩索牵引与松钩甩出                         |
 | 战斗       | 地面三连、挑空、空中追击、坠星、击退碰撞；贯夜蓄箭、断潮蓄剑、回息、五段连环剑刀   |
 | 反制       | 正面护架与绕背、重斩破架、低扑 / 跃袭判断、支援断线、远程遮挡、精英配合拆分        |
-| 铭文       | 拼写 / 三选一辨义，随机 30 词池、开局预览、独立词汇难度、本机词册与复习            |
-| 成长记录   | 18 项行旅 / 技艺 / 铭文成就、可佩戴称号、战绩和本机导出；称号不增加战斗数值        |
+| 铭文       | 3,816 常用／进阶词、普通 / 困难 / 挑战 / 随机、每局 30 词、拼写 / 辨义独立记忆、加权复习、搜索与备份            |
+| 成长记录   | 24 项英语成就：词汇积累、双能力、错误回访、隐字拼写、间隔复习和持续练习        |
 | 叙事与排练 | 五区短叙事、猎手手记、九种单类 / 组合排练；通过敌人外形和行动表现旧城故事          |
 | 音频       | 82 个动作 / 材质采样，开始 / 游戏 / 结束三阶段音乐各自循环，音效和音乐独立调节     |
 | 续行       | 自动检查点、本机存档与旧版迁移；从检查点重建场景，不保存半段攻击或飞行中的弹幕     |
@@ -74,52 +86,60 @@ EasyRun 希望验证：**一款动作游戏能否先凭移动、战斗与世界�
 | 棘背猎兽      | 低扑与高弧跃袭           | 跳低扑、避落点、追击收势     |
 | 缝魂师        | 单体护架支援与投射攻击   | 优先击杀、隔断视线或拉开距离 |
 
-具体状态机、精英规则和初始参数见 [猎战设计](docs/HUNT_V10.md)。这些是当前平衡基线，仍需真人试玩校准。
+具体状态机、精英规则和初始参数见 [猎战设计](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/HUNT_V10.md)。这些是当前平衡基线，仍需真人试玩校准。
 
 ## 铭文：可选的英语练习
 
-开局可关闭铭文；战斗难度与词汇难度独立设置。当前词库包含 **82 个精选 CET-4 词元**，每局抽取 30 个不同词，并优先兼顾新词、曾错词和已完成词。它不是完整四级词表，基础 / 标准 / 挑战是游戏分组。
+开局可关闭铭文，战斗难度与词汇设置独立。词库已更新为 **3,816 个常用及进阶词头**：NGSL 核心与补充词、NAWL 进阶扩展；普通 1,550／困难 1,309／挑战 957，按词频和用途分层，不再按词长或考试标签。源数据、许可、释义质量边界与迁移规则见 [本版说明](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/BOSS_AND_COMMON_V220.md)。
+
+新远征自动选 30 词，预览后开始使用同一组；重试保留词组，通关后新远征自动换组。单词选择统一为普通、困难、挑战、随机；随机覆盖全部三档，选词结合未练习、到期和薄弱记录。默认目标组成是 12 新词、10 到期复习、6 薄弱词、2 熟悉词，缺项按规则补足。
+
+记忆区分拼写与辨义、错误与超时、辅助提示与独立回忆。常错词在限定配额内提高入选概率；一次答对只作为练习证据，不等同于掌握。网页与原生词册均支持完整词库搜索和薄弱词筛选；JSON 备份导入导出目前仅在网页版提供。现行规则见 [常用词库与迁移](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/BOSS_AND_COMMON_V220.md)，历史设计见 [自适应词册设计](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/WORD_MEMORY_V11.md)。
 
 | 规则     | 当前行为                                                                                                               |
 | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 触发     | U / L / I / Q 每次有效释放都独立答题，Q 答对后才开始整套攻击；没有免题续招                                             |
+| 触发     | U / L / I / P 每次有效释放都独立答题，P 答对后才开始整套攻击；没有免题续招                                             |
 | 作答     | 输入完整英文，或按 1 / 2 / 3 选择中文释义；错误字母、错误选项、超时或放弃均取消技能                                    |
-| 节奏     | 作答时冻结危险逻辑，独立表现层慢速运动；确认结果后立即释放或取消，音乐保持正常音量                                     |
-| 操作约束 | U / L / I 冷却 3 秒，Q 冷却 5 秒；按有效战斗时间计时，起手、收势、资源和控制状态仍然有效。普通攻击与基础移动不要求答题 |
+| 节奏     | 作答时冻结移动、伤害与敌方 AI，表现层慢速运动；Boss 已开始的回血继续，答对释放、答错取消，音乐保持正常音量                                     |
+| 操作约束 | U / L / I 冷却 3 秒，P 冷却 5 秒；按有效战斗时间计时，起手、收势、资源和控制状态仍然有效。普通攻击与基础移动不要求答题 |
 | 解控     | 部分控制情境提供铭文脱身，原有动作解法按控制类型保留                                                                   |
 | 完成记录 | 只记录真实作答与结算；30 词是可选目标，不是通关门槛，未遇到的词不会自动标记完成                                        |
 
-英语模块应服务玩家的主动选择。重复释放、重复答题和一次答对，都不能直接证明学习效果；词条仍需独立语言审校。来源、抽样与义项边界见 [词库说明](docs/WORD_BANK.md)。
+英语模块应服务玩家的主动选择。重复释放、重复答题和一次答对，都不能直接证明学习效果；词条仍需独立语言审校。来源、抽样与义项边界见 [词库说明](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/WORD_BANK.md)。
 
 ## 操作指南
 
-面向电脑浏览器和实体键盘；目前未完成手柄、触屏或自定义键位。
+面向电脑浏览器和实体键盘；目前未完成手柄、触屏或自定义键位。W 单按立即跳跃；与战斗键组合时作为向上方向，蓄力期间不会误跳。快速双击 S 下穿平台，左右手可保持在 WASD 和技能区。↑ 和 S + W 保留为兼容操作；旧 E、Q、空格不触发游戏动作。
 
 | 按键                     | 功能                                                   |
 | ------------------------ | ------------------------------------------------------ |
 | A / D 或左右方向键       | 移动与空中调整                                         |
-| Space                    | 跳跃、二段跳、蹬墙                                     |
-| 按住 E / 松开 E          | 抓住高亮目标 / 借力甩出；按住 S 松钩向下甩出           |
+| W                    | 跳跃、二段跳、蹬墙                                     |
+| 按住 O / 松开 O          | 抓住高亮目标 / 借力甩出；按住 S 松钩向下甩出           |
 | K 或 Shift，配合 W / S   | 水平、向上、向下冲刺                                   |
 | J / W + J / S + J        | 普攻连段 / 挑空 / 坠星                                 |
-| 按住 U 或 L，松开        | 贯夜蓄箭 / 断潮蓄剑                                    |
-| I / Q                    | 回息 / 五段连环剑刀                                    |
-| S + Space                | 下穿普通平台                                           |
+| 按住 U 或 L，松开        | 贯夜蓄箭 / 断潮蓄剑；蓄力中 W / S 选择向上 / 向下方向 |
+| I / P                    | 回息 / 五段连环剑刀                                    |
+| 快速双击 S（或 S + W） | 下穿普通平台                                           |
 | F（被缚索牵引时）        | 可选铭文解链                                           |
 | 字母 / 1、2、3           | 拼写 / 选择中文释义                                    |
 | Enter / Esc / R          | 开始或续关 / 暂停 / 重开；题中 Esc 打开铭文暂停面板    |
 | T（标题或暂停）          | 进入排练；排练中 1–5、7–9 为单类，6 为组合，R 开始冒险 |
-| 顶部「猎手手记」「成就」 | 查看故事、反制方法和铭录；主动打开暂停，题中限制入口   |
+| 顶部「猎手手记」/ 边带「铭文成就」 | 查看故事与英语成就；成就册支持题中打开，冻结计时、关闭后恢复 |
+
+W 跳跃没有额外等待；刚起跳接 J 可衔接挑空，按住 J 在起手阶段补 W 也可挑空。双击 S 仅在站立、未蓄力或出招时生效，单按、长按不会下穿；暂停和答题会清除待完成的双击。
 
 ## 快速启动
+
+本轮桌面导入包为 `EasyRun-XBuilder-v0.22.2-local-reset.xbp`，本地导出副本为 `prototypes/runlab/exports/belfry-local-reset.xbp`。网页与独立包共用战斗规则；源码已发布到开发分支，生成的 `.xbp` 包保留在本地，不纳入 Git。
 
 ### 首次安装
 
 需要 Git、Bash、curl、tar、`shasum`；导出工程包还需 Python 3。安装脚本支持 macOS / Linux 的 arm64、x64 分支，主要已验证环境为 macOS arm64。Windows 原生安装尚未验收。
 
 ```sh
-# 1. 获取当前主分支
-git clone --branch main https://github.com/RJ-SRE/EasyRun.git
+# 1. 获取当前完整开发版本（尚未合入 main）
+git clone --branch feat/adaptive-wordbook-local https://github.com/RJ-SRE/EasyRun.git
 cd EasyRun
 
 # 2. 安装仓库固定的 Node、pnpm、依赖和浏览器工具
@@ -134,7 +154,7 @@ bash scripts/with-env.sh node prototypes/runlab/server.mjs
 
 浏览器打开 [http://127.0.0.1:4177/](http://127.0.0.1:4177/)。看到开始页后选择难度并开始；浏览器要求用户交互后才允许播放声音，可点击「播放音乐」。终端按 `Ctrl+C` 停止服务。
 
-首次安装需要网络下载工具；准备好资源后的游戏运行不依赖账号、API 密钥、在线模型或数据库。工具安装在项目 `.tools/`，不会要求替换系统默认 Node。已有共享依赖的协作工作树不要重复安装，直接使用 `with-env.sh` 调用现有工具。
+首次安装需要网络下载工具；准备好资源后的游戏运行不依赖账号、API 密钥、在线模型或服务端数据库。大词册使用浏览器自带 IndexedDB。工具安装在项目 `.tools/`，不会要求替换系统默认 Node。已有共享依赖的协作工作树不要重复安装，直接使用 `with-env.sh` 调用现有工具。
 
 ### 后续启动与修改
 
@@ -155,7 +175,7 @@ bash scripts/with-env.sh node prototypes/runlab/build-belfry.mjs
 | `/rupture.html`     | 旧风机墓场            | 包含在完整构建中                              |
 | `/legacy.html`      | 最早两款对照原型      | 包含在完整构建中                              |
 
-遇到资源 404，先确认构建成功、启动目录和端口正确。端口占用时改用 `RUNLAB_PORT`。Linux 浏览器缺系统库、测试缺 headless shell 等处理见 [运行手册](docs/RUNBOOK.md)，无需为游玩安装 XBuilder 编辑器或生成音频。
+遇到资源 404，先确认构建成功、启动目录和端口正确。端口占用时改用 `RUNLAB_PORT`。Linux 浏览器缺系统库、测试缺 headless shell 等处理见 [运行手册](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/RUNBOOK.md)，无需为游玩安装 XBuilder 编辑器或生成音频。
 
 ## 技术设计
 
@@ -167,7 +187,7 @@ bash scripts/with-env.sh node prototypes/runlab/build-belfry.mjs
 | 网页宿主 | 原生 JavaScript ES Modules、HTML、CSS                 | 开始页、HUD、输入所有权、铭文、成就、记录与模块接线 |
 | 音频     | Web Audio API + HTMLAudioElement                      | 短音效混音、事件反馈、长曲播放与生命周期            |
 | 构建     | Node 24.22.1、pnpm 11.9.0、Playwright 1.64.1          | 资源导入、拆帧、游戏清单与测试；精确依赖见锁文件    |
-| 数据     | 浏览器 localStorage、静态词库和地图                   | 本机战绩、词册、成就、设置与检查点，无云端账号      |
+| 数据     | 浏览器 localStorage / IndexedDB、静态词库和地图                   | 本机战绩、词册、成就、设置与检查点，无云端账号      |
 | 工程导出 | Python 3                                              | 生成 XBuilder `.xbp` 工程包                         |
 | 验证     | Node 规则测试、Playwright、ESLint、GitHub Actions     | 验证战斗、输入、存档、音频、场景容量与整关流程      |
 
@@ -190,10 +210,10 @@ flowchart LR
 
 ### 关键实现取舍
 
-- **模拟与表现分开**：铭文阶段冻结碰撞、伤害和 AI，表现时钟平滑趋向 28% 速率，让蓄势、绳索和余影继续运动；明确暂停时再一起停止。恢复不会补算冻结期间的攻击。
+- **模拟与表现分开**：铭文阶段冻结碰撞、伤害和 AI，独立表现时钟让蓄势、绳索和余影继续缓慢运动。Boss 回血使用独立活动时间，作答时继续，明确暂停或查看词册时停止；恢复不会补算冻结期间的攻击。
 - **答案与技能绑定**：题目带局次、尝试和序号信息，结果仅能结算当前动作，拒绝重复或过期结果。网页返回答题结论，spx 执行释放、取消、资源返还和伤害。
 - **敌人有行动承诺**：起手、锁向、执行、收势分别处理，伤害与打断分离；同时攻击预算限制无预警围殴。护架、扑击与支援都有实际反制条件。
-- **显示对象按镜头复用**：地图逻辑与显示槽分离，为箭矢和攻击预留空间。当前常驻克隆 121，三条本机整关路线的最高采样为 183；这是容量观察，不是跨设备帧率保证。
+- **显示对象按镜头复用**：地图逻辑与显示槽分离，为箭矢和攻击预留空间。原生 HUD 复用固定显示对象，缓存造型与位置写入，避免空闲元素逐帧轮询；实际设备仍可能出现长帧，不作固定帧率保证。见 [性能记录](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/PERFORMANCE_V163.md)。
 - **从源资产可重建**：源图保留，拆帧统一比例与落脚线。当前动画主要由关键姿态、运动轨迹和短交叠构成，尚未采用完整骨骼动画。
 - **存档恢复明确**：当前地图 revision 3，迁移保留词池；从检查点恢复有效状态，清理临时攻击、连接和输入。音乐、成就和词册分别管理生命周期。
 
@@ -222,22 +242,24 @@ EasyRun/
 
 ```sh
 # 快速规则检查，不启动浏览器
-bash scripts/with-env.sh node --test prototypes/runlab/test-hunt-data.mjs prototypes/runlab/test-inscription-core.mjs prototypes/runlab/test-belfry-achievements-core.mjs
+bash scripts/with-env.sh node --test prototypes/runlab/test-common-content.mjs prototypes/runlab/test-inscription-core.mjs prototypes/runlab/test-learning-milestones.mjs
 
 # 完整默认回归：先完成构建；脚本自动使用独立随机端口
 bash scripts/with-env.sh node scripts/test-game.mjs
 
-# 已完成完整构建后，生成四个主 / 历史游戏的 XBuilder 工程包
-python3 prototypes/runlab/package.py
+# 已完成构建后，生成当前主游戏的 XBuilder 工程包
+LEARNING_NATIVE_STORAGE_MODE=local bash scripts/with-env.sh python3 prototypes/runlab/package.py --game belfry
 ```
 
 如浏览器测试提示缺少 headless shell，可运行 `bash scripts/with-env.sh node node_modules/@playwright/test/cli.js install chromium` 补齐；Linux 系统库按实际报错处理。浏览器 / WASM 性能检查应串行运行，避免互相争用资源。
 
-**已记录的 v0.10 本机验证**：25 项纯逻辑检查、206 项浏览器检查、三条真实键盘整关路线，以及四个 `.xbp` 包完整性检查。测试在 macOS arm64 / Chromium 下完成，分段运行并修复后复测；详情见 [验收账本](docs/planning/hunt-v10/IMPLEMENTATION.md) 与 [源码哈希清单](docs/evidence/2026-10-25-hunt-v10/source-manifest.json)。这轮 README 整理没有重新执行游戏回归。
+当前版本的可追溯验证包括：18 项词库／铭文／成就规则检查、3 项词源完整性检查、游戏 ESLint，以及已归档的网页／原生档案清除与词册回归。具体执行时间和边界见 [Git 交接验收](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/evidence/2026-11-01-git-handoff/README.md)、[本地清除说明](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/LOCAL_RESET_V222.md) 和 [Boss／词库实现](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/BOSS_AND_COMMON_V220.md)。本次只同步 README 并检查文档链接，没有重新运行游戏回归。
+
+**已记录的 v0.10 本机验证**：25 项纯逻辑检查、206 项浏览器检查、三条真实键盘整关路线，以及四个 `.xbp` 包完整性检查。测试在 macOS arm64 / Chromium 下完成，分段运行并修复后复测；详情见 [验收账本](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/planning/hunt-v10/IMPLEMENTATION.md) 与 [源码哈希清单](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/evidence/2026-10-25-hunt-v10/source-manifest.json)。这轮 README 整理没有重新执行游戏回归。
 
 自动路线的题目由脚本正确作答，不能证明真人会自然完成 30 词、愿意持续游玩或取得学习提升。真人试玩、低端设备、跨浏览器、长时间稳定性和完整 XBuilder 编辑器往返仍需验收。[GitHub Actions](https://github.com/RJ-SRE/EasyRun/actions/workflows/verify.yml) 的结果应按具体提交查看，不用本机结果代替。
 
-`.xbp` 输出位于 `prototypes/runlab/exports/`，包含纯动作工程。网页铭文、成就册、本机记录和网页音频混音不包含在单个 `.xbp` 内；当前完整体验由网页宿主与引擎共同提供。尚无正式线上部署或桌面安装包。
+`.xbp` 输出位于 `prototypes/runlab/exports/`。Belfry 导入包内置完整开始 / 帮助 / 暂停 / 结算菜单、3,816 词的随机 30 词远征、拼写与三选一辨义、四技能与束缚解救判题、76×28 技能冷却环、三阶段背景音乐及独立音乐 / 动作音量。战斗答题界面复用网页的断环计时、衬线单词、逐字输入槽和三列辨义卡；拼写常显中文，完整拼对自动释放，首错立即取消技能前摇。题面缩至 400×138 / 400×148，开始页可选完整提示、2 秒后保留首字母、1 秒后全部隐藏；随行词册复用网页双列布局，支持 30 词进度、状态标记、完整词库 / 薄弱词筛选与英文搜索；Tab 或点击进度查看，合上后恢复战斗。标题区仅保留「裂隙」，移除标题页和战斗 HUD 的重复操作提示；技能栏去掉 READY，暂停页只留状态、按钮和音量设置。默认音乐 75%、动作 85%；答题不降低背景音乐。窗口按比例完整容纳 960×600，保留此前镜头纠偏与高分屏兼容。原生版与网页均支持本地学习记录与成就；原生 IndexedDB 按运行器用户名分档，升级词库时保留拼写、旧辨义归档和退役词记录。详见 [原生版说明](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/XBUILDER_NATIVE.md) 和 [本次界面验证](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/evidence/2026-10-26-native-minimal-ui/verification.json)。本版源码已发布到开发分支；生成包仍在本地交付，本次未重新发布 XBuilder 在线作品或制作桌面安装包。
 
 ## 商业价值与验证
 
@@ -256,7 +278,7 @@ python3 prototypes/runlab/package.py
 
 ## 待开发路线
 
-下列内容均为规划，按验证结果调整优先级，不是排期承诺。详细设计、依赖与验收条件见 [产品路线图](docs/ROADMAP.md)。
+下列内容均为规划，按验证结果调整优先级，不是排期承诺。详细设计、依赖与验收条件见 [产品路线图](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/ROADMAP.md)。
 
 | 阶段                | 待开发 / 待验证方向                                                                  | 达成条件                                               |
 | ------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------ |
@@ -276,24 +298,36 @@ python3 prototypes/runlab/package.py
 
 ## 素材、许可与发行边界
 
-美术源图及 AI 生成提示词、程序化音效的母版和制作记录已纳管，详见 [资产来源](docs/ASSETS.md)。当前三首背景音乐是用户提供的 Sea Power 第三方录音，来源清单不等于商业授权记录；发行准备阶段需确认授权或替换为适合发行的配乐。
+美术源图及 AI 生成提示词、程序化音效的母版和制作记录已纳管，详见 [资产来源](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/ASSETS.md)。当前三首背景音乐是用户提供的 Sea Power 第三方录音，来源清单不等于商业授权记录；发行准备阶段需确认授权或替换为适合发行的配乐。
 
-词元成员信息来自 ECDICT，采用词元的来源摘录与 MIT 许可保存在仓库，中文义项及干扰项由项目编写。**词库来源许可不代表整个游戏采用 MIT 许可**；仓库目前没有覆盖整项目的统一 LICENSE，代码、素材与第三方依赖应分别明确使用条件。
+当前词表来自 NGSL／NAWL，来源与 CC BY-SA 4.0 许可记录见 [词源说明](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/prototypes/runlab/data/common-sources/NOTICE.md)。中文释义以固定版本 MIT ECDICT 为基础，含项目编辑覆盖与干扰项规则；没有宣称全部词条已逐词人工审校。**词库来源许可不代表整个游戏采用 MIT 许可**；仓库目前没有覆盖整项目的统一 LICENSE，代码、素材与第三方依赖应分别明确使用条件。
 
-本机战绩、词册和成就可以分别导出，当前没有通用导入或云同步。旧原型、研究记录与测试证据按原日期保留，不把历史方案当作已实现功能。
+网页词册支持 JSON 备份；原生学习档案尚无备份导入导出或云同步。不同浏览器、站点与运行器用户名对应不同本机记录。旧原型、研究记录与测试证据按原日期保留，不把历史方案当作已实现功能。
 
 ## 完整文档
 
 | 阅读目的                     | 入口                                                                                                                                |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| 当前需求与玩法边界           | [PRD](docs/PRD.md)、[v0.10 猎战设计](docs/HUNT_V10.md)                                                                              |
-| 未来优先级与局域网合作方案   | [产品路线图](docs/ROADMAP.md)                                                                                                       |
-| 安装、端口、构建、导出与排障 | [运行维护手册](docs/RUNBOOK.md)                                                                                                     |
-| 当前代码与历代技术契约       | [技术设计](docs/TECHNICAL_DESIGN.md)，旧段落结合 v0.10 说明阅读                                                                     |
-| 铭文、词库与成就规则         | [铭文实现](docs/INSCRIPTION_V07.md)、[词库说明](docs/WORD_BANK.md)、[成就设计](docs/ACHIEVEMENTS_V07.md)；当前数量与变更以 PRD 为准 |
-| 复核测试与局限               | [猎战验收账本](docs/planning/hunt-v10/IMPLEMENTATION.md)、[测试记录](docs/TESTING.md)                                               |
-| 追溯资源与音乐               | [资产来源](docs/ASSETS.md)、[场景音乐](docs/SCENE_MUSIC.md)                                                                         |
-| 提交、协作与回退             | [Git 流程](docs/GIT_WORKFLOW.md)、[贡献约定](CONTRIBUTING.md)                                                                       |
-| 全部文档与历史               | [文档索引](docs/README.md)、[开发日志](docs/DEVELOPMENT_LOG.md)、[决策记录](docs/DECISIONS.md)                                      |
+| 当前需求与玩法边界           | [PRD](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/PRD.md)、[v0.10 猎战设计](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/HUNT_V10.md)                                                                              |
+| 未来优先级与局域网合作方案   | [产品路线图](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/ROADMAP.md)                                                                                                       |
+| 安装、端口、构建、导出与排障 | [运行维护手册](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/RUNBOOK.md)                                                                                                     |
+| 当前代码与历代技术契约       | [技术设计](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/TECHNICAL_DESIGN.md)，旧段落结合 v0.10 说明阅读                                                                     |
+| 铭文、词库与成就规则         | [当前词库与记忆](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/BOSS_AND_COMMON_V220.md)、[学习进度与成就规则](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/LEARNING_RAILS_V190.md)、[当前成就界面](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/ACHIEVEMENT_ARCHIVE_V221.md)；旧文档词库数量以 v0.22.0 为准 |
+| 复核测试与局限               | [猎战验收账本](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/planning/hunt-v10/IMPLEMENTATION.md)、[测试记录](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/TESTING.md)                                               |
+| 追溯资源与音乐               | [资产来源](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/ASSETS.md)、[场景音乐](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/SCENE_MUSIC.md)                                                                         |
+| 提交、协作与回退             | [三人提交与交接](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/TEAM_GIT_HANDOFF.md)、[Git 流程](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/GIT_WORKFLOW.md)、[贡献约定](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/CONTRIBUTING.md)                                                                       |
+| 全部文档与历史               | [文档索引](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/README.md)、[开发日志](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/DEVELOPMENT_LOG.md)、[决策记录](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/DECISIONS.md)                                      |
 
 反馈问题时请附提交 SHA、设备与浏览器、操作步骤、预期与实际结果。产品提案注明目标玩家、改变的体验、验证方式与暂不包含的内容；待开发设计进入路线图后仍需单独评审和实现。
+
+### 重建当前词库
+
+词库已随源码提供，不必每次启动都重建。修改词源或题目生成规则后执行：
+
+```sh
+bash scripts/with-env.sh node scripts/build-common-wordbank.mjs
+bash scripts/with-env.sh node services/learning/check-content.mjs services/learning/content-common
+bash scripts/with-env.sh node prototypes/runlab/build-belfry.mjs
+```
+
+旧 CET 构建脚本仅用于历史追溯；当前默认词库采用 NGSL／NAWL。来源校验、释义迁移和实际验收见 [v0.22.0 说明](https://github.com/RJ-SRE/EasyRun/blob/feat/adaptive-wordbook-local/docs/BOSS_AND_COMMON_V220.md)。
