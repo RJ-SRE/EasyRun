@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-31T13:33:36.760Z",
+  "runtime": "XBuilder cached 2026-10-26 compiler/resources",
+  "browser": {
+    "actualBrowserProcessRestart": true,
+    "localStorageRestored": true,
+    "indexedDBRestored": true,
+    "origin": "http://127.0.0.1:4177",
+    "nativeLocalStorageRestoredAfterProcessRestart": true,
+    "nativeIndexedDBRestoredAfterProcessRestart": true
+  },
+  "native": [
+    {
+      "name": "syscall/js localStorage",
+      "messages": [
+        "{\"time\":\"2026-10-31T21:33:39.903+08:00\",\"level\":\"INFO\",\"msg\":\"STORAGE_PROBE_JS native-saved\\n\",\"function\":\"main.(*Game).MainEntry.func1\",\"file\":\"main.spx\",\"line\":2}"
+      ],
+      "error": null
+    },
+    {
+      "name": "syscall/js localStorage after browser restart",
+      "messages": [
+        "{\"time\":\"2026-10-31T21:33:42.496+08:00\",\"level\":\"INFO\",\"msg\":\"STORAGE_PROBE_JS_REOPEN native-saved\\n\",\"function\":\"main.(*Game).MainEntry.func1\",\"file\":\"main.spx\",\"line\":2}"
+      ],
+      "error": null
+    },
+    {
+      "name": "syscall/js IndexedDB write",
+      "messages": [
+        "{\"time\":\"2026-10-31T21:33:44.401+08:00\",\"level\":\"INFO\",\"msg\":\"STORAGE_PROBE_IDB_WRITE committed\\n\",\"function\":\"main.(*Game).MainEntry.func1.func2.func1\",\"file\":\"main.spx\",\"line\":7}"
+      ],
+      "error": null
+    },
+    {
+      "name": "syscall/js IndexedDB read after browser restart",
+      "messages": [
+        "{\"time\":\"2026-10-31T21:33:47+08:00\",\"level\":\"INFO\",\"msg\":\"STORAGE_PROBE_IDB_REOPEN native-db-saved\\n\",\"function\":\"main.(*Game).MainEntry.func1.func1.func1\",\"file\":\"main.spx\",\"line\":6}"
+      ],
+      "error": null
+    },
+    {
+      "name": "os.WriteFile same-run",
+      "messages": [
+        "{\"time\":\"2026-10-31T21:33:48.824+08:00\",\"level\":\"INFO\",\"msg\":\"STORAGE_PROBE_FILE_WRITE open /tmp/easyrun-audit-4ceb24d4271d49b9d56d95d8.json: not implemented on js  open /tmp/easyrun-audit-4ceb24d4271d49b9d56d95d8.json: not implemented on js\\n\",\"function\":\"main.(*Game).MainEntry.func1\",\"file\":\"main.spx\",\"line\":2}"
+      ],
+      "error": null
+    },
+    {
+      "name": "os.ReadFile fresh runtime",
+      "messages": [
+        "{\"time\":\"2026-10-31T21:33:50.695+08:00\",\"level\":\"INFO\",\"msg\":\"STORAGE_PROBE_FILE_REOPEN  open /tmp/easyrun-audit-4ceb24d4271d49b9d56d95d8.json: not implemented on js\\n\",\"function\":\"main.(*Game).MainEntry.func1\",\"file\":\"main.spx\",\"line\":2}"
+      ],
+      "error": null
+    }
+  ],
+  "complete": true
+}

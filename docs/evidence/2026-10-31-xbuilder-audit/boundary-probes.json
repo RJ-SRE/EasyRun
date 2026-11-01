@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-31T12:57:32.367Z",
+  "cases": [
+    {
+      "name": "HTTPS page blocks public HTTP API before server/CORS processing",
+      "blocked": true,
+      "error": "TypeError",
+      "secureContext": true,
+      "httpRequestsReachedRouting": 0
+    },
+    {
+      "name": "local-only default rejects deployed XBuilder origin",
+      "status": 403
+    },
+    {
+      "name": "explicit XBuilder origin permits preflight",
+      "status": 204
+    },
+    {
+      "name": "current legacy test bank is intentionally blocked in production release validation",
+      "code": "LEXICON_CEFR"
+    }
+  ],
+  "complete": true
+}

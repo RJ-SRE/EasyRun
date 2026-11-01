@@ -1,0 +1,25 @@
+✔ spelling and meaning stay independent; assisted success and timeout use exact schedules (2.140542ms)
+✔ 30 unique words, mutually exclusive quotas, weak cap, same-mode fallback, insufficient pool (2.331584ms)
+✔ wrong outcomes are capped and chronological order matters (0.260667ms)
+✔ checkpoint save, failure retry, victory and duplicate submission do not double count (114.768209ms)
+✔ reject changed duplicate, missing sequence, stale revision, unknown words and duplicate question (95.622042ms)
+✔ two users isolated, explicit takeover invalidates previous writer, survives cache loss (96.408875ms)
+✔ lost write response reconciles exact candidate; unknown write blocks takeover after restart (129.647209ms)
+✔ read errors/corrupt profiles do not initialize or erase user history (64.657125ms)
+✔ prepared views stay small with old 8815-word history, removed words remain in totals (272.545208ms)
+✔ client does not upload per answer; frozen retry excludes later answers and clears only acked entries (134.787583ms)
+✔ late callbacks cannot contaminate another account; original frozen batch can resume (91.851875ms)
+✔ HTTP boundary: no dev login, no credential leakage, unknown origin rejected, health explicit (71.13375ms)
+✔ content checks block a legacy test bank from release even with a valid hash (0.364917ms)
+✔ Kodo adapter uses signed exact user key, verifies origin bytes, treats only stat 612 as absent (4.376833ms)
+✔ platform verifier fails closed, rejects public names and never accepts a client-supplied user id (0.979375ms)
+✔ retry schedule is 2,5,15 seconds then manual; in-flight answers remain pending beyond save boundary (3.865084ms)
+✔ real local HTTP: prepare -> 100 batches -> cold restart -> restored history; no pending references (3057.179666ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3143.589625

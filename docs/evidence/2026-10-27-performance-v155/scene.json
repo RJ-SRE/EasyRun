@@ -1,0 +1,508 @@
+{
+  "date": "2026-10-27T03:02:50.407Z",
+  "cases": [
+    {
+      "name": "all scene views and combat telegraphs start without device clones",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 2",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 3",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 4",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 5",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 6",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 7",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 8",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 9",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 10",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 11",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 12",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 13",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 14",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 15",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "descent camera room 1",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 2",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 3",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 4",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 5",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 6",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 7",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 8",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 9",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 10",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 11",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 12",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 13",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 14",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 15",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "return camera room 1",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 0,
+        "arrowsBorn": 0,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "charged arrow actually exists and hits after excess decoration requests",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 16,
+        "projectiles": 1,
+        "arrowsRequested": 1,
+        "arrowsBorn": 1,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "bow spam during cooldown creates no extra projectiles",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 2,
+        "projectiles": 0,
+        "arrowsRequested": 1,
+        "arrowsBorn": 1,
+        "boltsRequested": 0,
+        "boltsBorn": 0
+      }
+    },
+    {
+      "name": "20 cooldown-respecting bow casts never lose arrows and all transient clones retire",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 0,
+        "projectiles": 0,
+        "arrowsRequested": 21,
+        "arrowsBorn": 21,
+        "boltsRequested": 20,
+        "boltsBorn": 20
+      }
+    },
+    {
+      "name": "restarts and practice remap existing views without accumulating clones",
+      "render": {
+        "sceneClones": 121,
+        "sceneBorn": 121,
+        "missing": 0,
+        "effects": 1,
+        "projectiles": 0,
+        "arrowsRequested": 21,
+        "arrowsBorn": 21,
+        "boltsRequested": 20,
+        "boltsBorn": 20
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Production renderer/clone births and real input/arrow collision. Response-only camera fixtures visit all rooms in both directions; effect stress deliberately requests more decoration than the pool admits; the response-only stress fixture gives the player 120 seconds of protection so cooldown-respecting bow tests cannot be interrupted by unrelated enemy damage. This is not a natural-route or frame-rate benchmark.",
+  "final": {
+    "sceneClones": 121,
+    "sceneBorn": 121,
+    "missing": 0,
+    "effects": 1,
+    "projectiles": 0,
+    "arrowsRequested": 21,
+    "arrowsBorn": 21,
+    "boltsRequested": 20,
+    "boltsBorn": 20
+  }
+}

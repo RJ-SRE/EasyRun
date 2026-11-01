@@ -1,0 +1,44 @@
+{
+  "version": "0.18.1-local.1",
+  "date": "2026-11-01",
+  "bytes": 136290435,
+  "sha256": "c3bf6b32e54fbc1168325aec06aa100c1f5fbc4f623e80d7c84d7cb3e8486726",
+  "desktop": "/Users/rj/Desktop/EasyRun-XBuilder-v0.18.1-word-selection.xbp",
+  "export": "/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/exports/belfry-learning-word-selection.xbp",
+  "manifest": {
+    "schemaVersion": 1,
+    "learningRuleVersion": 1,
+    "contentVersion": "cet46-2026-10-26.1-cloud-test",
+    "wordCount": 8815,
+    "core": false,
+    "selectionRuleVersion": 1,
+    "selectionModes": [
+      "normal",
+      "hard",
+      "challenge",
+      "random"
+    ],
+    "defaultSelection": "normal",
+    "difficultyBasis": "existing-gameplay-tiers-v1",
+    "difficultyCounts": {
+      "normal": 3711,
+      "hard": 3353,
+      "challenge": 1751
+    },
+    "storageMode": "local",
+    "localPersistence": true,
+    "cloudEnabled": false,
+    "apiURL": "",
+    "profileMode": "username",
+    "identityBridge": "runtime-name-local-profile",
+    "identityVerified": false,
+    "releaseReady": false
+  },
+  "checks": {
+    "sameHashInBothNativeReports": true,
+    "identicalDesktopAndExport": true,
+    "noTestHooks": true,
+    "oldExamSelectorRemoved": true,
+    "localOnly": true
+  }
+}

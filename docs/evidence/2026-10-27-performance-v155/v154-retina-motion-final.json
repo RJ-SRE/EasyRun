@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-27T02:25:22.302Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "25.5.0",
+    "cpu": "Apple M1 Pro"
+  },
+  "errors": [],
+  "archiveSha256": "5ab99f4146fdc5703537f5adf56741d3a8b0da135ed8b4f755bdc8b1dbd88d35",
+  "fixture": "Actual native archive, fixed deck indices 25–54 and spelling mode. Same title, idle, arena J-held, question and ledger setup; invulnerability prevents test interruptions. Test-only scene/UI counters, unclamped engine frame intervals, CDP task time and rAF include instrumentation. Initial camera follows Anchor to exercise reset. No online project overwritten or cross-hardware performance guarantee.",
+  "browser": "156.0.8078.4",
+  "display": {
+    "width": 1440,
+    "height": 1080,
+    "dpr": 2,
+    "canvasWidth": 2880,
+    "canvasHeight": 2160
+  },
+  "gpu": {
+    "devices": [
+      {
+        "vendorId": 4203,
+        "deviceId": 0,
+        "vendorString": "Google Inc. (Apple)",
+        "deviceString": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Version 26.5.1 (Build 25F80))",
+        "driverVendor": "Apple",
+        "driverVersion": "26.5.1"
+      }
+    ],
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Version 26.5.1 (Build 25F80))"
+  },
+  "samples": [
+    {
+      "name": "grapple",
+      "wallSeconds": 6.518,
+      "frames": 90,
+      "sceneChecksPerFrame": 255,
+      "sceneSlotsPerFrame": 50,
+      "uiSyncPerFrame": 35,
+      "uiCostumesPerFrame": 0,
+      "uiLayersPerFrame": 0,
+      "engineFrameMean": 67.65927182924416,
+      "engineFrameMax": 102.96277701854706,
+      "rafP50": 83.32499999999709,
+      "rafP95": 100,
+      "rafOver34ms": 76,
+      "taskMsPerSecond": 995.761006289308,
+      "jsHeap": 23027612,
+      "sceneMissing": 0,
+      "phase": 1,
+      "heroX": 868,
+      "heroY": -210,
+      "hook": -1,
+      "hookCount": 1,
+      "glyphs": 0
+    },
+    {
+      "name": "traversal",
+      "wallSeconds": 6.524,
+      "frames": 60,
+      "sceneChecksPerFrame": 255.05,
+      "sceneSlotsPerFrame": 50,
+      "uiSyncPerFrame": 35,
+      "uiCostumesPerFrame": 0,
+      "uiLayersPerFrame": 0,
+      "engineFrameMean": 88.88888874401648,
+      "engineFrameMax": 148.8516628742218,
+      "rafP50": 99.98999999999796,
+      "rafP95": 116.66500000000087,
+      "rafOver34ms": 67,
+      "taskMsPerSecond": 996.4327099938688,
+      "jsHeap": 24717492,
+      "sceneMissing": 0,
+      "phase": 1,
+      "heroX": 868,
+      "heroY": -780,
+      "hook": -1,
+      "hookCount": 0,
+      "glyphs": 0
+    }
+  ],
+  "cpuThrottle": 1
+}

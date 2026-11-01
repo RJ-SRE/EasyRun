@@ -1,0 +1,12 @@
+{
+  "version": "0.17.0-local.1",
+  "file": "prototypes/runlab/exports/belfry-learning-local.xbp",
+  "desktopFile": "/Users/rj/Desktop/EasyRun-XBuilder-v0.17.0-learning-local.xbp",
+  "bytes": 136283019,
+  "sha256": "3122ff978d4bdf4d1aa9548d3594426dd8e1b0aab7bf9d2684ae3bc401dc2fe9",
+  "cloudEnabled": false,
+  "contentVersion": "cet46-2026-10-26.1",
+  "newCoreLexiconReady": false,
+  "nativeTransportLocalTested": true,
+  "formalIdentityReady": false
+}

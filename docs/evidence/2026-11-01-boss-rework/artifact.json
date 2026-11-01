@@ -1,0 +1,18 @@
+{
+  "version": "0.20.0-local.1",
+  "date": "2026-11-01",
+  "archiveBytes": 145389917,
+  "sha256": "860432f89090ab7fd4d31e922d5bccaf41ea9b1fdd327dfced02a6246c0bc5ae",
+  "storageMode": "local",
+  "cloudEnabled": false,
+  "remotePushed": false,
+  "onlineImportedOrPublished": false,
+  "worldClones": 121,
+  "addedWorldFixedSprites": [
+    "KeeperRegalia",
+    "KeeperRitual"
+  ],
+  "keeperLineSlots": 8,
+  "sourceBranch": "feat/adaptive-wordbook-local",
+  "desktopArchive": "/Users/rj/Desktop/EasyRun-XBuilder-v0.20.0-boss-rework.xbp"
+}

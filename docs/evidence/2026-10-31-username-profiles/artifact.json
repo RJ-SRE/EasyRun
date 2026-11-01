@@ -1,0 +1,24 @@
+{
+  "version": "0.17.0-local.4",
+  "bytes": 136284257,
+  "sha256": "3858238feadab19c3ad4ff06d7981bdb5eccf1c769b44e5e8a7c48a6c8a0e399",
+  "paths": [
+    "/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/exports/belfry-learning-username.xbp",
+    "/Users/rj/Desktop/EasyRun-XBuilder-v0.17.0-username-profile.xbp"
+  ],
+  "manifest": {
+    "schemaVersion": 1,
+    "learningRuleVersion": 1,
+    "contentVersion": "cet46-2026-10-26.1-cloud-test",
+    "wordCount": 8815,
+    "core": false,
+    "cloudEnabled": false,
+    "apiURL": "",
+    "profileMode": "username",
+    "identityBridge": "runtime-username-unverified",
+    "identityVerified": false,
+    "releaseReady": false
+  },
+  "testSourceAbsent": true,
+  "privateConfigAbsent": true
+}

@@ -1,0 +1,49 @@
+{
+  "version": "0.16.7",
+  "date": "2026-10-31",
+  "file": "EasyRun-XBuilder-v0.16.7-full-bleed.xbp",
+  "bytes": 133613654,
+  "zipEntries": 5045,
+  "sha256": "2f6fb4366785f22c105c398a8cad37361b3630141055120857f8e9dd5fd02b69",
+  "crc": "pass",
+  "checksPassed": {
+    "native-shell": 15,
+    "native-menu": 5,
+    "native-words": 24
+  },
+  "changedArchiveEntriesVsV166": [
+    "Depth.spx",
+    "District0.spx",
+    "District1.spx",
+    "District2.spx",
+    "District3.spx",
+    "District4.spx",
+    "Enemy.spx",
+    "MenuClothLocal.spx",
+    "MenuScene.spx",
+    "MenuWaterLocal.spx",
+    "NativeLogic.spx",
+    "WorldLogic.spx",
+    "assets/index.json",
+    "assets/sprites/NativeHUD/hud.png",
+    "assets/sprites/NativePanel/title0.png",
+    "assets/sprites/NativePanel/title1.png",
+    "builder-meta.json"
+  ],
+  "removedArchiveEntriesVsV166": [
+    "NativeMatte0.spx",
+    "NativeMatte1.spx",
+    "NativeMatte2.spx",
+    "NativeMatte3.spx",
+    "assets/sprites/NativeMatte0/index.json",
+    "assets/sprites/NativeMatte0/matte.png",
+    "assets/sprites/NativeMatte1/index.json",
+    "assets/sprites/NativeMatte1/matte.png",
+    "assets/sprites/NativeMatte2/index.json",
+    "assets/sprites/NativeMatte2/matte.png",
+    "assets/sprites/NativeMatte3/index.json",
+    "assets/sprites/NativeMatte3/matte.png"
+  ],
+  "identicalAudioFiles": 19,
+  "remotePushed": false
+}

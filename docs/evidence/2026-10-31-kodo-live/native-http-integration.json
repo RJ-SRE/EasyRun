@@ -1,0 +1,336 @@
+{
+  "date": "2026-10-31T11:45:28.169Z",
+  "runtime": "pinned npm SPX, real native HTTP",
+  "storage": "real-private-kodo",
+  "identity": "temporary test verifier; not XBuilder production auth",
+  "prefix": "rupture/learning-tests/1793447127277-3bc79bab877651e2/users",
+  "samples": [
+    {
+      "operation": "bucket-check",
+      "status": 200,
+      "ms": 494
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 5193
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 82
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 671
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 115
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 158
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 202
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 449
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 147
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 163
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 167
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 135
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 116
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 119
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 181
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 107
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 211
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 393
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 107
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 106
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 104
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 322
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 175
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 236
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 145
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 142
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 214
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 184
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 102
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 102
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 100
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 108
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 106
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 102
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 100
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 92
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 202
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 118
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 97
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 105
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 190
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 139
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 164
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 105
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 104
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 201
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 104
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 122
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 108
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 131
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 107
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 110
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 97
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 92
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 98
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 95
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 98
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 93
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 107
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 340
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 80
+    }
+  ],
+  "cases": [
+    "guest mid-run login and R keep guest ownership; no profile writes",
+    "same stable id with refreshed credential keeps prepared deck and does not reload or request another profile",
+    "native HTTP prepares 30 unique words only after returning to title",
+    "checkpoint async save retries the identical batch after lost ACK; no double counts, later answer retained",
+    "failure saves pending timeout with separate ability evidence",
+    "R preserves current account/deck; pending second account activates at title without importing guest/other history",
+    "switching back drains archived unconfirmed account events and restores server history",
+    "winning counts once and persists solved-word completion",
+    "same-id updates during native save preserve frozen evidence and the in-flight request",
+    "late previous-account receipt is ignored; restored frozen batch replays safely",
+    "fresh native runtime requires explicit writer takeover and recovers persisted learning state",
+    "native 2000-event bound retains evidence, marks excess local-only, drains in <=32 KiB batches"
+  ],
+  "errors": [],
+  "archiveSha256": "a5171ebc3db854cf00bb99593f611f0f0c2567b5fac9f8d6cc60cc4130baf62d",
+  "complete": true,
+  "cleanup": {
+    "deleted": 2,
+    "verifiedAbsent": true,
+    "prefix": "rupture/learning-tests/1793447127277-3bc79bab877651e2/users"
+  }
+}

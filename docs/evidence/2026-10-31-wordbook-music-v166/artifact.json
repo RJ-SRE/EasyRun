@@ -1,0 +1,14 @@
+{
+  "version": "0.16.6",
+  "date": "2026-10-31",
+  "file": "EasyRun-XBuilder-v0.16.6-wordbook-music.xbp",
+  "bytes": 134773901,
+  "zipEntries": 5057,
+  "sha256": "7a15388980cb73ab3fd47350a210c7c98332ba7ff215aa75ba6294efb622617a",
+  "crc": "pass",
+  "audioChecksPassed": 19,
+  "changedArchiveEntriesVsV165": [
+    "NativeLogic.spx"
+  ],
+  "remotePushed": false
+}

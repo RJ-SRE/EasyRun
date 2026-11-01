@@ -1,0 +1,11 @@
+{
+  "cases": [
+    "difficulty, word settings, focused selectors, Escape and persistent reduced motion remain usable",
+    "full 8815-word ledger and typing search keep keyboard focus and release menu busy state",
+    "audio panel opens and adjusts music without starting gameplay",
+    "gameplay, pause and return restore original controls and the animated title without duplicate elements",
+    "small, portrait and ultrawide web viewports contain the full logical menu and maintain clickable settings"
+  ],
+  "errors": [],
+  "date": "2026-10-27T11:29:51.258Z"
+}

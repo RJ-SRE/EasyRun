@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-28T11:04:32.526Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "wordsDuringMotion": true,
+  "runtime": "deployed XBuilder compiler and resources",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "25.5.0",
+    "cpu": "Apple M1 Pro"
+  },
+  "errors": [],
+  "archiveSha256": "062cb82fd6df3939c6ae3c2c8e7d361f1badbcd0f503f51364ac6e3f9c8aae67",
+  "fixture": "Actual native archive, fixed deck indices 25–54 and spelling mode. Same title, idle, arena J-held, question and ledger setup; invulnerability prevents test interruptions. Test-only scene/UI counters, unclamped engine frame intervals, CDP task time and rAF include instrumentation. Initial camera follows Anchor to exercise reset. No online project overwritten or cross-hardware performance guarantee.",
+  "browser": "156.0.8078.4",
+  "display": {
+    "width": 1440,
+    "height": 1080,
+    "dpr": 2,
+    "canvasWidth": 2880,
+    "canvasHeight": 2160
+  },
+  "gpu": {
+    "devices": [
+      {
+        "vendorId": 4203,
+        "deviceId": 0,
+        "vendorString": "Google Inc. (Apple)",
+        "deviceString": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Version 26.5.1 (Build 25F80))",
+        "driverVendor": "Apple",
+        "driverVersion": "26.5.1"
+      }
+    ],
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Version 26.5.1 (Build 25F80))"
+  },
+  "samples": [
+    {
+      "name": "mixed-soak",
+      "wallSeconds": 120.074,
+      "frames": 6840,
+      "sceneChecksPerFrame": 69.90540935672514,
+      "sceneSlotsPerFrame": 13.698830409356725,
+      "uiSyncPerFrame": 10.951754385964913,
+      "uiCostumesPerFrame": 0,
+      "uiLayersPerFrame": 0,
+      "engineFrameMean": 17.276086084059934,
+      "engineFrameMax": 147.95400202274323,
+      "rafP50": 16.665000000000873,
+      "rafP95": 16.67000000000189,
+      "rafP99": 16.670000000012806,
+      "rafMax": 200,
+      "rafOver34ms": 31,
+      "rafOver100ms": 31,
+      "rafOver250ms": 0,
+      "rafExcessOver34ms": 4812.454999999984,
+      "taskMsPerSecond": 796.5209780309465,
+      "jsHeap": 37996432,
+      "sceneMissing": 0,
+      "phase": 1,
+      "heroX": 868,
+      "heroY": -210,
+      "hook": -1,
+      "hookCount": 37,
+      "glyphs": 7
+    }
+  ],
+  "cpuThrottle": 1
+}

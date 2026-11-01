@@ -1,0 +1,15 @@
+✔ release validates actual source hashes, source membership and frequency bands (31.899333ms)
+✔ old spelling, changed meaning, retired records and milestones migrate independently (5.071875ms)
+✔ importing an old export cannot reintroduce obsolete meaning mastery (2.178042ms)
+✔ 24 English-only milestones have measurable criteria and unlock once (2.764833ms)
+✔ real answers distinguish help, recall, delayed review and recovery; preview and timeouts grant no day (21.668958ms)
+✔ repeating a word does not inflate unique words, both-mode or recovery counts (6.29675ms)
+✔ practice dates use actual calendar days and corrupt milestone metadata is bounded (0.128084ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 176.641167

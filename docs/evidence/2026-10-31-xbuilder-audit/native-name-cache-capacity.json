@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-31T13:05:38.038Z",
+  "kind": "isolated native methods, helper stubs, no cloud writes",
+  "reproduced": true,
+  "messages": [
+    "AUDIT_CACHE_FULL true false 账号缓存已满 · 请先保存记录"
+  ],
+  "errors": []
+}

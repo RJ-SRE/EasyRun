@@ -1,0 +1,16 @@
+{
+  "version": "0.16.1",
+  "archiveBytes": 133028652,
+  "sha256": "cb459be4fcff02eac0fe046caa8a8736ddd8564bd467f9ddda528eaeaaff2807",
+  "zipEntries": 4806,
+  "zipCRC": "pass",
+  "menuSprites": [
+    "MenuScene",
+    "MenuClothLocal",
+    "MenuWaterLocal"
+  ],
+  "unchangedAudioFiles": 19,
+  "heroSourceUnchanged": true,
+  "remotePushed": false,
+  "delivery": "/Users/rj/Desktop/EasyRun-XBuilder-v0.16.1-stillwater.xbp"
+}

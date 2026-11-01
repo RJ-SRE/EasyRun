@@ -1,0 +1,29 @@
+✔ verified XBuilder id retains saved history across rename, new token and cold restart; reused name stays isolated (148.211834ms)
+✔ a username or display name cannot substitute for a missing stable user id (0.994375ms)
+✔ same-id credential refresh retains reference client deck, queue and in-flight acknowledgement (0.43975ms)
+✔ old-token 401 after same-id refresh retries the unchanged batch with the new token (0.289416ms)
+✔ spelling and meaning stay independent; assisted success and timeout use exact schedules (1.857625ms)
+✔ 30 unique words, mutually exclusive quotas, weak cap, same-mode fallback, insufficient pool (2.2855ms)
+✔ wrong outcomes are capped and chronological order matters (0.272375ms)
+✔ checkpoint save, failure retry, victory and duplicate submission do not double count (161.661458ms)
+✔ reject changed duplicate, missing sequence, stale revision, unknown words and duplicate question (102.112583ms)
+✔ two users isolated, explicit takeover invalidates previous writer, survives cache loss (103.586084ms)
+✔ lost write response reconciles exact candidate; unknown write blocks takeover after restart (130.190333ms)
+✔ read errors/corrupt profiles do not initialize or erase user history (57.93475ms)
+✔ prepared views stay small with old 8815-word history, removed words remain in totals (268.432542ms)
+✔ client does not upload per answer; frozen retry excludes later answers and clears only acked entries (151.386208ms)
+✔ late callbacks cannot contaminate another account; original frozen batch can resume (102.394792ms)
+✔ HTTP boundary: no dev login, no credential leakage, unknown origin rejected, health explicit (87.922125ms)
+✔ content checks block a legacy test bank from release even with a valid hash (0.385875ms)
+✔ Kodo adapter uses signed exact user key, verifies origin bytes, treats only stat 612 as absent (4.387458ms)
+✔ platform verifier fails closed, rejects public names and never accepts a client-supplied user id (0.808042ms)
+✔ retry schedule is 2,5,15 seconds then manual; in-flight answers remain pending beyond save boundary (4.427291ms)
+✔ real local HTTP: prepare -> 100 batches -> cold restart -> restored history; no pending references (2993.499167ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3084.104833

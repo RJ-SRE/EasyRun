@@ -1,0 +1,257 @@
+{
+  "baseline": "v0.20.0 final .xbp",
+  "checks": [
+    {
+      "frame": 0,
+      "stage": 0,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        82.44,
+        74.88,
+        55.95
+      ]
+    },
+    {
+      "frame": 1,
+      "stage": 0,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        75.63,
+        69.0,
+        52.12
+      ]
+    },
+    {
+      "frame": 2,
+      "stage": 0,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        78.8,
+        71.72,
+        53.87
+      ]
+    },
+    {
+      "frame": 3,
+      "stage": 0,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        82.93,
+        75.07,
+        55.67
+      ]
+    },
+    {
+      "frame": 4,
+      "stage": 0,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        76.67,
+        69.88,
+        52.66
+      ]
+    },
+    {
+      "frame": 5,
+      "stage": 0,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        77.51,
+        70.73,
+        53.41
+      ]
+    },
+    {
+      "frame": 6,
+      "stage": 1,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        88.28,
+        29.46,
+        39.56
+      ]
+    },
+    {
+      "frame": 7,
+      "stage": 1,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        88.26,
+        29.35,
+        39.51
+      ]
+    },
+    {
+      "frame": 8,
+      "stage": 1,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        92.3,
+        30.62,
+        40.71
+      ]
+    },
+    {
+      "frame": 9,
+      "stage": 1,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        90.36,
+        29.13,
+        39.62
+      ]
+    },
+    {
+      "frame": 10,
+      "stage": 1,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        89.98,
+        29.1,
+        39.56
+      ]
+    },
+    {
+      "frame": 11,
+      "stage": 1,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        92.31,
+        32.2,
+        41.61
+      ]
+    },
+    {
+      "frame": 12,
+      "stage": 2,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        79.36,
+        86.7,
+        110.87
+      ]
+    },
+    {
+      "frame": 13,
+      "stage": 2,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        74.56,
+        81.56,
+        106.06
+      ]
+    },
+    {
+      "frame": 14,
+      "stage": 2,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        75.82,
+        82.92,
+        107.14
+      ]
+    },
+    {
+      "frame": 15,
+      "stage": 2,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        77.93,
+        85.18,
+        109.26
+      ]
+    },
+    {
+      "frame": 16,
+      "stage": 2,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        70.68,
+        77.42,
+        101.87
+      ]
+    },
+    {
+      "frame": 17,
+      "stage": 2,
+      "alphaExact": true,
+      "size": [
+        384,
+        384
+      ],
+      "meanOpaqueRGB": [
+        78.81,
+        86.1,
+        110.32
+      ]
+    }
+  ]
+}

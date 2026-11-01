@@ -1,6 +1,10 @@
 # Git 工作流程
 
-仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。更新：2026-10-26。
+仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。本地交接更新：2026-11-01。
+
+当前本地整理：开发分支 `feat/adaptive-wordbook-local` 已以 `645d9f5` 保存 v0.22.2 的代码、资源、测试和产品文档；随后归档历史验收材料及三人协作说明。本轮不 push、不合并 main、不改写原作者。当前协作请先阅读 [三人 Git 交接](TEAM_GIT_HANDOFF.md)，基线和账号责任以该文档为准。
+
+下文 v0.10／v0.11、旧 main SHA 与旧合并结果属于此前的历史记录，不代表当前 main 或当前远程状态。
 
 本地 v0.11.2（词册、键位与组合操作优化）：从 `d4faf9e` 创建 `feat/adaptive-wordbook-local`，在独立集成工作树开发。本轮只做本地提交，遵循用户“先不用提到远程仓库”的要求，不执行 push、合并远程 main 或创建 PR；后文推送步骤是通用流程，本轮不适用。词源、运行逻辑、测试和文档按实际完成内容分组记录，未改写旧历史，也未触碰原工作目录的其他聊天改动。
 

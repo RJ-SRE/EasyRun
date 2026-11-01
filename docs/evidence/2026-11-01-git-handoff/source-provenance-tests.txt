@@ -1,0 +1,11 @@
+✔ release validates actual source hashes, source membership and frequency bands (22.852458ms)
+✔ old spelling, changed meaning, retired records and milestones migrate independently (4.744292ms)
+✔ importing an old export cannot reintroduce obsolete meaning mastery (1.38225ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 136.46375

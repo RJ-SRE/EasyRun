@@ -1,0 +1,11 @@
+{
+  "sampleRate": 44100,
+  "channels": 2,
+  "sourceDecodedFrames": 18235055,
+  "trimmedDecodedFrames": 18014555,
+  "removedFrames": 220500,
+  "removedSeconds": 5.0,
+  "trimmedDecodedSeconds": 408.4933106575964,
+  "firstTwoSecondsCorrelationWithSourceAt5s": 0.9999932860709488,
+  "note": "MP3 format duration includes frame padding; decoded sample count verifies exactly 5 seconds removed. Re-encoding introduces small waveform differences."
+}

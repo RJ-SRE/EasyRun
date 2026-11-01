@@ -1,0 +1,430 @@
+{
+  "date": "2026-10-30T16:13:06.947Z",
+  "cases": [
+    "actual export compiles without the web host and the full menu MP3 produces nonzero engine audio",
+    "the exported title initializes music at 75% and action effects at 85%",
+    "title wordbook keeps menu music playing through open, page and close without restart",
+    "Enter switches to the full gameplay track",
+    "Tab wordbook freezes combat while the actual gameplay audio remains audible without pause, resume or restart",
+    "wordbook respects B mute, zero volume and an existing explicit pause; closing preserves the prior state",
+    "real J attacks and gameplay music both run under the new mix without full-scale clipping in the sampled opening combat",
+    "music-only output remains audible in all five districts and after returning to the top, without restarting the song",
+    "real repeated J attacks, jumping, charged arrow and charged blade at depth leave music audible after effect cleanup, without restarting",
+    "zero music volume leaves independently controlled action audio audible",
+    "85% action output is measurably louder than 30%; the independent level control still works",
+    "zero action volume silences action samples without muting background music; both zero is silent",
+    "pause silences the engine output; continue resumes the same track",
+    "word-focus state leaves gameplay music running without restart or volume ducking",
+    "result wordbook preserves ending music and returns to the result screen",
+    "victory switches to the full ending track; mute is silent with no previous track leaking",
+    "defeat uses ending music; returning to title switches back and leaves only one active track",
+    "native loop keeps a one-second MP3 audible past three durations without JS restarts",
+    "mute persists across stage changes; unmute plays the current stage"
+  ],
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "errors": [],
+  "archiveSha256": "7a15388980cb73ab3fd47350a210c7c98332ba7ff215aa75ba6294efb622617a",
+  "note": "Actual .xbp is unzipped and compiled without the web host, optionally roundtripped through the pinned deployed project model. Test-only keys select lifecycle states, volumes, and checkpoint depths; invulnerability isolates audio continuity. Real J/W/U/L keys exercise attacks and effects. Analyser reads the real engine output. A separate one-second MP3 fixture accelerates loop verification; full delivered tracks remain unchanged. Does not claim a live x.qiniu.com editor upload.",
+  "browser": "156.0.8078.4",
+  "ledgerAudio": [
+    {
+      "track": "BGM_Menu",
+      "returnPhase": 0,
+      "silent": false,
+      "phase": 0,
+      "elapsed": 0,
+      "rms": 0.00555015610209762,
+      "musicEvents": 1
+    },
+    {
+      "track": "BGM_Gameplay",
+      "returnPhase": 1,
+      "silent": false,
+      "phase": 4,
+      "elapsed": 0.20999400675296784,
+      "rms": 0.07413007593890784,
+      "musicEvents": 2
+    },
+    {
+      "track": "BGM_Gameplay",
+      "returnPhase": 1,
+      "silent": true,
+      "phase": 4,
+      "elapsed": 0.7699906990677119,
+      "rms": 0,
+      "musicEvents": 3
+    },
+    {
+      "track": "BGM_Gameplay",
+      "returnPhase": 1,
+      "silent": true,
+      "phase": 4,
+      "elapsed": 1.4033240654319525,
+      "rms": 0,
+      "musicEvents": 5
+    },
+    {
+      "track": "BGM_Gameplay",
+      "returnPhase": 4,
+      "silent": true,
+      "phase": 4,
+      "elapsed": 1.8533240889012814,
+      "rms": 0,
+      "musicEvents": 7
+    },
+    {
+      "track": "BGM_Ending",
+      "returnPhase": 2,
+      "silent": false,
+      "phase": 2,
+      "elapsed": 27.276998626589776,
+      "rms": 0.0037295304475058323,
+      "musicEvents": 13
+    }
+  ],
+  "defaultMixPeak": 0.34518420696258545,
+  "depthSweep": [
+    {
+      "key": "Home",
+      "cameraY": -80.00281766433996,
+      "heroY": 0,
+      "phase": 1,
+      "rms": [
+        0.07990142231478069,
+        0.08612413579257476,
+        0.08301034341267524,
+        0.08478602059650892,
+        0.08761910769562715,
+        0.09122053957362256,
+        0.08736801577438524,
+        0.08781245211108372
+      ],
+      "maxRms": 0.09122053957362256
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -2340.006643487463,
+      "heroY": -2260,
+      "phase": 1,
+      "rms": [
+        0.0673851785969236,
+        0.07203837289462474,
+        0.06566101406539672,
+        0.05706063352124594,
+        0.05483111244175164,
+        0.06113876358150211,
+        0.06034128651136533,
+        0.06153449567290255
+      ],
+      "maxRms": 0.07203837289462474
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -4740.003154669131,
+      "heroY": -4660,
+      "phase": 1,
+      "rms": [
+        0.0460945058036272,
+        0.05187941969934473,
+        0.051134883234553286,
+        0.05858967748573167,
+        0.05078378958162109,
+        0.06693483733752788,
+        0.06344379649625569,
+        0.04629117197165686
+      ],
+      "maxRms": 0.06693483733752788
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -7140.002611831249,
+      "heroY": -7060,
+      "phase": 1,
+      "rms": [
+        0.06466507510143939,
+        0.058229492450039215,
+        0.05578555443237165,
+        0.057845740588324986,
+        0.0642556212032061,
+        0.06859157921365801,
+        0.0695416482919316,
+        0.0734596482395321
+      ],
+      "maxRms": 0.0734596482395321
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -9540.008048558391,
+      "heroY": -9460,
+      "phase": 1,
+      "rms": [
+        0.0718817686709071,
+        0.07441208049753158,
+        0.0769208395560379,
+        0.0803060914351375,
+        0.07376961362073643,
+        0.08300635365512445,
+        0.07016580124022707,
+        0.06238484475395147
+      ],
+      "maxRms": 0.08300635365512445
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -11140.00280097499,
+      "heroY": -11060,
+      "phase": 1,
+      "rms": [
+        0.06592448297960013,
+        0.048691583912961925,
+        0.06953419062517685,
+        0.06907362389627116,
+        0.059728965340754094,
+        0.05832501807082696,
+        0.05303850922231476,
+        0.06730647532125912
+      ],
+      "maxRms": 0.06953419062517685
+    },
+    {
+      "key": "Home",
+      "cameraY": -80.01339733373428,
+      "heroY": 0,
+      "phase": 1,
+      "rms": [
+        0.042334068745940014,
+        0.03055797186368054,
+        0.030293777707105913,
+        0.030382663866156776,
+        0.03237950814248561,
+        0.05318962454869681,
+        0.06237165526668447,
+        0.039205427698749094
+      ],
+      "maxRms": 0.06237165526668447
+    }
+  ],
+  "roundtripAudio": {
+    "run": {
+      "width": 480,
+      "height": 360
+    },
+    "audioAttenuation": 1,
+    "audioMaxDistance": 768
+  },
+  "deepCombat": {
+    "state": [
+      1,
+      0,
+      0,
+      22.22620704650879,
+      8,
+      8,
+      0,
+      0,
+      0,
+      0,
+      50,
+      0,
+      779.7991153471753,
+      -4620,
+      0,
+      0,
+      -1,
+      88,
+      14,
+      36,
+      0,
+      -11970,
+      1,
+      0,
+      0,
+      0,
+      0,
+      -4700.000000000004,
+      0,
+      990.6478136035801,
+      0,
+      0,
+      0,
+      1,
+      1,
+      8,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.6333990301936865,
+      0,
+      0,
+      0,
+      -1,
+      0,
+      0,
+      5,
+      0,
+      0,
+      0,
+      1.1985062595084308,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      -1,
+      0,
+      0,
+      0,
+      -1,
+      1,
+      24.104498774185778,
+      1,
+      -1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      11060,
+      -1,
+      36,
+      0,
+      0,
+      0,
+      2
+    ],
+    "musicRms": 0.0637374449558128,
+    "musicLog": [
+      {
+        "track": "BGM_Menu",
+        "state": "playing"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "playing"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "paused"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "playing"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "paused"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "playing"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "paused"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "playing"
+      }
+    ],
+    "cues": [
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx cloth 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx land 85",
+      "@nativeSfx bowdraw 85",
+      "@nativeSfx bowshot 85",
+      "@nativeSfx heavycut 85"
+    ]
+  },
+  "actionLevels": {
+    "highPeak": 0.2842227518558502,
+    "lowPeak": 0.10031390935182571,
+    "ratio": 2.8333334199847666
+  },
+  "fullTrackLog": [
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "paused"
+    }
+  ]
+}
