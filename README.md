@@ -21,7 +21,7 @@
 
 EasyRun 是一款面向成年玩家的二维纵向动作冒险原型。玩家穿过倒悬旧城的五个区域，以钩索、连招和四种技能对抗各有弱点的猎手，击破守心者，再带着钟心逃离上涨的黑潮。英语以可选的「铭文」模式融入技能释放；关闭后可以体验完整的纯动作冒险。
 
-默认主分支：`main` · 本修订分支：`feat/adaptive-wordbook-local` · 版本：`0.22.2-local.1 / 本地档案清除` · 文档更新：2026-11-01。此版本仅保存在本地，尚未推送远程。
+默认主分支：`main` · 本修订分支：`feat/adaptive-wordbook-local` · 版本：`0.22.2-local.1 / 本地档案清除` · 文档更新：2026-11-01。此版本已由 RJ-SRE 推送到开发分支，尚未合入 `main`。
 
 v0.16.10 为菜单建筑之间与水面附近的雾加入缓慢漂移和局部翻涌，保留原图主角与近处台阶。两层局部图平滑过渡，减少动态时恢复静态；网页和 `.xbp` 共用效果。[设计与验收](docs/evidence/2026-10-31-menu-fog-v1610/README.md)。桌面包：`EasyRun-XBuilder-v0.16.10-living-mist.xbp`。
 
@@ -160,15 +160,15 @@ W 跳跃没有额外等待；刚起跳接 J 可衔接挑空，按住 J 在起手
 
 ## 快速启动
 
-本轮桌面导入包为 `EasyRun-XBuilder-v0.22.2-local-reset.xbp`，仓库副本为 `prototypes/runlab/exports/belfry-local-reset.xbp`。网页与独立包共用战斗规则，本轮仅在本地交付。
+本轮桌面导入包为 `EasyRun-XBuilder-v0.22.2-local-reset.xbp`，本地导出副本为 `prototypes/runlab/exports/belfry-local-reset.xbp`。网页与独立包共用战斗规则；源码已发布到开发分支，生成的 `.xbp` 包保留在本地，不纳入 Git。
 
 ### 首次安装
 
 需要 Git、Bash、curl、tar、`shasum`；导出工程包还需 Python 3。安装脚本支持 macOS / Linux 的 arm64、x64 分支，主要已验证环境为 macOS arm64。Windows 原生安装尚未验收。
 
 ```sh
-# 1. 获取远程主分支（不含尚未推送的本地 v0.11 修订）
-git clone --branch main https://github.com/RJ-SRE/EasyRun.git
+# 1. 获取当前完整开发版本（尚未合入 main）
+git clone --branch feat/adaptive-wordbook-local https://github.com/RJ-SRE/EasyRun.git
 cd EasyRun
 
 # 2. 安装仓库固定的 Node、pnpm、依赖和浏览器工具
@@ -286,7 +286,7 @@ python3 prototypes/runlab/package.py
 
 自动路线的题目由脚本正确作答，不能证明真人会自然完成 30 词、愿意持续游玩或取得学习提升。真人试玩、低端设备、跨浏览器、长时间稳定性和完整 XBuilder 编辑器往返仍需验收。[GitHub Actions](https://github.com/RJ-SRE/EasyRun/actions/workflows/verify.yml) 的结果应按具体提交查看，不用本机结果代替。
 
-`.xbp` 输出位于 `prototypes/runlab/exports/`。Belfry 导入包内置完整开始 / 帮助 / 暂停 / 结算菜单、3,816 词的随机 30 词远征、拼写与三选一辨义、四技能与束缚解救判题、76×28 技能冷却环、三阶段背景音乐及独立音乐 / 动作音量。战斗答题界面复用网页的断环计时、衬线单词、逐字输入槽和三列辨义卡；拼写常显中文，完整拼对自动释放，首错立即取消技能前摇。题面缩至 400×138 / 400×148，开始页可选完整提示、2 秒后保留首字母、1 秒后全部隐藏；随行词册复用网页双列布局，支持 30 词进度、状态标记、完整词库 / 薄弱词筛选与英文搜索；Tab 或点击进度查看，合上后恢复战斗。标题区仅保留「裂隙」，移除标题页和战斗 HUD 的重复操作提示；技能栏去掉 READY，暂停页只留状态、按钮和音量设置。默认音乐 75%、动作 85%；答题不降低背景音乐。窗口按比例完整容纳 960×600，保留此前镜头纠偏与高分屏兼容。原生版与网页均支持本地学习记录与成就；原生 IndexedDB 按运行器用户名分档，升级词库时保留拼写、旧辨义归档和退役词记录。详见 [原生版说明](docs/XBUILDER_NATIVE.md) 和 [本次界面验证](docs/evidence/2026-10-26-native-minimal-ui/verification.json)。本版仅本地交付，尚无正式线上部署或桌面安装包。
+`.xbp` 输出位于 `prototypes/runlab/exports/`。Belfry 导入包内置完整开始 / 帮助 / 暂停 / 结算菜单、3,816 词的随机 30 词远征、拼写与三选一辨义、四技能与束缚解救判题、76×28 技能冷却环、三阶段背景音乐及独立音乐 / 动作音量。战斗答题界面复用网页的断环计时、衬线单词、逐字输入槽和三列辨义卡；拼写常显中文，完整拼对自动释放，首错立即取消技能前摇。题面缩至 400×138 / 400×148，开始页可选完整提示、2 秒后保留首字母、1 秒后全部隐藏；随行词册复用网页双列布局，支持 30 词进度、状态标记、完整词库 / 薄弱词筛选与英文搜索；Tab 或点击进度查看，合上后恢复战斗。标题区仅保留「裂隙」，移除标题页和战斗 HUD 的重复操作提示；技能栏去掉 READY，暂停页只留状态、按钮和音量设置。默认音乐 75%、动作 85%；答题不降低背景音乐。窗口按比例完整容纳 960×600，保留此前镜头纠偏与高分屏兼容。原生版与网页均支持本地学习记录与成就；原生 IndexedDB 按运行器用户名分档，升级词库时保留拼写、旧辨义归档和退役词记录。详见 [原生版说明](docs/XBUILDER_NATIVE.md) 和 [本次界面验证](docs/evidence/2026-10-26-native-minimal-ui/verification.json)。本版源码已发布到开发分支；生成包仍在本地交付，尚无正式线上部署或桌面安装包。
 
 ## 商业价值与验证
 
@@ -349,7 +349,7 @@ python3 prototypes/runlab/package.py
 
 ### v0.11 本地词册开发
 
-本地分支 `feat/adaptive-wordbook-local`，未推送远程。已有环境直接运行：
+该开发线已随 `feat/adaptive-wordbook-local` 发布到远程；以下保留 v0.11 的词库构建与验收入口，当前完整版本按上方快速启动运行。已有环境直接运行：
 
 ```sh
 bash scripts/with-env.sh node scripts/build-wordbank.mjs

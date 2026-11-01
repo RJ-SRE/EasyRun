@@ -6,11 +6,11 @@
 
 ## 1. 当前交接状态：先拿到同一份代码
 
-本地最新开发分支是 `feat/adaptive-wordbook-local`，代码快照为 `645d9f5`，其后还有本次文档与验收归档提交。提交列表以 `git log -2 --oneline` 为准。本轮只建立本地提交，没有推送、合并 main 或修改仓库权限。
+当前完整开发分支是 [`feat/adaptive-wordbook-local`](https://github.com/RJ-SRE/EasyRun/tree/feat/adaptive-wordbook-local)，已于 2026-11-01 使用 RJ-SRE 的 SSH 授权推送到 GitHub。代码快照为 `645d9f5`，文档与验收归档为 `501cc92`，其后补充本次发布状态文档。最新提交以 `git log -3 --oneline` 为准。本次未合并 `main`，未修改仓库权限。
 
-远程 `main` 尚未包含当前完整功能；同事不能只拉 main 就认为拿到了 v0.22.2。本说明中的登录、推送和 PR 命令均由对应同事在后续交接时自行执行，当前未代执行。
+远程 `main` 尚未包含当前完整功能；同事不能只拉 main 就认为拿到了 v0.22.2。RJ-SRE 的集成分支已发布；两位同事的登录、开发分支推送和 PR 仍由本人自行执行。
 
-由 RJ-SRE 先确认本地状态、验证结果，再把当前完整集成分支发布到远程：
+RJ-SRE 已完成首次发布。后续更新仍先核对状态与验证结果，再正常推送同一分支：
 
 ```sh
 git switch feat/adaptive-wordbook-local
@@ -19,9 +19,9 @@ git log -2 --oneline
 git push -u origin feat/adaptive-wordbook-local
 ```
 
-已有 15 条本地未推送历史提交继续保留真实作者，本轮整理的新增提交也保留当前 RJ-SRE 身份。发布整条分支会一并发送其尚未在远程的祖先提交，不需要逐条 push。
+首次发布包含此前 15 条开发提交与本轮 2 条整理提交，全部保留原 RJ-SRE 作者信息，随后补充发布状态文档。推送整条分支会一并发送其尚未在远程的祖先提交，不需要逐条 push。两位同事的贡献从本人实际完成的新任务开始。
 
-在该分支已被 RJ-SRE 发布后，同事再开始本文的后续步骤。在它合入 main 前，新任务都从 `origin/feat/adaptive-wordbook-local` 派生，PR 的目标也选这个集成分支。待 RJ-SRE 验收并合入 main 后，新任务统一从最新 `origin/main` 派生，PR 目标改为 main。
+同事现在可以按本文后续步骤获取该分支。在它合入 main 前，新任务都从 `origin/feat/adaptive-wordbook-local` 派生，PR 的目标也选这个集成分支。待 RJ-SRE 验收并合入 main 后，新任务统一从最新 `origin/main` 派生，PR 目标改为 main。
 
 ## 2. 三人的责任与文件边界
 
@@ -215,4 +215,4 @@ PR 地址：
 未覆盖或需协助的部分：
 ```
 
-RJ-SRE 收到后确认远程确实存在该提交，再安排审查／合并。文档建立不等于已邀请协作者、已获取权限或已推送，本轮没有自动执行这些操作。
+RJ-SRE 收到后确认远程确实存在该提交，再安排审查／合并。本次仅发布 RJ-SRE 的集成分支及交接文档；两位同事的协作者邀请、权限确认、登录与新任务提交仍需各自完成。
