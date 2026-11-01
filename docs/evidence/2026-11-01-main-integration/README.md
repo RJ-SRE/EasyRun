@@ -2,7 +2,7 @@
 
 将开发分支 `feat/adaptive-wordbook-local` 的 `9f5cc76` 合入主分支 `d454647`。保留两个父提交和原始作者，不 squash、不改写历史、不强推。唯一冲突为 README，保留主分支最新整理、作者署名、视频和在线体验入口，并将启动与文档链接改为 main。
 
-相对开发分支，本次只改交付文档和新增此验收记录；游戏源码、资源、词库和构建配置逐路径与原开发分支一致。三人交接改为从 `origin/main` 建任务分支、向 main 提 PR。旧功能验收中“本地交付／未推送”保留为当时事实。
+相对开发分支，本次只改交付文档和新增此验收记录；游戏源码、资源、词库和构建配置逐路径与原开发分支一致。后续开发从 `origin/main` 建任务分支、向 main 提 PR。旧功能验收中“本地交付／未推送”保留为当时事实。
 
 ## 本次实际检查
 
@@ -18,4 +18,4 @@ bash scripts/with-env.sh node services/learning/check-content.mjs services/learn
 
 ESLint 实际展开 `package.json` 中 `game:lint` 的文件通配符，并以 `bash scripts/with-env.sh node node_modules/eslint/bin/eslint.js ... --max-warnings 0` 运行相同参数。
 
-本次没有重新构建 `.xbp`、重新发布 XBuilder 在线作品或重跑浏览器／原生交互测试。运行代码没有改变，沿用此前真实验收；历史证据与限制见 [上一轮交接验收](../2026-11-01-git-handoff/README.md)。机器可读结果见 [checks.json](checks.json)。
+本次没有重新构建 `.xbp`、重新发布 XBuilder 在线作品或重跑浏览器／原生交互测试。运行代码没有改变，沿用此前真实验收；历史证据与限制见 [上一轮 Git 整理验收](../2026-11-01-git-handoff/README.md)。机器可读结果见 [checks.json](checks.json)。

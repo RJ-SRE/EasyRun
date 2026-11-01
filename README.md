@@ -253,7 +253,7 @@ LEARNING_NATIVE_STORAGE_MODE=local bash scripts/with-env.sh python3 prototypes/r
 
 如浏览器测试提示缺少 headless shell，可运行 `bash scripts/with-env.sh node node_modules/@playwright/test/cli.js install chromium` 补齐；Linux 系统库按实际报错处理。浏览器 / WASM 性能检查应串行运行，避免互相争用资源。
 
-当前版本的可追溯验证包括：18 项词库／铭文／成就规则检查、3 项词源完整性检查、游戏 ESLint，以及已归档的网页／原生档案清除与词册回归。具体执行时间和边界见 [Git 交接验收](https://github.com/RJ-SRE/EasyRun/blob/main/docs/evidence/2026-11-01-git-handoff/README.md)、[本地清除说明](https://github.com/RJ-SRE/EasyRun/blob/main/docs/LOCAL_RESET_V222.md) 和 [Boss／词库实现](https://github.com/RJ-SRE/EasyRun/blob/main/docs/BOSS_AND_COMMON_V220.md)。本次主分支合并重新通过 18 项规则检查、3,816 词内容发布校验和完整游戏 ESLint；游戏源码与原开发分支相同，浏览器及原生交互回归沿用已有报告，未在本次重跑。详见 [主分支合并记录](docs/evidence/2026-11-01-main-integration/README.md)。
+当前版本的可追溯验证包括：18 项词库／铭文／成就规则检查、3 项词源完整性检查、游戏 ESLint，以及已归档的网页／原生档案清除与词册回归。具体执行时间和边界见 [Git 整理验收](https://github.com/RJ-SRE/EasyRun/blob/main/docs/evidence/2026-11-01-git-handoff/README.md)、[本地清除说明](https://github.com/RJ-SRE/EasyRun/blob/main/docs/LOCAL_RESET_V222.md) 和 [Boss／词库实现](https://github.com/RJ-SRE/EasyRun/blob/main/docs/BOSS_AND_COMMON_V220.md)。本次主分支合并重新通过 18 项规则检查、3,816 词内容发布校验和完整游戏 ESLint；游戏源码与原开发分支相同，浏览器及原生交互回归沿用已有报告，未在本次重跑。详见 [主分支合并记录](docs/evidence/2026-11-01-main-integration/README.md)。
 
 **已记录的 v0.10 本机验证**：25 项纯逻辑检查、206 项浏览器检查、三条真实键盘整关路线，以及四个 `.xbp` 包完整性检查。测试在 macOS arm64 / Chromium 下完成，分段运行并修复后复测；详情见 [验收账本](https://github.com/RJ-SRE/EasyRun/blob/main/docs/planning/hunt-v10/IMPLEMENTATION.md) 与 [源码哈希清单](https://github.com/RJ-SRE/EasyRun/blob/main/docs/evidence/2026-10-25-hunt-v10/source-manifest.json)。这轮 README 整理没有重新执行游戏回归。
 
@@ -315,7 +315,7 @@ LEARNING_NATIVE_STORAGE_MODE=local bash scripts/with-env.sh python3 prototypes/r
 | 铭文、词库与成就规则         | [当前词库与记忆](https://github.com/RJ-SRE/EasyRun/blob/main/docs/BOSS_AND_COMMON_V220.md)、[学习进度与成就规则](https://github.com/RJ-SRE/EasyRun/blob/main/docs/LEARNING_RAILS_V190.md)、[当前成就界面](https://github.com/RJ-SRE/EasyRun/blob/main/docs/ACHIEVEMENT_ARCHIVE_V221.md)；旧文档词库数量以 v0.22.0 为准 |
 | 复核测试与局限               | [猎战验收账本](https://github.com/RJ-SRE/EasyRun/blob/main/docs/planning/hunt-v10/IMPLEMENTATION.md)、[测试记录](https://github.com/RJ-SRE/EasyRun/blob/main/docs/TESTING.md)                                               |
 | 追溯资源与音乐               | [资产来源](https://github.com/RJ-SRE/EasyRun/blob/main/docs/ASSETS.md)、[场景音乐](https://github.com/RJ-SRE/EasyRun/blob/main/docs/SCENE_MUSIC.md)                                                                         |
-| 提交、协作与回退             | [三人提交与交接](https://github.com/RJ-SRE/EasyRun/blob/main/docs/TEAM_GIT_HANDOFF.md)、[Git 流程](https://github.com/RJ-SRE/EasyRun/blob/main/docs/GIT_WORKFLOW.md)、[贡献约定](https://github.com/RJ-SRE/EasyRun/blob/main/CONTRIBUTING.md)                                                                       |
+| 提交、协作与回退             | [Git 流程](https://github.com/RJ-SRE/EasyRun/blob/main/docs/GIT_WORKFLOW.md)、[贡献约定](https://github.com/RJ-SRE/EasyRun/blob/main/CONTRIBUTING.md)                                                                       |
 | 全部文档与历史               | [文档索引](https://github.com/RJ-SRE/EasyRun/blob/main/docs/README.md)、[开发日志](https://github.com/RJ-SRE/EasyRun/blob/main/docs/DEVELOPMENT_LOG.md)、[决策记录](https://github.com/RJ-SRE/EasyRun/blob/main/docs/DECISIONS.md)                                      |
 
 反馈问题时请附提交 SHA、设备与浏览器、操作步骤、预期与实际结果。产品提案注明目标玩家、改变的体验、验证方式与暂不包含的内容；待开发设计进入路线图后仍需单独评审和实现。

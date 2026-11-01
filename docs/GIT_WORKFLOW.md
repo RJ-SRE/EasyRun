@@ -2,7 +2,7 @@
 
 仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。交接更新：2026-11-01。
 
-当前交付：2026-11-01，RJ-SRE 将 `feat/adaptive-wordbook-local` 的 `9f5cc76` 完整合入 `main`，保留主分支 `d454647` 的首页整理。采用双父提交，不压缩、不改写原作者；唯一冲突为 README，保留最新首页并把启动、文档和协作基线切换到 main。游戏源码与资源与原开发分支相同。合并复查通过 18 项规则检查、3,816 词内容校验及完整游戏 ESLint；浏览器与原生交互沿用此前证据。当前协作请阅读 [三人 Git 交接](TEAM_GIT_HANDOFF.md)，核验范围见 [合并记录](evidence/2026-11-01-main-integration/README.md)。
+当前交付：2026-11-01，RJ-SRE 将 `feat/adaptive-wordbook-local` 的 `9f5cc76` 完整合入 `main`，保留主分支 `d454647` 的首页整理。采用双父提交，不压缩、不改写原作者；唯一冲突为 README，保留最新首页并把启动、文档和协作基线切换到 main。游戏源码与资源与原开发分支相同。合并复查通过 18 项规则检查、3,816 词内容校验及完整游戏 ESLint；浏览器与原生交互沿用此前证据。后续任务从 `origin/main` 建立独立分支并提交 PR；核验范围见 [合并记录](evidence/2026-11-01-main-integration/README.md)。
 
 下文 v0.10／v0.11、旧 main SHA 与旧合并结果属于此前的历史记录，不代表当前 main 或当前远程状态。
 

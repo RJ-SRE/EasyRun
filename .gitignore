@@ -54,3 +54,6 @@ prototypes/runlab/art/passages/imported/
 # Learning service personal data and generated internal integration lexicon
 .local/
 services/learning/content/legacy-test/
+
+# Local-only collaboration notes
+/docs/TEAM_GIT_HANDOFF.md

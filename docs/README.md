@@ -1,6 +1,5 @@
 # 文档总目录
 
-三人协作交接：[TEAM_GIT_HANDOFF.md](TEAM_GIT_HANDOFF.md)（RJ-SRE／mdyqwe／leoweng 邮箱对应同事的职责、基线、身份、提交和推送步骤）。
 
 - [v0.22.1 铭文成就陈列册](ACHIEVEMENT_ARCHIVE_V221.md)：共享矢量美术、三状态铭牌、网页与原生界面、资源去重及验收。
 
