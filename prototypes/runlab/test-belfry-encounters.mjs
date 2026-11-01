@@ -226,12 +226,12 @@ try {
   );
   const splitAt = events.length;
   await page.keyboard.down("d");
-  await page.keyboard.down("Space");
+  await page.keyboard.down("w");
   await page.waitForTimeout(350);
-  await page.keyboard.up("Space");
-  await page.keyboard.down("e");
+  await page.keyboard.up("w");
+  await page.keyboard.down("o");
   await page.waitForTimeout(450);
-  await page.keyboard.up("e");
+  await page.keyboard.up("o");
   await page.waitForTimeout(350);
   await page.keyboard.up("d");
   await until(

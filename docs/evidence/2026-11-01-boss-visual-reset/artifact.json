@@ -1,0 +1,15 @@
+{
+  "version": "0.21.1-local.1",
+  "date": "2026-11-01",
+  "status": "visual-baseline-restored-new-boss-planning-only",
+  "bytes": 145223584,
+  "sha256": "2c348c46daa48602ef59c8c42b21550d358e3799e8691f93afaba88b955fba67",
+  "checks": {
+    "noRejectedSprites": true,
+    "originalBackgroundSHA256": "6ba42d7cddc1b945a3aa4ee350304d8561a3a851a2af2f2510acfc6f4df071e2",
+    "backgroundCount": 1,
+    "all18OriginalFramesExact": true
+  },
+  "remotePushed": false,
+  "onlineImported": false
+}

@@ -16,11 +16,19 @@ const report = {
   errors: [],
 };
 page.on("pageerror", (e) => report.errors.push(e.message));
-await page.route("**/belfry.json", async (route) => {
-  const data = await (await route.fetch()).json();
-  data["main.spx"] = data["main.spx"].replace(
-    "onKey KeyT",
-    `
+// Keep the 96 MB art manifest inside the renderer. Sending a complete rewritten
+// response through Playwright's protocol can close Chromium before compilation.
+await page.addInitScript(() => {
+  const fetch = window.fetch.bind(window);
+  window.fetch = async (...args) => {
+    const response = await fetch(...args);
+    if (String(args[0]).includes("belfry.json")) {
+      const json = response.json.bind(response);
+      response.json = async () => {
+        const data = await json();
+        data["main.spx"] = data["main.spx"].replace(
+          "onKey KeyT",
+          `
 func keeperFixture(stage,move int) {
  startRun(); segment=1; checkpoint=14; bossShield=0; sealLeft=true; sealRight=true; bossStage=stage
  for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0}
@@ -29,6 +37,7 @@ func keeperFixture(stage,move int) {
  Hero.resetHero(380,enemyBaseY[i]-34); Hero.invulnerable=0; Hero.grounded=true
  if move>=0 {prepareKeeperMove(move)}
 }
+onKey KeyF7, => {keeperFixture(0,-1); bossDecision=1; enemyHP[keeperIndex]=bossMaxHP-12; bossHP=enemyHP[keeperIndex]; Hero.px=530; beginKeeperMend()}
 onKey KeyF8, => {keeperFixture(0,-1)}
 onKey KeyF9, => {keeperFixture(0,0); Hero.px=490; keeperAim()}
 onKey KeyF10, => {keeperFixture(0,1)}
@@ -39,12 +48,16 @@ onKey KeyH, => {keeperFixture(1,5)}
 onKey KeyO, => {keeperFixture(2,6)}
 onKey KeyB, => {keeperFixture(0,-1); enemyHP[keeperIndex]=bossMaxHP*2/3+2; bossHP=enemyHP[keeperIndex]; Hero.px=530; keeperRest(8)}
 onKey KeyN, => {keeperFixture(1,-1); enemyHP[keeperIndex]=bossMaxHP/3+2; bossHP=enemyHP[keeperIndex]; Hero.px=530; keeperRest(8)}
-onKey KeyP, => {keeperFixture(2,-1); enemyHP[keeperIndex]=3; bossHP=3; Hero.px=530; keeperRest(8)}
+onKey KeyC, => {keeperFixture(2,-1); enemyHP[keeperIndex]=3; bossHP=3; Hero.px=530; keeperRest(8)}
 onKey KeyZ, => {keeperFixture(0,-1); Hero.px=530; keeperRest(8)}
 onKey KeyX, => {keeperFixture(2,-1); Hero.invulnerable=40}
 onKey KeyT`,
-  );
-  await route.fulfill({ json: data });
+        );
+        return data;
+      };
+    }
+    return response;
+  };
 });
 const wait = (fn, timeout = 10000) => page.waitForFunction(fn, {}, { timeout });
 const state = () => page.evaluate(() => latestState);
@@ -108,7 +121,7 @@ try {
   await fixture("F10");
   await wait(() => latestState.bossLocked === 1);
   const aim = (await snapshot()).boss.aimX;
-  await page.keyboard.down("Space");
+  await page.keyboard.down("w");
   await page.keyboard.down("a");
   await page.waitForTimeout(160);
   await page.keyboard.up("a");
@@ -118,7 +131,7 @@ try {
     "locked target must not follow later input",
   );
   await wait(() => latestState.bossState === 2);
-  await page.keyboard.up("Space");
+  await page.keyboard.up("w");
   assert.equal((await state()).health, health);
   await pass(
     "thrust commits its endpoint and a real jump avoids the swept body hit",
@@ -130,9 +143,9 @@ try {
       latestState.bossState === 3 &&
       Object.values(foes).find((f) => f.kind === 3)?.clock > 0.18,
   );
-  await page.keyboard.down("Space");
+  await page.keyboard.down("w");
   await wait(() => latestState.bossState === 2);
-  await page.keyboard.up("Space");
+  await page.keyboard.up("w");
   assert.equal((await state()).health, health);
   await pass("jumping above the landing shock avoids slam damage");
 
@@ -184,7 +197,7 @@ try {
   await page.waitForTimeout(240);
   await page.keyboard.up("d");
   await wait(() => latestState.bossState === 2);
-  await page.keyboard.up("Space");
+  await page.keyboard.up("w");
   assert.equal((await state()).health, health);
   await pass(
     "core blades arrive in three warned lanes with a traversable safe gap",
@@ -222,19 +235,21 @@ try {
   await page.waitForTimeout(400);
   assert.equal((await state()).bossShield, 0);
   assert.ok((await state()).bossHP < shieldHP);
-  await pass("first form is directly vulnerable in recovery without exterior seals");
+  await pass(
+    "first form is directly vulnerable in recovery without exterior seals",
+  );
 
   await fixture("F8");
   const pressureStart = (await state()).elapsed;
   while ((await state()).elapsed - pressureStart < 14) {
     const s = await state();
     if (s.phase !== 1 || s.segment !== 1) break;
-    if (s.ultimateTime <= 0) await page.keyboard.press("q", { delay: 65 });
+    if (s.ultimateTime <= 0) await page.keyboard.press("p", { delay: 65 });
     await page.waitForTimeout(85);
   }
   assert.ok(
     (await state()).bossHP > 0,
-    "standing still and repeating Q must not erase all three forms",
+    "standing still and repeating P must not erase all three forms",
   );
   report.stationaryUltimate = await snapshot();
   await pass(
@@ -266,13 +281,13 @@ try {
     "autonomous core AI selects multiple attacks and actually changes horizontal and vertical position",
   );
 
-  await fixture("p");
+  await fixture("c");
   await heavy();
   await wait(() => latestState.segment === 2);
   assert.equal((await state()).bossHP, 0);
   await pass("real final hit starts the return and clears Boss hazards");
 
-  await fixture("p");
+  await fixture("c");
   for (let strike = 0; strike < 4 && (await state()).segment === 1; strike++) {
     await page.keyboard.press("j", { delay: 60 });
     await page.waitForTimeout(320);
@@ -326,6 +341,32 @@ try {
   assert.equal((await state()).health, frozen.state.health);
   await pass(
     "word focus freezes all Boss trajectories; wrong answer cancels the skill with no accumulated damage",
+  );
+
+  await fixture("F7");
+  await page.keyboard.down("u");
+  await page.waitForTimeout(150);
+  await page.keyboard.up("u");
+  await wait(() => latestState.phase === 5 && inscriptionDiagnostics.active);
+  const mending = await snapshot();
+  await page.waitForTimeout(2300);
+  const healing = await snapshot();
+  assert.ok(healing.state.bossMendAge > mending.state.bossMendAge + 1.8);
+  assert.ok(healing.state.bossHP > mending.state.bossHP);
+  assert.equal(healing.state.elapsed, mending.state.elapsed);
+  assert.equal(healing.boss.x, mending.boss.x);
+  assert.equal(await page.locator("#boss").isVisible(), true);
+  assert.equal(await page.locator("#boss").getAttribute("data-form"), "0");
+  assert.match(await page.locator("#boss-state").textContent(), /回流.*断印/);
+  const focusBounds = await page.evaluate(() => ({
+    card: document.querySelector(".word-focus-card").getBoundingClientRect()
+      .bottom,
+    boss: document.querySelector("#boss").getBoundingClientRect().top,
+  }));
+  assert.ok(focusBounds.boss >= focusBounds.card, JSON.stringify(focusBounds));
+  await capture("08-mending-word-focus");
+  await pass(
+    "web spelling keeps healing and its readable Boss HUD alive while attack and movement clocks freeze",
   );
 
   assert.deepEqual(await page.evaluate(() => runtimeErrors), []);

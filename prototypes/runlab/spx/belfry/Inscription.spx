@@ -1,5 +1,5 @@
 // The browser owns word content and input; the simulation owns every effect.
-// phase 5 freezes combat clocks; a separate presentation clock keeps the focus alive. Internal F1-F3 replies are sent
+// phase 5 freezes combat clocks except the Keeper mending clock; a separate presentation clock keeps the focus alive. Internal F1-F3 replies are sent
 // only by the host adapter after checking the run/serial pair and its epoch.
 func presentationDelta(dt float64) float64 {
  if phase==4 || phase==5 && wordVisualPaused {return 0}

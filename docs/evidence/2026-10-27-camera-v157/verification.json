@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-27",
+  "archiveBytes": 112090940,
+  "archiveSha256": "2f0dc27104063a104460fd3338bbe805dc8501c97acbc99860132aeb6b9f180e",
+  "baselineArchiveSha256": "9a5b0b00d9b53693411ae41e2c7b488a591d8f7921a885d4a1cdf534c764fa37",
+  "entries": 4728,
+  "originalSprites": 85,
+  "changed": [
+    "Hero.spx",
+    "main.spx"
+  ],
+  "added": [],
+  "removed": [],
+  "crc": "passed",
+  "audioFilesUnchanged": 19,
+  "allImageFilesUnchanged": true,
+  "coverSha256": "449e9f57dc789d29dc5529ec04baddf387e19e5fd6080c265f7083cb6332da43",
+  "testInstrumentationAbsent": true,
+  "sourceSha256": {
+    "prototypes/runlab/spx/belfry/Hero.spx": "260c2a94b5c4c9c15eb4d36b5804c9f8d89699bf608316052f39abb21229d4b3",
+    "prototypes/runlab/spx/belfry/Viewport.spx": "3c24e86ebd905743c8411c961ce09d468124fa6e654a437d572c520f9337dbf1",
+    "prototypes/runlab/test-belfry-camera.mjs": "6179719cb5e715b42154478d40486e164eca5dbb9ec00d843a99567ab287c2eb",
+    "prototypes/runlab/test-belfry-native-shell.mjs": "3a7919499be5593bc6cc74c79314a57c8a80e6d70813e31c3c36cc11feae81fb",
+    "prototypes/runlab/test-belfry-native-music.mjs": "9dc207c334b40d52a6b282b358b166debc230518e9d44a532fed34f96474626b"
+  },
+  "checks": {
+    "camera": 6,
+    "native-shell": 15,
+    "native-audio": 15
+  },
+  "checksPassed": 36
+}

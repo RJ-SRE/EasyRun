@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-31T20:12:57.331Z",
+  "runtime": "XBuilder cached compiler/resources",
+  "storage": "real browser IndexedDB, no cloud",
+  "archiveSha256": "860432f89090ab7fd4d31e922d5bccaf41ea9b1fdd327dfced02a6246c0bc5ae",
+  "cases": [
+    "full local-only game atomically saves independent word abilities with zero live callback retention",
+    "already-loaded game saves through IndexedDB while browser network is offline",
+    "SIGKILL of isolated browser after commit preserves history in a fresh game process",
+    "injected transaction abort changes neither header nor words; pending memory retries once without double counts",
+    "SIGKILL during a held real transaction rolls back header and word changes together",
+    "two tabs use revision fencing; a stale tab cannot replace newer word state",
+    "names and guest use isolated persistent profiles; guest history does not attach to a signed-in name",
+    "100 answers coalesce into changed-word writes and all transient JS callbacks are released",
+    "legacy exam scope resets to normal, persists its migration marker and preserves all saved word abilities and other settings",
+    "random selection survives restart as the fourth mode and shares the same learned-word profile"
+  ],
+  "errors": [],
+  "networkCalls": [],
+  "complete": true
+}

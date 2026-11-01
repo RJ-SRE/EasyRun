@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-26T11:16:21.748001+00:00",
+  "version": "0.13.1",
+  "scope": "Only native in-game inscription presentation. Title, wordbook, volume controls, skill HUD and web demo unchanged.",
+  "package": {
+    "path": "/Users/rj/Desktop/EasyRun-XBuilder-v0.13.1-word-focus.xbp",
+    "sha256": "6cda2ef4add79adb8c93b2c991c0fe7dca504144078076aea6bb23848900af4a",
+    "bytes": 105041500,
+    "files": 4364,
+    "originalSprites": 67,
+    "svgFiles": 0
+  },
+  "tests": {
+    "words": {
+      "cases": 14,
+      "file": "words.json"
+    },
+    "shell": {
+      "cases": 14,
+      "file": "shell.json"
+    }
+  },
+  "totalPassed": 28,
+  "unchangedAssets": {
+    "count": 389,
+    "prefixes": [
+      "assets/sprites/NativePanel/",
+      "assets/sprites/NativeMusicSlider/",
+      "assets/sprites/NativeSfxSlider/",
+      "assets/sprites/NativeMusicButton/",
+      "assets/sprites/NativeSkill",
+      "assets/sprites/NativeHUD/",
+      "assets/sprites/NativeHealth/",
+      "assets/sprites/NativeObjective/"
+    ],
+    "comparison": "byte-for-byte against Desktop v0.13.0 package"
+  },
+  "formatAndLint": "Changed native builders and word test passed ESLint and Prettier; git diff --check passed.",
+  "evidence": {
+    "spelling.png": "Real charged-arrow spelling input",
+    "meaning.png": "Real charged-blade meaning question",
+    "meaning-long.png": "Test-only longest vocabulary entry and three 28-character distractor/meaning fixtures",
+    "meaning-small.png": "Same fixture fitted in a 480x360 canvas",
+    "spelling-overflow.png": "Test-only 48-character input; only trailing 22 slots are displayed"
+  },
+  "limitations": [
+    "Public deployed XBuilder model and compiler tested locally; no account project overwritten.",
+    "Words memory remains session-only.",
+    "Small preview windows shrink the whole game; use the larger player for reading.",
+    "No full-level playthrough or new remote CI run in this presentation-only revision.",
+    "No GitHub push."
+  ]
+}

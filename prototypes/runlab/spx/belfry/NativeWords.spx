@@ -1,0 +1,287 @@
+// Native question host. Combat effects remain owned by Inscription.spx.
+var (
+ nativeSenseRevisions []string
+ nativeLegacySenseSafe []int
+ nativeWords []string
+ nativeMeanings []string
+ nativeWordContexts []string
+ nativeWordPOS []string
+ nativeDistractA []string
+ nativeDistractB []string
+ nativeAliases []string
+ nativeLevels []int
+ nativeSpellable []int
+ nativeWeak []int
+ nativeDeck []int
+ nativeDone []int
+ nativeCursor int
+ nativeWordIndex int
+ nativeWordSeen int
+ nativeQuestionMode int
+ nativeAnswer int
+ nativeInput string
+ nativeQuestionAge float64
+ nativeQuestionLimit float64
+ nativeFeedback string
+ nativeFeedbackTime float64
+ nativeResolved int
+ nativeScope int
+ nativePace int
+ nativeHint int
+ nativeHintOpen bool
+ nativeTypedWithHint bool
+ nativeHeld []bool
+ nativePreview bool
+ nativePreviewPage int
+ nativeDeckUsed bool
+ nativeInputLock float64
+ nativeFocusOffset float64
+ nativeTextFocus []bool
+ nativeGlyphAdvance []float64
+ nativeSerifGlyphs map[rune]int
+ nativeMonoGlyphs map[rune]int
+ nativeErrorGlyphs map[rune]int
+ nativeGlyphs map[rune]int
+ nativeTextGlyph []int
+ nativeTextX []float64
+ nativeTextY []float64
+ nativeTextSize []float64
+ nativeTextCount int
+ nativeGlyphCount int
+ nativeGlyphLive int
+ nativeTextMemoKnown bool
+ nativeTextMemoRevision int
+ nativeTextMemoSearch bool
+ nativeTextMemoPhase int
+ nativeTextMemoPreview bool
+ nativeTextMemoPage int
+ nativeTextMemoScope int
+ nativeTextMemoPace int
+ nativeTextMemoHint int
+ nativeTextMemoVisible bool
+ nativeTextMemoWords int
+ nativeTextMemoHelp bool
+ nativeTextMemoMusic int
+ nativeTextMemoSfx int
+ nativeTextMemoSerial int
+ nativeTextMemoMode int
+ nativeTextMemoPaused bool
+ nativeTextMemoInput string
+ nativeTextMemoAge int
+ nativeTextMemoCompleted int
+ nativeTextMemoFeedback bool
+ nativeTextVersion int
+ nativeTextPaintVersion int
+ nativeTextPaintLayer int
+ nativeTextPaintX float64
+ nativeTextPaintY float64
+ nativeTextPaintOffset float64
+)
+func nativeRand(n int) int {return int(rand(0,n-1))}
+
+func nativeShuffleDeck() {if nativeCloudAccount!="" {nativeCloudNeedsPrepare=true; nativeCloudReady=false; return}; nativeLearningShuffle()}
+func initNativeWords() {
+ initNativeWordData(); initNativeGlyphData()
+ nativeWeak=make([]int,len(nativeWords)); initNativeLearning()
+ nativeTextGlyph=make([]int,160); nativeTextX=make([]float64,160); nativeTextY=make([]float64,160); nativeTextSize=make([]float64,160); nativeTextFocus=make([]bool,160)
+ wordMode=1; nativeHint=1; nativeHeld=make([]bool,64); nativeShuffleDeck()
+}
+func nativeStartWords() {
+ nativeDeckUsed=true; nativePreview=false
+ nativeWordSeen=wordSerial; nativeInputLock=0; nativeFeedbackTime=0; nativeHintOpen=false
+}
+func nativeCompleted() int {n:=0; for _,v:=range nativeDone {n+=v}; return n}
+func nativeOpenQuestion() {
+ nativeCloudQuestionStarted=float64(timer)
+ nativeWordSeen=wordSerial; nativeWordIndex=nativeDeck[nativeCursor]
+ nativeQuestionMode=nativeLearningAbility(nativeWordIndex)
+ nativeTypedWithHint=false
+ nativeAnswer=nativeRand(3); nativeInput=""; nativeQuestionAge=0; nativeFeedbackTime=0
+ nativeCaptureHeld()
+ nativeQuestionLimit=9; if nativeQuestionMode==0 {nativeQuestionLimit=math.Max(9,float64(len(nativeWords[nativeWordIndex]))*0.65+4)}
+ if nativePace==1 {nativeQuestionLimit*=0.8}; if nativePace==2 {nativeQuestionLimit*=1.35}
+ println "@nativeQuestion",wordSerial,wordPending,nativeWordIndex,nativeQuestionMode,nativeAnswer,nativeQuestionLimit,nativeWords[nativeWordIndex]
+}
+func nativeFinishQuestion(result int) {
+ if phase!=5 || wordPending==0 {return}
+ i:=nativeWordIndex
+ nativeLearningAnswer(result)
+ nativeResolved=result; nativeFeedbackTime=1.4
+ if result==1 {
+  nativeDone[nativeCursor]=1
+  nativeFeedback="铭文已解 · 技能释放"; if wordPending>=5 {nativeFeedback="束缚已解 · 重返战场"}
+ } else {
+  nativeFeedback="释放取消 · "+nativeWords[i]+" · "+nativeMeanings[i]; if wordPending>=5 {nativeFeedback="脱困失衡 · "+nativeWords[i]+" · "+nativeMeanings[i]}
+ }
+ // Failed entries return after other words; never trap the player in one word.
+ nativeCursor=(nativeCursor+1)%30
+ if nativeCompleted()<30 {for nativeDone[nativeCursor]==1 {nativeCursor=(nativeCursor+1)%30}}
+ nativeCaptureHeld(); resolveWord(result); nativeInputLock=0.18
+ println "@nativeAnswer",result,nativeCompleted(),nativeWeak[i]
+}
+func nativeType(s string) {
+ if nativeStudyOpen {return}
+ if nativePreview {nativeLedgerType(s); return}
+ if phase!=5 || wordVisualPaused || nativeQuestionAge<0.18 || nativeQuestionMode!=0 || wordSerial!=nativeWordSeen {return}
+ if len(nativeInput)<48 {if nativeHintVisible() {nativeTypedWithHint=true}; nativeInput+=s; nativeCheckSpelling()}
+}
+// Accept every prefix of canonical and regional spellings. One invalid letter
+// cancels anticipation immediately; a complete match releases without Enter.
+func nativeCheckSpelling() {
+ if phase!=5 || wordVisualPaused || nativeQuestionMode!=0 || nativeQuestionAge<0.18 {return}
+ if nativeInput=="" {return}
+ valid:=false; good:=false
+ for _,word:=range strings.Split(nativeWords[nativeWordIndex]+"|"+nativeAliases[nativeWordIndex],"|") {
+  if word!="" && strings.HasPrefix(word,nativeInput) {valid=true; if word==nativeInput {good=true}}
+ }
+ if good {nativeFinishQuestion(1)} else if !valid {nativeFinishQuestion(2)}
+}
+func nativeSpellingIndependent() bool {return nativeInput!="" && nativeHint!=0 && !nativeTypedWithHint && !nativeHintVisible()}
+func nativeSubmit() {nativeCheckSpelling()}
+func nativeSpellingTarget() string {
+ word:=nativeWords[nativeWordIndex]
+ if strings.HasPrefix(word,nativeInput) {return word}
+ for _,alias:=range strings.Split(nativeAliases[nativeWordIndex],"|") {if alias!="" && strings.HasPrefix(alias,nativeInput) {return alias}}
+ return word
+}
+func nativeHintVisible() bool {
+ return nativeHint==0 || nativeHint==1 && nativeQuestionAge<2 || nativeHint==2 && nativeQuestionAge<1
+}
+func nativeCue() string {
+ word:=nativeWords[nativeWordIndex]
+ if nativeQuestionMode!=0 || nativeHintVisible() {return word}
+ hidden:=""; for n:=0;n<len(word);n++ {if word[n]==' ' || word[n]=='-' || n==0 && nativeHint==1 {hidden+=string(word[n])} else {hidden+="·"}}
+ return hidden
+}
+func nativeChoose(option int) {
+ if phase!=5 || wordVisualPaused || nativeQuestionMode!=1 || nativeQuestionAge<0.18 {return}
+ if option==nativeAnswer {nativeFinishQuestion(1)} else {nativeFinishQuestion(2)}
+}
+func nativeText(s string,x,y,size float64) {
+ for _,c:=range s {
+  if nativeTextCount>=160 {return}
+  if c!=' ' {g,ok:=nativeGlyphs[c]; if ok {
+   n:=nativeTextCount; nativeTextGlyph[n]=g; nativeTextX[n]=x+size/2; nativeTextY[n]=y; nativeTextSize[n]=size/20; nativeTextFocus[n]=false; nativeTextCount++
+  }}
+  if c<128 {x+=size*0.58} else {x+=size}
+ }
+}
+// Proportional serif cues and monospaced input match the web focus card.
+// Only focus text follows the entrance easing; HUD/menu text stays fixed.
+func nativeFocusGlyph(c rune,font int) int {
+ g:=nativeGlyphs[c]
+ if font==1 {if v,ok:=nativeSerifGlyphs[c]; ok {g=v}}
+ if font==2 {if v,ok:=nativeMonoGlyphs[c]; ok {g=v}}
+ if font==3 {if v,ok:=nativeErrorGlyphs[c]; ok {g=v}}
+ return g
+}
+func nativeTextWidth(s string,size float64,font int) float64 {
+ w:=0.0; for _,c:=range s {w+=nativeGlyphAdvance[nativeFocusGlyph(c,font)]*size}; return w
+}
+func nativeFocusText(s string,x,y,size float64,font int) {
+ for _,c:=range s {
+  if nativeTextCount>=160 {return}
+  g:=nativeFocusGlyph(c,font)
+  if c!=' ' {
+   n:=nativeTextCount; nativeTextGlyph[n]=g; nativeTextSize[n]=size/20; nativeTextFocus[n]=true
+   nativeTextX[n]=x+size/2; nativeTextY[n]=y-size*0.3
+   if font>0 && c<128 {nativeTextX[n]=x+nativeGlyphAdvance[g]*size/2; nativeTextY[n]=y-size*0.4}
+   nativeTextCount++
+  }
+  x+=nativeGlyphAdvance[g]*size
+ }
+}
+func nativeWrapText(s string,x,y,width,size float64,maxRows int) {
+ line:=""; row:=0
+ for _,c:=range s {
+  candidate:=line+string(c)
+  if nativeTextWidth(candidate,size,0)>width && line!="" {
+   nativeFocusText(line,x,y+float64(row)*(size+1),size,0); row++; line=""
+  }
+  if row>=maxRows {return}; line+=string(c)
+ }
+ nativeFocusText(line,x,y+float64(row)*(size+1),size,0)
+}
+func nativeNumber(n int) string {return fmt.Sprint(n)}
+func nativeRebuildText() {
+ nativeTextCount=0
+ if nativeLocalResetStage>0 {
+ // Confirmation copy is baked into the existing panel; no glyph clones.
+ } else if nativeStudyOpen {nativeStudyDraw()} else if nativePreview {
+  nativeDrawLedger()
+ } else if phase==0 && !nativeHelp {
+  scope:=[]string{"普通","困难","挑战","随机"}[nativeScope]
+  mode:="铭文开启"; if wordMode==0 {mode="纯动作模式"}
+  pace:="标准"; if nativePace==1 {pace="紧凑"}; if nativePace==2 {pace="从容"}
+  if !nativeSettings {notice:="游客 · 记录保留于本次运行"; if nativeCloudStatus!="" {notice=nativeCloudStatus}; if nativeLocalEnabled && nativeLocalStatus!="" {notice=nativeLocalStatus}; nativeText(notice,658,516,10)}
+  if nativeSettings && nativeSettingsTab==0 {
+  nativeText(mode,720,214,15); nativeText(scope,720,256,15); nativeText(pace,790,298,15)
+  hint:="完整提示"; if nativeHint==1 {hint="渐隐挑战 · 2s"}; if nativeHint==2 {hint="独立回忆 · 1s"}
+  nativeText(hint,716,384,13)
+  } else if nativeSettings {motion:="关闭"; if menuReduced {motion="开启"}; nativeText(motion,815,376,13)} else {state:="开启"; if wordMode==0 {state="关闭"}; nativeText(state,854,341,13)}
+ }
+ if !nativeStudyOpen && phase!=1 && phase!=5 && (phase!=0 || nativeSettings && nativeSettingsTab==1) && !nativeHelp && !nativePreview {
+  if phase==0 {nativeText(nativeNumber(nativeMusicVolume)+"%",882,255,12); nativeText(nativeNumber(nativeSfxVolume)+"%",882,313,12)} else {nativeText(nativeNumber(nativeMusicVolume)+"%",882,438,12); nativeText(nativeNumber(nativeSfxVolume)+"%",882,478,12)}
+ }
+ if !nativeStudyOpen && (phase==1 || phase==5) && !nativeHelp && !nativePreview {
+  if wordMode==1 && practice==0 {nativeText("铭文 "+nativeNumber(nativeCompleted())+" / 30 ↗",36,106,12)}
+  if phase==5 {
+   i:=nativeWordIndex
+   nativeFocusText(nativeNumber(int(math.Ceil(math.Max(0,nativeQuestionLimit-nativeQuestionAge))))+"s",298,99,11,2)
+   if !wordVisualPaused {
+    word:=nativeCue(); size:=24.0; width:=nativeTextWidth(word,size,1); if width>320 {size*=320/width}
+    nativeFocusText(word,344,63,size,1)
+    if nativeQuestionMode==0 {
+     nativeWrapText(nativeWordPOS[i]+" "+nativeMeanings[i],344,81,320,12,2)
+     start:=0; if len(nativeInput)>22 {start=len(nativeInput)-22}
+     for n:=start;n<len(nativeInput);n++ {
+      nativeFocusText(string(nativeInput[n]),344+float64(n-start)*14,116,16,2)
+     }
+     // Active letter uses the next slot; very long inputs scroll inside the card.
+     if len(nativeInput)-start<22 {nativeFocusText("_",344+float64(len(nativeInput)-start)*14,116,16,2)}
+    } else {
+     context:=nativeWordPOS[i]+" · "+nativeWordContexts[i]; if nativeWordContexts[i]!="" && width+nativeTextWidth(context,9,2)+12<=320 {nativeFocusText(context,344+width+12,59,9,2)}
+     for option:=0;option<3;option++ {meaning:=nativeMeanings[i]; if option!=nativeAnswer {if option==(nativeAnswer+1)%3 {meaning=nativeDistractA[i]} else {meaning=nativeDistractB[i]}}
+      nativeWrapText(meaning,348+float64(option)*108,94,94,11,4)
+     }
+    }
+   }
+  }
+  if nativeFeedbackTime>0 {nativeText(nativeFeedback,240,220,12)}
+ }
+ if !nativeStudyOpen {nativeDrawCombatText(); nativeLearningDrawSummary()}
+ if !nativeStudyOpen && (phase==2 || phase==3 || phase==4) && !nativePreview && !nativeHelp && !nativeSettings {notice:=nativeCloudStatus; if nativeLocalEnabled {notice=nativeLocalStatus}; if notice!="" {nativeText(notice,64,520,11)}}
+ // Reclaim only surplus decorative effects; never remove enemies or projectiles.
+ broadcastAndWait "nativeCullFX"
+ broadcastAndWait "nativeTextResize"
+ if nativeTextCount>nativeGlyphCount {for i:=nativeGlyphCount;i<nativeTextCount;i++ {NativeGlyph.clone i}}
+ nativeGlyphCount=nativeTextCount
+ nativeTextVersion++
+}
+// Compare typed state directly: no per-frame fmt.Sprint / temporary signature.
+func nativeTextNeedsRebuild() bool {
+ hintVisible:=nativeHintVisible(); second:=int(nativeQuestionAge); completed:=nativeCompleted(); feedback:=nativeFeedbackTime>0
+ changed:=nativeStudyTextSeen!=nativeStudyRevision || !nativeTextMemoKnown || nativeTextMemoRevision!=nativeLedgerRevision || nativeTextMemoSearch!=nativeLedgerSearch || nativeTextMemoPhase!=phase || nativeTextMemoPreview!=nativePreview || nativeTextMemoPage!=nativePreviewPage || nativeTextMemoScope!=nativeScope || nativeTextMemoPace!=nativePace || nativeTextMemoHint!=nativeHint || nativeTextMemoVisible!=hintVisible || nativeTextMemoWords!=wordMode || nativeTextMemoHelp!=nativeHelp || nativeTextMemoMusic!=nativeMusicVolume || nativeTextMemoSfx!=nativeSfxVolume || nativeTextMemoSerial!=nativeWordSeen || nativeTextMemoMode!=nativeQuestionMode || nativeTextMemoPaused!=wordVisualPaused || nativeTextMemoInput!=nativeInput || nativeTextMemoAge!=second || nativeTextMemoCompleted!=completed || nativeTextMemoFeedback!=feedback
+ if changed {nativeStudyTextSeen=nativeStudyRevision; nativeTextMemoKnown=true; nativeTextMemoRevision=nativeLedgerRevision; nativeTextMemoSearch=nativeLedgerSearch; nativeTextMemoPhase=phase; nativeTextMemoPreview=nativePreview; nativeTextMemoPage=nativePreviewPage; nativeTextMemoScope=nativeScope; nativeTextMemoPace=nativePace; nativeTextMemoHint=nativeHint; nativeTextMemoVisible=hintVisible; nativeTextMemoWords=wordMode; nativeTextMemoHelp=nativeHelp; nativeTextMemoMusic=nativeMusicVolume; nativeTextMemoSfx=nativeSfxVolume; nativeTextMemoSerial=nativeWordSeen; nativeTextMemoMode=nativeQuestionMode; nativeTextMemoPaused=wordVisualPaused; nativeTextMemoInput=nativeInput; nativeTextMemoAge=second; nativeTextMemoCompleted=completed; nativeTextMemoFeedback=feedback}
+ return changed
+}
+func updateNativeWords(dt float64) {
+ if phase==2 {nativeLedgerWon=true}
+ nativeFocusOffset=0
+ nativeReleaseHeld()
+ if phase==5 {t:=clamp(nativeQuestionAge/0.16,0,1); nativeFocusOffset=8*(1-t)*(1-t)*(1-t)}
+ if nativeInputLock>0 {nativeInputLock-=dt}
+ if phase==5 && wordPending>0 {
+  if nativeWordSeen!=wordSerial {nativeOpenQuestion()}
+  if !wordVisualPaused {nativeQuestionAge+=dt; if nativeQuestionAge>=nativeQuestionLimit {nativeFinishQuestion(3)}}
+ }
+ if phase!=4 && !(phase==5 && wordVisualPaused) {nativeFeedbackTime=math.Max(0,nativeFeedbackTime-dt)}
+ if nativeTextNeedsRebuild() {nativeRebuildText()}
+}
+func nativePaintText() {
+ layerChanged:=nativeTextPaintLayer!=nativeLayerVersion
+ if nativeTextPaintVersion==nativeTextVersion && !layerChanged && nativeTextPaintX==viewCenterX && nativeTextPaintY==viewCenterY && nativeTextPaintOffset==nativeFocusOffset {return}
+ nativeTextPaintVersion=nativeTextVersion; nativeTextPaintLayer=nativeLayerVersion
+ nativeTextPaintX=viewCenterX; nativeTextPaintY=viewCenterY; nativeTextPaintOffset=nativeFocusOffset
+ if layerChanged || nativePreview && nativeLedgerFilterOpen || nativeHintOpen {broadcastAndWait "nativeText"} else {broadcast "nativeText"}
+}

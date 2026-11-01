@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-31",
+  "anonymousPage": "https://x.qiniu.com/",
+  "runnerAsset": "https://x.qiniu.com/assets/ProjectRunner-BF8s5DRd.js",
+  "runnerAssetSha256": "620dd3e2242c57b43df544e5c591d44221844851117868ecf0a91cff89d440d6",
+  "deployedSpxVersion": "3.3.0",
+  "compilerURL": "https://x.qiniu.com/assets/ispx-K91HiEtJ.wasm",
+  "upstreamCommit": "c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2",
+  "upstreamSpxVersion": "4.0.0",
+  "observedInjection": "xbuilder_set_username before startGame",
+  "scope": "Anonymous entry and assets only; did not run or modify the user published project; did not download or validate the current compiler WASM."
+}

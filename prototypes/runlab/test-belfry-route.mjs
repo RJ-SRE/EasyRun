@@ -285,7 +285,7 @@ try {
         const down = await page.evaluate(() => latestState);
         if (down.y <= floorY + 10 || down.phase !== 1) break;
         if (Math.abs(down.vy) < 10)
-          await page.keyboard.press("Space", { delay: 80 });
+          await page.keyboard.press("w", { delay: 80 });
         await page.keyboard.press("j", { delay: 80 });
         await page.waitForTimeout(180);
       }
@@ -380,7 +380,7 @@ try {
       // around it before shooting; real arrows correctly collide with floors.
       const rising = targetY > s.y + 65 && (!rangedFight || blockedAbove);
       if (rising && targetY - s.y < 160) {
-        if (tick % 6 === 0) keys.push("Space");
+        if (tick % 6 === 0) keys.push("w");
       } else if (rising) {
         const candidate = expeditionLayout.anchors
           .filter((a) => a[1] > s.y + 70 && a[1] < s.y + 450)
@@ -390,14 +390,14 @@ try {
               Math.hypot(b[0] - s.x, b[1] - s.y),
           )[0];
         if (candidate) targetX = candidate[0];
-        if (tick % 9 < 7) keys.push("e");
-        if (s.hook < 0 && tick % 8 === 0) keys.push("Space");
+        if (tick % 9 < 7) keys.push("o");
+        if (s.hook < 0 && tick % 8 === 0) keys.push("w");
       }
       if (s.x < targetX - 18) keys.push("d");
       if (s.x > targetX + 18) keys.push("a");
       if (targetY < s.y - 55 && !rising) {
         keys.push("s");
-        if (Math.abs(s.vy) < 10 && tick % 3 === 0) keys.push("Space");
+        if (Math.abs(s.vy) < 10 && tick % 3 === 0) keys.push("w");
       }
       if (
         combat &&
@@ -422,7 +422,7 @@ try {
             )
               keys.push("l");
             else if (Math.abs(fight.x - s.x) < 235 && s.ultimateCool <= 0)
-              keys.push("q");
+              keys.push("p");
             else if (tick % 4 === 0) keys.push("j");
           }
         } else if (s.bowCharge > 0) {
@@ -441,7 +441,7 @@ try {
         }
         // Approach/retreat keys can leave the hero facing away from the foe.
         // Aim committed melee inputs at the actual target, using normal keys.
-        if (keys.some((k) => ["j", "l", "q"].includes(k)) || s.chargeTime > 0) {
+        if (keys.some((k) => ["j", "l", "p"].includes(k)) || s.chargeTime > 0) {
           for (let i = keys.length - 1; i >= 0; i--)
             if (["a", "d"].includes(keys[i])) keys.splice(i, 1);
           keys.push(fight.x >= s.x ? "d" : "a");
@@ -457,7 +457,7 @@ try {
           !keys.includes("u") &&
           !keys.includes("l")
         )
-          keys.push("Space");
+          keys.push("w");
       }
       if (
         e.prompt >= 0 &&
@@ -473,9 +473,9 @@ try {
         if (s.x < targetX - 28) keys.push("d");
         if (s.x > targetX + 28) keys.push("a");
         if (s.y > expeditionLayout.keeperY + 336) keys.push("s");
-        if (tick % 10 < 8) keys.push("e");
+        if (tick % 10 < 8) keys.push("o");
         if (s.y < expeditionLayout.keeperY + 36 && s.hook < 0 && tick % 4 === 0)
-          keys.push("Space");
+          keys.push("w");
       } else {
         targetX = 480 + Math.sin(s.elapsed * 0.7 + 10) * 35;
         if (s.x < targetX - 20) keys.push("d");
@@ -495,10 +495,10 @@ try {
           s.y > expeditionLayout.keeperY - 44 &&
           s.y < expeditionLayout.keeperY + 406
         )
-          keys.push("q");
-        if (tick % 10 < 7) keys.push("e");
+          keys.push("p");
+        if (tick % 10 < 7) keys.push("o");
         if (s.y < expeditionLayout.keeperY + 36 && tick % 8 === 0)
-          keys.push("Space");
+          keys.push("w");
       }
     } else {
       if (s.y > -370) {
@@ -516,8 +516,8 @@ try {
       }
       if (s.x < targetX - 35) keys.push("d");
       if (s.x > targetX + 35) keys.push("a");
-      if (tick % 9 < 7) keys.push("e");
-      if (tick % 8 === 0 && s.hook < 0) keys.push("Space");
+      if (tick % 9 < 7) keys.push("o");
+      if (tick % 8 === 0 && s.hook < 0) keys.push("w");
       if (s.vy < 50 && s.hook < 0 && s.dashCool <= 0 && tick % 5 === 0) {
         keys.push("w", "k");
       }
@@ -533,7 +533,7 @@ try {
             Math.hypot(f.x - s.x, f.y - s.y - 32) < 245,
         )
       )
-        keys.push("q");
+        keys.push("p");
     }
     await hold(keys);
     await page.waitForTimeout(90);

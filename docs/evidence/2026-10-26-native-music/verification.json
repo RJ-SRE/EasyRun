@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-26T07:54:42.132605+00:00",
+  "version": "0.11.3",
+  "scope": "Local XBuilder background-music export only; not pushed or uploaded to the online editor.",
+  "package": {
+    "path": "prototypes/runlab/exports/belfry.xbp",
+    "bytes": 79501273,
+    "sha256": "34ecdb92094be36cbd370845370bf3c77818a522d312fdc72d1a299f92db5636",
+    "entries": 453,
+    "zipIntegrity": true,
+    "testOnlyKeysAbsent": true,
+    "tracks": [
+      {
+        "stage": "menu",
+        "path": "assets/sounds/BGM_Menu/sound.mp3",
+        "bytes": 10609826,
+        "sha256": "5322690efba8f3581b0879e3bcb65d4f3d4b4c5c85025b14191bd676ba04bddb"
+      },
+      {
+        "stage": "gameplay",
+        "path": "assets/sounds/BGM_Gameplay/sound.mp3",
+        "bytes": 15491858,
+        "sha256": "c5ca1def4570840e52abb7178bc9e2b9085495f908ec9b5d83d34c81fb856a83"
+      },
+      {
+        "stage": "ending",
+        "path": "assets/sounds/BGM_Ending/sound.mp3",
+        "bytes": 7942185,
+        "sha256": "8281281fcf5bd8d8adb9c75d89b3779f2f22e21cbf3d3d1622697eaa6cdd3d5a"
+      }
+    ],
+    "deliveryCopy": "EasyRun-XBuilder-v0.11.3-music.xbp"
+  },
+  "build": {
+    "generatedFiles": 445,
+    "nativeMusicExcludedFromWeb": true
+  },
+  "validation": {
+    "nativeRuntime": {
+      "passed": 8,
+      "errors": 0,
+      "report": "native-runtime.json"
+    },
+    "webMusicRegression": {
+      "passed": 14,
+      "errors": 0,
+      "report": "web-regression.json"
+    },
+    "staticChecks": [
+      "targeted ESLint passed",
+      "Prettier checked package.json and new test",
+      "Python AST parse passed",
+      "Git whitespace check passed",
+      "Changed documentation local links resolve"
+    ]
+  },
+  "sources": {
+    "prototypes/runlab/package.py": "9e9d5ff5cf84cc3146a59cf19f036e312bd40157114b4ff738b4c7ef200527fb",
+    "prototypes/runlab/spx/belfry/NativeMusic.spx": "98bdb0f250b6c7f09a3c1e3949029b4e96582688ada88fb53030f5148514afdc",
+    "prototypes/runlab/spx/belfry/main.spx": "f5836580667d709bb0eaad64377ede544bffc50a7b1d4183dd5c054b518c7c76",
+    "prototypes/runlab/test-belfry-native-music.mjs": "6a7bafe337d24919503c53d615df8dca0bfa9effbe1e1e06e448e724cbcefa53",
+    "prototypes/runlab/build-belfry.mjs": "3a25b587b640d65439fe57ed1354f05b6995dc1c90e0d9ed955bf3e7656da464",
+    "prototypes/runlab/public/belfry-music.js": "1c85c61e6d914df21796e477b06d48e4845b5a7b97fa0784f32a1a3066d35ade",
+    "prototypes/runlab/test-belfry-music.mjs": "7fb4bae3d0668ce6b57874f56ec2f735ee60f50157751e2ac285ccb08c734ff9",
+    "prototypes/runlab/public/audio/music/manifest.json": "7e35a0c8588add967b2689089cd2341cf9bf85f4ad095e1f5fe49c26211b80a6"
+  },
+  "resolvedDuringValidation": [
+    "Moved native class fields into the single XGo var block and methods ahead of event registrations after compile failures.",
+    "Test harness uses window.onGameError to avoid runner lexical shadowing and streams the archive over HTTP rather than sending 80 MB through the browser automation protocol."
+  ],
+  "limits": [
+    "No live x.qiniu.com editor import, Safari, mobile, low-memory-device or subjective listening validation.",
+    "Native lifecycle checks use phase-only test keys; one-second test audio accelerates loop validation; full delivered MP3s match their source hashes.",
+    "Web-host wordbook, achievement UI, storage and combat sound mixing are not part of the standalone package.",
+    "No full combat route rerun in this change."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-01T09:21:25.615Z",
+  "runtime": "XBuilder cached compiler/resources",
+  "storage": "real browser IndexedDB, no cloud",
+  "archiveSha256": "ad5c14debb7618f3a6792466829f27ea97cff8241001962dc0681aaed82e8b86",
+  "cases": [
+    "actual settings button opens scoped confirmation; Enter is safe and Escape cancels without changing saved records",
+    "aborted reset rolls back deletion and header together; error panel offers retry, never false success",
+    "confirmed reset deletes active and retired words, achievements and progress; restores settings; preserves other user and unrelated storage",
+    "monotonic reset revision rejects stale window writes and prevents deleted learning history from returning",
+    "reopening the actual XBuilder engine restores the empty current profile with zero retained callbacks"
+  ],
+  "errors": [],
+  "networkCalls": [],
+  "complete": true
+}

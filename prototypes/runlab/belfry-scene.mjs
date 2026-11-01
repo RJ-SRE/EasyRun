@@ -36,6 +36,7 @@ export function sceneCloneCount(layout) {
 }
 export function sceneInit(layout) {
   return `func initScene() {
+    sceneRefreshKnown=false
     ${Object.entries(SCENE_POOLS)
       .map(([name, size]) => `${name}=[]int{${Array(size).fill(-1).join(",")}}`)
       .join("\n")}

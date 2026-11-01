@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-01T07:47:11.593Z",
+  "runtime": "XBuilder cached compiler/resources",
+  "storage": "real browser IndexedDB, no cloud",
+  "archiveSha256": "e4450aac849d04f39247b05787ec9865c9d34cbeee3982ba19272daaddbb66a0",
+  "cases": [
+    "full local-only game atomically saves independent word abilities with zero live callback retention",
+    "already-loaded game saves through IndexedDB while browser network is offline",
+    "SIGKILL of isolated browser after commit preserves history in a fresh game process",
+    "injected transaction abort changes neither header nor words; pending memory retries once without double counts",
+    "SIGKILL during a held real transaction rolls back header and word changes together",
+    "two tabs use revision fencing; a stale tab cannot replace newer word state",
+    "names and guest use isolated persistent profiles; guest history does not attach to a signed-in name",
+    "100 answers coalesce into changed-word writes and all transient JS callbacks are released",
+    "legacy exam scope resets to normal, persists its migration marker and preserves all saved word abilities and other settings",
+    "random selection survives restart as the fourth mode and shares the same learned-word profile",
+    "old CET archive migrates to the new core: spelling and achievements survive; changed meaning evidence is archived and requires relearning",
+    "retired word rows remain intact in IndexedDB and reloading the migrated archive is idempotent"
+  ],
+  "errors": [],
+  "networkCalls": [],
+  "complete": true
+}

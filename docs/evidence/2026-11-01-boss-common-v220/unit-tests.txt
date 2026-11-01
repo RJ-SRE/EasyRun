@@ -1,0 +1,26 @@
+✔ release validates actual source hashes, source membership and frequency bands (29.9875ms)
+✔ old spelling, changed meaning, retired records and milestones migrate independently (5.067667ms)
+✔ importing an old export cannot reintroduce obsolete meaning mastery (2.573125ms)
+✔ common bank has sourced independent pools, stable IDs and valid answers (5.703875ms)
+✔ four modes select 30 unique words from their actual pools, independent of exam tags (415.179292ms)
+✔ legacy exam settings migrate to normal without losing learning history or hints (8.38925ms)
+✔ balanced category quotas, all-new fallback, weak cap and weighted selection (535.736959ms)
+✔ preview, retry, new expedition and archived continuation have distinct lifecycles (19.2125ms)
+✔ per-skill history separates wrong, timeout, cancellation, assisted and independent answers (1.006375ms)
+✔ mastery requires independent spelling and meaning across three days; due and weakness decay (1.633292ms)
+✔ content replacement preserves history and rebuilds journey without stale pending questions (5.263792ms)
+✔ history import is non-destructive and idempotent, rejects malformed history before merge (3.19075ms)
+✔ all 30 words appear, spaced retries avoid hammering, further casts remain available (9.853292ms)
+✔ settlement is idempotent; allowances scale and punctuation is meaning only (1.540125ms)
+✔ 24 English-only milestones have measurable criteria and unlock once (1.507167ms)
+✔ real answers distinguish help, recall, delayed review and recovery; preview and timeouts grant no day (23.79825ms)
+✔ repeating a word does not inflate unique words, both-mode or recovery counts (10.735459ms)
+✔ practice dates use actual calendar days and corrupt milestone metadata is bounded (0.44175ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1100.110208

@@ -1,0 +1,10 @@
+{
+  "gameArchiveUnchanged": true,
+  "sha256": "a5171ebc3db854cf00bb99593f611f0f0c2567b5fac9f8d6cc60cc4130baf62d",
+  "bytes": 136283416,
+  "nativeDefaultCloudEnabled": false,
+  "nativeDefaultApiURL": "",
+  "secretsDirectoryAbsent": true,
+  "mappingAndSessionKeysAbsent": true,
+  "backendVersion": "0.17.0-local.3"
+}

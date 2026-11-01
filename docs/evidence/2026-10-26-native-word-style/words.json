@@ -1,0 +1,220 @@
+{
+  "date": "2026-10-26T11:12:00.308Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "all 121 world clones spawn before text; native glyphs do not consume missing enemy or platform slots",
+    "CET4 and CET6 scope selection draws only words belonging to the selected source level",
+    "8815-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
+    "music and action sliders independently set 50% and 25% without changing the other channel",
+    "real charged arrow invokes spelling; typing combat/menu/mute keys is isolated; correct submission releases once and starts 3-second cooldown",
+    "wrong meaning cancels charged blade without consuming cooldown and increases session weakness",
+    "misspelled submission cancels ultimate; invalid typing never directly casts a skill",
+    "healing gates before recovery; correct meaning restores one life and starts cooldown",
+    "question can pause/resume without losing input; correct ultimate starts its 5-second cooldown",
+    "timeout cancels the pending skill without cooldown and resumes combat",
+    "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
+    "long-word and 28-character option fixtures fit the card; 48 typed characters scroll within the input; 480x360 resize remains intact",
+    "returning to title prepares a fresh preview deck; practice stays free of inscription questions",
+    "native text shrinks after answers, real arrows receive clone slots, and observed combined clone count stays below 300"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "6cda2ef4add79adb8c93b2c991c0fe7dca504144078076aea6bb23848900af4a",
+  "fixture": "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states; F12 injects bounded long-text fixtures. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
+  "browser": "156.0.8078.4",
+  "frameRateSamples": [
+    60.37918125656376,
+    59.22884049784772,
+    28.552176246951284,
+    55.03685503685504,
+    58.482952216166225,
+    13.67859510326884,
+    48.462610230753185,
+    60.33296253862831,
+    60.61294844138446,
+    43.544050249155895,
+    59.966643555058646,
+    56.968154799918466,
+    60.144346429998045,
+    37.55539420679079,
+    55.78078152819522,
+    53.396391930002316,
+    59.12661542330229,
+    51.969633052964866,
+    55.01022846638427,
+    62.0989443148819,
+    60.07569537560033,
+    48.55551613749237,
+    43.37565902483507,
+    59.20312592978425,
+    60.92220995427217,
+    59.751434029309564,
+    10.15749114972292,
+    42.24407894262156,
+    41.19001703658567,
+    36.56914893472095
+  ],
+  "clonePeak": 232,
+  "worldRender": [
+    121,
+    121,
+    0,
+    31,
+    0,
+    1,
+    1,
+    0,
+    0
+  ],
+  "questions": [
+    [
+      "1",
+      "1",
+      "4433",
+      "1",
+      "2",
+      "9",
+      "know"
+    ],
+    [
+      "2",
+      "2",
+      "4612",
+      "1",
+      "2",
+      "9",
+      "list"
+    ],
+    [
+      "3",
+      "4",
+      "8256",
+      "1",
+      "1",
+      "9",
+      "tyre"
+    ],
+    [
+      "4",
+      "3",
+      "1282",
+      "1",
+      "0",
+      "9",
+      "chord"
+    ],
+    [
+      "5",
+      "4",
+      "2222",
+      "1",
+      "1",
+      "9",
+      "diagram"
+    ],
+    [
+      "6",
+      "2",
+      "6429",
+      "1",
+      "0",
+      "9",
+      "rectangle"
+    ],
+    [
+      "7",
+      "5",
+      "8375",
+      "0",
+      "1",
+      "9",
+      "us"
+    ],
+    [
+      "8",
+      "6",
+      "4697",
+      "0",
+      "0",
+      "9",
+      "lunar"
+    ],
+    [
+      "9",
+      "2",
+      "5151",
+      "0",
+      "1",
+      "9",
+      "napkin"
+    ]
+  ],
+  "answers": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      1,
+      2,
+      0
+    ],
+    [
+      1,
+      3,
+      0
+    ],
+    [
+      3,
+      3,
+      2
+    ],
+    [
+      1,
+      4,
+      0
+    ],
+    [
+      1,
+      5,
+      0
+    ],
+    [
+      1,
+      6,
+      0
+    ]
+  ],
+  "deckCount": 6,
+  "sfx": [
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healcomplete 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx heavycut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25"
+  ]
+}

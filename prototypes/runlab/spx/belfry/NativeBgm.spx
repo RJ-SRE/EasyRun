@@ -1,0 +1,20 @@
+// A persistent audio owner follows the listener, independently of world objects.
+// SPX stage playback still uses a finite-radius AudioStreamPlayer2D. Attaching
+// music to this sprite keeps it audible throughout the vertical map.
+var (
+ audioPositionKnown bool
+ audioX float64
+ audioY float64
+ applied int
+)
+func pinToCamera() {
+ if !audioPositionKnown || audioX!=viewCenterX || audioY!=viewCenterY {
+  audioPositionKnown=true; audioX=viewCenterX; audioY=viewCenterY
+  setXYpos audioX,audioY
+ }
+}
+func syncChannel() {
+ if applied!=nativeMusicVolume {applied=nativeMusicVolume; setVolume float64(applied)}
+}
+func startTrack(name string) {pinToCamera(); syncChannel(); play name,true}
+onStart => {hide}

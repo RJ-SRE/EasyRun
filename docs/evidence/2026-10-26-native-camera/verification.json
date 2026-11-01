@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-26T18:11:06.642493+08:00",
+  "version": "0.12.1",
+  "scope": "Hide in-game guide/pause/music buttons, take camera ownership, and bake SVG costumes for native high-DPI compatibility. Local only; no online project write or remote push.",
+  "checks": {
+    "npm-shell": {
+      "passed": 14,
+      "report": "npm-shell.json"
+    },
+    "deployed-shell": {
+      "passed": 14,
+      "report": "deployed-shell.json"
+    },
+    "web-scene": {
+      "passed": 35,
+      "report": "web-scene.json"
+    }
+  },
+  "totalPassed": 63,
+  "artifact": {
+    "path": "prototypes/runlab/exports/belfry.xbp",
+    "delivery": "/Users/rj/Desktop/EasyRun-XBuilder-v0.12.1-camera-fix.xbp",
+    "bytes": 93792561,
+    "sha256": "9fa49d3fd433461225b88a1a900c0ab0517a6e3d6ba0173701834f0113d08418",
+    "entries": 551,
+    "rasterizedSvgCostumes": 69,
+    "musicTracks": 3
+  },
+  "sourceHashes": {
+    "prototypes/runlab/build-belfry.mjs": "b809e4a3933de003316fe34a14ae834e82c840356fdf7e631d122b78426ff443",
+    "prototypes/runlab/build-belfry-native.mjs": "45a7dfeb3628000dbb97f3e112a74d305829e5a1689d89e9df3e85534429e598",
+    "prototypes/runlab/package.py": "61869dd9ef51cebe66a92fa16c8803c7fdc6ae87218d0f8fba15b99f75b00a14",
+    "prototypes/runlab/spx/belfry/Viewport.spx": "c3c655bac05545329bb6c7484e5712001cfd866fdfd12cf936febcd70471a2f2",
+    "prototypes/runlab/spx/belfry/NativeShell.spx": "9d4753ddac542df4f88fd8dd1b2522ea2a71500584c60704578be138ee7c80b9",
+    "prototypes/runlab/test-belfry-native-shell.mjs": "6c725ecae5c7a3557675437829171eb1d8c899dcc0fbad9e6027d398485d2f8f",
+    "prototypes/runlab/test-belfry-scene.mjs": "1076d60e8f7c7dfaf764f3e476ec9b1f0b00a5d98ee462f0908d02e11ea30a4c"
+  },
+  "deployedComponents": {
+    "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+    "modelSha256": "d56a00e8a6f6bcfc4873c0db5cdaee5f98bd57f59b01780c7c85003a6e81d0a5",
+    "compilerUrl": "https://x.qiniu.com/assets/ispx-K91HiEtJ.wasm",
+    "compilerSha256": "b57b2a103bd10d42d7dd2761b8f3a5609cc256b00c66dc0dfee52df6a60d81b2",
+    "engineMatchesNpm": true,
+    "note": "The deployed runner also lists engineres.zip; its URL currently returns the SPA HTML fallback and is unused by this matching game.js. The tested asset map mirrors that runner."
+  },
+  "resolvedFindings": [
+    "Builder selection watch sets the selected sprite as camera follow target. Anchor follow reproduces the screenshot with view center (0,0); ChangeXYpos clears follow before game camera positioning.",
+    "Game buttons and their hit/hover regions are disabled; keyboard and menu controls still work.",
+    "Large cold-start canvas crashed with runtime SVGs. Minimal project succeeded. Baking the same SVGs to PNG succeeded with 1125x844 DPR2 and 480x360 roundtripped run configuration.",
+    "Shortening buttresses, skipping camera fit and enabling stretch were diagnostic attempts only and were not retained."
+  ],
+  "initialFailureReport": "deployed-attempt-1.json",
+  "limits": [
+    "Model roundtrip and deployed compiler run locally; no live account project import/save or online fullscreen button operation.",
+    "F6/F7/F8/F9 test injections simulate a deep room, stale follow and ending phases; production archive has none of those injected handlers. This is not a full playthrough.",
+    "The unchanged web scene sources passed 35 checks before native-only rasterization; the native artifact was tested afterward in both runtime variants.",
+    "No Safari/mobile validation. Browser wordbook/achievements/storage remain outside the native package."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "health": {
+    "ok": true,
+    "storage": "kodo",
+    "identityConfigured": false,
+    "releaseReady": false
+  },
+  "unconfiguredLogin": {
+    "status": 503,
+    "body": {
+      "error": "XBUILDER_IDENTITY_NOT_CONFIGURED"
+    }
+  }
+}

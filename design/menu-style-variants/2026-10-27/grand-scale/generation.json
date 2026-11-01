@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-27",
+  "tool": "built-in image_gen.imagegen",
+  "status": "static concepts; not implemented",
+  "userRevision": "Smaller protagonist, monumental architecture and stronger grandeur",
+  "variants": [
+    {
+      "key": "a-embers-hall",
+      "image": "a-embers-hall.png",
+      "prompt": "a-embers-hall-prompt.txt",
+      "width": 1586,
+      "height": 992,
+      "sha256": "8f978b376601e3f98db95af511a76c57f9dfc33abf587559d605829d49f69f5d",
+      "review": [
+        "Hero is visibly smaller and placed toward the lower-left",
+        "Architecture and layered depth dominate the composition",
+        "Mask, dark hood, brass gauntlets and red scarf retain character identity",
+        "Top-left title and right menu keep their reading scale",
+        "Static concept only; native controls and accurate type must be rendered separately at implementation"
+      ]
+    },
+    {
+      "key": "b-moonlit-sanctuary",
+      "image": "b-moonlit-sanctuary.png",
+      "prompt": "b-moonlit-sanctuary-prompt.txt",
+      "width": 1586,
+      "height": 992,
+      "sha256": "9caba243f69d5520ec6b5061bd1998f37725cf746b89920b4211fa9559c4e5b4",
+      "review": [
+        "Hero is visibly smaller and placed toward the lower-left",
+        "Architecture and layered depth dominate the composition",
+        "Mask, dark hood, brass gauntlets and red scarf retain character identity",
+        "Top-left title and right menu keep their reading scale",
+        "Static concept only; native controls and accurate type must be rendered separately at implementation"
+      ]
+    },
+    {
+      "key": "c-colossal-viaduct",
+      "image": "c-colossal-viaduct.png",
+      "prompt": "c-colossal-viaduct-prompt.txt",
+      "width": 1586,
+      "height": 992,
+      "sha256": "9d73224cf3788662a29e770fa5b74cc4d7a204fb82b0dee9add085f80f97c607",
+      "review": [
+        "Hero is visibly smaller and placed toward the lower-left",
+        "Architecture and layered depth dominate the composition",
+        "Mask, dark hood, brass gauntlets and red scarf retain character identity",
+        "Top-left title and right menu keep their reading scale",
+        "Static concept only; native controls and accurate type must be rendered separately at implementation"
+      ]
+    }
+  ]
+}

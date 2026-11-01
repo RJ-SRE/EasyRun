@@ -1,0 +1,322 @@
+{
+  "date": "2026-10-27T04:53:11.027Z",
+  "cases": [
+    "actual export compiles without the web host and the full menu MP3 produces nonzero engine audio",
+    "the exported title initializes music at 75% and action effects at 85%",
+    "Enter switches to the full gameplay track",
+    "real J attacks and gameplay music both run under the new mix without full-scale clipping in the sampled opening combat",
+    "music-only output remains audible in all five districts and after returning to the top, without restarting the song",
+    "real repeated J attacks, jumping, charged arrow and charged blade at depth leave music audible after effect cleanup, without restarting",
+    "zero music volume leaves independently controlled action audio audible",
+    "85% action output is measurably louder than 30%; the independent level control still works",
+    "zero action volume silences action samples without muting background music; both zero is silent",
+    "pause silences the engine output; continue resumes the same track",
+    "word-focus state leaves gameplay music running without restart or volume ducking",
+    "victory switches to the full ending track; mute is silent with no previous track leaking",
+    "defeat uses ending music; returning to title switches back and leaves only one active track",
+    "native loop keeps a one-second MP3 audible past three durations without JS restarts",
+    "mute persists across stage changes; unmute plays the current stage"
+  ],
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "errors": [],
+  "archiveSha256": "2acbe97a7e0d98fa0c8f11c4897d37b658b4933f5e555505f2593011ee3c02d3",
+  "note": "Actual .xbp is unzipped and compiled without the web host, optionally roundtripped through the pinned deployed project model. Test-only keys select lifecycle states, volumes, and checkpoint depths; invulnerability isolates audio continuity. Real J/W/U/L keys exercise attacks and effects. Analyser reads the real engine output. A separate one-second MP3 fixture accelerates loop verification; full delivered tracks remain unchanged. Does not claim a live x.qiniu.com editor upload.",
+  "browser": "156.0.8078.4",
+  "defaultMixPeak": 0.2841525673866272,
+  "depthSweep": [
+    {
+      "key": "Home",
+      "cameraY": -80.00563987918365,
+      "heroY": 0,
+      "phase": 1,
+      "rms": [
+        0.015469047570330284,
+        0.01742468179446601,
+        0.015449903169648404,
+        0.01761968423331084,
+        0.018170914232091585,
+        0.01898510556211695,
+        0.019535214097439257,
+        0.01976699164454787
+      ],
+      "maxRms": 0.01976699164454787
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -2340.003542240437,
+      "heroY": -2260,
+      "phase": 1,
+      "rms": [
+        0.02423434607598174,
+        0.024244066489646086,
+        0.027933443716145506,
+        0.025327909543542002,
+        0.02432839549410825,
+        0.02181894246364346,
+        0.025556629029585713,
+        0.02744968930105842
+      ],
+      "maxRms": 0.027933443716145506
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -4740.002056367482,
+      "heroY": -4660,
+      "phase": 1,
+      "rms": [
+        0.024039642439688022,
+        0.02369037787518296,
+        0.02287959896243694,
+        0.024606113234031075,
+        0.022306776793108156,
+        0.020347500345286748,
+        0.02089847923774155,
+        0.01831519730224442
+      ],
+      "maxRms": 0.024606113234031075
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -7140.007759024943,
+      "heroY": -7060,
+      "phase": 1,
+      "rms": [
+        0.018443559785221962,
+        0.01822976936530709,
+        0.017403050554911776,
+        0.02020028419012102,
+        0.020985363902988753,
+        0.019412153947288204,
+        0.040614433395865596,
+        0.03716452075051758
+      ],
+      "maxRms": 0.040614433395865596
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -9540.005875193405,
+      "heroY": -9460,
+      "phase": 1,
+      "rms": [
+        0.02770550182670555,
+        0.02357011962065303,
+        0.028423325908489974,
+        0.02435897734405188,
+        0.0270989298718751,
+        0.021833843995865337,
+        0.02504991090741861,
+        0.027019162834196427
+      ],
+      "maxRms": 0.028423325908489974
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -11140.002610558333,
+      "heroY": -11060,
+      "phase": 1,
+      "rms": [
+        0.05871410585908658,
+        0.06765556920812696,
+        0.06680490756115583,
+        0.055490115880841795,
+        0.07089321293780329,
+        0.05361067988644268,
+        0.05639651434535756,
+        0.06683924510440453
+      ],
+      "maxRms": 0.07089321293780329
+    },
+    {
+      "key": "Home",
+      "cameraY": -80.00713069916021,
+      "heroY": 0,
+      "phase": 1,
+      "rms": [
+        0.11774774794266389,
+        0.11745553841046977,
+        0.11583485349014232,
+        0.12510025143134007,
+        0.12444721128255898,
+        0.14037490937492364,
+        0.10370928989241528,
+        0.11273887133592284
+      ],
+      "maxRms": 0.14037490937492364
+    }
+  ],
+  "roundtripAudio": {
+    "run": {
+      "width": 480,
+      "height": 360
+    },
+    "audioAttenuation": 1,
+    "audioMaxDistance": 768
+  },
+  "deepCombat": {
+    "state": [
+      1,
+      0,
+      0,
+      20.596919336551803,
+      8,
+      8,
+      0,
+      0,
+      0,
+      0,
+      50,
+      0,
+      777.1335367875189,
+      -4620,
+      0,
+      0,
+      -1,
+      88,
+      14,
+      36,
+      0,
+      -11970,
+      1,
+      0,
+      0,
+      0,
+      0,
+      -4700.000000000004,
+      0,
+      990.7451138865858,
+      0,
+      0,
+      0,
+      1,
+      1,
+      8,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.6239660092070699,
+      0,
+      0,
+      0,
+      -1,
+      0,
+      0,
+      5,
+      0,
+      0,
+      0,
+      1.2101349338516592,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      -1,
+      0,
+      0,
+      0,
+      -1,
+      1,
+      20.839692667955536,
+      1,
+      -1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      11060,
+      -1,
+      36,
+      0,
+      0,
+      0,
+      2
+    ],
+    "musicRms": 0.0896131347111869,
+    "musicLog": [
+      {
+        "track": "BGM_Menu",
+        "state": "playing"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "playing"
+      }
+    ],
+    "cues": [
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx cloth 85",
+      "@nativeSfx blade 85",
+      "@nativeSfx land 85",
+      "@nativeSfx bowdraw 85",
+      "@nativeSfx bowshot 85",
+      "@nativeSfx heavycut 85"
+    ]
+  },
+  "actionLevels": {
+    "highPeak": 0.2842227518558502,
+    "lowPeak": 0.10031390935182571,
+    "ratio": 2.8333334199847666
+  },
+  "fullTrackLog": [
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "paused"
+    }
+  ]
+}

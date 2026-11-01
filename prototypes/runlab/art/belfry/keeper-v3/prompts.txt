@@ -1,0 +1,31 @@
+Form 1:
+Use case: stylized-concept
+Asset type: production transparent sprite atlas for a gothic side-scrolling action game, NOT a concept presentation.
+Reference image: the provided design is identity/material reference; only its FIRST fully armored form.
+Create exactly 12 isolated full-body animation keyframes in a perfectly regular 4-column by 3-row grid, transparent background. Wide landscape atlas. Every cell same scale, facing RIGHT, feet at 87% cell height, pelvis centered at 50% cell width. Leave generous clear margins so weapons never cross cells. No labels, numbers, grid lines, ground shadows, text, scenery.
+Character: nonhuman ancient mechanical Heartkeeper, pointed ivory porcelain faceplate with narrow dark eye slits, small bronze clock crown attached to head (not a halo), massive dark iron / old bronze shoulder armor, layered ripped gray-white cloth, a long double-ended curved polearm gripped in hands. Tiny warm ivory chest core. Same detailed hand-painted game sprite style as reference. No human skin, no giant aura, no floating weapons, no full-body color filter.
+Keyframes in reading order:
+0 upright guard with polearm vertical; 1 advancing low step;
+2 readable horizontal sweep windup, polearm drawn behind; 3 horizontal sweep follow-through, blade low forward;
+4 overhead cleave windup with raised polearm; 5 grounded recovery with weapon lowered;
+6 forward polearm thrust with bent leading leg; 7 airborne compact tuck with weapon close;
+8 heavy landing with polearm tip on floor; 9 kneeling repair: polearm planted, free hand held against open chest core;
+10 transition: shoulders cracked, one shoulder plate visibly falling immediately beside body, polearm breaking at center;
+11 diagonal upward cut follow-through.
+Actual distinct articulate arm/leg/torso poses, consistent proportions. Keep complete silhouettes separated by transparency.
+
+Form 2:
+Use case: stylized-concept. Production game sprite atlas, 4 columns x 3 rows, exactly 12 separate full-body gothic mechanical boss keyframes. TRANSPARENT alpha background; only character pixels. Do NOT reproduce the brown presentation background from reference. No text, grid, floor, ground shadow, gradients or panel. Reference for identity/material only. Side view facing RIGHT, equal body scale in every cell, separated generous margins, no weapon crossing cell boundary. Feet at 87% height, pelvis at cell center.
+Nonhuman ivory pointed faceplate, small attached bronze crown spokes, blackened iron and old bronze articulated mechanisms, gray-white torn cloth, tiny ivory chest core. Detailed hand painted readable silhouettes, same character each pose. No circles, aura, floating objects, color wash, human skin.
+SECOND FORM only: one shoulder armor MISSING, asymmetric half-broken chest plate, exposed rib-like rods; low bent knees, split polearm as long curved main sword + short offhand curved guard blade. Every frame includes two hand-held weapons, no polearm.
+12 poses reading order: 0 low dual-blade guard; 1 forward stride; 2 main blade drawn back windup; 3 low forward main cut follow-through; 4 offhand raised across head preparing return cut; 5 lowered blades exhausted recovery; 6 deep forward sliding cut; 7 compact airborne tuck; 8 crouching landing; 9 kneeling with main blade planted/free hand repairs core; 10 transition contorted long arms with chest shell unfolded and chain drawing from forearm; 11 rising offhand uppercut.
+Actually different joint poses, same scale and identity.
+
+Form 3:
+Use case: stylized-concept. Production game sprite atlas, 4 columns x 3 rows, exactly 12 separate full-body gothic mechanical boss keyframes. TRANSPARENT alpha background; only character pixels. Do NOT reproduce the brown presentation background from reference. No text, grid, floor, ground shadow, gradients or panel. Reference for identity/material only. Side view facing RIGHT, equal body scale in every cell, separated generous margins, no weapon crossing cell boundary. Feet at 87% height, pelvis at cell center.
+Nonhuman ivory pointed faceplate, small attached bronze crown spokes, blackened iron and old bronze articulated mechanisms, gray-white torn cloth, tiny ivory chest core. Detailed hand painted readable silhouettes, same character each pose. No circles, aura, floating objects, color wash, human skin.
+THIRD FORM only: almost no shoulder plate, exposed elongated hinged arms and torso ribs, hunching predatory posture, long three-finger ground-bracing claw left arm, right forearm physically connected by hanging real iron chain to broken curved blade in right hand. Armor same dark metal, no whole-body colored glow. No floating blade; weapon always held or visibly attached by chain.
+12 poses reading order: 0 hunched guard claw on floor and blade held; 1 creeping stride; 2 chain blade drawn back behind shoulder; 3 chain blade thrown horizontally forward still attached to wrist by physical chain; 4 overhead diagonal blade sweep winding; 5 exhausted recovery crouch; 6 chain reeling across floor toward hand; 7 arched leaping pounce with claw forward; 8 ground-claw impact braced low; 9 blade planted, kneeling, hand repairing exposed core; 10 chest shell opening, hunched structural evolution key pose; 11 diagonal high cut with blade in hand.
+Actual distinct articulated animation poses, no detached magic/lasers/orbiting weapons.
+
+Form 1 alpha extraction: Remove the entire brown gradient background from the provided sprite atlas, leaving genuine transparent alpha everywhere except the 12 character silhouettes, their weapons and attached cloth. Keep every character pixel, pose, size and position exactly as in the input, no other edits. No shadows or floor. Transparent production sprite sheet.

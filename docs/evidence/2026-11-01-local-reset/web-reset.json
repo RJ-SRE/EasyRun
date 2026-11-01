@@ -1,0 +1,13 @@
+{
+  "cases": [
+    "cancel closes only the confirmation and preserves full IndexedDB learning history",
+    "transaction failure retains the stored book and offers a visible retry",
+    "confirmation drains queued writes, clears game-owned saves/backups/achievements/settings and reloads a fresh 30-word journey",
+    "stale second window cannot write its old book after the reset generation changes; unrelated storage remains intact",
+    "confirmation and controls stay visible at narrow window sizes",
+    "the same control also clears small localStorage saves, not only large IndexedDB books",
+    "a write queued after confirmation is fenced as well, even in the clearing tab before reload"
+  ],
+  "errors": [],
+  "complete": true
+}

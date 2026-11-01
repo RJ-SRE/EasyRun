@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-26T16:57:36.646Z",
+  "cases": [
+    "actual export compiles without the web host and the full menu MP3 produces nonzero engine audio",
+    "the exported title initializes music at 40% and action effects at 85%",
+    "Enter switches to the full gameplay track",
+    "real J attacks and gameplay music both run under the new mix without full-scale clipping in the sampled opening combat",
+    "zero music volume leaves independently controlled action audio audible",
+    "85% action output is measurably louder than 30%; the independent level control still works",
+    "zero action volume silences action samples without muting background music; both zero is silent",
+    "pause silences the engine output; continue resumes the same track",
+    "word-focus state leaves gameplay music running without restart or volume ducking",
+    "victory switches to the full ending track; mute is silent with no previous track leaking",
+    "defeat uses ending music; returning to title switches back and leaves only one active track",
+    "native loop keeps a one-second MP3 audible past three durations without JS restarts",
+    "mute persists across stage changes; unmute plays the current stage"
+  ],
+  "errors": [],
+  "archiveSha256": "6540e59a9801aaf476bf6a6346bc655b4e3097a979c9c06f7e3c061dad846612",
+  "note": "Actual .xbp is unzipped and compiled by the pinned SPX runtime without the web host. F8/F9/F10/F11/F12 select lifecycle states only. Analyser reads the real engine output. A separate one-second MP3 fixture accelerates loop verification; full delivered tracks remain unchanged. Does not claim a live x.qiniu.com editor upload.",
+  "browser": "156.0.8078.4",
+  "defaultMixPeak": 0.3159712553024292,
+  "actionLevels": {
+    "highPeak": 0.28422272205352783,
+    "lowPeak": 0.10031390935182571,
+    "ratio": 2.833333122894138
+  },
+  "fullTrackLog": [
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "paused"
+    }
+  ]
+}

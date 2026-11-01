@@ -1,0 +1,242 @@
+// Export-only menu, lifecycle controls and HUD. Art/hit regions share one layout.
+var (
+ nativeSettings bool
+ nativeSettingsTab int
+ nativePaintKnown bool
+ nativePaintFull bool
+ nativePaintLayer int
+ nativePaintX float64
+ nativePaintY float64
+ nativePaintW float64
+ nativePaintH float64
+ nativePaintOffset float64
+ nativePaintHealth int
+ nativePaintMaxHealth int
+ nativePaintSegment int
+ nativePaintPractice int
+ nativePaintBow int
+ nativePaintBlade int
+ nativePaintHeal int
+ nativePaintUltimate int
+ nativePaintTimer int
+ nativePaintMusic int
+ nativePaintSfx int
+ nativePaintMuted bool
+ nativeHelp bool
+ nativeHelpReturn int
+ nativeHover int
+ nativePanel int
+ nativeUiLogTime float64
+ nativeDragging int
+ nativeLayerVersion int
+ nativeLayerMemoKnown bool
+ nativeLayerMemoPanel int
+ nativeLayerMemoHover int
+ nativeLayerMemoPreview bool
+ nativeLayerMemoHelp bool
+ nativeLayerMemoHint bool
+ nativeLayerMemoFilter bool
+ nativeLayerMemoText int
+ nativeLayerMemoPhase int
+ nativeLayerMemoPaused bool
+ nativeHitMemoKnown bool
+ nativeHitMemoPanel int
+ nativeHitMemoPhase int
+ nativeHitMemoHelp bool
+ nativeHitMemoPreview bool
+ nativeHitMemoPage int
+ nativeHitMemoPages int
+ nativeHitMemoFilter bool
+ nativeHitMemoHint bool
+ nativeHitMemoWords int
+ nativeHitMemoPractice int
+ nativeHitX float64
+ nativeHitY float64
+)
+func nativeButtonVisible(action int) bool {
+ if nativeLocalResetStage>0 {return nativeLocalResetStage!=2 && (action==44 || action==43 && nativeLocalResetStage!=4)}
+ if action==42 {return nativeLocalEnabled && phase==0 && nativeSettings && nativeSettingsTab==0 && !nativePreview && !nativeHelp && !nativeHintOpen && !nativeStudyOpen}
+ if action==43 || action==44 {return false}
+ if nativeStudyOpen {return false}
+ if nativeHintOpen && phase==0 && !nativeHelp && !nativePreview {return action>=30 && action<=33}
+ if nativePreview && nativeLedgerFilterOpen && action>=27 && action<=29 {return true}
+ if nativePreview {return action==26 || action==19 && nativePreviewPage>0 || action==20 && nativePreviewPage+1<len(nativeLedgerPages) || action==22 || action==23 || action==24 || action==25}
+ if nativeHelp {return action==9 || action==6}
+ if phase==0 {
+  if nativeSettings {return action==6 || action==34 || action==36 || action==37 || nativeSettingsTab==0 && (action>=12 && action<=16 || action==30) || nativeSettingsTab==1 && (action==17 || action==18 || action==35)}
+  return action==1 || action==2 || action==3 || action==4 || action==5 || action==6 || action==13 || action==15 || action==34
+ }
+ if action==6 {return phase!=1 && phase!=5}
+ if action==21 {return phase==1 && practice==0 && wordMode==1 && !nativeHelp}
+ if action==17 || action==18 {return phase!=1 && phase!=5 && !nativeHelp}
+ if nativeHelp {return action==9}
+ if action==10 || action==11 {return false}
+ if action==1 {return phase==0 || phase==2 || phase==3 || phase==4}
+ if action==2 || action==4 || action==5 {return phase==0}
+ if action==3 {return phase==0 || phase==4}
+ if action==7 {return phase==2 || phase==3 || phase==4}
+ if action==8 {return phase==2 || phase==3}
+ return false
+}
+func nativeActionAt(x,y float64) int {
+ if nativeLocalResetStage==0 {if action:=nativeStudyActionAt(x,y); action>0 {return action}}; if nativeStudyOpen {return 0}
+ for a:=1;a<=44;a++ {
+  if nativeButtonVisible(a) {
+   bx,by,bw,bh:=nativeButtonRect(a)
+   if x>=bx && x<=bx+bw && y>=by && y<=by+bh {return a}
+  }
+ }
+ return 0
+}
+func nativeSetSettings(open bool) {nativeSettings=open; if open {nativeSettingsTab=0}; nativeHintOpen=false; nativePaintKnown=false; nativeHitMemoKnown=false; nativeTextMemoKnown=false; nativeLayerMemoKnown=false}
+func nativeCloseHelp() {nativeHelp=false; phase=nativeHelpReturn}
+func nativeToggleHelp() {
+ if phase==5 || nativePreview {return}
+ if nativeHelp {nativeCloseHelp(); return}
+ nativeSetSettings(false)
+ nativeHelpReturn=phase; nativeHelp=true
+ if phase==1 {phase=4}
+}
+func nativeConfirm() {
+ if nativeLocalResetStage>0 {if nativeLocalResetStage==4 {nativeLocalResetCancel()}; return}
+ if nativeStudyOpen {nativeStudyClose(); return}
+ nativeHintOpen=false
+ if phase==5 {nativeSubmit(); return}
+ if nativePreview {if nativeLedgerFilterOpen {nativeLedgerFilterOpen=false} else {nativeCloseLedger()}; return}
+ if nativeHelp {nativeCloseHelp(); return}
+ if nativeSettings {nativeSetSettings(false); return}
+ if phase==4 {phase=1} else if phase==3 {retryCheckpoint()} else if phase==0 {requestMenuStart()} else if phase==2 {startRun()}
+}
+func nativePause() {
+ if nativeLocalResetStage>0 {nativeLocalResetCancel(); return}
+ if nativeStudyOpen {nativeStudyClose(); return}
+ if nativeHintOpen {nativeHintOpen=false; return}
+ if nativePreview {if nativeLedgerFilterOpen {nativeLedgerFilterOpen=false} else {nativeCloseLedger()}; return}
+ if nativeSettings {nativeSetSettings(false); return}
+ if phase==5 {wordVisualPaused=!wordVisualPaused; return}
+ if nativeHelp {nativeCloseHelp(); return}
+ if phase==1 {phase=4} else if phase==4 {phase=1}
+}
+func nativeReturnTitle() {
+ if phase==4 || phase==2 || phase==3 {
+  nativeSetSettings(false); nativeHelp=false; practice=0; resetInscription(); Hero.cancelAttack(); phase=0; event("menu")
+ }
+}
+func nativeActivate(action int) {
+ if nativeLocalResetStage>0 {if action==43 {nativeLocalResetConfirm()}; if action==44 {nativeLocalResetCancel()}; return}
+ if action==42 {nativeLocalResetAsk(); return}
+ if action==38 {nativeStudyToggle(); return}; if action==39 {nativeStudyTurn(-1); return}; if action==40 {nativeStudyTurn(1); return}; if action==41 {nativeStudyClose(); return}; if nativeStudyOpen {return}
+ if action==36 || action==37 {nativeSettingsTab=action-36; nativeHintOpen=false; nativePaintKnown=false; nativeHitMemoKnown=false; nativeTextMemoKnown=false; nativeLayerMemoKnown=false; return}
+ if action==34 {nativeSetSettings(!nativeSettings); return}
+ if action==35 {menuReduced=!menuReduced; nativeTextMemoKnown=false; nativePaintKnown=false; return}
+ if action==0 {nativeHintOpen=false; if nativePreview {nativeLedgerFilterOpen=false}; return}
+ println "@nativeAction",action
+ if action==1 {nativeConfirm()}
+ if action==2 {startPractice()}
+ if action==3 || action==11 {nativeToggleHelp()}
+ if action==4 {difficulty=0; event("difficulty")}
+ if action==5 {difficulty=1; event("difficulty")}
+ if action==6 {nativeMusicMuted=!nativeMusicMuted}
+ if action==7 {nativeReturnTitle()}
+ if action==8 {startRun()}
+ if action==9 {if nativePreview {nativeCloseLedger()} else {nativeCloseHelp()}}
+ if action==12 {if nativeCloudAccount!="" && nativeCloudBusy {return}; nativeScope=(nativeScope+1)%4; nativeShuffleDeck(); nativeLocalSettings=nativeLocalCurrentSettings(); nativeLocalMark(-1)}
+ if action==13 {wordMode=1-wordMode}
+ if action==14 {nativePace=(nativePace+1)%3}
+ if action==15 || action==21 {nativeOpenLedger()}
+ if action==16 {nativeShuffleDeck()}
+ if action==17 || action==18 {nativeDragging=action; nativeAdjustVolume(action)}
+ if action==19 {nativeLedgerPage(-1)}
+ if action==20 {nativeLedgerPage(1)}
+ if action==10 {nativePause()}
+ if action==22 {nativeLedgerFilterOpen=!nativeLedgerFilterOpen; nativeLedgerSearch=false}
+ if action==23 {nativeLedgerSearch=true; nativeLedgerFilterOpen=false}
+ if action==24 {nativeLedgerFilterOpen=false; nativeLedgerQuery=""; nativeFilterLedger(); nativeLedgerSearch=true}
+ if action==25 || action==26 {nativeCloseLedger()}
+ if action>=27 && action<=29 {nativeLedgerFilter=action-27; nativeLedgerFilterOpen=false; nativeFilterLedger()}
+ if action==30 {nativeHintOpen=!nativeHintOpen}
+ if action>=31 && action<=33 {nativeHint=action-31; nativeHintOpen=false}
+}
+func nativeAdjustVolume(action int) {
+ x:=mouseX-viewCenterX+480
+ v:=int(clamp(math.Floor((x-656)/224*100+0.5),0,100))
+ if action==17 {nativeMusicVolume=v; nativeMusicMuted=false} else {nativeSfxVolume=v}
+ println "@nativeVolume",nativeMusicVolume,nativeSfxVolume
+}
+func nativeNeedsPaint() bool {
+ bow:=int(clamp(Hero.bowCool*10+0.999,0,30)); blade:=int(clamp(Hero.bladeCool*10+0.999,0,30))
+ heal:=int(clamp(Hero.healCool*10+0.999,0,30)); ultimate:=int(clamp(Hero.ultimateCool*10+0.999,0,50))
+ tick:=0; if phase==5 && nativeQuestionLimit>0 {tick=int(clamp((1-nativeQuestionAge/nativeQuestionLimit)*60,0,60))}
+ nativePaintFull=!nativePaintKnown || nativePaintLayer!=nativeLayerVersion
+ if nativeCombatDirty || !nativePaintKnown || nativePaintLayer!=nativeLayerVersion || nativePaintX!=viewCenterX || nativePaintY!=viewCenterY || nativePaintW!=viewWidth || nativePaintH!=viewHeight || nativePaintOffset!=nativeFocusOffset || nativePaintHealth!=health || nativePaintMaxHealth!=maxHealth || nativePaintSegment!=segment || nativePaintPractice!=practice || nativePaintBow!=bow || nativePaintBlade!=blade || nativePaintHeal!=heal || nativePaintUltimate!=ultimate || nativePaintTimer!=tick || nativePaintMusic!=nativeMusicVolume || nativePaintSfx!=nativeSfxVolume || nativePaintMuted!=nativeMusicMuted {
+  nativePaintKnown=true; nativePaintLayer=nativeLayerVersion; nativePaintX=viewCenterX; nativePaintY=viewCenterY; nativePaintW=viewWidth; nativePaintH=viewHeight; nativePaintOffset=nativeFocusOffset; nativePaintHealth=health; nativePaintMaxHealth=maxHealth; nativePaintSegment=segment; nativePaintPractice=practice; nativePaintBow=bow; nativePaintBlade=blade; nativePaintHeal=heal; nativePaintUltimate=ultimate; nativePaintTimer=tick; nativePaintMusic=nativeMusicVolume; nativePaintSfx=nativeSfxVolume; nativePaintMuted=nativeMusicMuted
+  return true
+ }
+ return false
+}
+// Compare typed state directly: no per-frame fmt.Sprint / temporary signature.
+func nativeHitChanged() bool {
+
+ changed:=!nativeHitMemoKnown || nativeHitMemoPanel!=nativePanel || nativeHitMemoPhase!=phase || nativeHitMemoHelp!=nativeHelp || nativeHitMemoPreview!=nativePreview || nativeHitMemoPage!=nativePreviewPage || nativeHitMemoPages!=len(nativeLedgerPages) || nativeHitMemoFilter!=nativeLedgerFilterOpen || nativeHitMemoHint!=nativeHintOpen || nativeHitMemoWords!=wordMode || nativeHitMemoPractice!=practice
+ if changed {nativeHitMemoKnown=true; nativeHitMemoPanel=nativePanel; nativeHitMemoPhase=phase; nativeHitMemoHelp=nativeHelp; nativeHitMemoPreview=nativePreview; nativeHitMemoPage=nativePreviewPage; nativeHitMemoPages=len(nativeLedgerPages); nativeHitMemoFilter=nativeLedgerFilterOpen; nativeHitMemoHint=nativeHintOpen; nativeHitMemoWords=wordMode; nativeHitMemoPractice=practice}
+ return changed
+}
+// Compare typed state directly: no per-frame fmt.Sprint / temporary signature.
+func nativeLayerChanged() bool {
+
+ changed:=!nativeLayerMemoKnown || nativeLayerMemoPanel!=nativePanel || nativeLayerMemoHover!=nativeHover || nativeLayerMemoPreview!=nativePreview || nativeLayerMemoHelp!=nativeHelp || nativeLayerMemoHint!=nativeHintOpen || nativeLayerMemoFilter!=nativeLedgerFilterOpen || nativeLayerMemoText!=nativeTextVersion || nativeLayerMemoPhase!=phase || nativeLayerMemoPaused!=wordVisualPaused
+ if changed {nativeLayerMemoKnown=true; nativeLayerMemoPanel=nativePanel; nativeLayerMemoHover=nativeHover; nativeLayerMemoPreview=nativePreview; nativeLayerMemoHelp=nativeHelp; nativeLayerMemoHint=nativeHintOpen; nativeLayerMemoFilter=nativeLedgerFilterOpen; nativeLayerMemoText=nativeTextVersion; nativeLayerMemoPhase=phase; nativeLayerMemoPaused=wordVisualPaused}
+ return changed
+}
+func updateNativeShell(dt float64) {
+ if nativeDragging>0 {if mousePressed && nativeButtonVisible(nativeDragging) {nativeAdjustVolume(nativeDragging)} else {nativeDragging=0}}
+ updateNativeCombat(dt)
+ // Rebuild text before the layer pass; newly cloned glyphs share this epoch.
+ updateNativeWords(dt)
+ nativePanel=-1
+ if phase==0 {nativePanel=difficulty; if nativeSettings {nativePanel=7+nativeSettingsTab}}
+ if phase==4 {nativePanel=3}
+ if phase==3 {nativePanel=4}
+ if phase==2 {nativePanel=5}
+ if nativeHelp {nativePanel=2}
+ if nativePreview {nativePanel=6}
+ if nativeLocalResetStage>0 {nativePanel=8+nativeLocalResetStage}
+ pointerX:=mouseX-viewCenterX+480; pointerY:=viewCenterY-mouseY+300
+ if nativeHitChanged() || pointerX!=nativeHitX || pointerY!=nativeHitY {
+  nativeHitX=pointerX; nativeHitY=pointerY
+  nativeHover=nativeActionAt(pointerX,pointerY)
+ }
+ menuBusy=nativeSettings || nativeHelp || nativePreview || nativeStudyOpen
+ if nativeLayerChanged() {nativeLayerVersion++}
+ // Edge framing follows the actual viewport, below all usable controls.
+ // Cached transforms handle resize/camera motion without per-frame layer writes.
+ NativeFrameTop.syncUI(); NativeFrameBottom.syncUI()
+ if nativeNeedsPaint() {
+ full:=nativePaintFull
+ if full || (phase==1 || phase==5) && !nativeHelp {
+  NativeHUD.syncUI(); NativeHealth.syncUI()
+  NativeEmbers.syncUI(); NativeBossPanel.syncUI(); NativeBossFill.syncUI(); NativeBossMendGauge.syncUI(); NativeCombatNotice.syncUI()
+  NativeSkill0.syncUI(); NativeSkill1.syncUI(); NativeSkill2.syncUI(); NativeSkill3.syncUI()
+ }
+ if full || nativePanel>=0 {NativePanel.syncUI()}
+ if full || nativePreview || phase==0 {NativeLedgerTools.syncUI()}
+ if full || phase!=1 && phase!=5 && !nativePreview {NativeMusicButton.syncUI()}
+ // Paint the hover once in its final layer; cached Front calls cannot be
+ // repeated below and above a dropdown in the same epoch.
+ overlayHover:=nativeHintOpen || nativeLedgerFilterOpen && nativeHover>=27
+ if !overlayHover && (full || nativeHover>0) {NativeHover.syncUI()}
+ if full || phase!=1 && phase!=5 && !nativeHelp && !nativePreview {NativeMusicSlider.syncUI(); NativeSfxSlider.syncUI()}
+ if full || phase==5 {NativeQuestion.syncUI(); NativeQuestionTimer.syncUI(); NativeSpellingTrack.syncUI()}
+ if !nativeStudyOpen {nativePaintText()}
+ if full || nativePreview && nativeLedgerFilterOpen {NativeLedgerFilter.syncUI()}
+ if full || nativeHintOpen {NativeHintMenu.syncUI()}
+ if overlayHover {NativeHover.syncUI()}
+ if full || nativePreview {NativeLedgerTally0.syncUI(); NativeLedgerTally1.syncUI(); NativeLedgerTally2.syncUI(); NativeLedgerTally3.syncUI(); NativeLedgerTally4.syncUI(); NativeLedgerTally5.syncUI(); NativeLedgerTally6.syncUI(); NativeLedgerTally7.syncUI(); NativeLedgerTally8.syncUI(); NativeLedgerTally9.syncUI();}
+ }
+ updateNativeStudy(dt)
+ nativeUiLogTime+=dt
+ if nativeUiLogTime>0.25 {
+  nativeUiLogTime=0
+  println "@nativeUI",nativePanel,nativeHover,viewCenterX,viewCenterY,viewWidth,viewHeight,Camera.zoom,nativeTextCount,nativeGlyphLive
+ }
+}

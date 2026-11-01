@@ -1,0 +1,22 @@
+// Keep the authored 960 x 600 field of view intact even when Builder rewrites
+// run to 480 x 360. stretchMode=false preserves physical pixels on host resize.
+func fitViewport() {
+ // All title/result entry paths share this boundary, including keyboard,
+ // mouse, fatal damage and the web host. Pausing combat preserves its state.
+ if phase==0 || phase==2 || phase==3 {
+  shock=0; hitStop=0; cameraRenderX=480; cameraRenderY=cameraY
+ }
+ // SetXYpos alone does not cancel Builder's saved camera-follow target.
+ // ChangeXYpos clears that target before our authored camera takes ownership.
+ Camera.changeXYpos 0,0
+ Camera.setXYpos cameraRenderX,cameraRenderY
+ x,y,w,h:=Camera.viewportRect()
+ if w<=0 || h<=0 {return}
+ zoom:=Camera.zoom
+ target:=zoom*math.Min(w/960,h/600)
+ if abs(target-zoom)>0.0001 {Camera.setZoom target}
+ viewCenterX=x+w/2
+ // Engine viewport rectangles use downward-positive Y; gameplay uses upward Y.
+ viewCenterY=-(y+h/2)
+ viewWidth=w; viewHeight=h
+}

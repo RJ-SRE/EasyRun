@@ -1,0 +1,38 @@
+{
+  "version": "0.16.8",
+  "date": "2026-10-31",
+  "file": "EasyRun-XBuilder-v0.16.8-cloud-lightning.xbp",
+  "bytes": 134536561,
+  "zipEntries": 5056,
+  "sha256": "60a164d569c8bd6f9f60fc7960ebf19f993b7206361b779eff474285ffdd8c6a",
+  "crc": "pass",
+  "checksPassed": {
+    "native-menu": 6,
+    "native-shell": 15,
+    "web-menu": 5
+  },
+  "identicalAudioFiles": 19,
+  "existingPngFilesUnchanged": true,
+  "addedArchiveEntries": [
+    "MenuLightning.spx",
+    "assets/sprites/MenuLightning/f0.png",
+    "assets/sprites/MenuLightning/f1.png",
+    "assets/sprites/MenuLightning/f2.png",
+    "assets/sprites/MenuLightning/f3.png",
+    "assets/sprites/MenuLightning/f4.png",
+    "assets/sprites/MenuLightning/f5.png",
+    "assets/sprites/MenuLightning/f6.png",
+    "assets/sprites/MenuLightning/f7.png",
+    "assets/sprites/MenuLightning/f8.png",
+    "assets/sprites/MenuLightning/index.json"
+  ],
+  "changedArchiveEntries": [
+    "WorldLogic.spx",
+    "assets/index.json",
+    "main.spx",
+    "native-runtime-manifest.json"
+  ],
+  "removedArchiveEntries": [],
+  "newLightningTextureBytes": 922442,
+  "remotePushed": false
+}

@@ -1,0 +1,22 @@
+{
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "archiveSha256": "3c9b49f891f487c5585e89346c7b7005ba1cd11c18700611a8ee8463e78d9a5e",
+  "fixture": "Actual XBP assets and deployed XBuilder project model. Static preview uses the same default map / sprite / pivot transform on Canvas; this is not a full online editor or publishing test.",
+  "cases": [
+    "cover is the first editor sprite after real model import",
+    "cover is visible above all world and native HUD sprites",
+    "no widget layer obscures the editor cover",
+    "selected PNG survives thumbnail metadata import unchanged",
+    "editor cover fills the initial 480 by 360 viewport without crop or offset",
+    "automatic thumbnail refresh replaces metadata with the composed cover JPEG",
+    "cover ordering survives save and reopen through the deployed model",
+    "editor cover selection survives roundtrip for runtime camera regression"
+  ],
+  "spriteCount": 84,
+  "geometry": {
+    "x": 0,
+    "y": 0,
+    "w": 480,
+    "h": 360
+  }
+}

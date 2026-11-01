@@ -1,0 +1,34 @@
+✔ verified XBuilder id retains saved history across rename, new token and cold restart; reused name stays isolated (158.063584ms)
+✔ a username or display name cannot substitute for a missing stable user id (1.098709ms)
+✔ same-id credential refresh retains reference client deck, queue and in-flight acknowledgement (0.482708ms)
+✔ old-token 401 after same-id refresh retries the unchanged batch with the new token (0.318792ms)
+✔ Kodo startup refuses public, missing or inaccessible bucket permissions (17.073917ms)
+✔ Kodo discovers matching region HTTPS origin and never uses a CDN test domain (0.988666ms)
+✔ Kodo rejects foreign endpoint discovery and unsafe test prefixes (0.658166ms)
+✔ spelling and meaning stay independent; assisted success and timeout use exact schedules (2.53ms)
+✔ 30 unique words, mutually exclusive quotas, weak cap, same-mode fallback, insufficient pool (2.367042ms)
+✔ wrong outcomes are capped and chronological order matters (0.27025ms)
+✔ checkpoint save, failure retry, victory and duplicate submission do not double count (177.233917ms)
+✔ reject changed duplicate, missing sequence, stale revision, unknown words and duplicate question (110.337875ms)
+✔ two users isolated, explicit takeover invalidates previous writer, survives cache loss (86.759875ms)
+✔ lost write response reconciles exact candidate; unknown write blocks takeover after restart (135.172ms)
+✔ read errors/corrupt profiles do not initialize or erase user history (62.533917ms)
+✔ prepared views stay small with old 8815-word history, removed words remain in totals (277.818709ms)
+✔ client does not upload per answer; frozen retry excludes later answers and clears only acked entries (139.583333ms)
+✔ late callbacks cannot contaminate another account; original frozen batch can resume (98.011042ms)
+✔ HTTP boundary: no dev login, no credential leakage, unknown origin rejected, health explicit (80.990042ms)
+✔ content checks block a legacy test bank from release even with a valid hash (0.412041ms)
+✔ Kodo adapter uses signed exact user key, verifies origin bytes, treats only stat 612 as absent (4.927166ms)
+✔ platform verifier fails closed, rejects public names and never accepts a client-supplied user id (0.865083ms)
+✔ retry schedule is 2,5,15 seconds then manual; in-flight answers remain pending beyond save boundary (4.136083ms)
+✔ real local HTTP: prepare -> 100 batches -> cold restart -> restored history; no pending references (2901.879958ms)
+✔ name profiles canonicalize case, surrounding spaces and Unicode, but reject empty/control/oversized inputs (1.772542ms)
+✔ explicit username HTTP mode restores same-name history after reopening, rename is new, and verified sessions stay isolated (218.005625ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2994.155042

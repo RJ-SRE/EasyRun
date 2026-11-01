@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-27T03:37:29.362Z",
+  "cases": [],
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: music stays audible after moving through all five districts and returning without restarting\n    at depthSweep (file:///Users/rj/.codex/worktrees/inscription-integration/%E4%B8%83%E7%89%9B%E9%BB%91%E5%AE%A2%E6%9D%BE/prototypes/runlab/test-belfry-native-music.mjs:309:10)\n    at async file:///Users/rj/.codex/worktrees/inscription-integration/%E4%B8%83%E7%89%9B%E9%BB%91%E5%AE%A2%E6%9D%BE/prototypes/runlab/test-belfry-native-music.mjs:320:5"
+  ],
+  "archiveSha256": "3c9b49f891f487c5585e89346c7b7005ba1cd11c18700611a8ee8463e78d9a5e",
+  "note": "Actual .xbp is unzipped and compiled by the pinned SPX runtime without the web host. F8/F9/F10/F11/F12 select lifecycle states only. Analyser reads the real engine output. A separate one-second MP3 fixture accelerates loop verification; full delivered tracks remain unchanged. Does not claim a live x.qiniu.com editor upload.",
+  "browser": "156.0.8078.4",
+  "depthSweep": [
+    {
+      "key": "Home",
+      "cameraY": -80.00704708723387,
+      "heroY": 0,
+      "phase": 1,
+      "rms": [
+        0.0014501367198294754,
+        0.0017882206272164327,
+        0.0019417733025037973,
+        0.0021039488825636116,
+        0.0022533478088551,
+        0.0024944362850753796,
+        0.0025202677576286105,
+        0.0027892166807278267
+      ],
+      "maxRms": 0.0027892166807278267
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -2340.002498449207,
+      "heroY": -2260,
+      "phase": 1,
+      "rms": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "maxRms": 0
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -4740.00666109547,
+      "heroY": -4660,
+      "phase": 1,
+      "rms": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "maxRms": 0
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -7140.00298471558,
+      "heroY": -7060,
+      "phase": 1,
+      "rms": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "maxRms": 0
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -9540.002545358648,
+      "heroY": -9460,
+      "phase": 1,
+      "rms": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "maxRms": 0
+    },
+    {
+      "key": "PageDown",
+      "cameraY": -11140.001952991539,
+      "heroY": -11060,
+      "phase": 1,
+      "rms": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "maxRms": 0
+    },
+    {
+      "key": "Home",
+      "cameraY": -80.00147129864709,
+      "heroY": 0,
+      "phase": 1,
+      "rms": [
+        0.017533667227082474,
+        0.020560744182952655,
+        0.018664562058537365,
+        0.01853292204560356,
+        0.020999106651999833,
+        0.03233031343862846,
+        0.03401120568941184,
+        0.037903919830878166
+      ],
+      "maxRms": 0.037903919830878166
+    }
+  ],
+  "roundtripAudio": {
+    "run": {
+      "width": 480,
+      "height": 360
+    },
+    "audioAttenuation": 1,
+    "audioMaxDistance": 768
+  },
+  "diagnostics": {
+    "errors": [],
+    "log": [
+      {
+        "track": "BGM_Menu",
+        "state": "playing"
+      },
+      {
+        "track": "BGM_Gameplay",
+        "state": "playing"
+      }
+    ],
+    "rms": 0.030865248016836707,
+    "contexts": [
+      "running"
+    ]
+  }
+}

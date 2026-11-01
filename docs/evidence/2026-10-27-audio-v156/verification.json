@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "archiveBytes": 112090765,
+  "archiveSha256": "9a5b0b00d9b53693411ae41e2c7b488a591d8f7921a885d4a1cdf534c764fa37",
+  "baselineArchiveSha256": "3c9b49f891f487c5585e89346c7b7005ba1cd11c18700611a8ee8463e78d9a5e",
+  "entries": 4728,
+  "originalSprites": 85,
+  "added": [
+    "NativeBgm.spx",
+    "assets/sprites/NativeBgm/index.json",
+    "assets/sprites/NativeBgm/pixel.png"
+  ],
+  "changed": [
+    "NativeSfx.spx",
+    "assets/index.json",
+    "main.spx"
+  ],
+  "removed": [],
+  "crc": "passed",
+  "audioFilesUnchanged": 19,
+  "coverSha256": "449e9f57dc789d29dc5529ec04baddf387e19e5fd6080c265f7083cb6332da43",
+  "missingCostumes": [],
+  "testInstrumentationAbsent": true,
+  "defaultMusicVolume": 75,
+  "defaultSfxVolume": 85,
+  "checks": {
+    "native-audio": 15,
+    "native-words": 23,
+    "web-music": 17
+  },
+  "checksPassed": 55,
+  "sourceSha256": {
+    "prototypes/runlab/spx/belfry/NativeBgm.spx": "3cdca6c02be849c1be9a052a58a8c616d9a7b917dba98146cc64d91e5078ec07",
+    "prototypes/runlab/spx/belfry/NativeMusic.spx": "b2a46db10deae698b18191a5f612ba9e90e7c2f55e0986d97603ab3b75aa1b2a",
+    "prototypes/runlab/build-belfry-native-lexicon.mjs": "b8f2cb4c9c68256eb8a78d1c097af056c5f89be7dd786f7e9d4e9ade430be9dd",
+    "prototypes/runlab/build-belfry-native.mjs": "05d59e0368ab0e4942d644adf171f0fc5362c50a956682789c9d1f883839cdb5",
+    "prototypes/runlab/package.py": "e69c095045be48b52f11cc3b80b998d89a8b75abd7d6e03995e841e56e6d6722",
+    "prototypes/runlab/public/belfry-audio.js": "23aef4883395eb32a8032723616f03f9befa6692874fcdbc2eb5814058018d42",
+    "prototypes/runlab/test-belfry-native-music.mjs": "9dc207c334b40d52a6b282b358b166debc230518e9d44a532fed34f96474626b",
+    "prototypes/runlab/test-belfry-music.mjs": "aeba6718160b48d424e619cbc888c137c11aefdf8a371822750b259b2129e993"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "0.16.0",
+  "localOnly": true,
+  "package": "/Users/rj/Desktop/EasyRun-XBuilder-v0.16.0-moonlit-sanctuary.xbp",
+  "bytes": 116219381,
+  "sha256": "874a6d6a6141e5c9f2364b94bf3e55664ed6b577857a935f552a8ac504498ab3",
+  "crc": "passed",
+  "entries": 4862,
+  "menuSprites": 10,
+  "baselineSha256": "4d1aa4da38ca3ccdebae50351624eab20a54358cadba8b8d9efac0e2b2f9ab40",
+  "unchangedAudioFiles": 19,
+  "heroCodeUnchanged": true
+}

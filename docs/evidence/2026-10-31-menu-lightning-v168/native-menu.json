@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-30T17:38:02.075Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "initialFollow": "Anchor",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "original hero pose and anchored pixels stay fixed while cape/water cycle; camera and clone count remain stable, zero combat FX",
+    "three cloud lightning paths naturally complete dark, gold and afterglow exposures with long quiet intervals and no extra clones",
+    "settings keep hero pose fixed without blocking the controls",
+    "reduced motion freezes environmental clock and rests the hero",
+    "reduced-motion start enters gameplay without the departure delay",
+    "start enters gameplay immediately; menu layers disappear in gameplay"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "60a164d569c8bd6f9f60fc7960ebf19f993b7206361b779eff474285ffdd8c6a",
+  "fixture": "Actual native archive after deployed XBuilder model roundtrip. Initial camera follows Anchor to exercise viewport ownership. Test-only unclamped frame diagnostics observe all three naturally scheduled lightning variants. F4 freezes one exposure for screenshots only; functional timing assertions use the unfrozen cycle. Settings, reduced motion and start use real clicks and keys. Per-frame logging adds overhead. No online project overwritten.",
+  "browser": "156.0.8078.4",
+  "performance": {
+    "frames": 1312,
+    "p50": 16.666000708937645,
+    "p95": 16.66666753590107,
+    "p99": 16.66666753590107,
+    "over34": 1,
+    "poses": [
+      0
+    ],
+    "note": "Unclamped SPX waitNextFrame samples in actual native archive; debug logging adds overhead. This machine only."
+  },
+  "lightning": {
+    "costumes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "cycleStarts": [
+      2.8108278007060292,
+      13.753195328190923,
+      23.61946774788201
+    ],
+    "maximumExposure": 1.2999480552971363
+  }
+}

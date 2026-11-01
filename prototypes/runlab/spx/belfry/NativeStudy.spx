@@ -1,0 +1,126 @@
+// English-only rails. Aggregate on answers/restoration, never scan the bank per frame.
+var (
+ nativeStudyGoals []int
+ nativeStudyMetric []int
+ nativeStudyUnlocked []int
+ nativeStudyDays []int
+ nativeStudyValues []int
+ nativeStudyRecovery []int
+ nativeStudyRecall []int
+ nativeStudyReview []int
+ nativeStudyStreak int
+ nativeStudyPeak int
+ nativeStudyCount int
+ nativeStudyQueue []int
+ nativeStudyToast int
+ nativeStudyToastTime float64
+ nativeStudyOpen bool
+ nativeStudyPage int
+ nativeStudyReturn int
+ nativeStudyPaused bool
+ nativeStudyRunPaint int
+ nativeStudyBankPaint int
+ nativeStudyRunVisual float64
+ nativeStudyBankVisual float64
+ nativeStudyRevision int
+ nativeStudyTextSeen int
+)
+func initNativeStudy() {
+ nativeStudyGoals=[]int{1,10,30,100,300,1000,10,50,200,10,50,200,5,25,100,5,20,5,25,5,25,3,7,10}
+ nativeStudyMetric=[]int{0,0,0,0,0,0,1,1,1,2,2,2,3,3,3,4,4,5,5,6,6,7,7,8}
+ nativeStudyUnlocked=make([]int,24); nativeStudyDays=nil; nativeStudyPeak=0; nativeStudyStreak=0; nativeStudyCount=0
+ nativeStudyValues=make([]int,9); nativeStudyRecovery=make([]int,len(nativeWords)); nativeStudyRecall=make([]int,len(nativeWords)); nativeStudyReview=make([]int,len(nativeWords))
+ nativeStudyQueue=nil; nativeStudyToast=-1; nativeStudyToastTime=0; nativeStudyRunVisual=0; nativeStudyBankVisual=0; nativeStudyRevision++
+}
+func nativeStudySaved() map[string]any {return map[string]any{"schema":1,"unlocked":nativeStudyUnlocked,"days":nativeStudyDays,"peak":nativeStudyPeak}}
+func nativeStudyRestore(value any) bool {
+ if value==nil {return true}; m,ok:=value.(map[string]any); if !ok || nativeCloudInt(m,"schema")!=1 {return false}
+ flags,ok:=m["unlocked"].([]any); if !ok || len(flags)!=24 {return false}
+ for i,v:=range flags {n,valid:=v.(float64); if !valid || n<0 || n>1e12 || math.Trunc(n)!=n {return false}; nativeStudyUnlocked[i]=int(n)}
+ if m["days"]!=nil {days,valid:=m["days"].([]any); if !valid || len(days)>8000 {return false}; seen:=map[int]bool{}; for _,v:=range days {n,valid:=v.(float64); if !valid || n<0 || n>1000000 || math.Trunc(n)!=n || seen[int(n)] {return false}; seen[int(n)]=true; nativeStudyDays=append(nativeStudyDays,int(n))}}
+ peak,ok:=m["peak"].(float64); if !ok || peak<0 || peak>1e9 || math.Trunc(peak)!=peak {return false}; nativeStudyPeak=int(peak); return true
+}
+func nativeStudyLoadWord(i int,row map[string]any) bool {
+ for _,key:=range []string{"recovered","recall","review"} {if v,present:=row[key]; present {n,ok:=v.(float64); if !ok || n<0 || n>1e9 || math.Trunc(n)!=n || key=="recovered" && n>1 {return false}}}
+ nativeStudyRecovery[i]=nativeCloudInt(row,"recovered"); nativeStudyRecall[i]=nativeCloudInt(row,"recall"); nativeStudyReview[i]=nativeCloudInt(row,"review")
+ for k:=0;k<2;k++ {j:=i*2+k; if nativeLearnWrong[j]>0 && nativeLearnOutcome[j]==1 {nativeStudyRecovery[i]=1}}
+ nativeStudyAccumulate(i,1); return true
+}
+func nativeStudyAccumulate(i,sign int) {
+ a:=i*2; b:=a+1
+ nativeStudyValues[1]+=nativeLearnCorrect[a]*sign; nativeStudyValues[2]+=nativeLearnCorrect[b]*sign
+ if nativeLearnCorrect[a]>0 && nativeLearnCorrect[b]>0 {nativeStudyValues[3]+=sign}
+ nativeStudyValues[4]+=nativeStudyRecovery[i]*sign; nativeStudyValues[5]+=nativeStudyRecall[i]*sign; nativeStudyValues[6]+=nativeStudyReview[i]*sign
+}
+func nativeStudyEvaluate(notify bool) bool {
+ nativeStudyValues[0]=nativeLearnCorrectWords; nativeStudyValues[7]=len(nativeStudyDays); nativeStudyValues[8]=nativeStudyPeak
+ changed:=false; nativeStudyCount=0
+ for i,goal:=range nativeStudyGoals {if nativeStudyUnlocked[i]==0 && nativeStudyValues[nativeStudyMetric[i]]>=goal {nativeStudyUnlocked[i]=int(nativeLocalNow()); changed=true; if notify {nativeStudyQueue=append(nativeStudyQueue,i)}}; if nativeStudyUnlocked[i]>0 {nativeStudyCount++}}
+ nativeStudyRevision++; return changed
+}
+func nativeStudyAnswer(i,mode,result int,wasDue bool) {
+ j:=i*2+mode
+ if result==1 {
+  if nativeLearnWrong[j]>0 {nativeStudyRecovery[i]=1}
+  if mode==0 && nativeSpellingIndependent() {nativeStudyRecall[i]++}
+  if wasDue {nativeStudyReview[i]++}
+  nativeStudyStreak++; if nativeStudyStreak>nativeStudyPeak {nativeStudyPeak=nativeStudyStreak}
+ } else {nativeStudyStreak=0}
+ date:=js.Global().Get("Date").New(); day:=int(math.Floor((nativeLocalNow()-date.Call("getTimezoneOffset").Float()*60)/86400))
+ found:=false; for _,d:=range nativeStudyDays {if d==day {found=true}}; if result!=3 && !found && len(nativeStudyDays)<8000 {nativeStudyDays=append(nativeStudyDays,day)}
+ nativeStudyAccumulate(i,1); nativeStudyEvaluate(true)
+}
+func nativeStudyRestored() {if nativeStudyEvaluate(false) {nativeLocalMark(-1)}}
+func nativeStudyTopY() float64 {return 300-viewHeight/2+14}
+func nativeStudyBottomY() float64 {return 300+viewHeight/2-15}
+func nativeStudyToggle() {
+ if nativeStudyOpen {nativeStudyClose(); return}
+ nativeStudyOpen=true; nativeStudyPage=0; nativeStudyReturn=phase; nativeStudyPaused=wordVisualPaused
+ if phase==1 {phase=4}; if phase==5 {wordVisualPaused=true}
+ nativeCaptureHeld(); nativeStudyRevision++; nativePaintKnown=false; nativeTextMemoKnown=false; nativeHitMemoKnown=false; nativeLayerMemoKnown=false
+}
+func nativeStudyClose() {
+ if !nativeStudyOpen {return}; nativeStudyOpen=false; phase=nativeStudyReturn; wordVisualPaused=nativeStudyPaused
+ nativeCaptureHeld(); nativeInputLock=0.18; nativeStudyRevision++; nativePaintKnown=false; nativeTextMemoKnown=false; nativeHitMemoKnown=false; nativeLayerMemoKnown=false
+}
+func nativeStudyTurn(delta int) {if !nativeStudyOpen {return}; nativeStudyPage=int(clamp(float64(nativeStudyPage+delta),0,5)); nativeStudyRevision++; nativeTextMemoKnown=false}
+func nativeStudyActionAt(x,y float64) int {
+ if x>=34 && x<=220 && math.Abs(y-nativeStudyTopY())<=13 {return 38}
+ if !nativeStudyOpen {return 0}
+ if x>=794 && x<=830 && y>=80 && y<=119 {return 41}
+ if x>=608 && x<=700 && y>=500 && y<=536 {return 39}
+ if x>=712 && x<=812 && y>=500 && y<=536 {return 40}
+ return 0
+}
+// Static serif numerals share the existing glyph atlas, without QTE motion.
+func nativeStudyNumber(s string,center,y,size float64) {
+ x:=center-nativeTextWidth(s,size,1)/2
+ for _,c:=range s {
+  if nativeTextCount>=160 {return}; g:=nativeFocusGlyph(c,1)
+  if c!=' ' {n:=nativeTextCount; nativeTextGlyph[n]=g; nativeTextSize[n]=size/20; nativeTextFocus[n]=false; nativeTextX[n]=x+nativeGlyphAdvance[g]*size/2; nativeTextY[n]=y-size*0.4; nativeTextCount++}
+  x+=nativeGlyphAdvance[g]*size
+ }
+}
+func nativeStudyDraw() {
+ nativeStudyNumber(fmt.Sprintf("%02d / 24",nativeStudyCount),721,123,21)
+ nativeStudyNumber(fmt.Sprint(nativeStudyPage+1," / 6"),480,520,10)
+ for slot:=0;slot<4;slot++ {i:=nativeStudyPage*4+slot; x:=230+float64(slot)*166
+  value:=nativeStudyValues[nativeStudyMetric[i]]; goal:=nativeStudyGoals[i]; if value>goal || nativeStudyUnlocked[i]>0 {value=goal}
+  nativeStudyNumber(fmt.Sprint(value," / ",goal),x,436,17)
+ }
+ status:="本机学习档案"; if nativeLocalBypass || !nativeLocalEnabled {status="临时记录 · 关闭后不保留"} else if nativeLocalFailed {status="存储异常 · 当前进度尚未保存"}
+ nativeText(status,154,520,11)
+}
+func updateNativeStudy(dt float64) {
+ if nativeStudyToastTime>0 && !nativeStudyOpen {nativeStudyToastTime=math.Max(0,nativeStudyToastTime-dt)}
+ if nativeStudyToastTime<=0 {nativeStudyToast=-1; if len(nativeStudyQueue)>0 {nativeStudyToast=nativeStudyQueue[0]; nativeStudyQueue=nativeStudyQueue[1:]; nativeStudyToastTime=3.4}}
+ run:=nativeCompleted(); if wordMode==0 || practice!=0 {run=0}
+ target:=float64(run)/30; if target<nativeStudyRunVisual {nativeStudyRunVisual=target}; nativeStudyRunVisual+=(target-nativeStudyRunVisual)*math.Min(1,dt*9)
+ nativeStudyBankVisual+=(float64(nativeLearnCorrectWords)/float64(len(nativeWords))-nativeStudyBankVisual)*math.Min(1,dt*7)
+ nativeStudyRunPaint=int(clamp(math.Floor(nativeStudyRunVisual*100+0.5),0,100)); nativeStudyBankPaint=int(clamp(math.Floor(nativeStudyBankVisual*100+0.5),0,100))
+ NativeStudyPanel.syncUI(); NativeStudyCard0.syncUI(); NativeStudyCard1.syncUI(); NativeStudyCard2.syncUI(); NativeStudyCard3.syncUI()
+ NativeStudyMeter0.syncUI(); NativeStudyMeter1.syncUI(); NativeStudyMeter2.syncUI(); NativeStudyMeter3.syncUI()
+ if nativeStudyOpen {nativePaintText()}
+ NativeStudyTop.syncUI(); NativeStudyBottom.syncUI(); NativeStudyRun.syncUI(); NativeStudyBank.syncUI(); NativeStudyToast.syncUI(); NativeStudyRunCount.syncUI()
+ NativeStudyDigit0.syncUI(); NativeStudyDigit1.syncUI(); NativeStudyDigit2.syncUI(); NativeStudyDigit3.syncUI()
+}

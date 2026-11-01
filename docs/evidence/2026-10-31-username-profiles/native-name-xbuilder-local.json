@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-31T12:17:26.027Z",
+  "runtime": "XBuilder cached compiler/resources with model roundtrip",
+  "storage": "local-files",
+  "identity": "actual runtime username selector, unverified; no pre-signed game sessions injected",
+  "archiveSha256": "3858238feadab19c3ad4ff06d7981bdb5eccf1c769b44e5e8a7c48a6c8a0e399",
+  "cases": [
+    "empty runtime username stays guest without a session request",
+    "mid-run username arrival and R keep guest ownership; title automatically opens name profile",
+    "same normalized name and token refresh keep deck without preparing it again",
+    "actual username session saves both abilities through normal native HTTP",
+    "rename takes effect at title, preserves old name archive and starts a separate new profile",
+    "late username-session response cannot attach a previous name",
+    "G stays guest, N reconnects, and runtime logout stops using the named profile",
+    "new runtime with the same username restores cloud history after explicit writer takeover",
+    "temporary name-session failure retries without starting on the previous profile"
+  ],
+  "errors": [],
+  "complete": true
+}

@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-27",
+  "archiveBytes": 113069739,
+  "archiveSha256": "4d1aa4da38ca3ccdebae50351624eab20a54358cadba8b8d9efac0e2b2f9ab40",
+  "baselineArchiveSha256": "2acbe97a7e0d98fa0c8f11c4897d37b658b4933f5e555505f2593011ee3c02d3",
+  "entries": 4728,
+  "crc": "passed",
+  "changed": [
+    "assets/sounds/BGM_Menu/sound.mp3",
+    "native-music-manifest.json"
+  ],
+  "menuFileMatchesWebAsset": true,
+  "menuSha256": "1e52bde9deb32b1aab99b121630d972dd4287e539dc23a100776e874a89dadb2",
+  "allOtherGameFilesUnchanged": true,
+  "sourcePreserved": true,
+  "trimSeconds": 5,
+  "tracks": [
+    {
+      "stage": "menu",
+      "artist": "Sea Power",
+      "title": "Red Rock Riviera",
+      "file": "/audio/music/red-rock-riviera-trim5.mp3",
+      "sourceFilename": "Sea Power - Red Rock Riviera.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 408.493311,
+      "bytes": 16342397,
+      "sha256": "1e52bde9deb32b1aab99b121630d972dd4287e539dc23a100776e874a89dadb2",
+      "sourceSha256": "65e0b2456c0f3192595ae85ea6b87b5ada59a1a6017973abfa90935c04bba6aa",
+      "sourceDurationSeconds": 413.505306,
+      "edit": {
+        "trimStartSeconds": 5,
+        "trimStartSamples": 220500,
+        "sampleRate": 44100,
+        "channels": 2,
+        "codec": "libmp3lame",
+        "bitrate": "320k",
+        "filter": "atrim=start_sample=220500,asetpts=PTS-STARTPTS",
+        "originalPreserved": true
+      }
+    },
+    {
+      "stage": "gameplay",
+      "artist": "Sea Power",
+      "title": "Melancholy Of The Boot",
+      "file": "/audio/music/menu.mp3",
+      "sourceFilename": "Sea Power - Melancholy Of The Boot.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 262.099592,
+      "bytes": 10609826,
+      "sha256": "5322690efba8f3581b0879e3bcb65d4f3d4b4c5c85025b14191bd676ba04bddb"
+    },
+    {
+      "stage": "ending",
+      "artist": "Sea Power",
+      "title": "Strange Sports",
+      "file": "/audio/music/ending.mp3",
+      "sourceFilename": "Sea Power - Strange Sports.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 195.40898,
+      "bytes": 7942185,
+      "sha256": "8281281fcf5bd8d8adb9c75d89b3779f2f22e21cbf3d3d1622697eaa6cdd3d5a"
+    }
+  ],
+  "checks": {
+    "web-music": 17,
+    "native-audio": 15
+  },
+  "checksPassed": 32
+}

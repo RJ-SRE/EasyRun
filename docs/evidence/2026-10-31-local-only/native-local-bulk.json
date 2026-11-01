@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-31T16:11:59.235Z",
+  "runtime": "XBuilder cached compiler/resources",
+  "storage": "real browser IndexedDB, no cloud",
+  "archiveSha256": "5a46f00b261909deeecdbb830829864a13dbe3e6191b9fb2b9913a8439e3aba1",
+  "cases": [
+    "500 learned words across many decks restore in bounded frame batches with no retained IDB callbacks"
+  ],
+  "errors": [],
+  "networkCalls": [],
+  "complete": true,
+  "bulkRestore": {
+    "rows": 500,
+    "coldGameBootAndRestoreMs": 14531,
+    "scope": "synthetic fixture; not a frame-time benchmark"
+  }
+}

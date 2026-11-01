@@ -94,14 +94,14 @@ try {
   assert((await snapshot()).events.some((e) => e.name === "armor"));
   await pass("frontal J chain cannot erase the plate guard");
   await setup("F8");
-  await page.keyboard.press("q", { delay: 80 });
+  await page.keyboard.press("p", { delay: 80 });
   await wait(() => runEvents.some((e) => e.name === "chainfinish"));
   assert.equal((await snapshot()).f[7].hp, 20);
   await pass("a stationary ultimate cannot bypass intact frontal plate armor");
   await setup("F8");
-  await page.keyboard.down("e");
+  await page.keyboard.down("o");
   await wait(() => runEvents.some((e) => e.name === "armor"));
-  await page.keyboard.up("e");
+  await page.keyboard.up("o");
   assert.equal((await snapshot()).f[7].hp, 20);
   assert.equal((await snapshot()).f[7].stun, 0);
   await pass(
@@ -154,9 +154,9 @@ try {
   );
   await setup("F10");
   await wait(() => foes[8]?.state === 1 && foes[8]?.clock > 0.53);
-  await page.keyboard.down("Space");
+  await page.keyboard.down("w");
   await wait(() => foes[8]?.state === 2);
-  await page.keyboard.up("Space");
+  await page.keyboard.up("w");
   assert.equal((await snapshot()).s.health, baseline);
   await pass("jumping the committed low pounce avoids damage");
   await setup("F8");

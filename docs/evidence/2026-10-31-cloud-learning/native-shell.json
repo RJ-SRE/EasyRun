@@ -1,0 +1,406 @@
+{
+  "date": "2026-10-31T08:41:50.284Z",
+  "initialFollow": "Anchor",
+  "runtime": "pinned npm runtime",
+  "cases": [
+    "native boot stays on the title screen; no run starts or combat time advances before an explicit start",
+    "native difficulty cards are clickable and select Veteran",
+    "title music button toggles the native player",
+    "help opens before play; gameplay shortcuts are isolated; Enter closes help without starting a run",
+    "start button enters actual gameplay with the selected health and hides the title",
+    "camera owns its authored center after boot even if imported configuration follows the hidden Anchor sprite",
+    "gameplay guide/pause/music buttons and hit regions are absent; H and B remain functional",
+    "runtime reacquires camera ownership after an external follow target is restored",
+    "deep-room camera movement and restart recover the intended world position without losing UI alignment",
+    "pause freezes play; help returns to pause; resume and return-to-title work with mouse and keys",
+    "practice can be entered from title; returning and keyboard-starting Traveler applies 8 health",
+    "defeat offers checkpoint retry; victory and return-to-title menus are visible and actionable",
+    "live resize covers 4:3, screenshot-sized, 16:9, ultrawide, portrait and return; thin dark edges fade into scenery while the safe UI field and real click mapping stay intact",
+    "1125x844 window on a 2x display fits, starts and accepts real jump input with centered camera",
+    "native ledger opens after a 2x-display boot, keeps all text inside the frame, and returns to gameplay; victory ledger preserves the result screen"
+  ],
+  "sizes": [
+    {
+      "width": 480,
+      "height": 360,
+      "worldWidth": 960,
+      "worldHeight": 720,
+      "zoom": 0.3
+    },
+    {
+      "width": 1125,
+      "height": 844,
+      "worldWidth": 960,
+      "worldHeight": 720.21337890625,
+      "zoom": 0.703125
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "worldWidth": 1066.6666259765625,
+      "worldHeight": 600,
+      "zoom": 0.7200000286102295
+    },
+    {
+      "width": 1440,
+      "height": 600,
+      "worldWidth": 1440,
+      "worldHeight": 600,
+      "zoom": 0.6
+    },
+    {
+      "width": 600,
+      "height": 900,
+      "worldWidth": 960.0000610351562,
+      "worldHeight": 1440.0001220703125,
+      "zoom": 0.375
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "worldWidth": 959.9998779296875,
+      "worldHeight": 599.9999389648438,
+      "zoom": 0.6000000715255737
+    }
+  ],
+  "errors": [],
+  "archiveSha256": "3122ff978d4bdf4d1aa9548d3594426dd8e1b0aab7bf9d2684ae3bc401dc2fe9",
+  "fixture": "Actual native archive without the web host. F8/F9 select only win/death; F6 moves to a deep room; F7 injects a stale Anchor follow target. Initial config follows Anchor to reproduce an editor-saved follow target. Resize checks use the exported 480x360 run config, matching Builder; a second boot simulates 960x600. No online project overwritten.",
+  "browser": "156.0.8078.4",
+  "cameraAtStart": [
+    479.9999694824219,
+    -81.73515319824219,
+    960,
+    600,
+    0.6,
+    7,
+    7
+  ],
+  "roundtrip": null,
+  "edgeSamples": [
+    {
+      "name": "title-480x360",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 15,
+          "meanLuminance": 8.07139375
+        },
+        {
+          "colors": 160,
+          "meanLuminance": 29.07439791666667
+        },
+        {
+          "colors": 170,
+          "meanLuminance": 28.088026041666662
+        },
+        {
+          "colors": 24,
+          "meanLuminance": 8.091991666666685
+        }
+      ]
+    },
+    {
+      "name": "game-480x360",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 21,
+          "meanLuminance": 9.880187500000018
+        },
+        {
+          "colors": 146,
+          "meanLuminance": 59.29533541666668
+        },
+        {
+          "colors": 81,
+          "meanLuminance": 32.96050833333333
+        },
+        {
+          "colors": 11,
+          "meanLuminance": 8.360055208333348
+        }
+      ]
+    },
+    {
+      "name": "title-1125x844",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 18,
+          "meanLuminance": 7.7454878048780795
+        },
+        {
+          "colors": 273,
+          "meanLuminance": 27.63436407982263
+        },
+        {
+          "colors": 323,
+          "meanLuminance": 26.275143237250564
+        },
+        {
+          "colors": 24,
+          "meanLuminance": 8.045668292682972
+        }
+      ]
+    },
+    {
+      "name": "game-1125x844",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 26,
+          "meanLuminance": 9.554229711751686
+        },
+        {
+          "colors": 292,
+          "meanLuminance": 55.38936541019953
+        },
+        {
+          "colors": 117,
+          "meanLuminance": 30.66138713968963
+        },
+        {
+          "colors": 8,
+          "meanLuminance": 8.31732638580938
+        }
+      ]
+    },
+    {
+      "name": "title-1280x720",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 19,
+          "meanLuminance": 7.75631953125004
+        },
+        {
+          "colors": 290,
+          "meanLuminance": 27.83792929687502
+        },
+        {
+          "colors": 346,
+          "meanLuminance": 25.280885937499963
+        },
+        {
+          "colors": 26,
+          "meanLuminance": 8.123934375000042
+        }
+      ]
+    },
+    {
+      "name": "game-1280x720",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 31,
+          "meanLuminance": 9.037875390625024
+        },
+        {
+          "colors": 360,
+          "meanLuminance": 49.50960859374995
+        },
+        {
+          "colors": 213,
+          "meanLuminance": 31.914439453125027
+        },
+        {
+          "colors": 13,
+          "meanLuminance": 8.27678164062506
+        }
+      ]
+    },
+    {
+      "name": "title-1440x600",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 17,
+          "meanLuminance": 7.827517708333344
+        },
+        {
+          "colors": 333,
+          "meanLuminance": 29.168743750000008
+        },
+        {
+          "colors": 397,
+          "meanLuminance": 31.39388576388886
+        },
+        {
+          "colors": 29,
+          "meanLuminance": 8.596086458333327
+        }
+      ]
+    },
+    {
+      "name": "game-1440x600",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 26,
+          "meanLuminance": 8.912136458333343
+        },
+        {
+          "colors": 403,
+          "meanLuminance": 48.5248461805555
+        },
+        {
+          "colors": 242,
+          "meanLuminance": 30.927803819444453
+        },
+        {
+          "colors": 13,
+          "meanLuminance": 8.523552777777784
+        }
+      ]
+    },
+    {
+      "name": "title-600x900",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 12,
+          "meanLuminance": 7.2839875000000225
+        },
+        {
+          "colors": 161,
+          "meanLuminance": 18.24424500000001
+        },
+        {
+          "colors": 160,
+          "meanLuminance": 16.785044999999986
+        },
+        {
+          "colors": 5,
+          "meanLuminance": 7.447119166666698
+        }
+      ]
+    },
+    {
+      "name": "game-600x900",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 13,
+          "meanLuminance": 9.724760833333354
+        },
+        {
+          "colors": 146,
+          "meanLuminance": 64.3006208333333
+        },
+        {
+          "colors": 68,
+          "meanLuminance": 31.669360833333347
+        },
+        {
+          "colors": 18,
+          "meanLuminance": 8.398281666666673
+        }
+      ]
+    },
+    {
+      "name": "title-960x600",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 17,
+          "meanLuminance": 7.813018750000027
+        },
+        {
+          "colors": 261,
+          "meanLuminance": 28.553719270833323
+        },
+        {
+          "colors": 268,
+          "meanLuminance": 23.35577812499996
+        },
+        {
+          "colors": 21,
+          "meanLuminance": 8.01632656250004
+        }
+      ]
+    },
+    {
+      "name": "game-960x600",
+      "sampledRows": [
+        0.001,
+        0.02,
+        0.98,
+        0.999
+      ],
+      "edges": [
+        {
+          "colors": 25,
+          "meanLuminance": 9.1769276041667
+        },
+        {
+          "colors": 282,
+          "meanLuminance": 54.423484895833376
+        },
+        {
+          "colors": 145,
+          "meanLuminance": 31.070425520833307
+        },
+        {
+          "colors": 8,
+          "meanLuminance": 8.398484895833386
+        }
+      ]
+    }
+  ]
+}

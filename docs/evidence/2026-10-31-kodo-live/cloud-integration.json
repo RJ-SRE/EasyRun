@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-31T11:42:17.939Z",
+  "storage": "real-private-kodo",
+  "bucket": "easyrun",
+  "prefix": "rupture/learning-tests/1793446937938-0d077401b9cfe85b/users",
+  "identity": "temporary test verifier; not XBuilder production auth",
+  "cases": [
+    "private bucket permission verified before service startup",
+    "real HTTP prepares 30 unique words and creates private Kodo profile",
+    "unsigned source download cannot read test profile",
+    "spelling and meaning evidence survives uncached HTTPS cloud read with ETag verification",
+    "fresh repository recovers uncertain real upload; duplicate batch counts victory exactly once",
+    "rename retains cloud profile; different stable id reusing old name remains isolated",
+    "insert-only collision cannot overwrite an existing cloud profile"
+  ],
+  "samples": [
+    {
+      "operation": "bucket-check",
+      "status": 200,
+      "ms": 356
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 518
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 526
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 131
+    },
+    {
+      "operation": "upload",
+      "status": 200,
+      "ms": 359
+    },
+    {
+      "operation": "bucket-check",
+      "status": 200,
+      "ms": 438
+    },
+    {
+      "operation": "stat",
+      "status": 200,
+      "ms": 572
+    },
+    {
+      "operation": "download",
+      "status": 200,
+      "ms": 1030
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 973
+    },
+    {
+      "operation": "stat",
+      "status": 612,
+      "ms": 318
+    }
+  ],
+  "complete": true,
+  "anonymousReadStatus": 401,
+  "lastHTTPError": {
+    "path": "/v1/batches",
+    "code": "SERVICE_UNAVAILABLE",
+    "name": "Error"
+  },
+  "cleanup": {
+    "deleted": 1,
+    "verifiedAbsent": true,
+    "prefix": "rupture/learning-tests/1793446937938-0d077401b9cfe85b/users"
+  }
+}

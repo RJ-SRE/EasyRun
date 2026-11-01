@@ -1,0 +1,25 @@
+{
+  "version": "0.16.4",
+  "date": "2026-10-30",
+  "file": "EasyRun-XBuilder-v0.16.4-combat-hud.xbp",
+  "bytes": 134897276,
+  "zipEntries": 5079,
+  "sha256": "9dd066c79481a8c7e9ff2bb619e0fba501d6e4f9b7bc515dc6243a6dbe70f08e",
+  "zipCrc": "pass",
+  "source": "/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/exports/belfry.xbp",
+  "desktop": "/Users/rj/Desktop/EasyRun-XBuilder-v0.16.4-combat-hud.xbp",
+  "newOriginalHudSprites": 4,
+  "worldCloneSlots": 121,
+  "glyphPoolLimit": 160,
+  "observedCombinedClonePeak": 246,
+  "testFixturePresent": false,
+  "unchangedNonNativeMedia": {
+    ".png": 435,
+    ".mp3": 3,
+    ".wav": 16
+  },
+  "changedNonNativeMedia": [],
+  "nativeChecks": 49,
+  "converterUnitTests": 4,
+  "remotePushed": false
+}

@@ -1,0 +1,28 @@
+{
+  "version": "0.16.9",
+  "date": "2026-10-31",
+  "file": "EasyRun-XBuilder-v0.16.9-soft-frame.xbp",
+  "bytes": 134543808,
+  "zipEntries": 5062,
+  "sha256": "3da54eea67441f7053a33becbd5b84648b6d39c6c582493657220142600e18a8",
+  "crc": "pass",
+  "checksPassed": {
+    "native-shell": 15,
+    "web-menu": 5
+  },
+  "identicalAudioFiles": 19,
+  "existingPngFilesUnchanged": true,
+  "addedArchiveEntries": [
+    "NativeFrameBottom.spx",
+    "NativeFrameTop.spx",
+    "assets/sprites/NativeFrameBottom/frame-bottom.png",
+    "assets/sprites/NativeFrameBottom/index.json",
+    "assets/sprites/NativeFrameTop/frame-top.png",
+    "assets/sprites/NativeFrameTop/index.json"
+  ],
+  "changedArchiveEntries": [
+    "NativeLogic.spx",
+    "assets/index.json"
+  ],
+  "remotePushed": false
+}

@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-28T11:19:51.607Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "initialFollow": "Anchor",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "Original hero pose and anchored pixels stay fixed; only cape/water frames cycle, camera and clone count stable, zero combat FX",
+    "settings keep hero pose fixed without blocking the controls",
+    "reduced motion freezes environmental clock and rests the hero",
+    "reduced-motion start enters gameplay without the departure delay",
+    "start enters gameplay immediately; menu layers disappear in gameplay"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "062cb82fd6df3939c6ae3c2c8e7d361f1badbcd0f503f51364ac6e3f9c8aae67",
+  "fixture": "Actual native archive after deployed XBuilder model roundtrip. Initial camera follows Anchor to exercise viewport ownership. Test-only unclamped waitNextFrame diagnostics sample a 9-second stillwater cycle; settings, reduced motion, start and skip use real clicks and keys. Per-frame diagnostic logging adds overhead. No online project overwritten.",
+  "browser": "156.0.8078.4",
+  "performance": {
+    "frames": 540,
+    "p50": 16.66666753590107,
+    "p95": 16.66666753590107,
+    "p99": 16.66666753590107,
+    "over34": 0,
+    "poses": [
+      0
+    ],
+    "note": "Unclamped SPX waitNextFrame samples in actual native archive; debug logging adds overhead. This machine only."
+  }
+}

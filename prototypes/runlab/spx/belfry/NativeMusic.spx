@@ -1,0 +1,53 @@
+// Included only in the standalone XBuilder export. The web host owns its music.
+var (
+ nativeMusicTrack string
+ nativeMusicPaused bool
+ nativeMusicMuted bool
+ nativeMusicVolume int
+ nativeSfxVolume int
+ nativeSfxTime float64
+)
+func updateNativeMusic() {
+ NativeBgm.syncChannel()
+ NativeSfx.syncChannel()
+ next:=nativeMusicTrack
+ if phase==0 {next="BGM_Menu"}
+ if phase==1 || phase==5 {next="BGM_Gameplay"}
+ if phase==2 || phase==3 {next="BGM_Ending"}
+ if next=="" {next="BGM_Menu"}
+ if next!=nativeMusicTrack {
+  if nativeMusicTrack!="" {NativeBgm.stopPlaying nativeMusicTrack}
+  nativeMusicTrack=next; nativeMusicPaused=false
+  NativeBgm.startTrack(nativeMusicTrack)
+  println "@nativeMusic",nativeMusicTrack,"playing"
+ }
+ // A ledger opened during play freezes combat, not the soundtrack. A ledger
+ // opened from an explicit pause must preserve that pause and any mute setting.
+ ledgerReading:=nativePreview && nativeLedgerReturn==1
+ studyReading:=nativeStudyOpen && (nativeStudyReturn==1 || nativeStudyReturn==5 && !nativeStudyPaused)
+ paused:=(phase==4 && !ledgerReading && !studyReading) || nativeMusicMuted || nativeMusicVolume==0 || (phase==5 && wordVisualPaused && !studyReading)
+ if paused!=nativeMusicPaused {
+  nativeMusicPaused=paused
+  if paused {NativeBgm.pausePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"paused"} else {NativeBgm.resumePlaying nativeMusicTrack; println "@nativeMusic",nativeMusicTrack,"playing"}
+ }
+}
+
+// Run after fitViewport so both owners use this frame's actual camera center.
+func syncNativeAudioPosition() {NativeBgm.pinToCamera(); NativeSfx.pinToCamera()}
+
+func nativeSoundEvent(name string) {
+ if name=="start" {nativeStartWords()}
+ if name=="menu" && nativeDeckUsed {nativeShuffleDeck()}
+ if phase!=1 || nativeSfxVolume<=0 || float64(timer)-nativeSfxTime<0.045 {return}
+ cue:=""
+ if name=="light1" || name=="light2" || name=="finisher" || name=="aircut" || name=="launcher" {cue="blade"}
+ if name=="heavy" {cue="heavycut"}
+ if name=="bowdraw" {cue="bowdraw"}; if name=="bowshot" {cue="bowshot"}; if name=="arrowhit" {cue="arrowhit"}
+ if name=="keepermend" {cue="healstart"}; if name=="keepermendbreak" {cue="chainfinish"}
+ if name=="healstart" {cue="healstart"}; if name=="healcomplete" {cue="healcomplete"}
+ if name=="swordcut" {cue="chaincut"}; if name=="chainfinish" {cue="chainfinish"}
+ if name=="hook" {cue="hook"}; if name=="hookattach" {cue="attach"}; if name=="sling" {cue="sling"}
+ if name=="dash" {cue="dash"}; if name=="land" || name=="hardland" {cue="land"}
+ if name=="jump" || name=="wordok" || name=="wordmiss" {cue="cloth"}
+ if cue!="" {nativeSfxTime=float64(timer); NativeSfx.cue("SFX_"+cue); println "@nativeSfx",cue,nativeSfxVolume}
+}

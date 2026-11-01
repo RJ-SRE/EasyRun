@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-26T09:48:09.860Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "native boot stays on the title screen; no run starts or combat time advances before an explicit start",
+    "native difficulty cards are clickable and select Veteran",
+    "title music button toggles the native player",
+    "help opens before play; gameplay shortcuts are isolated; Enter closes help without starting a run",
+    "start button enters actual gameplay with the selected health and hides the title",
+    "camera owns its authored center after boot even if imported configuration follows the hidden Anchor sprite",
+    "gameplay guide/pause/music buttons and hit regions are absent; H and B remain functional",
+    "runtime reacquires camera ownership after an external follow target is restored",
+    "deep-room camera movement and restart recover the intended world position without losing UI alignment",
+    "pause freezes play; help returns to pause; resume and return-to-title work with mouse and keys",
+    "practice can be entered from title; returning and keyboard-starting Traveler applies 8 health",
+    "defeat offers checkpoint retry; victory and return-to-title menus are visible and actionable",
+    "live resize covers small 4:3, 16:9, ultrawide, portrait and return; entire 960x600 field fits with matching aspect and correct click mapping"
+  ],
+  "sizes": [
+    {
+      "width": 480,
+      "height": 360,
+      "worldWidth": 960,
+      "worldHeight": 720,
+      "zoom": 0.3
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "worldWidth": 1066.6666259765625,
+      "worldHeight": 600,
+      "zoom": 0.7200000286102295
+    },
+    {
+      "width": 1440,
+      "height": 600,
+      "worldWidth": 1440,
+      "worldHeight": 600,
+      "zoom": 0.6
+    },
+    {
+      "width": 600,
+      "height": 900,
+      "worldWidth": 960.0000610351562,
+      "worldHeight": 1440.0001220703125,
+      "zoom": 0.375
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "worldWidth": 960,
+      "worldHeight": 600,
+      "zoom": 0.6
+    }
+  ],
+  "errors": [
+    "[Godot WASM Crashed]  Stack overflow! Stack cookie has been overwritten at 0x00483d70, expected hex dwords 0x89BACDFE and 0x2135467, but received 0x00000000 0x00000000",
+    "Aborted(Stack overflow! Stack cookie has been overwritten at 0x00483d70, expected hex dwords 0x89BACDFE and 0x2135467, but received 0x00000000 0x00000000)",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "memory access out of bounds",
+    "Engine re-init failed: TypeError: Cannot read properties of null (reading 'deleteDirFS')\n    at Engine.unpackEngineData (http://127.0.0.1:4177/runtime/engine.js:861:15)\n    at GameApp.unpackEngineData (http://127.0.0.1:4177/runtime/game.js:466:20)\n    at async TimeProfiler.profile (http://127.0.0.1:4177/runtime/engine.js:684:46)\n    at async GameApp.initEngine (http://127.0.0.1:4177/runtime/game.js:279:9)",
+    "page.waitForFunction: Timeout 90000ms exceeded.\n    at boot (/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/test-belfry-native-shell.mjs:186:14)\n    at async file:///Users/rj/.codex/worktrees/inscription-integration/%E4%B8%83%E7%89%9B%E9%BB%91%E5%AE%A2%E6%9D%BE/prototypes/runlab/test-belfry-native-shell.mjs:407:3"
+  ],
+  "archiveSha256": "1ddf52244c2c52936aff526ed0bdfa5a4f9cc9f00ed1fc128d7ba7adb8c619f8",
+  "fixture": "Actual native archive without the web host. F8/F9 select only win/death; F6 moves to a deep room; F7 injects a stale Anchor follow target. Initial config also follows Anchor to reproduce the reported offset. Resize checks use the exported 480x360 run config, matching Builder; a second boot simulates 960x600. No online project overwritten.",
+  "browser": "156.0.8078.4",
+  "cameraAtStart": [
+    479.99993896484375,
+    -83.73687744140625,
+    960,
+    600,
+    0.6
+  ],
+  "roundtrip": {
+    "run": {
+      "width": 480,
+      "height": 360
+    },
+    "camera": {
+      "on": "Anchor"
+    },
+    "map": {
+      "width": 4000,
+      "height": 26380,
+      "mode": "fillRatio"
+    }
+  },
+  "diagnostics": {
+    "state": [],
+    "ui": [],
+    "errors": []
+  }
+}

@@ -1,8 +1,8 @@
 # 本地运行、维护与交接手册
 
-> 当前工作版本为 [v0.10 猎战重构](HUNT_V10.md)，交付分支 `main`。新增 `game:test:hunt` 检查地图、敌人与迁移；`game:test:scene` 检查当前猎战地图；`game:test:expedition` 检查当前真实按键路线。历史机关专项保留源码但退出默认测试。开发预览仍在本机 4184，实际端口可由 `RUNLAB_PORT` 指定。
+> 当前完整版本为 `main` 上的 v0.22.2-local.1，包含原生 `.xbp` 菜单、3,816 词库、本地学习档案、24 项英语成就及档案清除。当前交付范围见 [项目首页](../README.md)、[原生版说明](XBUILDER_NATIVE.md) 与 [档案清除](LOCAL_RESET_V222.md)。
 
-适用：`main` 的倒悬钟城 v0.10（已合入猎战重构、十五房、铭文、成就与场景音乐）。更新：2026-10-25。以下命令都从仓库根目录执行；Windows 原生脚本和跨平台兼容性尚未验收。
+适用：当前主分支。更新：2026-11-01。以下命令从仓库根目录执行；开发服务默认本机 4177，使用 `RUNLAB_PORT` 可调整。下文历史测试命令按各自版本理解，最新合并检查见 [合并记录](evidence/2026-11-01-main-integration/README.md)。Windows 原生脚本及跨平台表现尚未验收。
 
 ## 1. 环境与第一次启动
 
@@ -107,6 +107,10 @@ git diff --check
 bash scripts/with-env.sh node scripts/build-game.mjs
 python3 prototypes/runlab/package.py
 
+# 只构建和打包当前 Belfry（内含三首完整背景音乐）
+bash scripts/with-env.sh node prototypes/runlab/build-belfry.mjs
+python3 prototypes/runlab/package.py --game belfry
+
 # 独立通道另行打包
 bash scripts/with-env.sh node prototypes/runlab/build-passages.mjs
 python3 prototypes/runlab/passages-package.py
@@ -114,7 +118,7 @@ python3 prototypes/runlab/passages-package.py
 
 输出在 `prototypes/runlab/exports/`。主打包生成 belfry / rupture / velocity / cinema 四个 `.xbp`，独立打包生成 passages。脚本验证 ZIP 与必要入口文件，不等于已经在完整 XBuilder 编辑器往返导入验证。
 
-配套网页提供中文界面、音频混音、铭文、成就和本机记录；这些不包含在单个 `.xbp`。没有正式线上部署产物或自动云同步。编辑器参考源码用 `bash scripts/setup-xbuilder-reference.sh` 按需安装，参考版本锁定于研究脚本，不替换运行库。
+Belfry `.xbp` 打包现在需要本机 ffmpeg 转码动作采样。已包含原生开始 / 难度 / 帮助 / 暂停 / 结算菜单、生命和技能 HUD，以及三首完整 MP3 与原生循环播放控制。原生菜单和窗口验收可运行 `RUNLAB_URL=http://127.0.0.1:4184/ bash scripts/with-env.sh pnpm game:test:native-shell`。导入后点击舞台或按 Enter 解锁声音；Esc 暂停 / 继续同步暂停 / 恢复音乐，B 开关背景音乐。新增原生铭文词册、拼写 / 辨义与音乐 / 动作独立滑条；运行内错词权重不跨重新运行保存。网页的完整战斗信息面板、跨日记忆、成就和本机持久记录仍由网页提供。原生菜单 / 窗口适配的范围和导入步骤见 [原生版说明](XBUILDER_NATIVE.md)。没有正式线上部署产物或自动云同步。编辑器参考源码用 `bash scripts/setup-xbuilder-reference.sh` 按需安装，参考版本锁定于研究脚本，不替换运行库。
 
 ## 6. 玩家记录与恢复
 

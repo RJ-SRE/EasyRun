@@ -1,0 +1,104 @@
+// Native field ledger: same information hierarchy as the web journal.
+// Pagination reserves the shared 300-clone budget; it never truncates a word.
+var (
+ nativeLedgerReturn int
+ nativeLedgerFilter int
+ nativeLedgerFilterOpen bool
+ nativeLedgerQuery string
+ nativeLedgerSearch bool
+ nativeLedgerMatches []int
+ nativeLedgerPages []int
+ nativeLedgerRevision int
+ nativeLedgerWon bool
+)
+func nativeLedgerScope(i int) bool {return nativeScope==3 || nativeLevels[i]==nativeScope+1}
+func nativeLedgerStatus(i int) int {
+ for n,v:=range nativeDeck {if v==i && nativeDone[n]==1 {if nativeLedgerWon {return 3}; return 2}}
+ if nativeWeak[i]>0 {return 1}; return 0
+}
+func nativeLedgerTally(group int) int {
+ value:=0; multiplier:=1
+ for n:=0;n<3;n++ {state:=nativeLedgerStatus(nativeDeck[group*3+n]); if state==3 {state=2}; value+=state*multiplier; multiplier*=3}
+ return value
+}
+func nativeLedgerMatch(i int) bool {
+ if nativeLedgerFilter==1 && !nativeLedgerScope(i) {return false}
+ if nativeLedgerFilter==1 && nativeLearningGroup(i)!=2 {return false}
+ return nativeLedgerQuery=="" || strings.Contains(nativeWords[i],nativeLedgerQuery)
+}
+func nativeFilterLedger() {
+ nativeLedgerMatches=[]int{}; nativeLedgerPages=[]int{0}; nativePreviewPage=0
+ if nativeLedgerFilter<=1 {
+  for _,i:=range nativeDeck {if nativeLedgerMatch(i) {nativeLedgerMatches=append(nativeLedgerMatches,i)}}
+ } else {for i:=0;i<len(nativeWords);i++ {if nativeLedgerMatch(i) {nativeLedgerMatches=append(nativeLedgerMatches,i)}}}
+ budget:=0; rows:=0
+ for n,i:=range nativeLedgerMatches {
+  cost:=len([]rune(nativeWords[i]+nativeMeanings[i]+nativeWordPOS[i]))+9
+  if rows>0 && (budget+cost>110 || rows==6) {nativeLedgerPages=append(nativeLedgerPages,n); budget=0; rows=0}
+  budget+=cost; rows++
+ }
+ nativeLedgerRevision++
+ println "@nativeLedger",nativeLedgerFilter,len(nativeLedgerMatches),len(nativeLedgerPages),nativePreviewPage,nativeLedgerQuery
+}
+func nativeOpenLedger() {
+ if nativePreview || nativeHelp || phase==5 {return}
+ nativeLedgerReturn=phase; if phase==1 {phase=4}
+ nativePreview=true; nativeLedgerFilter=0; nativeLedgerQuery=""; nativeLedgerSearch=false; nativeLedgerFilterOpen=false
+ nativeFilterLedger()
+}
+func nativeCloseLedger() {
+ if !nativePreview {return}
+ nativePreview=false; nativeLedgerSearch=false; nativeLedgerFilterOpen=false; phase=nativeLedgerReturn; nativeInputLock=0.18
+}
+func nativeLedgerPage(delta int) {
+ nativeLedgerFilterOpen=false
+ count:=len(nativeLedgerPages)
+ nativePreviewPage=int(clamp(float64(nativePreviewPage+delta),0,float64(count-1)))
+ nativeLedgerRevision++
+ println "@nativeLedgerPage",nativePreviewPage,count
+}
+func nativeLedgerType(s string) {
+ if !nativePreview || !nativeLedgerSearch || len(nativeLedgerQuery)>=20 {return}
+ nativeLedgerQuery+=s; nativeFilterLedger()
+}
+func nativeLedgerBackspace() {
+ if nativePreview && nativeLedgerSearch && len(nativeLedgerQuery)>0 {nativeLedgerQuery=nativeLedgerQuery[:len(nativeLedgerQuery)-1]; nativeFilterLedger()}
+}
+func nativeLedgerText(s string,x,y,size float64,font int) {
+ start:=nativeTextCount; nativeFocusText(s,x,y,size,font)
+ for n:=start;n<nativeTextCount;n++ {nativeTextFocus[n]=false}
+}
+func nativeLedgerMeaning(s string,x,y float64) {
+ line:=""; row:=0
+ for _,c:=range s {
+  if nativeTextWidth(line+string(c),11,0)>238 && line!="" {nativeLedgerText(line,x,y+float64(row)*13,11,0); row++; line=""}
+  line+=string(c)
+ }
+ nativeLedgerText(line,x,y+float64(row)*13,11,0)
+}
+func nativeDrawLedger() {
+ done:=nativeCompleted()
+ nativeLedgerText(fmt.Sprintf("%02d",done),269,132,13,2)
+ nativeLedgerText(fmt.Sprint(30-done),379,132,13,2)
+ filter:="本局 30 词"; if nativeLedgerFilter==1 {filter="本局薄弱"}; if nativeLedgerFilter==2 {filter="完整词库"}
+ nativeLedgerText(filter,215,209,11,0)
+ if nativeLedgerQuery!="" {nativeLedgerText(nativeLedgerQuery,390,209,12,1)}
+ nativeLedgerText(fmt.Sprint(len(nativeLedgerMatches)),278,241,11,2)
+ nativeLedgerText(fmt.Sprintf("%d / %d",nativePreviewPage+1,len(nativeLedgerPages)),530,531,11,2)
+ if len(nativeLedgerMatches)==0 {
+  nativeLedgerText("这里暂时没有词条。",305,330,15,0)
+  nativeLedgerText("试试其他关键词或词册范围。",305,358,12,0)
+  return
+ }
+ start:=nativeLedgerPages[nativePreviewPage]; end:=len(nativeLedgerMatches)
+ if nativePreviewPage+1<len(nativeLedgerPages) {end=nativeLedgerPages[nativePreviewPage+1]}
+ for n:=start;n<end;n++ {
+  i:=nativeLedgerMatches[n]; row:=(n-start)/2; column:=(n-start)%2
+  x:=226+float64(column)*282; y:=278+float64(row)*64
+  badge:="·"; state:=nativeLedgerStatus(i); if state==1 {badge="◐"}; if state==2 {badge="◆"}; if state==3 {badge="✦"}
+  nativeLedgerText(badge,x-20,y+9,12,0)
+  nativeLedgerText(nativeWords[i],x,y,16,1)
+  nativeLedgerMeaning(nativeWordPOS[i]+" "+nativeMeanings[i],x,y+19)
+  if nativeLedgerFilter<2 {nativeLedgerText("拼 "+nativeLearningBadge(i,0)+"  义 "+nativeLearningBadge(i,1),x,y+42,9,0)}
+ }
+}

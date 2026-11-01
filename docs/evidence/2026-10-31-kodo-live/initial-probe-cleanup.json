@@ -1,0 +1,15 @@
+{
+  "notes": "Initial live probes encountered network timeouts. These are their exact temporary namespaces; all are now empty.",
+  "result": [
+    {
+      "prefix": "rupture/learning-tests/1793446201092-2b0e165701e21601/users/",
+      "deleted": 0,
+      "verifiedAbsent": true
+    },
+    {
+      "prefix": "rupture/learning-tests/1793446645835-df55db52c0b8f66f/users/",
+      "deleted": 1,
+      "verifiedAbsent": true
+    }
+  ]
+}

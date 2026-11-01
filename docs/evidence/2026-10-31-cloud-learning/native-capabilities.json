@@ -1,0 +1,28 @@
+{
+  "runtime": "local pinned @xgo-pkgs/spx 3.3.0; not deployed XBuilder verification",
+  "results": [
+    {
+      "name": "json",
+      "messages": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "PROBE_JSON {\"v\":1} <nil>"
+      ],
+      "error": null
+    },
+    {
+      "name": "http",
+      "messages": [
+        "PROBE_HTTP_BEGIN",
+        "PROBE_HTTP_STATUS 200"
+      ],
+      "error": null
+    },
+    {
+      "name": "username",
+      "messages": [
+        "PROBE_USERNAME "
+      ],
+      "error": null
+    }
+  ]
+}

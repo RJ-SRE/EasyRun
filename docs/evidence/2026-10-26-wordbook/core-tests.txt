@@ -1,0 +1,18 @@
+✔ full source coverage, curated IDs, normalized variants and distinct options (27.037667ms)
+✔ all scope/difficulty combinations yield deterministic 30 unique eligible words (2062.537208ms)
+✔ balanced category quotas, all-new fallback, weak cap and weighted selection (743.125792ms)
+✔ preview, retry, new expedition and archived continuation have distinct lifecycles (31.303125ms)
+✔ per-skill history separates wrong, timeout, cancellation, assisted and independent answers (4.168375ms)
+✔ mastery requires independent spelling and meaning across three days; due and weakness decay (4.333917ms)
+✔ old content versions preserve history/pending run; invalid run rebuilds only journey (22.572667ms)
+✔ history import is non-destructive and idempotent, rejects malformed history before merge (8.182875ms)
+✔ all 30 words appear, spaced retries avoid hammering, further casts remain available (15.788084ms)
+✔ settlement is idempotent; allowances scale and punctuation is meaning only (3.754084ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3023.453125

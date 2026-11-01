@@ -62,11 +62,11 @@ try {
   await wait(() => latestState.phase === 1);
   assert.equal((await state()).maxHealth, 5);
   await save("start with chosen difficulty");
-  await page.keyboard.down("e");
+  await page.keyboard.down("o");
   await page.waitForTimeout(180);
   await tap("Escape");
   await wait(() => latestState.phase === 4);
-  await page.keyboard.up("e");
+  await page.keyboard.up("o");
   await page.waitForTimeout(160);
   const frozen = await state();
   await page.waitForTimeout(650);
@@ -105,7 +105,7 @@ try {
   assert.equal(gate.checkpoint, 5);
   for (let i = 0; i < 5; i++) {
     await page.keyboard.down("s");
-    await tap("Space");
+    await tap("w");
     await page.keyboard.up("s");
     const s = await state();
     assert.ok(s.y >= firstGate, "Elite exit cannot be dropped through");

@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-26T09:18:42.056690+00:00",
+  "version": "0.12.0",
+  "scope": "Local native .xbp menus, aspect-preserving viewport and regression checks. No remote push or live project upload.",
+  "checks": {
+    "native-shell": {
+      "passed": 10,
+      "report": "native-shell.json"
+    },
+    "native-music": {
+      "passed": 8,
+      "report": "native-music.json"
+    },
+    "scene": {
+      "passed": 35,
+      "report": "web-scene.json"
+    }
+  },
+  "totalChecks": 53,
+  "artifact": {
+    "path": "prototypes/runlab/exports/belfry.xbp",
+    "bytes": 92645315,
+    "sha256": "288cea63f138af8e980054376ac22ca29182535d6ab12a8e6aae7c597ec83506",
+    "entries": 551,
+    "nativeUiSprites": 14,
+    "extraUiClones": 0,
+    "musicTracks": 3,
+    "run": {
+      "width": 480,
+      "height": 360
+    },
+    "stretchMode": false,
+    "deliveryCopy": "EasyRun-XBuilder-v0.12.0-menu-fit.xbp"
+  },
+  "viewports": [
+    {
+      "width": 480,
+      "height": 360,
+      "worldWidth": 960,
+      "worldHeight": 720,
+      "zoom": 0.3
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "worldWidth": 1066.6666259765625,
+      "worldHeight": 600,
+      "zoom": 0.7200000286102295
+    },
+    {
+      "width": 1440,
+      "height": 600,
+      "worldWidth": 1440,
+      "worldHeight": 600,
+      "zoom": 0.6
+    },
+    {
+      "width": 600,
+      "height": 900,
+      "worldWidth": 960.0000610351562,
+      "worldHeight": 1440.0001220703125,
+      "zoom": 0.375
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "worldWidth": 959.9998779296875,
+      "worldHeight": 599.9999389648438,
+      "zoom": 0.6000000715255737
+    }
+  ],
+  "retina": {
+    "deviceScaleFactor": 2,
+    "verifiedBy": "assertion of window.devicePixelRatio, actual click/start/jump checks, 1920x1200 screenshot of a 960x600 page"
+  },
+  "sourceHashes": {
+    "prototypes/runlab/build-belfry.mjs": "b809e4a3933de003316fe34a14ae834e82c840356fdf7e631d122b78426ff443",
+    "prototypes/runlab/build-belfry-native.mjs": "e6f7c1139245c732e9c9597545d49cbb87575ab5f1b01441c9f7b0c973e734dc",
+    "prototypes/runlab/package.py": "fc06addc99216f6672a91c6d89330ff04b021439368d7338ee5b4cd22864a706",
+    "prototypes/runlab/spx/belfry/main.spx": "a31b1f47454d1fb0f25b3cd990fcd2cd2f510e5f5dfba79915538107a82b3dc3",
+    "prototypes/runlab/spx/belfry/Viewport.spx": "07f084d5d90e1393a9a737a9d21410772fe2564eeb1c1354fcf3409fa847b752",
+    "prototypes/runlab/spx/belfry/NativeShell.spx": "331fd23d9a26740cbdca0c800c1aff3c425fecf988bddd367a909a82d3701985",
+    "prototypes/runlab/spx/belfry/NativeBindings.spx": "64996244bde6cec2f70b79b88c3c38ac620cc0f122fa67bcf7eece7bf39184ae",
+    "prototypes/runlab/spx/belfry/NativeMusic.spx": "77e1ed51f3f3ecc6d1100ede601e9192baf8448a51ae5b15041f77b8166bc6ab",
+    "prototypes/runlab/test-belfry-native-shell.mjs": "5f70ad076a429f27a1479dfc43883ee51eb0212e55e6db5a7700321b559a8075",
+    "prototypes/runlab/test-belfry-native-music.mjs": "6a7bafe337d24919503c53d615df8dca0bfa9effbe1e1e06e448e724cbcefa53",
+    "prototypes/runlab/test-belfry-scene.mjs": "1076d60e8f7c7dfaf764f3e476ec9b1f0b00a5d98ee462f0908d02e11ea30a4c",
+    "prototypes/runlab/art/belfry/clockwell.png": "65dc9e7815716f37ce6d21b40386c80d97d2b222bf5d1c3b2f6ba840273a55a5"
+  },
+  "resolvedFindings": [
+    "XBuilder discards authored run dimensions and writes 480x360; native export now uses runtime camera fit and stretchMode:false, retained as a stage extraConfig.",
+    "Leaving practice previously retained practice=1, so title key 1 launched an encounter. Native return-to-title now clears practice.",
+    "Input automation now holds clicks/keys across engine frames instead of zero-duration synthetic input.",
+    "Legacy scene stress assumed no bow cooldown. It now rejects spam during cooldown and verifies 20 real accepted casts with production cooldown intact; response-only stress-player protection prevents unrelated damage interruptions."
+  ],
+  "limits": [
+    "No live x.qiniu.com editor import/save round trip, online fullscreen button or Safari/mobile validation.",
+    "Win/death menu checks use phase-only test fixtures. Scene traversal uses room fixtures and is not a full playthrough.",
+    "Native menu includes current playable action features; browser wordbook, achievements, storage and combat sound mixer remain in the web host.",
+    "Physical gameplay frames fit without cropping; portrait and unusual aspect ratios intentionally have dark margins."
+  ],
+  "staticChecks": [
+    "Targeted ESLint",
+    "Prettier for new scripts/config",
+    "Python AST parse",
+    "ZIP integrity and unchanged MP3 hashes",
+    "Current served web build SHA matches disk",
+    "Documentation link check",
+    "Git whitespace check"
+  ]
+}

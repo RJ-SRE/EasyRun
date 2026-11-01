@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { createServer } from "node:http";
 import {
   InscriptionBook,
   STORAGE_KEY,
@@ -18,7 +19,34 @@ const manifest = JSON.parse(
     "utf8",
   ),
 );
-const browser = await chromium.launch({ headless: true, channel: "chromium" });
+// Deliver the large game fixture over HTTP instead of a base64 CDP message;
+// the automation connection disconnected while fulfilling this 97 MB body.
+const fixture = JSON.parse(
+  await readFile(new URL("public/belfry.json", import.meta.url), "utf8"),
+);
+fixture["main.spx"] = fixture["main.spx"].replace(
+  "onKey KeyT",
+  `
+onKey KeyF8, => {phase=2; event("finish")}
+onKey KeyF9, => {health=0; phase=3; deaths++; event("fail")}
+onKey KeyF10, => {phase=0}
+onKey KeyT`,
+);
+const fixtureBody = JSON.stringify(fixture);
+const fixtureServer = createServer((_req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Cross-Origin-Resource-Policy": "cross-origin",
+  });
+  res.end(fixtureBody);
+});
+await new Promise((resolve) => fixtureServer.listen(0, "127.0.0.1", resolve));
+const fixtureUrl = `http://127.0.0.1:${fixtureServer.address().port}/belfry.json`;
+const browser = await chromium.launch({
+  headless: true,
+  channel: "chromium",
+});
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const report = {
   date: new Date().toISOString(),
@@ -34,22 +62,22 @@ page.on("console", (m) => {
 });
 const book = new InscriptionBook(null, 4);
 book.settings.hint = "guided";
+await page.addInitScript(() => {
+  const Original = window.AudioContext;
+  window.AudioContext = class extends Original {
+    constructor(...args) {
+      super(...args);
+      window.testMusicContext = this;
+    }
+  };
+});
 await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
   key: STORAGE_KEY,
   value: book.serialize(),
 });
-await page.route("**/belfry.json", async (route) => {
-  const data = await (await route.fetch()).json();
-  data["main.spx"] = data["main.spx"].replace(
-    "onKey KeyT",
-    `
-onKey KeyF8, => {phase=2; event("finish")}
-onKey KeyF9, => {health=0; phase=3; deaths++; event("fail")}
-onKey KeyF10, => {phase=0}
-onKey KeyT`,
-  );
-  await route.fulfill({ json: data });
-});
+await page.route("**/belfry.json", (route) =>
+  route.continue({ url: fixtureUrl }),
+);
 const wait = (fn, arg, timeout = 15000) =>
   page.waitForFunction(fn, arg, { timeout });
 const music = () => page.evaluate(() => soundDiagnostics.music);
@@ -67,6 +95,14 @@ async function playing(stage) {
     stage,
   );
   assert.equal((await music()).loop, true);
+  assert.equal(
+    (await music()).title,
+    manifest.tracks.find((t) => t.stage === stage).title,
+  );
+  assert.equal(
+    await page.locator("#scene-music").getAttribute("src"),
+    manifest.tracks.find((t) => t.stage === stage).file,
+  );
   assert.equal((await music()).activePlayers, 1);
   assert.equal(await page.locator("audio").count(), 1);
 }
@@ -133,8 +169,48 @@ try {
     45000,
   );
   assert.deepEqual(await page.evaluate(() => runtimeErrors), []);
-  assert.equal(await music(), null);
-  await page.locator("#music-start").click();
+  assert.deepEqual(await page.evaluate(() => soundDiagnostics.settings), {
+    sfx: 0.85,
+    music: 0.75,
+  });
+  pass("new players start with the action-forward 85% effects / 75% music mix");
+  const migration = await page.evaluate(async () => {
+    const { BelfryAudio } = await import("/belfry-audio.js");
+    const key = "belfry-audio-v2",
+      previous = localStorage.getItem(key);
+    const results = [];
+    try {
+      for (const saved of [
+        { sfx: 0.3, music: 0.65 },
+        { sfx: 0.55, music: 0.2 },
+        { sfx: 0, music: 0.65 },
+      ]) {
+        localStorage.setItem(key, JSON.stringify(saved));
+        const audio = new BelfryAudio();
+        results.push({
+          settings: audio.settings,
+          saved: JSON.parse(localStorage.getItem(key)),
+        });
+        window.clearInterval(audio.timer);
+      }
+    } finally {
+      if (previous === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, previous);
+    }
+    return results;
+  });
+  assert.deepEqual(migration, [
+    { settings: { sfx: 0.85, music: 0.75 }, saved: { sfx: 0.85, music: 0.75 } },
+    { settings: { sfx: 0.55, music: 0.2 }, saved: { sfx: 0.55, music: 0.2 } },
+    { settings: { sfx: 0, music: 0.65 }, saved: { sfx: 0, music: 0.65 } },
+  ]);
+  pass(
+    "old quiet-effects preset migrates once; custom volumes and explicit mute remain intact",
+  );
+  assert.equal((await music()).stage, "menu");
+  if (await page.locator("#music-start").isVisible())
+    await page.locator("#music-start").click();
+  else await page.locator("#moonlit-logo").click();
   await playing("menu");
   assert.equal(await page.evaluate(() => latestState.phase), 0);
   assert.ok(
@@ -142,7 +218,7 @@ try {
       0.1,
   );
   pass(
-    "a title-screen gesture starts Melancholy Of The Boot without starting a run",
+    "the menu plays Melancholy Of The Boot after autoplay or a title-screen gesture, without starting a run",
   );
   await page.locator("#scene-music").evaluate((audio) => {
     audio.currentTime = audio.duration - 0.2;
@@ -161,7 +237,15 @@ try {
       0.1,
   );
   pass(
-    "starting the game switches to Cleaning out the Rooms and retains only one media element",
+    "starting the game switches to Cleaning out the Rooms (Wandering Horn) and retains only one media element",
+  );
+  await page.evaluate(() => window.testMusicContext.suspend());
+  await page.waitForFunction(() => soundDiagnostics.context === "suspended");
+  await page.frameLocator("#stage iframe").locator("#game-canvas").press("x");
+  await page.waitForFunction(() => soundDiagnostics.context === "running");
+  await playing("gameplay");
+  pass(
+    "trusted gameplay iframe input resumes an interrupted music context without restarting the run",
   );
   await page.keyboard.press("Escape");
   await wait(() => latestState.phase === 4);
@@ -296,7 +380,7 @@ try {
 
   const fallback = await browser.newPage();
   fallback.on("pageerror", (e) => report.errors.push(e.message));
-  await fallback.route("**/audio/music/menu.mp3", (route) =>
+  await fallback.route("**" + manifest.tracks[0].file, (route) =>
     route.fulfill({ status: 404, body: "Missing audio fixture" }),
   );
   await fallback.goto(base);
@@ -315,7 +399,7 @@ try {
     await fallback.locator("#music-start").textContent(),
     "重试音乐",
   );
-  await fallback.unroute("**/audio/music/menu.mp3");
+  await fallback.unroute("**" + manifest.tracks[0].file);
   await fallback.locator("#music-start").click();
   await fallback.waitForFunction(
     () =>
@@ -349,4 +433,6 @@ try {
     JSON.stringify(report, null, 2) + "\n",
   );
   await browser.close();
+  fixtureServer.closeAllConnections();
+  await new Promise((resolve) => fixtureServer.close(resolve));
 }

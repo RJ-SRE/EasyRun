@@ -1,0 +1,350 @@
+{
+  "date": "2026-10-30T16:42:22.890Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "all 8815 runtime rows preserve words, meanings, distractors, aliases, CET levels and spelling flags exactly",
+    "all 121 world clones spawn before text; native glyphs do not consume missing enemy or platform slots",
+    "CET4 and CET6 scope selection draws only words belonging to the selected source level",
+    "ledger pages cover all 30 words without gaps or duplicates; weakness/full-bank filters and isolated live search work without reshuffling",
+    "8815-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
+    "music and action sliders independently set 50% and 25% without changing the other channel",
+    "title offers full hints, 2-second first-letter challenge and 1-second independent recall; default is gradual challenge",
+    "charged arrow shows Chinese and full hint beyond 2 seconds; Backspace/partial Enter do not resolve; last correct letter automatically releases once and starts 3-second cooldown",
+    "gameplay ledger pauses combat, shows completed-word states and resumes; opening from pause returns to pause; an active question rejects Tab",
+    "wrong meaning cancels charged blade without consuming cooldown and increases session weakness",
+    "a wrong answer becomes a review badge and enters the weakness ledger in the same session",
+    "first wrong letter instantly cancels skill U, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill L, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill I, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill P, leaves cooldown untouched and quarantines held W until release",
+    "healing gates before recovery; correct meaning restores one life and starts cooldown",
+    "question can pause/resume without losing input; correct ultimate starts its 5-second cooldown",
+    "timeout cancels the pending skill without cooldown and resumes combat",
+    "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
+    "long word and complete Chinese meaning fit compact card; 28-character options and 480x360 resize fit; regional alias color auto-accepts for colour",
+    "real title hint 1: visible then hidden on schedule, Chinese remains, pause freezes reveal time, automatic finish isolates held R",
+    "real title hint 2: visible then hidden on schedule, Chinese remains, pause freezes reveal time, automatic finish isolates held R",
+    "returning to title prepares a fresh preview deck; practice stays free of inscription questions",
+    "native text shrinks after answers, real arrows receive clone slots, and observed combined clone count stays below 300"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "2f6fb4366785f22c105c398a8cad37361b3630141055120857f8e9dd5fd02b69",
+  "fixture": "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states; F12 injects bounded long-text fixtures. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
+  "browser": "156.0.8078.4",
+  "frameRateSamples": [
+    59.629106967174856,
+    59.28736583551748,
+    55.54121392913446,
+    61.17579884088665,
+    55.402182279593085,
+    59.2,
+    59.98800241095961,
+    61.54351125764637,
+    46.78853196929454,
+    56.16292353955806,
+    60.207112470343056,
+    59.86590036833087,
+    57.44815303768317,
+    59.45342484906623,
+    60.19140869802869,
+    59.91731409968544,
+    60.0096015270876,
+    59.79669124406751,
+    48.13109159353902,
+    60.00262512128664,
+    59.92846039718604,
+    59.8121897322266,
+    60.23612558817849,
+    59.90893841475225,
+    60.12265020412291,
+    57.28798672692305,
+    59.64659392671794,
+    60.40227919905107,
+    59.368321043712406,
+    60.385257952648445,
+    51.691875072095634,
+    60.02280867416525,
+    60.214891887887816,
+    60.26032461267111,
+    59.652820574019124,
+    60.19020102605805,
+    59.986802915944224,
+    59.05366501947093,
+    59.82531008997297,
+    57.38002790715392,
+    53.710565376468324,
+    60.09841117085979,
+    59.92846039718604,
+    60.15829149697141,
+    61.13839694410245,
+    59.96998265110958,
+    59.825384646794795,
+    60.27046369938467,
+    59.95316159250586,
+    32.27167788511812,
+    61.497396174844276,
+    60.10230179028133,
+    59.73938691496944,
+    60.029639642087176,
+    59.5548276706166,
+    50.85299850964311,
+    59.58528640435271,
+    60.15399422176568,
+    59.76809979445724,
+    57.30221186955325,
+    59.33285039097013,
+    60.23982981815484,
+    33.90897861273115,
+    65.19613171645416,
+    58.62397047147965,
+    59.80026712718539,
+    57.946380279576104,
+    59.14114194271275,
+    60.46063446096169,
+    59.99587529644709,
+    58.27998833512063,
+    35.15556337674291
+  ],
+  "clonePeak": 234,
+  "worldRender": [
+    121,
+    121,
+    0,
+    27,
+    0,
+    3,
+    3,
+    0,
+    0
+  ],
+  "questions": [
+    [
+      "1",
+      "1",
+      "5713",
+      "0",
+      "2",
+      "9",
+      "pepper"
+    ],
+    [
+      "2",
+      "2",
+      "6264",
+      "0",
+      "1",
+      "9",
+      "quality"
+    ],
+    [
+      "3",
+      "1",
+      "3889",
+      "1",
+      "2",
+      "9",
+      "hysteria"
+    ],
+    [
+      "4",
+      "2",
+      "3344",
+      "1",
+      "0",
+      "9",
+      "function"
+    ],
+    [
+      "5",
+      "3",
+      "2004",
+      "1",
+      "1",
+      "9",
+      "decade"
+    ],
+    [
+      "6",
+      "4",
+      "183",
+      "1",
+      "1",
+      "9",
+      "afford"
+    ],
+    [
+      "7",
+      "3",
+      "4000",
+      "0",
+      "0",
+      "9",
+      "in"
+    ],
+    [
+      "8",
+      "4",
+      "409",
+      "0",
+      "0",
+      "10.5",
+      "apparently"
+    ],
+    [
+      "9",
+      "2",
+      "443",
+      "0",
+      "2",
+      "9",
+      "april"
+    ],
+    [
+      "10",
+      "5",
+      "7309",
+      "1",
+      "2",
+      "9",
+      "solo"
+    ],
+    [
+      "11",
+      "6",
+      "6033",
+      "1",
+      "2",
+      "9",
+      "prepare"
+    ],
+    [
+      "12",
+      "2",
+      "6122",
+      "0",
+      "1",
+      "9.2",
+      "producer"
+    ],
+    [
+      "13",
+      "1",
+      "1097",
+      "0",
+      "1",
+      "9.850000000000001",
+      "candidacy"
+    ],
+    [
+      "14",
+      "1",
+      "6747",
+      "1",
+      "1",
+      "9",
+      "robust"
+    ]
+  ],
+  "answers": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      1,
+      2,
+      0
+    ],
+    [
+      1,
+      3,
+      0
+    ],
+    [
+      3,
+      3,
+      2
+    ],
+    [
+      1,
+      4,
+      0
+    ],
+    [
+      1,
+      5,
+      0
+    ],
+    [
+      1,
+      6,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ]
+  ],
+  "deckCount": 8,
+  "sfx": [
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healcomplete 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx heavycut 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25"
+  ]
+}
