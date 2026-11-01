@@ -1,12 +1,15 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
+import { buildKeeperFrames } from "./belfry-keeper-frames.mjs";
 import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
 import { buildHuntLayout } from "./belfry-hunt.mjs";
 import { huntInit } from "./hunt-init.mjs";
 import { sceneInit, SCENE_SPRITES } from "./belfry-scene.mjs";
 import { buildIdleCloth } from "./belfry-idle-cloth.mjs";
+import { addMenuArt } from "./belfry-menu-art.mjs";
+import { cacheRenderWrites } from "./belfry-render-cache.mjs";
 const layout = buildHuntLayout();
 const { platforms, anchors, echoes, checkpoints } = layout;
 const enemies = layout.enemies.map((e) => [e.x, e.y, e.kind, +e.returnOnly]);
@@ -24,6 +27,7 @@ const png = async (path, width) => {
   return { binary, w, h, res: w / width };
 };
 function sprite(name, images, config = {}, source = "") {
+  source = cacheRenderWrites(name, source);
   const costumes = [];
   for (const [key, im] of Object.entries(images)) {
     const ext = im.binary ? "png" : "svg",
@@ -369,6 +373,7 @@ try {
     true,
     true,
   );
+  assassinFrames.keeperStructural = await buildKeeperFrames(page, root);
   idleCloth = await buildIdleCloth(
     page,
     "data:image/png;base64," +
@@ -578,6 +583,14 @@ for (const name of ["warden", "hound", "weaver"])
       pivotX: 192,
       pivotY: 366,
     };
+for (let i = 0; i < 36; i++)
+  enemyImages[`keeper-structural-${i}`] = {
+    binary: Buffer.from(assassinFrames.keeperStructural[i], "base64"),
+    w: 512,
+    h: 512,
+    pivotX: 256,
+    pivotY: 490,
+  };
 sprite(
   "EnemyBlend",
   enemyImages,
@@ -803,9 +816,14 @@ sprite(
       110,
       '<path d="M14 34V14h20m42 0h20v20m0 42v20H76m-42 0H14V76" fill="none" stroke="#edb59e" stroke-width="2"/><circle cx="55" cy="55" r="35" fill="none" stroke="#ca6563" stroke-width="1" stroke-dasharray="18 10"/><path d="M55 4v14m0 74v14M4 55h14m74 0h14" stroke="#fff0d4" stroke-width="1.5"/>',
     ),
+    boss: vector(
+      70,
+      94,
+      '<path d="M8 23V9h12m30 0h12v14m0 48v14H50m-30 0H8V71" fill="none" stroke="#cbb78c" stroke-width="1.5" stroke-opacity=".8"/>',
+    ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); i:=Hero.bowTarget; if Hero.bowCharging && i>=0 && phase!=2 && phase!=3 {show; setXYpos enemyX[i],enemyY[i]; setSize 0.75+clamp(Hero.bowCharge,0,0.55)*0.25; if enemyType[i]==3 {setSize 1.6}; setHeading 90; setGraphicEffect GhostEffect,15} else {hide}}}",
+  "onStart => {for {waitNextFrame(); i:=Hero.bowTarget; if Hero.bowCharging && i>=0 && phase!=2 && phase!=3 {show; setCostume 0; setXYpos enemyX[i],enemyY[i]; setSize 0.75+clamp(Hero.bowCharge,0,0.55)*0.25; if enemyType[i]==3 {setCostume 1; setSize 0.70; setXYpos enemyX[i],enemyY[i]+28}; setHeading 90; setGraphicEffect GhostEffect,15} else {hide}}}",
 );
 sprite(
   "HealingWeave",
@@ -1037,6 +1055,7 @@ sprite(
   { visible: false },
   "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos 480,riseY-395} else {hide}}}",
 );
+await addMenuArt({ root, sprite, png, vector });
 // Device art intentionally omitted in the hunt edition.
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
@@ -1070,6 +1089,7 @@ files["main.spx"] = (await code("main")).replace(
     (await code("HuntExpedition")) +
     (await code("Scene")) +
     (await code("Viewport")) +
+    (await code("MenuMotion")) +
     "\nfunc dist(",
 );
 files["assets/index.json"] = JSON.stringify({

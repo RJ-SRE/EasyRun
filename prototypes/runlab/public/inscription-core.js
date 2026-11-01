@@ -1,11 +1,22 @@
-import { WORDS, CONTENT_VERSION, COVERAGE } from "./cet4-words.js";
+import {
+  freshLearningMilestones,
+  cleanLearningMilestones,
+  practiceDay,
+} from "./learning-milestones.js";
+import { WORD_MODES, wordDifficulty, wordModeOf } from "./word-selection.js";
+import {
+  WORDS,
+  CONTENT_VERSION,
+  COVERAGE,
+  LEGACY_SENSE_SAFE,
+} from "./common-words.js";
+const legacySenseSafe = new Set(LEGACY_SENSE_SAFE);
 export { CONTENT_VERSION, COVERAGE };
 export const STORAGE_KEY = "easyrun-inscription-v1";
 export const DEFAULTS = {
   enabled: true,
-  scope: "mixed",
+  wordMode: "normal",
   strategy: "balanced",
-  tier: "standard",
   pace: "standard",
   hint: "standard",
   reduced: false,
@@ -34,21 +45,18 @@ export function shuffle(values, rng) {
   }
   return a;
 }
+const selectionPools = new Map(
+  WORD_MODES.map((mode, index) => [
+    mode,
+    mode === "random"
+      ? WORDS
+      : WORDS.filter((word) => wordDifficulty(word) === index + 1),
+  ]),
+);
 export function eligibleWords(settings = DEFAULTS) {
-  return WORDS.filter(
-    (w) =>
-      (settings.scope === "cet4"
-        ? w.levels.includes("cet4")
-        : settings.scope === "cet6"
-          ? w.levels.includes("cet6")
-          : true) &&
-      (settings.tier === "foundation"
-        ? w.tier <= 2
-        : settings.tier === "challenge"
-          ? w.tier >= 2
-          : true),
-  );
+  return selectionPools.get(wordModeOf(settings));
 }
+
 function freshSkill() {
   return {
     attempts: 0,
@@ -103,13 +111,44 @@ function cleanHistory(raw) {
       seen: finite(s.seen),
       wrong: finite(s.wrong),
       completed: !!s.completed,
+      senseRevision:
+        typeof s.senseRevision === "string" ? s.senseRevision.slice(0, 64) : "",
+      legacyMeaning: Array.isArray(s.legacyMeaning)
+        ? s.legacyMeaning.slice(-4)
+        : [],
       spell: cleanSkill(s.spell),
       meaning: cleanSkill(s.meaning),
+      learning: {
+        recovered: !!s.learning?.recovered,
+        recall: finite(s.learning?.recall),
+        review: finite(s.learning?.review),
+      },
       legacyWrong: finite(s.legacyWrong, s.spell ? 0 : finite(s.wrong)),
       lastSeen: finite(s.lastSeen),
     };
   }
   return h;
+}
+function alignHistory(history, oldVersion) {
+  for (const [id, h] of Object.entries(history)) {
+    const w = BANK.get(id);
+    if (!w) continue;
+    const changed = h.senseRevision
+      ? h.senseRevision !== w.senseRevision
+      : oldVersion !== CONTENT_VERSION && !legacySenseSafe.has(id);
+    if (changed) {
+      h.legacyMeaning.push({
+        version: oldVersion,
+        skill: copy(h.meaning),
+        completed: h.completed,
+      });
+      h.legacyMeaning = h.legacyMeaning.slice(-4);
+      h.meaning = freshSkill();
+      h.completed = false;
+    }
+    h.senseRevision = w.senseRevision;
+  }
+  return history;
 }
 export function weakness(h, now = Date.now()) {
   if (!h) return 0;
@@ -227,10 +266,10 @@ export function selectPool(
     ),
   };
 }
-export function poolFor(seed, tier = "standard", history = {}, options = {}) {
+export function poolFor(seed, wordMode = "normal", history = {}, options = {}) {
   return selectPool(
     seed,
-    { ...DEFAULTS, ...options, tier },
+    { ...DEFAULTS, ...options, wordMode },
     history,
     options.now ?? Date.now(),
     options.previous,
@@ -259,9 +298,8 @@ function settingsOf(raw = {}) {
   for (const k of ["enabled", "reduced"])
     if (typeof raw[k] === "boolean") out[k] = raw[k];
   for (const [key, values] of Object.entries({
-    scope: ["cet4", "cet6", "mixed"],
+    wordMode: WORD_MODES,
     strategy: ["balanced", "explore", "review"],
-    tier: ["foundation", "standard", "challenge"],
     pace: ["relaxed", "standard", "brisk"],
     hint: ["guided", "standard", "recall"],
   }))
@@ -303,6 +341,7 @@ export class InscriptionBook {
       version: 2,
       contentVersion: CONTENT_VERSION,
       settings: { ...DEFAULTS },
+      study: freshLearningMilestones(),
       history: Object.create(null),
       run: null,
       archive: null,
@@ -312,12 +351,22 @@ export class InscriptionBook {
         const s = typeof saved === "string" ? JSON.parse(saved) : copy(saved);
         if (![1, 2].includes(s.version) || !safeObject(s.settings))
           throw new Error("version");
+        this.data.study = cleanLearningMilestones(s.study);
         this.data.history = cleanHistory(s.history);
         this.data.settings = settingsOf(s.settings);
-        this.migrated = s.version === 1 || s.contentVersion !== CONTENT_VERSION;
+        alignHistory(this.data.history, s.contentVersion);
+        this.migrated =
+          s.version === 1 ||
+          s.contentVersion !== CONTENT_VERSION ||
+          !WORD_MODES.includes(s.settings.wordMode);
         for (const field of ["run", "archive"]) {
-          if (validRun(s[field])) {
+          if (s.contentVersion === CONTENT_VERSION && validRun(s[field])) {
             const r = copy(s[field]);
+            r.wordMode = WORD_MODES.includes(r.wordMode)
+              ? r.wordMode
+              : WORD_MODES.includes(s.settings.wordMode)
+                ? s.settings.wordMode
+                : "random";
             r.progress = Object.assign(Object.create(null), r.progress);
             r.reasons = Object.assign(
               Object.create(null),
@@ -356,12 +405,22 @@ export class InscriptionBook {
           } else if (s[field])
             this.notice = "词库已更新，旅程词组已重建；长期记录保留。";
         }
+        if (
+          !WORD_MODES.includes(s.settings.wordMode) &&
+          !this.data.run?.started
+        )
+          this.data.run = null;
+        if (this.data.run?.started)
+          this.data.settings.wordMode = this.data.run.wordMode;
         if (this.migrated && !this.notice)
           this.notice = "已迁移旧词册；原有完成与错误记录保留。";
       } catch {
         this.notice = "词册格式异常，已建立新词组；原文件未被删除。";
       }
     if (!this.run) this.newPool(seed);
+  }
+  get bankSize() {
+    return BANK.size;
   }
   get settings() {
     return this.data.settings;
@@ -383,6 +442,7 @@ export class InscriptionBook {
     );
     this.data.run = {
       seed: seed >>> 0,
+      wordMode: wordModeOf(this.settings),
       ...selection,
       progress: Object.create(null),
       resolved: [],
@@ -394,6 +454,7 @@ export class InscriptionBook {
       won: false,
       snapshot: null,
       attempt: 0,
+      learningStreak: 0,
       summary: { first: 0, independent: 0, revivals: 0 },
     };
   }
@@ -422,6 +483,7 @@ export class InscriptionBook {
   resume() {
     if (!this.data.archive) return false;
     this.data.run = this.data.archive;
+    this.settings.wordMode = this.data.run.wordMode;
     this.data.run.progress = Object.assign(
       Object.create(null),
       this.data.run.progress,
@@ -524,6 +586,8 @@ export class InscriptionBook {
       seen: 0,
       wrong: 0,
       completed: false,
+      senseRevision: BANK.get(q.wordId)?.senseRevision || "",
+      legacyMeaning: [],
       spell: freshSkill(),
       meaning: freshSkill(),
       legacyWrong: 0,
@@ -535,6 +599,19 @@ export class InscriptionBook {
     h.lastSeen = now;
     if (outcome !== "correct") h.wrong++;
     const s = (h[q.type] ||= freshSkill());
+    h.learning ||= { recovered: false, recall: 0, review: 0 };
+    const wasDue = s.attempts > 0 && s.due > 0 && s.due <= now;
+    const hadWrong = s.wrong > 0;
+    const day = practiceDay(now);
+    if (outcome !== "timeout" && !this.data.study.days.includes(day))
+      this.data.study.days.push(day);
+    if (outcome === "correct") {
+      if (hadWrong) h.learning.recovered = true;
+      if (q.type === "spell" && !assisted) h.learning.recall++;
+      if (wasDue) h.learning.review++;
+      r.learningStreak = (r.learningStreak || 0) + 1;
+      this.data.study.peak = Math.max(this.data.study.peak, r.learningStreak);
+    } else r.learningStreak = 0;
     s.attempts++;
     s.lastSeen = now;
     const independent = outcome === "correct" && !assisted;
@@ -603,7 +680,7 @@ export class InscriptionBook {
       !safeObject(s?.settings)
     )
       throw new Error("不是有效的 EasyRun 词册");
-    const incoming = cleanHistory(s.history);
+    const incoming = alignHistory(cleanHistory(s.history), s.contentVersion);
     let added = 0;
     for (const [id, h] of Object.entries(incoming)) {
       const existing = this.data.history[id];
@@ -615,6 +692,12 @@ export class InscriptionBook {
       existing.seen = Math.max(existing.seen, h.seen);
       existing.wrong = Math.max(existing.wrong, h.wrong);
       existing.completed ||= h.completed;
+      existing.legacyMeaning = [...existing.legacyMeaning, ...h.legacyMeaning]
+        .filter(
+          (v, i, a) =>
+            a.findIndex((o) => JSON.stringify(o) === JSON.stringify(v)) === i,
+        )
+        .slice(-4);
       if (h.lastSeen > existing.lastSeen) existing.legacyWrong = h.legacyWrong;
       else if (!existing.lastSeen)
         existing.legacyWrong = Math.max(

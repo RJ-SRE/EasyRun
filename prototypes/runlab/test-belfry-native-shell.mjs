@@ -12,6 +12,8 @@ await mkdir(out, { recursive: true });
 const onlineRuntime =
   process.env.XBUILDER_RUNTIME_DIR && resolve(process.env.XBUILDER_RUNTIME_DIR);
 const modelUrl = process.env.XBUILDER_MODEL_URL;
+const initialFollow = process.env.NATIVE_SHELL_FOLLOW || "Anchor";
+assert.ok(["Anchor", "ProjectCover"].includes(initialFollow));
 const runtimeFiles = onlineRuntime
   ? {
       "/ispx.wasm": join(onlineRuntime, "ispx.wasm"),
@@ -23,6 +25,7 @@ const archive = new URL("exports/belfry.xbp", root);
 const report = {
   date: new Date().toISOString(),
   modelUrl,
+  initialFollow,
   runtime: onlineRuntime
     ? "deployed XBuilder compiler and resources"
     : "pinned npm runtime",
@@ -32,8 +35,7 @@ const report = {
   archiveSha256: createHash("sha256")
     .update(await readFile(archive))
     .digest("hex"),
-  fixture:
-    "Actual native archive without the web host. F8/F9 select only win/death; F6 moves to a deep room; F7 injects a stale Anchor follow target. Initial config also follows Anchor to reproduce the reported offset. Resize checks use the exported 480x360 run config, matching Builder; a second boot simulates 960x600. No online project overwritten.",
+  fixture: `Actual native archive without the web host. F8/F9 select only win/death; F6 moves to a deep room; F7 injects a stale Anchor follow target. Initial config follows ${initialFollow} to reproduce an editor-saved follow target. Resize checks use the exported 480x360 run config, matching Builder; a second boot simulates 960x600. No online project overwritten.`,
 };
 const server = createServer((req, res) => {
   res.writeHead(200, {
@@ -101,7 +103,7 @@ async function boot(run, deviceScaleFactor = 1) {
   );
   await page.addScriptTag({ url: "/runtime/fflate.js" });
   await page.evaluate(
-    async ({ url, run, modelUrl, deployed }) => {
+    async ({ url, run, modelUrl, deployed, initialFollow }) => {
       window.onGameError((e) => window.nativeErrors.push(String(e)));
       window.onEngineCrash((e) => window.nativeErrors.push(String(e)));
       await window.initEngine(
@@ -126,7 +128,7 @@ async function boot(run, deviceScaleFactor = 1) {
         encoder = new window.TextEncoder();
       const config = JSON.parse(decoder.decode(files["assets/index.json"]));
       if (run) config.run = run;
-      config.camera = { on: "Anchor" };
+      config.camera = { on: initialFollow };
       files["assets/index.json"] = encoder.encode(JSON.stringify(config));
       if (modelUrl) {
         // Pinned public deployment bundle exports SpxProject as r and File as gn.
@@ -153,7 +155,7 @@ async function boot(run, deviceScaleFactor = 1) {
         const roundtrip = JSON.parse(
           decoder.decode(files["assets/index.json"]),
         );
-        if (roundtrip.camera.on !== "Anchor")
+        if (roundtrip.camera.on !== initialFollow)
           throw new Error("stale-follow fixture lost during model roundtrip");
         window.nativeRoundtrip = {
           run: roundtrip.run,
@@ -181,7 +183,7 @@ async function boot(run, deviceScaleFactor = 1) {
       );
       await window.startGame();
     },
-    { url, run, modelUrl, deployed: Boolean(onlineRuntime) },
+    { url, run, modelUrl, deployed: Boolean(onlineRuntime), initialFollow },
   );
   await page.waitForFunction(
     () => window.nativeUI.length > 0 || window.nativeErrors.length > 0,
@@ -212,8 +214,66 @@ async function click(x, y) {
     { delay: 80 },
   );
 }
-const shot = async (name) =>
-  page.screenshot({ path: fileURLToPath(new URL(name + ".png", out)) });
+const shot = async (name) => {
+  const png = await page.screenshot({
+    path: fileURLToPath(new URL(name + ".png", out)),
+  });
+  if (/^(title|game)-\d+x\d+$/.test(name)) {
+    const edges = await page.evaluate(
+      async (data) => {
+        const image = new Image();
+        image.src = data;
+        await image.decode();
+        const canvas = document.createElement("canvas");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const c = canvas.getContext("2d");
+        c.drawImage(image, 0, 0);
+        return [0.001, 0.02, 0.98, 0.999].map((at) => {
+          const pixels = c.getImageData(
+            0,
+            Math.floor(canvas.height * at),
+            canvas.width,
+            1,
+          ).data;
+          const colors = new Set();
+          let light = 0,
+            count = 0;
+          for (
+            let x = Math.floor(canvas.width * 0.1);
+            x < canvas.width * 0.9;
+            x += 2
+          ) {
+            colors.add(
+              `${pixels[x * 4]},${pixels[x * 4 + 1]},${pixels[x * 4 + 2]}`,
+            );
+            light +=
+              pixels[x * 4] * 0.2126 +
+              pixels[x * 4 + 1] * 0.7152 +
+              pixels[x * 4 + 2] * 0.0722;
+            count++;
+          }
+          return { colors: colors.size, meanLuminance: light / count };
+        });
+      },
+      "data:image/png;base64," + png.toString("base64"),
+    );
+    assert.ok(
+      edges.slice(1, 3).every((row) => row.colors > 12),
+      `${name}: border must fade into visible scenery at 2% of the viewport`,
+    );
+    assert.ok(
+      edges[0].meanLuminance < 18 && edges[3].meanLuminance < 18,
+      `${name}: outer edge should remain dark`,
+    );
+    report.edgeSamples ??= [];
+    report.edgeSamples.push({
+      name,
+      sampledRows: [0.001, 0.02, 0.98, 0.999],
+      edges,
+    });
+  }
+};
 try {
   await boot();
   await state(0, 0);
@@ -224,20 +284,20 @@ try {
   pass(
     "native boot stays on the title screen; no run starts or combat time advances before an explicit start",
   );
-  await click(350, 316);
+  await click(850, 278);
   await state(0, 1);
   await page.waitForFunction(() => window.nativeState[2] === 1);
   pass("native difficulty cards are clickable and select Veteran");
-  await click(899, 44);
+  await click(885, 560);
   await page.waitForFunction(() =>
     window.nativeMusic.at(-1)?.endsWith("paused"),
   );
-  await click(899, 44);
+  await click(885, 560);
   await page.waitForFunction(() =>
     window.nativeMusic.at(-1)?.endsWith("playing"),
   );
   pass("title music button toggles the native player");
-  await click(350, 465);
+  await click(850, 482);
   await state(0, 2);
   await shot("guide-960");
   for (const key of ["t", "r", "1"]) await tap(key);
@@ -248,7 +308,7 @@ try {
   pass(
     "help opens before play; gameplay shortcuts are isolated; Enter closes help without starting a run",
   );
-  await click(230, 402);
+  await click(784, 211);
   await state(1, -1);
   assert.equal(await page.evaluate(() => window.nativeState[5]), 5);
   await shot("game-960");
@@ -263,7 +323,7 @@ try {
   report.cameraAtStart = await page.evaluate(() => window.nativeUI.slice(2));
   report.roundtrip = await page.evaluate(() => window.nativeRoundtrip || null);
   pass(
-    "camera owns its authored center after boot even if imported configuration follows the hidden Anchor sprite",
+    `camera owns its authored center after boot even if imported configuration follows the hidden ${initialFollow} sprite`,
   );
   const musicBefore = await page.evaluate(() => window.nativeMusic.at(-1));
   for (const x of [560, 700, 840]) await click(x, 51);
@@ -330,7 +390,7 @@ try {
   pass(
     "pause freezes play; help returns to pause; resume and return-to-title work with mouse and keys",
   );
-  await click(160, 466);
+  await click(718, 482);
   await state(1, -1);
   await tap("Escape");
   await state(4, 3);
@@ -364,6 +424,7 @@ try {
   );
   for (const [width, height] of [
     [480, 360],
+    [1125, 844],
     [1280, 720],
     [1440, 600],
     [600, 900],
@@ -392,11 +453,11 @@ try {
       worldHeight: ui[5],
       zoom: ui[6],
     });
-    await click(350, 465);
+    await click(850, 482);
     await state(0, 2);
     await click(230, 532);
     await state(0, 0);
-    await click(230, 402);
+    await click(784, 211);
     await state(1, -1);
     await page.waitForTimeout(150);
     await shot(`game-${width}x${height}`);
@@ -406,13 +467,13 @@ try {
     await state(0, 0);
   }
   pass(
-    "live resize covers small 4:3, 16:9, ultrawide, portrait and return; entire 960x600 field fits with matching aspect and correct click mapping",
+    "live resize covers 4:3, screenshot-sized, 16:9, ultrawide, portrait and return; thin dark edges fade into scenery while the safe UI field and real click mapping stay intact",
   );
   assert.deepEqual(await page.evaluate(() => window.nativeErrors), []);
   await page.close();
   await boot({ width: 960, height: 600 }, 2);
   await state(0, 0);
-  await click(230, 402);
+  await click(784, 211);
   await state(1, -1);
   await page.waitForFunction(() => Math.abs(window.nativeUI[2] - 480) < 2);
   await shot("run-config-960");

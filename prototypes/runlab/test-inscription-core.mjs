@@ -1,7 +1,6 @@
+import { WORD_MODES, wordDifficulty } from "./public/word-selection.js";
 import test from "node:test";
-import { URL } from "node:url";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import {
   InscriptionBook,
   BANK,
@@ -55,66 +54,74 @@ function target(book, id, type, outcome, assisted = false) {
   };
   return book.settle(action, outcome, 2, assisted, { input: "mistkae" });
 }
-test("full source coverage, curated IDs, normalized variants and distinct options", async () => {
-  const source = JSON.parse(
-    await readFile(new URL("./data/cet-source.json", import.meta.url), "utf8"),
-  );
-  const old = JSON.parse(
-    await readFile(
-      new URL(
-        "../../docs/evidence/inscription-v1/word-membership.json",
-        import.meta.url,
-      ),
-      "utf8",
-    ),
-  );
-  assert.equal(BANK.size, 8815);
-  assert.equal(source.entries.length, BANK.size);
-  assert.equal(COVERAGE.officialMappedRows, COVERAGE.officialHeadRows);
-  for (const w of old.entries) assert.ok(BANK.has(w.word));
+test("common bank has sourced independent pools, stable IDs and valid answers", () => {
+  assert.equal(BANK.size, 3816);
+  assert.deepEqual(COVERAGE.difficultyCounts, {
+    normal: 1550,
+    hard: 1309,
+    challenge: 957,
+  });
+  assert.equal(COVERAGE.gradingBasis, "frequency-purpose-v1");
   for (const w of entries) {
-    assert.ok(w.accepted.includes(w.word), w.word);
-    assert.equal(new Set([w.meaning, ...w.distractors]).size, 3, w.word);
-    assert.ok(w.pos && w.context.includes(w.word));
-    assert.ok(
-      w.levels.length && w.levels.every((v) => ["cet4", "cet6"].includes(v)),
-    );
+    assert.ok(w.accepted.includes(w.word));
+    assert.equal(new Set([w.meaning, ...w.distractors]).size, 3);
     assert.match(w.meaning, /[\u4e00-\u9fff]/);
-    assert.equal(w.spellable, /^[a-z]+$/.test(w.word));
+    assert.match(w.senseRevision, /^[a-f0-9]{16}$/);
+    assert.ok(w.pos);
   }
-  assert.ok(matches(BANK.get("colour"), " COLOR "));
-  assert.equal(BANK.get("a").meaning, "一个；某个");
-  assert.equal(BANK.get("can").pos, "aux.");
-  const mapping = JSON.parse(
-    await readFile(
-      new URL(
-        "../../docs/evidence/2026-10-26-wordbook/head-mapping.json",
-        import.meta.url,
-      ),
-      "utf8",
-    ),
-  );
-  assert.equal(mapping.length, COVERAGE.officialHeadRows);
-  for (const row of mapping)
-    assert.ok(
-      row.words.length && row.words.every((id) => BANK.has(id)),
-      row.head,
-    );
+  assert.ok(matches(BANK.get("color"), " COLOUR "));
+  assert.equal(BANK.get("can").pos, "v.");
 });
-test("all scope/difficulty combinations yield deterministic 30 unique eligible words", () => {
-  for (const scope of ["cet4", "cet6", "mixed"])
-    for (const tier of ["foundation", "standard", "challenge"]) {
-      const allowed = new Set(
-        eligibleWords({ ...DEFAULTS, scope, tier }).map((w) => w.id),
-      );
-      for (let seed = 0; seed < 50; seed++) {
-        const p = poolFor(seed, tier, {}, { scope, now: NOW });
-        assert.equal(new Set(p).size, 30);
-        assert.ok(p.every((id) => allowed.has(id)));
-        assert.deepEqual(p, poolFor(seed, tier, {}, { scope, now: NOW }));
-      }
+test("four modes select 30 unique words from their actual pools, independent of exam tags", () => {
+  const union = new Set();
+  for (const [index, wordMode] of WORD_MODES.entries()) {
+    const candidates = eligibleWords({ ...DEFAULTS, wordMode });
+    const allowed = new Set(candidates.map((w) => w.id));
+    assert.ok(allowed.size >= 30);
+    if (wordMode !== "random") {
+      assert.ok(candidates.every((w) => wordDifficulty(w) === index + 1));
+      candidates.forEach((w) => {
+        assert.ok(!union.has(w.id));
+        union.add(w.id);
+      });
+    } else assert.deepEqual(allowed, union);
+    for (let seed = 0; seed < 50; seed++) {
+      const p = poolFor(seed, wordMode, {}, { now: NOW });
+      assert.equal(new Set(p).size, 30);
+      assert.ok(p.every((id) => allowed.has(id)));
+      assert.deepEqual(p, poolFor(seed, wordMode, {}, { now: NOW }));
     }
+  }
 });
+test("legacy exam settings migrate to normal without losing learning history or hints", () => {
+  const book = new InscriptionBook(null, 42, () => NOW);
+  const id = book.run.pool[0];
+  target(book, id, "spell", "wrong");
+  const saved = JSON.parse(book.serialize());
+  delete saved.settings.wordMode;
+  saved.settings.scope = "cet6";
+  saved.settings.tier = "challenge";
+  saved.settings.hint = "recall";
+  const restored = new InscriptionBook(saved, 43, () => NOW);
+  assert.equal(restored.settings.wordMode, "normal");
+  assert.equal(restored.settings.scope, undefined);
+  assert.equal(restored.settings.tier, undefined);
+  assert.equal(restored.settings.hint, "recall");
+  assert.equal(restored.data.history[id].spell.wrong, 1);
+  assert.ok(
+    restored.run.pool.every((id) => wordDifficulty(BANK.get(id)) === 1),
+  );
+  delete saved.run.wordMode;
+  saved.run.started = true;
+  const active = new InscriptionBook(saved, 44, () => NOW);
+  assert.equal(active.settings.wordMode, "random");
+  assert.deepEqual(active.run.pool, saved.run.pool);
+  active.prepare(45);
+  active.settings.wordMode = "hard";
+  assert.equal(active.resume(), true);
+  assert.equal(active.settings.wordMode, "random");
+});
+
 test("balanced category quotas, all-new fallback, weak cap and weighted selection", () => {
   const history = Object.create(null);
   entries.slice(0, 60).forEach((w) => (history[w.id] = historyItem()));
@@ -132,16 +139,24 @@ test("balanced category quotas, all-new fallback, weak cap and weighted selectio
         meaning: skill({ recentFailures: 0 }),
       })),
   );
-  assert.deepEqual(selectPool(42, DEFAULTS, history, NOW).composition, {
-    new: 12,
-    due: 10,
-    weak: 6,
-    familiar: 2,
-  });
+  assert.deepEqual(
+    selectPool(42, { ...DEFAULTS, wordMode: "random" }, history, NOW)
+      .composition,
+    {
+      new: 12,
+      due: 10,
+      weak: 6,
+      familiar: 2,
+    },
+  );
   assert.equal(selectPool(42, DEFAULTS, {}, NOW).composition.new, 30);
   assert.deepEqual(
-    selectPool(42, { ...DEFAULTS, strategy: "review" }, history, NOW)
-      .composition,
+    selectPool(
+      42,
+      { ...DEFAULTS, wordMode: "random", strategy: "review" },
+      history,
+      NOW,
+    ).composition,
     { new: 6, due: 12, weak: 10, familiar: 2 },
   );
   const weak = entries.slice(0, 60).map((w) => w.id);
@@ -149,7 +164,12 @@ test("balanced category quotas, all-new fallback, weak cap and weighted selectio
     low = 0;
   weak.forEach((id, i) => (history[id].spell.recentFailures = i < 30 ? 6 : 1));
   for (let seed = 0; seed < 200; seed++) {
-    const p = selectPool(seed, DEFAULTS, history, NOW);
+    const p = selectPool(
+      seed,
+      { ...DEFAULTS, wordMode: "random" },
+      history,
+      NOW,
+    );
     assert.equal(p.composition.weak, 6);
     high += p.pool.filter((id) => weak.slice(0, 30).includes(id)).length;
     low += p.pool.filter((id) => weak.slice(30).includes(id)).length;
@@ -228,10 +248,10 @@ test("mastery requires independent spelling and meaning across three days; due a
   const h = historyItem();
   assert.ok(weakness(h, NOW + 60 * DAY) < weakness(h, NOW));
 });
-test("old content versions preserve history/pending run; invalid run rebuilds only journey", () => {
+test("content replacement preserves history and rebuilds journey without stale pending questions", () => {
   const b = new InscriptionBook(null, 1, () => NOW);
   b.begin(1);
-  const q = b.question(3, "a");
+  b.question(3, "a");
   const old = JSON.parse(b.serialize());
   old.version = 1;
   old.contentVersion = "cet4-old";
@@ -239,8 +259,8 @@ test("old content versions preserve history/pending run; invalid run rebuilds on
   const migrated = new InscriptionBook(old, 33, () => NOW);
   assert.equal(migrated.data.contentVersion, CONTENT_VERSION);
   assert.equal(migrated.data.history.create.legacyWrong, 4);
-  assert.deepEqual(migrated.question(3, "a"), q);
-  assert.equal(migrated.run.seed, 1);
+  assert.equal(migrated.run.reserved, null);
+  assert.equal(migrated.run.seed, 33);
   old.run.pool[0] = "missing-word";
   const recovered = new InscriptionBook(old, 33, () => NOW);
   assert.equal(recovered.data.history.create.wrong, 4);
@@ -328,7 +348,5 @@ test("settlement is idempotent; allowances scale and punctuation is meaning only
     ) > allowance({ word: "act", meaning: "行动" }, "spell", "standard"),
   );
   assert.ok(allowance(entries[0], "control", "brisk") >= 3.5);
-  const id = entries.find((w) => !w.spellable).id;
-  b.run.reserved = { wordId: id };
-  assert.equal(b.question(1, "b").type, "meaning");
+  assert.ok(entries.every((w) => w.spellable));
 });

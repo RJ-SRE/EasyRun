@@ -52,42 +52,90 @@ export async function loadLargeBook() {
     return { raw: null, blocked: true, protect: true };
   }
 }
+export const RESET_KEY = STORAGE_KEY + "-reset-generation";
+let generation;
+try {
+  generation = localStorage.getItem(RESET_KEY);
+} catch {
+  /* writes report unavailable */
+}
+const lock = (fn) =>
+  window.navigator.locks
+    ? window.navigator.locks.request("easyrun-inscription-storage", fn)
+    : Promise.resolve().then(fn);
+function assertCurrent() {
+  if (localStorage.getItem(RESET_KEY) !== generation)
+    throw new Error("另一窗口已清除记录，请刷新页面");
+}
 let queue = Promise.resolve();
-let pending = 0;
 export function persistBook(raw) {
-  if (raw.length < 450000 && pending === 0) {
-    localStorage.setItem(STORAGE_KEY, raw);
-    return Promise.resolve("local");
-  }
-  pending++;
   // A pointer is changed only AFTER the durable transaction completes.
   queue = queue
     .catch(() => {})
-    .then(async () => {
-      if (raw.length < 450000) {
-        localStorage.setItem(STORAGE_KEY, raw);
-        return "local";
-      }
-      const db = await database();
-      try {
-        await new Promise((resolve, reject) => {
-          const tx = db.transaction(STORE, "readwrite");
-          tx.objectStore(STORE).put(raw, "current");
-          tx.oncomplete = resolve;
-          tx.onerror = () => reject(tx.error);
-          tx.onabort = () => reject(tx.error || new Error("保存被中断"));
-        });
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ storage: "indexeddb", version: 2 }),
-        );
-        return "database";
-      } finally {
-        db.close();
-      }
-    })
-    .finally(() => {
-      pending--;
-    });
+    .then(() =>
+      lock(async () => {
+        assertCurrent();
+        if (raw.length < 450000) {
+          localStorage.setItem(STORAGE_KEY, raw);
+          return "local";
+        }
+        const db = await database();
+        try {
+          await new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, "readwrite");
+            tx.objectStore(STORE).put(raw, "current");
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error || new Error("保存被中断"));
+          });
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({ storage: "indexeddb", version: 2 }),
+          );
+          return "database";
+        } finally {
+          db.close();
+        }
+      }),
+    );
+  return queue;
+}
+
+// Serialize reset with this tab's queue and other tabs' durable writes. A reset
+// generation is retained as a tombstone; older tabs cannot resurrect their book.
+export function clearLocalGameRecords() {
+  queue = queue
+    .catch(() => {})
+    .then(() =>
+      lock(async () => {
+        if (!window.navigator.locks)
+          throw new Error("当前浏览器暂不支持安全清除，请使用新版 Chrome");
+        const db = await database();
+        try {
+          await new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, "readwrite");
+            tx.objectStore(STORE).delete("current");
+            tx.oncomplete = resolve;
+            tx.onabort = tx.onerror = () =>
+              reject(tx.error || new Error("清除被中断"));
+          });
+          const next = crypto.randomUUID();
+          localStorage.setItem(RESET_KEY, next);
+          for (const key of [
+            STORAGE_KEY,
+            STORAGE_KEY + "-backup",
+            STORAGE_KEY + "-before-import",
+            "easyrun-belfry-v1",
+            "easyrun-belfry-achievements-v1",
+            "belfry-audio-v2",
+            "easyrun-menu-reduced",
+          ])
+            localStorage.removeItem(key);
+          sessionStorage.removeItem("belfry-resume");
+        } finally {
+          db.close();
+        }
+      }),
+    );
   return queue;
 }

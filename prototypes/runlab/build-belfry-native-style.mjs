@@ -34,7 +34,7 @@ export async function buildNativeWordStyle(browser) {
       .word-key-hint {font-size:9px}
       .paused-note {position:absolute;left:64px;top:44px;color:#eee3c9;font:22px 'Songti SC',serif;letter-spacing:2px}
       .paused-note small {display:block;color:#8e9c8f;font:11px sans-serif;letter-spacing:1px;margin-top:12px}
-      #word-journal {position:absolute;inset:0;display:block;padding:0;background:#050c10b8}
+      #word-journal {position:absolute;inset:0;display:block;padding:0;background:transparent;backdrop-filter:none}
       #word-journal > .word-ledger-page {position:absolute;left:180px;top:48px;width:600px;height:504px;max-height:none;padding:22px 24px 16px;display:block}
       #word-journal .word-ledger-head h2 {font:25px 'Songti SC',serif;letter-spacing:4px;margin:8px 0 12px}
       #word-journal .word-ledger-head .eyebrow {font-size:8px;letter-spacing:2px}
@@ -94,12 +94,12 @@ export async function buildNativeWordStyle(browser) {
       <div class="word-ledger-page"><header class="word-ledger-head"><div><span class="eyebrow">FIELD LEDGER / XXX</span><h2>随行铭文</h2></div></header></div>
       <button class="fixed" style="left:724px;top:62px;width:30px;height:30px;border-color:transparent;font:25px Georgia;padding:0">×</button>
       <span class="fixed" style="left:204px;top:120px;font-size:11px;color:#d7c69f">本局已斩</span><span class="fixed" style="left:294px;top:120px;font-size:11px;color:#d7c69f">/ 30 · 待斩</span>
-      <div class="word-legend fixed" style="left:204px;top:165px">○ 待遇见 <span>◐ 待复习</span> ◆ 已斩 <span>✦ 通关确认</span></div>
+      <div class="word-legend fixed" style="left:204px;top:165px">· 未练 / 未加载 <span>◐ 薄弱</span> ◆ 已解 <span>✦ 通关确认</span></div>
       <button class="filter-shell fixed" style="left:204px;top:190px;width:160px;height:30px;text-align:right">⌄</button>
       <button class="fixed" style="left:724px;top:190px;width:30px;height:30px;padding:0">×</button>
       <span class="fixed" style="left:204px;top:231px;font-size:10px;color:#93a399">当前匹配</span><span class="fixed" style="left:330px;top:231px;font-size:10px;color:#93a399">词 · 记录保留于本次运行</span>
-      ${Array.from({ length: 8 }, (_, i) => `<i class="row-rule" style="left:${204 + (i % 2) * 282}px;top:${318 + Math.floor(i / 2) * 54}px"></i>`).join("")}
-      <div class="footer-rule"></div><button class="fixed" style="left:204px;top:516px;width:180px;height:30px;border:0;text-align:left;padding-left:0">合上词册 · Esc / Tab</button>
+      ${Array.from({ length: 6 }, (_, i) => `<i class="row-rule" style="left:${204 + (i % 2) * 282}px;top:${332 + Math.floor(i / 2) * 64}px"></i>`).join("")}
+      <div class="fixed" style="left:204px;top:478px;color:#93a399;font-size:10px">拼 / 义 &nbsp; · 未练 &nbsp; ! 薄弱 &nbsp; ◇ 辅助正确 &nbsp; ✓ 正确</div><div class="footer-rule"></div><button class="fixed" style="left:204px;top:516px;width:180px;height:30px;border:0;text-align:left;padding-left:0">合上词册 · Esc / Tab</button>
       <button class="fixed" style="left:580px;top:516px;width:74px;height:30px">← 上页</button><button class="fixed" style="left:670px;top:516px;width:84px;height:30px">下页 →</button>
     </section>`,
     );
@@ -107,7 +107,7 @@ export async function buildNativeWordStyle(browser) {
       "ledger-filter",
       160,
       90,
-      `<div style="width:160px;height:90px;background:#101c1e;border:1px solid #b49b6b77">${["本局 30 词", "薄弱 / 宿敌词", "完整词库"].map((label) => `<div style="height:30px;padding:8px 10px;border-bottom:1px solid #b49b6b22;font-size:11px;color:#d9ccae">${label}</div>`).join("")}</div>`,
+      `<div style="width:160px;height:90px;background:#101c1e;border:1px solid #b49b6b77">${["本局 30 词", "本局薄弱", "完整词库"].map((label) => `<div style="height:30px;padding:8px 10px;border-bottom:1px solid #b49b6b22;font-size:11px;color:#d9ccae">${label}</div>`).join("")}</div>`,
     );
     for (const [name, w, label] of [
       ["prev", 74, "← 上页"],

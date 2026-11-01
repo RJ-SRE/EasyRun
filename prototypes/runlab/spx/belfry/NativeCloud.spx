@@ -1,0 +1,342 @@
+// Optional transport. Username mode uses the runtime name as an UNVERIFIED
+// profile selector. Verified-ID mode still requires an explicit host session.
+// Requests run outside the frame loop; only save boundaries drain the event log.
+var (
+ nativeNameMode bool
+ nativeNameSeen bool
+ nativeNameObserved string
+ nativeNameConnected string
+ nativeNameEpoch int
+ nativeNameBusy bool
+ nativeNameHalted bool
+ nativeNameGuest bool
+ nativeNameRetry int
+ nativeNameRetryAt float64
+ nativeNameRefreshAt float64
+ nativeNameNextPoll float64
+ nativeCloudURL string
+ nativeCloudVersion string
+ nativeCloudAccount string
+ nativeCloudSession string
+ nativeCloudPendingAccount string
+ nativeCloudPendingSession string
+ nativeCloudAttachPending bool
+ nativeCloudGeneration int
+ nativeCloudBusy bool
+ nativeCloudReady bool
+ nativeCloudHalted bool
+ nativeCloudAuthRequired bool
+ nativeCloudRun bool
+ nativeCloudOwned bool
+ nativeCloudPractice bool
+ nativeCloudNeedsPrepare bool
+ nativeCloudStatus string
+ nativeCloudWriter string
+ nativeCloudEpoch int
+ nativeCloudRevision int
+ nativeCloudBatch int
+ nativeCloudSeq int
+ nativeCloudAck int
+ nativeCloudRunSeq int
+ nativeCloudAttempt int
+ nativeCloudCheckpoint int
+ nativeCloudQuestion int
+ nativeCloudRunID string
+ nativeCloudPreparation string
+ nativeCloudPreparedAt float64
+ nativeCloudQueue []map[string]any
+ nativeCloudFrozen string
+ nativeCloudFrozenCount int
+ nativeCloudFrozenLast int
+ nativeCloudDrain int
+ nativeCloudRetry int
+ nativeCloudRetryAt float64
+ nativeCloudArchives map[string]string
+ nativeCloudStartCloud bool
+ nativeCloudTakeoverRequested bool
+ nativeCloudQuestionStarted float64
+ nativeCloudOverflow bool
+ nativeCloudSummary map[string]any
+)
+func nativeCloudString(m map[string]any,key string) string {v,_:=m[key].(string); return v}
+func nativeCloudInt(m map[string]any,key string) int {if v,ok:=m[key].(int); ok {return v}; v,_:=m[key].(float64); return int(v)}
+func nativeCloudBool(m map[string]any,key string) bool {v,_:=m[key].(bool); return v}
+func nativeCloudJSON(v any) string {b,err:=json.Marshal(v); if err!=nil {return ""}; return string(b)}
+func nativeCloudNotice(s string) {if nativeNameMode && (nativeCloudAccount!="" || nativeNameBusy) {s="名称档案 · "+s}; nativeCloudStatus=s; nativeTextMemoKnown=false; println "@cloud",s}
+func nativeNamePoll(force bool) {
+ if !nativeNameMode || nativeCloudURL=="" || phase!=0 {return}
+ if !force && float64(timer)<nativeNameNextPoll {return}; nativeNameNextPoll=float64(timer)+1
+ name:=strings.ToLower(strings.TrimSpace(username))
+ if !nativeNameSeen || name!=nativeNameObserved {
+  nativeNameSeen=true; nativeNameObserved=name; nativeNameEpoch++; nativeNameBusy=false; nativeNameHalted=false
+  nativeNameConnected=""; nativeNameRetry=0; nativeNameRetryAt=0; nativeNameRefreshAt=0; nativeNameGuest=false
+  if name=="" {nativeCloudAttach("",""); nativeCloudNotice("游客 · 本次运行记录"); return}
+ }
+ if name=="" || nativeNameGuest || nativeNameBusy || nativeNameHalted || float64(timer)<nativeNameRetryAt {return}
+ if nativeNameConnected==name && !nativeCloudAuthRequired && float64(timer)<nativeNameRefreshAt {return}
+ nativeNameBusy=true; nativeCloudNotice("正在读取名称档案")
+ go nativeCloudRequest("session",nativeCloudJSON(map[string]any{"username":name}),nativeNameEpoch,"")
+}
+func nativeNameResponse(status int,raw string,epoch int) {
+ if epoch!=nativeNameEpoch || nativeNameGuest {return}; nativeNameBusy=false
+ data:=map[string]any{}; err:=json.Unmarshal([]byte(raw),&data)
+ if status!=200 || err!=nil {
+  if status>=400 && status<500 {nativeNameHalted=true; nativeCloudNotice("名称不可用 · N 重试 / G 游客"); return}
+  nativeNameRetry++
+  if nativeNameRetry<=3 {nativeNameRetryAt=float64(timer)+[]float64{2,5,15}[nativeNameRetry-1]; nativeCloudNotice("名称服务暂不可用 · 自动重试")} else {nativeNameHalted=true; nativeCloudNotice("名称档案未连接 · N 重试 / G 游客")}
+  return
+ }
+ account:=nativeCloudString(data,"playerId"); session:=nativeCloudString(data,"session")
+ if nativeCloudString(data,"profileMode")!="username" || nativeCloudBool(data,"verified") || !nativeCloudValidAccount(account) || session=="" {nativeNameHalted=true; nativeCloudNotice("名称档案响应异常 · G 游客"); return}
+ nativeNameConnected=nativeNameObserved; nativeNameRetry=0; nativeNameRetryAt=0; nativeNameRefreshAt=float64(timer)+6*3600
+ same:=account==nativeCloudAccount
+ nativeCloudAttach(account,session)
+ if same && !nativeCloudHalted {nativeCloudNotice("记录已连接")}
+}
+func nativeNameBlocked() bool {
+ return nativeNameMode && nativeCloudURL!="" && nativeNameObserved!="" && !nativeNameGuest && (nativeNameBusy || nativeNameHalted || nativeNameConnected!=nativeNameObserved || nativeCloudAccount=="")
+}
+func nativeCloudValidAccount(account string) bool {
+ if len(account)!=66 || !strings.HasPrefix(account,"p_") {return false}
+ for _,c:=range account[2:] {if !(c>='0' && c<='9') && !(c>='a' && c<='f') {return false}}
+ return true
+}
+func nativeCloudAttach(account,session string) {
+ if nativeCloudURL=="" {return}
+ if account!="" && (!nativeCloudValidAccount(account) || session=="") {return}
+ // account is a backend-derived key: verified id OR explicitly selected name.
+ // Same profile token refresh keeps the current deck and in-flight save.
+ if account==nativeCloudAccount {
+  nativeCloudAttachPending=false; nativeCloudPendingAccount=""; nativeCloudPendingSession=""
+  if session==nativeCloudSession {return}
+  nativeCloudSession=session
+  if nativeCloudAuthRequired {nativeCloudAuthRequired=false; nativeCloudHalted=false; nativeCloudRetry=0; nativeCloudRetryAt=0; nativeCloudDrain=nativeCloudSeq; nativeCloudNotice("登录已恢复 · 记录保留")}
+  return
+ }
+ nativeCloudPendingAccount=account; nativeCloudPendingSession=session; nativeCloudAttachPending=true
+ if phase!=0 {nativeCloudNotice("身份变更 · 下次远征生效")}
+}
+func nativeCloudSnapshot() string {
+ states:=[]map[string]any{}
+ for _,i:=range nativeDeck {
+  row:=map[string]any{"id":nativeWordIDs[i],"last":nativeLearnLast[i],"ever":nativeLearnEver[i],"won":nativeLearnWon[i]}
+  for mode,key:=range []string{"spell","meaning"} {
+   j:=i*2+mode
+   row[key]=[]float64{float64(nativeLearnAttempts[j]),float64(nativeLearnCorrect[j]),float64(nativeLearnWrong[j]),float64(nativeLearnTimeout[j]),float64(nativeLearnAssisted[j]),float64(nativeLearnWeak[j]),float64(nativeLearnOutcome[j]),nativeLearnDue[j]}
+  }
+  states=append(states,row)
+ }
+ return nativeCloudJSON(map[string]any{"writer":nativeCloudWriter,"epoch":nativeCloudEpoch,"revision":nativeCloudRevision,"batch":nativeCloudBatch,"seq":nativeCloudSeq,"ack":nativeCloudAck,"runSeq":nativeCloudRunSeq,"preparation":nativeCloudPreparation,"preparedAt":nativeCloudPreparedAt,"queue":nativeCloudQueue,"frozen":nativeCloudFrozen,"count":nativeCloudFrozenCount,"last":nativeCloudFrozenLast,"drain":nativeCloudDrain,"states":states,"overflow":nativeCloudOverflow})
+}
+func nativeCloudRestore(raw string) {
+ m:=map[string]any{}; if json.Unmarshal([]byte(raw),&m)!=nil {nativeCloudHalted=true; nativeCloudNotice("本地记录异常 · 未开启同步"); return}
+ nativeCloudWriter=nativeCloudString(m,"writer"); nativeCloudEpoch=nativeCloudInt(m,"epoch"); nativeCloudRevision=nativeCloudInt(m,"revision")
+ nativeCloudBatch=nativeCloudInt(m,"batch"); nativeCloudSeq=nativeCloudInt(m,"seq"); nativeCloudAck=nativeCloudInt(m,"ack"); nativeCloudRunSeq=nativeCloudInt(m,"runSeq")
+ nativeCloudPreparation=nativeCloudString(m,"preparation"); nativeCloudPreparedAt,_=m["preparedAt"].(float64)
+ nativeCloudFrozen=nativeCloudString(m,"frozen"); nativeCloudFrozenCount=nativeCloudInt(m,"count"); nativeCloudFrozenLast=nativeCloudInt(m,"last"); nativeCloudDrain=nativeCloudInt(m,"drain")
+ nativeCloudOverflow=nativeCloudBool(m,"overflow")
+ rows,_:=m["queue"].([]any); for _,v:=range rows {e,ok:=v.(map[string]any); if ok {nativeCloudQueue=append(nativeCloudQueue,e)}}
+ states,_:=m["states"].([]any); nativeDeck=[]int{}; nativeDone=[]int{}
+ for _,v:=range states {row,ok:=v.(map[string]any); if ok {
+  i,found:=nativeWordIdIndex[nativeCloudString(row,"id")]; if found {
+   nativeDeck=append(nativeDeck,i); nativeDone=append(nativeDone,0); nativeLearnLast[i]=nativeCloudInt(row,"last"); nativeLearnEver[i]=nativeCloudInt(row,"ever"); nativeLearnWon[i]=nativeCloudInt(row,"won")
+   for mode,key:=range []string{"spell","meaning"} {a,_:=row[key].([]any); if len(a)==8 {j:=i*2+mode
+    nativeLearnAttempts[j]=int(a[0].(float64)); nativeLearnCorrect[j]=int(a[1].(float64)); nativeLearnWrong[j]=int(a[2].(float64)); nativeLearnTimeout[j]=int(a[3].(float64)); nativeLearnAssisted[j]=int(a[4].(float64)); nativeLearnWeak[j]=int(a[5].(float64)); nativeLearnOutcome[j]=int(a[6].(float64)); nativeLearnDue[j]=a[7].(float64)
+   }}
+  }
+ }}
+}
+func nativeCloudSwitch() {
+ if !nativeCloudAttachPending || phase!=0 {return}
+ account:=nativeCloudPendingAccount; session:=nativeCloudPendingSession; nativeCloudAttachPending=false
+ nativeCloudPendingAccount=""; nativeCloudPendingSession=""
+ if account==nativeCloudAccount {
+  nativeCloudSession=session
+  return
+ }
+ if nativeCloudArchives==nil {nativeCloudArchives=map[string]string{}}
+ if _,exists:=nativeCloudArchives[account]; account!="" && !exists && len(nativeCloudArchives)>=4 {nativeCloudNotice("账号缓存已满 · 请先保存记录"); return}
+ if nativeCloudAccount!="" {nativeCloudArchives[nativeCloudAccount]=nativeCloudSnapshot()}
+ nativeCloudGeneration++; nativeCloudBusy=false; nativeCloudAccount=account; nativeCloudSession=session
+ nativeCloudWriter=""; nativeCloudEpoch=0; nativeCloudRevision=0; nativeCloudBatch=0; nativeCloudSeq=0; nativeCloudAck=0; nativeCloudRunSeq=0
+ nativeCloudQueue=nil; nativeCloudFrozen=""; nativeCloudFrozenCount=0; nativeCloudFrozenLast=0; nativeCloudDrain=0; nativeCloudPreparation=""
+ nativeCloudReady=false; nativeCloudHalted=false; nativeCloudAuthRequired=false; nativeCloudRun=false; nativeCloudOwned=false; nativeCloudRetry=0; nativeCloudRetryAt=0; nativeCloudTakeoverRequested=false; nativeCloudOverflow=false; nativeCloudSummary=nil
+ initNativeLearning()
+ if account=="" {nativeCloudNeedsPrepare=false; nativeLearningShuffle(); nativeCloudNotice("游客 · 本次运行记录"); return}
+ if raw,exists:=nativeCloudArchives[account]; exists {nativeCloudRestore(raw)}
+ nativeCloudNeedsPrepare=true; nativeCloudDrain=nativeCloudSeq; nativeCloudNotice("正在准备词册")
+}
+func nativeCloudPrepare() {
+ if nativeCloudAccount=="" || nativeCloudBusy || nativeCloudHalted || phase!=0 {return}
+ if len(nativeCloudQueue)>0 || nativeCloudFrozen!="" {nativeCloudDrain=nativeCloudSeq; return}
+ mode:=[]string{"normal","hard","challenge","random"}[nativeScope]
+ body:=map[string]any{"contentVersion":nativeCloudVersion,"wordMode":mode}
+ if nativeCloudWriter!="" {body["writerSessionId"]=nativeCloudWriter; body["writerEpoch"]=nativeCloudEpoch; body["baseRevision"]=nativeCloudRevision; body["lastEventSeq"]=nativeCloudAck}
+ if nativeCloudTakeoverRequested {body["takeover"]=true; body["baseRevision"]=nativeCloudRevision}
+ nativeCloudBusy=true; nativeCloudReady=false; nativeCloudNotice("正在准备词册")
+ go nativeCloudRequest("prepare",nativeCloudJSON(body),nativeCloudGeneration,nativeCloudSession)
+}
+func nativeCloudRequest(kind,body string,generation int,session string) {
+ method:="POST"; if kind=="view" {method="GET"}
+ request,err:=http.NewRequest(method,nativeCloudURL+"/v1/"+kind,strings.NewReader(body))
+ if err!=nil {nativeCloudResponse(kind,0,"",generation,session); return}
+ if session!="" {request.Header.Set("Authorization","Bearer "+session)}; request.Header.Set("Content-Type","application/json")
+ client:=http.Client{Timeout:10000000000}
+ response,err:=client.Do(request)
+ if err!=nil {nativeCloudResponse(kind,0,"",generation,session); return}
+ buffer:=make([]byte,1024); raw:=""; reading:=true
+ for reading && len(raw)<=32768 {n,readErr:=response.Body.Read(buffer); if n>0 {raw+=string(buffer[:n])}; if readErr!=nil || n==0 {reading=false}}
+ response.Body.Close()
+ if len(raw)>32768 {nativeCloudResponse(kind,0,"",generation,session); return}
+ nativeCloudResponse(kind,response.StatusCode,raw,generation,session)
+}
+func nativeCloudResponse(kind string,status int,raw string,generation int,requestSession string) {
+ if kind=="session" {nativeNameResponse(status,raw,generation); return}
+ if generation!=nativeCloudGeneration {return}
+ nativeCloudBusy=false
+ // An old in-flight token may expire just as the same account refreshes it.
+ // Keep its frozen batch; retry with the new credential instead of reloading.
+ if status==401 && requestSession!=nativeCloudSession {nativeCloudHalted=false; nativeCloudAuthRequired=false; nativeCloudRetryAt=0; nativeCloudNotice("登录已更新 · 记录保留"); return}
+ data:=map[string]any{}; decodeErr:=json.Unmarshal([]byte(raw),&data)
+ if status!=200 || decodeErr!=nil {
+  code:=nativeCloudString(data,"error")
+  if status>=400 && status<500 {
+   nativeCloudHalted=true; nativeCloudRetryAt=0
+   nativeCloudAuthRequired=status==401
+   if status==401 {nativeCloudNotice("登录失效 · 记录待保存")} else if code=="TAKEOVER_REQUIRED" || code=="WRITER_REPLACED" {nativeCloudNotice("其他设备占用 · V 接管 / G 游客")} else {nativeCloudNotice("同步冲突 · 记录待保存")}
+  } else {
+   nativeCloudRetry++
+   if nativeCloudRetry<=3 {nativeCloudRetryAt=float64(timer)+[]float64{2,5,15}[nativeCloudRetry-1]; nativeCloudNotice("网络暂不可用 · 自动重试")} else {nativeCloudHalted=true; nativeCloudNotice("未保存 · N 重试 / G 游客")}
+  }
+  return
+ }
+ if kind=="view" {
+  nativeCloudRevision=nativeCloudInt(data,"revision"); nativeCloudTakeoverRequested=true; nativeCloudNeedsPrepare=true; nativeCloudHalted=false
+ } else if kind=="prepare" {
+  if !nativeCloudLoadDeck(data) {nativeCloudHalted=true; nativeCloudNotice("词册校验失败 · 保留本地"); return}
+  nativeCloudNeedsPrepare=false; nativeCloudReady=true; nativeCloudTakeoverRequested=false; nativeCloudOverflow=false; nativeCloudNotice("词册已就绪 · 学习记录已恢复")
+ } else {
+  expected:=nativeCloudWriter+":"+fmt.Sprint(nativeCloudBatch+1)
+  if nativeCloudString(data,"batchId")!=expected || nativeCloudInt(data,"batchSeq")!=nativeCloudBatch+1 || nativeCloudInt(data,"lastEventSeq")!=nativeCloudFrozenLast || nativeCloudInt(data,"revision")!=nativeCloudRevision+1 {
+   nativeCloudHalted=true; nativeCloudNotice("保存回执异常 · 记录保留"); return
+  }
+  nativeCloudBatch++; nativeCloudAck=nativeCloudFrozenLast; nativeCloudRevision=nativeCloudInt(data,"revision")
+  // Remove only the acknowledged prefix; answers entered during the request stay.
+  tail:=make([]map[string]any,len(nativeCloudQueue)-nativeCloudFrozenCount); copy(tail,nativeCloudQueue[nativeCloudFrozenCount:]); nativeCloudQueue=tail
+  nativeCloudFrozen=""; nativeCloudFrozenCount=0; nativeCloudFrozenLast=0
+  if len(nativeCloudQueue)==0 {nativeCloudNotice("记录已保存")} else {nativeCloudNotice("还有记录待保存")}
+  if nativeCloudOverflow {nativeCloudNotice("已存已有记录 · 超额作答未同步")}
+ }
+ nativeCloudRetry=0; nativeCloudRetryAt=0
+ nativeCloudAuthRequired=false
+ if summary,ok:=data["summary"].(map[string]any); ok {nativeCloudSummary=summary; nativeTextMemoKnown=false}
+}
+func nativeCloudLoadDeck(data map[string]any) bool {
+ rows,ok:=data["words"].([]any)
+ if !ok || len(rows)!=30 || nativeCloudString(data,"playerId")!=nativeCloudAccount || nativeCloudString(data,"contentVersion")!=nativeCloudVersion || nativeCloudInt(data,"learningRuleVersion")!=1 {return false}
+ ids:=map[int]bool{}
+ for _,v:=range rows {row,valid:=v.(map[string]any); if !valid {return false}; i,found:=nativeWordIdIndex[nativeCloudString(row,"wordId")]; if !found || ids[i] {return false}; ids[i]=true}
+ if nativeCloudString(data,"writerSessionId")=="" || nativeCloudString(data,"preparation")=="" {return false}
+ clock,validClock:=data["serverTimeMs"].(float64); if !validClock || clock<=0 {return false}
+ initNativeLearning(); nativeDeck=[]int{}; nativeDone=[]int{}; nativeCursor=0; nativeDeckUsed=false
+ for _,v:=range rows {
+  row:=v.(map[string]any); i:=nativeWordIdIndex[nativeCloudString(row,"wordId")]; nativeDeck=append(nativeDeck,i); nativeDone=append(nativeDone,0)
+  state,known:=row["state"].(map[string]any); if known {
+   if nativeCloudBool(state,"everCorrect") {nativeLearnEver[i]=1}; if nativeCloudBool(state,"everCompletedInWonRun") {nativeLearnWon[i]=1}
+   if nativeCloudString(state,"lastQuestionType")=="spell" {nativeLearnLast[i]=1} else if nativeCloudString(state,"lastQuestionType")=="meaning" {nativeLearnLast[i]=2}
+   for mode,key:=range []string{"spell","meaning"} {a,practiced:=state[key].(map[string]any); if practiced {
+    j:=i*2+mode; nativeLearnAttempts[j]=1; nativeLearnWeak[j]=nativeCloudInt(a,"weaknessMilli")
+    outcome:=nativeCloudString(a,"lastOutcome"); if outcome=="correct" {nativeLearnOutcome[j]=1} else if outcome=="wrong" {nativeLearnOutcome[j]=2} else if outcome=="timeout" {nativeLearnOutcome[j]=3}
+    due,ok:=a["nextReviewAtMs"].(float64); if ok {nativeLearnDue[j]=float64(timer)+(due-clock)/1000}
+   }}
+   if nativeLearningGroup(i)==2 {nativeWeak[i]=1}
+  }
+ }
+ nativeCloudWriter=nativeCloudString(data,"writerSessionId"); nativeCloudEpoch=nativeCloudInt(data,"writerEpoch"); nativeCloudRevision=nativeCloudInt(data,"revision")
+ nativeCloudBatch=nativeCloudInt(data,"lastBatchSeq"); nativeCloudSeq=nativeCloudInt(data,"lastEventSeq"); nativeCloudAck=nativeCloudSeq; nativeCloudRunSeq=nativeCloudInt(data,"maxRunSeq")
+ nativeCloudPreparation=nativeCloudString(data,"preparation"); nativeCloudPreparedAt=float64(timer)
+ nativeLedgerRevision++; return true
+}
+func nativeCloudRecord(e map[string]any) {
+ if !nativeCloudRun {return}
+ if len(nativeCloudQueue)>=2000 {nativeCloudRun=false; nativeCloudOwned=false; nativeCloudReady=false; nativeCloudHalted=true; nativeCloudOverflow=true; nativeCloudNotice("记录已满 · 后续练习仅本地"); return}
+ nativeCloudSeq++; e["eventSeq"]=nativeCloudSeq; e["runId"]=nativeCloudRunID; nativeCloudQueue=append(nativeCloudQueue,e)
+ if len(nativeCloudQueue)==1 && !nativeCloudBusy && !nativeCloudHalted {nativeCloudNotice("记录待保存")}
+}
+func nativeCloudFlush() {
+ if nativeCloudBusy || nativeCloudHalted || nativeCloudAccount=="" || nativeCloudDrain<=nativeCloudAck {return}
+ if nativeCloudFrozen=="" {
+  events:=[]map[string]any{}
+  for index:=0;index<len(nativeCloudQueue) && len(events)<50;index++ {
+   e:=nativeCloudQueue[index]
+   // Locally created ints become float64 after restoring an archived JSON log.
+   seq:=nativeCloudInt(e,"eventSeq")
+   if seq<=nativeCloudDrain && len(events)<50 {events=append(events,e); nativeCloudFrozenLast=seq}
+  }
+  if len(events)==0 {return}
+  body:=map[string]any{"writerSessionId":nativeCloudWriter,"writerEpoch":nativeCloudEpoch,"baseRevision":nativeCloudRevision,"batchSeq":nativeCloudBatch+1,"batchId":nativeCloudWriter+":"+fmt.Sprint(nativeCloudBatch+1),"events":events}
+  nativeCloudFrozen=nativeCloudJSON(body)
+  for len(nativeCloudFrozen)>32768 && len(events)>1 {events=events[:len(events)/2]; body["events"]=events; nativeCloudFrozen=nativeCloudJSON(body)}
+  nativeCloudFrozenCount=len(events); nativeCloudFrozenLast=nativeCloudInt(events[len(events)-1],"eventSeq")
+  if len(nativeCloudFrozen)>32768 {nativeCloudFrozen=""; nativeCloudHalted=true; nativeCloudNotice("记录批次过大 · 已停止发送"); return}
+ }
+ nativeCloudBusy=true; nativeCloudNotice("正在保存记录")
+ go nativeCloudRequest("batches",nativeCloudFrozen,nativeCloudGeneration,nativeCloudSession)
+}
+func nativeCloudBeforeStart() bool {
+ if !nativeLocalBeforeStart() {return false}
+ nativeCloudStartCloud=false
+ if nativeCloudPractice {if nativeCloudRun {nativeCloudRecord(map[string]any{"type":"abandoned"}); nativeCloudDrain=nativeCloudSeq}; nativeCloudRun=false; nativeCloudOwned=false; return true}
+ if phase==0 {nativeNamePoll(true); if nativeNameBlocked() {nativeCloudNotice("名称档案准备中 · N 重试 / G 游客"); return false}}
+ if phase==0 && nativeCloudAttachPending {nativeCloudNotice("身份准备中 · 请稍候"); return false}
+ if phase==0 && nativeCloudAccount!="" && (!nativeCloudReady || nativeCloudBusy || nativeCloudHalted || nativeCloudNeedsPrepare) {nativeCloudNotice("词册未就绪 · N 重试 / G 游客"); return false}
+ if phase==0 && nativeCloudAccount!="" && float64(timer)-nativeCloudPreparedAt>25*60 {nativeCloudNeedsPrepare=true; nativeCloudReady=false; nativeCloudNotice("词册已过期 · 正在更新"); return false}
+ nativeCloudStartCloud=(phase!=0 && nativeCloudOwned) || (phase==0 && nativeCloudAccount!="" && nativeCloudReady)
+ if nativeCloudRun {nativeCloudRecord(map[string]any{"type":"abandoned"}); nativeCloudDrain=nativeCloudSeq}
+ nativeCloudRun=false
+ return true
+}
+func nativeCloudEvent(name string) {
+ if name=="start" {
+  nativeCloudRun=nativeCloudStartCloud && !nativeCloudPractice; nativeCloudOwned=nativeCloudRun; nativeCloudStartCloud=false
+  if nativeCloudRun {nativeCloudRunSeq++; nativeCloudRunID=nativeCloudWriter+":"+fmt.Sprint(nativeCloudRunSeq); nativeCloudQuestion=0; nativeCloudAttempt=0; nativeCloudCheckpoint=0; nativeCloudRecord(map[string]any{"type":"run-start","runSeq":nativeCloudRunSeq,"preparation":nativeCloudPreparation})}
+ }
+ if !nativeCloudRun {if name=="menu" {nativeCloudOwned=false; if nativeCloudAccount!="" {nativeCloudNeedsPrepare=true}}; return}
+ if name=="fail" {nativeCloudAttempt++; nativeCloudRecord(map[string]any{"type":"failure","attemptSeq":nativeCloudAttempt}); nativeCloudDrain=nativeCloudSeq}
+ if name=="checkpoint" && checkpoint+1>nativeCloudCheckpoint {nativeCloudCheckpoint=checkpoint+1; nativeCloudRecord(map[string]any{"type":"checkpoint","checkpoint":nativeCloudCheckpoint}); nativeCloudDrain=nativeCloudSeq}
+ if name=="finish" {nativeCloudRecord(map[string]any{"type":"won"}); nativeCloudDrain=nativeCloudSeq; nativeCloudRun=false}
+ if name=="menu" {nativeCloudRecord(map[string]any{"type":"abandoned"}); nativeCloudDrain=nativeCloudSeq; nativeCloudRun=false; nativeCloudOwned=false; nativeCloudNeedsPrepare=true; nativeCloudReady=false}
+}
+func nativeCloudAnswer(result int) {
+ if !nativeCloudRun {return}
+ nativeCloudQuestion++
+ hint:="none"; ability:="meaning"; shown:=false
+ if nativeQuestionMode==0 {ability="spell"; shown=true; hint=[]string{"full","fade","brief"}[nativeHint]}
+ ms:=int((float64(timer)-nativeCloudQuestionStarted)*1000); if ms<0 {ms=0}; if ms>3600000 {ms=3600000}
+ nativeCloudRecord(map[string]any{"type":"answer","questionSeq":nativeCloudQuestion,"wordId":nativeWordIDs[nativeWordIndex],"contentVersion":nativeCloudVersion,"questionType":ability,"result":[]string{"correct","wrong","timeout"}[result-1],"hintMode":hint,"answerShown":shown,"extraHintUsed":false,"responseMs":ms})
+}
+func nativeCloudRetryNow() {
+ if nativeNameMode && phase==0 && nativeCloudURL!="" {
+  nativeNameGuest=false; nativeNameHalted=false; nativeNameRetry=0; nativeNameRetryAt=0; nativeNameNextPoll=0
+  if nativeCloudAuthRequired || nativeCloudAccount=="" {nativeNameRefreshAt=0}
+  nativeNamePoll(true); if nativeNameBlocked() {return}
+ }
+ if nativeCloudAccount=="" || nativeCloudBusy {return}
+ nativeCloudHalted=false; nativeCloudRetry=0; nativeCloudRetryAt=0; nativeCloudDrain=nativeCloudSeq
+ if phase==0 {nativeCloudNeedsPrepare=true}; nativeCloudNotice("正在重试")
+}
+func nativeCloudTakeover() {
+ if phase!=0 || nativeCloudAccount=="" || nativeCloudBusy || nativeHelp || nativeSettings {return}
+ if len(nativeCloudQueue)>0 || nativeCloudFrozen!="" {nativeCloudNotice("旧记录待确认 · 无法接管"); return}
+ nativeCloudBusy=true; nativeCloudRetryAt=0; nativeCloudNotice("正在接管此账号")
+ go nativeCloudRequest("view","",nativeCloudGeneration,nativeCloudSession)
+}
+func nativeCloudGuest() {if phase==0 {nativeNameGuest=true; nativeNameEpoch++; nativeNameBusy=false; nativeNameConnected=""; nativeCloudAttach("",""); nativeCloudNotice("游客 · 本次运行记录")}}
+func updateNativeCloud() {
+ if nativeCloudURL=="" {return}
+ nativeNamePoll(false)
+ nativeCloudSwitch()
+ if nativeCloudAccount=="" || nativeCloudBusy || nativeCloudHalted || float64(timer)<nativeCloudRetryAt {return}
+ if nativeCloudDrain>nativeCloudAck {nativeCloudFlush(); return}
+ if nativeCloudNeedsPrepare && phase==0 {nativeCloudPrepare()}
+}

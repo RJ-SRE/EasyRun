@@ -5,6 +5,7 @@ var (
  ultimateGated bool
  bladeLink int
  skillWord int
+ skillCast int
  px float64
  py float64
  vx float64
@@ -164,6 +165,7 @@ func strike() {
  if kind==7 {skillFX(px+bladeX*70,py+32+bladeY*70,angle(bladeX,bladeY),1,1.0); burst(px+bladeX*80,py+32+bladeY*80,12,3,260)} else {if takeFX(90) {Slash.clone []float64{px,py+32,attackFacing,float64(style),float64(attempts)}}}
  if kind==1 {event("light1")}; if kind==2 {event("light2")}; if kind==3 {event("finisher")}; if kind==4 {event("launcher")}; if kind==5 || kind==6 {event("aircut")}; if kind==7 {event("heavy"); if charged {event("charged")}}
  event("slash"); lastMove=kind
+ if kind!=7 {keeperDeflectBlade(px,py+28,reach,attackFacing)}
  if kind==4 {releaseHook(false); vy=530; grounded=false; airJump=true}
  if kind==7 {vx+=bladeX*240; vy+=bladeY*120}
  if kind==3 {vx+=attackFacing/90*160}
@@ -175,7 +177,7 @@ func strike() {
    dealt:=damage; marked:=kind==7 && charged && enemyMark[i]>0
    if marked {dealt+=2}
    if strikeEnemy(i,dealt,kind) {
-    if kind==7 {skillImpact(skillWord,2,i)}
+    if kind==7 {skillImpact(skillWord,2,i); keeperSkillImpact(i,2,skillCast)}
     if marked {enemyMark[i]=0; skillFX(enemyX[i],enemyY[i],angle(bladeX,bladeY),3,0.85); event("markbreak")}
     if enemyType[i]!=3 && enemyStun[i]>0 {
      push:=95.0; lift:=70.0; stun:=0.18
@@ -247,13 +249,14 @@ func aimBow() {
  }
 }
 func shootBow() {
+ skillCastSerial++; skillCast=skillCastSerial
  full:=0.0; if bowCharge>=0.55 {full=1}
  bowCool=3; bowRecoil=0.2; bodyVelocity=-25; bowCharging=false; bowCharge=0; attackTime=0.12; lastMove=11
- projectileCount++; arrowMade++; Arrow.clone []float64{px+aimX*24,py+32+aimY*24,aimX,aimY,full,float64(attempts),float64(skillWord)}
+ projectileCount++; arrowMade++; Arrow.clone []float64{px+aimX*24,py+32+aimY*24,aimX,aimY,full,float64(attempts),float64(skillWord),float64(skillCast)}
  skillFX(px+aimX*30,py+32+aimY*30,angle(aimX,aimY),0,0.65+full*0.3)
  bowTarget=-1; vx-=aimX*45; event("bowshot"); if full>0 {event("bowfull")}
 }
-func releaseBlade(full bool) {bladeCool=3; charged=full; charging=false; chargeTime=0; beginAttack(7)}
+func releaseBlade(full bool) {skillCastSerial++; skillCast=skillCastSerial; bladeCool=3; charged=full; charging=false; chargeTime=0; beginAttack(7)}
 func nova() {
  if ultimateCool>0 || ultimateTime>0 || healTime>0 || attackKind==7 {return}
  cancelAttack(); releaseHook(false); dashTime=0; ultimateTime=1.08; ultimateStep=0; ultimateGated=false; ultimateDir=0
@@ -262,6 +265,7 @@ func nova() {
  releaseUltimate()
 }
 func releaseUltimate() {
+ skillCastSerial++; skillCast=skillCastSerial
  ultimateCool=5; ultimateGated=true; lastMove=9; invulnerable=math.Max(invulnerable,0.35); vx*=0.2; vy*=0.4
  skillFX(px,py+32,90,4,0.85); event("chainstart")
 }
@@ -293,7 +297,7 @@ func updateSkills(dt float64) {
    for i:=0;i<len(enemyHP);i++ {
     if dist(enemyX[i]-strikeX,enemyY[i]-strikeY)<115 && dist(enemyX[i]-px,enemyY[i]-py-32)<285 && !blockedLine(px,py+32,enemyX[i],enemyY[i]) {
      damage:=1; if final {damage=3}
-     if strikeEnemy(i,damage,10) {skillImpact(skillWord,4,i); if enemyType[i]!=3 && enemyStun[i]>0 {enemyStun[i]=0.4; if final {enemyVX[i]=facing/90*270; enemyVY[i]=ultimateDir*420+80}}; if final {hitStop=0.07; shock=6}; event("chainhit")}
+     if strikeEnemy(i,damage,10) {skillImpact(skillWord,4,i); keeperSkillImpact(i,4,skillCast); if enemyType[i]!=3 && enemyStun[i]>0 {enemyStun[i]=0.4; if final {enemyVX[i]=facing/90*270; enemyVY[i]=ultimateDir*420+80}}; if final {hitStop=0.07; shock=6}; event("chainhit")}
     }
    }
    if final {event("chainfinish"); burst(strikeX,strikeY,18,3,330); if ultimateDir>0 {vy=480; grounded=false}; if ultimateDir<0 {vy=-680; grounded=false}} else {event("swordcut")}
@@ -495,7 +499,9 @@ func render(dt float64) {
   idleTime+=dt; frame:=int(idleTime*10)%24
   if frame!=idleFrame {idleFrame=frame; setCostume 40+frame}
  } else {idleTime=0; idleFrame=-1}
- if attackKind==0 && !charging && !bowCharging && ultimateTime<=0 {if vx < -20 {facing=-90} else if vx>20 {facing=90}}; setHeading facing
+ // Bow recoil is opposite the aim; it must not turn the next blade cast away
+ // from the enemy while answer-input quarantine freezes the movement tick.
+ if attackKind==0 && !charging && !bowCharging && ultimateTime<=0 && bowRecoil<=0 {if vx < -20 {facing=-90} else if vx>20 {facing=90}}; setHeading facing
  bodyVelocity+=(-210*bodyOffset-23*bodyVelocity)*dt; bodyOffset+=bodyVelocity*dt; renderY=py+bodyOffset
  if charging {renderY+=sin(visualTime*43)*chargeTime*1.8}; if bindTime>0 {renderY+=sin(visualTime*35)*1.2}
  if phase==5 {renderY+=sin(visualTime*4)*1.3}
@@ -510,7 +516,11 @@ func render(dt float64) {
  targetY=clamp(targetY,worldBottom+240,220)
  if segment==1 {targetY=clamp((py+enemyY[keeperIndex])/2+105,enemyBaseY[keeperIndex]+65,enemyBaseY[keeperIndex]+155)}
  cameraY+=(targetY-cameraY)*(1-exp(-7*dt))
- renderShock:=shock; if phase==5 {renderShock*=exp(-wordFocusAge*12)}
+ // Combat impulses never animate title or result screens. Their simulation
+ // clock is stopped there, so applying the old amplitude would shake forever.
+ renderShock:=0.0
+ if phase==1 || phase==5 {renderShock=shock}
+ if phase==5 {renderShock*=exp(-wordFocusAge*12)}
  cameraRenderX=480+sin(visualTime*81)*renderShock; cameraRenderY=cameraY+sin(visualTime*73)*renderShock*0.6
  Camera.setXYpos cameraRenderX,cameraRenderY
 }

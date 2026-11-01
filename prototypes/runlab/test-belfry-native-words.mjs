@@ -1,6 +1,7 @@
+import { WORD_MODES, wordDifficulty } from "./public/word-selection.js";
 import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
-import { WORDS } from "./public/cet4-words.js";
+import { WORDS } from "./public/common-words.js";
 import { createServer } from "node:http";
 import { createReadStream } from "node:fs";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
@@ -8,7 +9,10 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { resolve, join } from "node:path";
 const root = new URL("./", import.meta.url),
-  out = new URL("test-results/native-words/", root);
+  out = new URL(
+    `test-results/${process.env.NATIVE_WORDS_OUT || "native-words"}/`,
+    root,
+  );
 await mkdir(out, { recursive: true });
 const onlineRuntime =
   process.env.XBUILDER_RUNTIME_DIR && resolve(process.env.XBUILDER_RUNTIME_DIR);
@@ -89,6 +93,10 @@ async function boot(run, deviceScaleFactor = 1) {
     window.ledgerQuery = "";
     window.clonePeak = 0;
     window.nativeFrameSamples = [];
+    window.nativeBank = {};
+    window.learningGolden = [];
+    window.learningDeck = [];
+    window.learningCore = [];
     const log = console.log.bind(console);
     console.log = (...args) => {
       let s = args.map(String).join(" ");
@@ -97,6 +105,21 @@ async function boot(run, deviceScaleFactor = 1) {
         s = JSON.parse(s).msg?.trim() || s;
       } catch {
         /* plain npm log */
+      }
+      if (s.startsWith("@studyProbe "))
+        window.studyProbe = JSON.parse(s.slice(12));
+      if (s.startsWith("@studyGolden "))
+        window.studyGolden = JSON.parse(s.slice(13));
+      if (s.startsWith("@learningGolden "))
+        window.learningGolden = s.slice(16).trim().split(/\s+/).map(Number);
+      if (s.startsWith("@learningDeck "))
+        window.learningDeck = s.slice(14).trim().split(/\s+/).map(Number);
+      if (s.startsWith("@learningCore "))
+        window.learningCore.push(s.slice(14).trim());
+      if (s.startsWith("@nativeBank ")) {
+        const end = s.indexOf(" ", 12);
+        window.nativeBank[s.slice(12, end)] = s.slice(end + 1);
+        return;
       }
       if (s.startsWith("@state "))
         window.nativeState = s.slice(7).split(/\s+/).map(Number);
@@ -222,9 +245,12 @@ async function boot(run, deviceScaleFactor = 1) {
           map: roundtrip.map,
         };
       }
-      files["main.spx"] = encoder.encode(
+      const nativeFile = files["NativeLogic.spx"]
+        ? "NativeLogic.spx"
+        : "main.spx";
+      files[nativeFile] = encoder.encode(
         decoder
-          .decode(files["main.spx"])
+          .decode(files[nativeFile])
           .replace(
             "nativeTextVersion++",
             'nativeTextVersion++; println "@nativeSpelling",nativeHint,nativeHintVisible(),nativeQuestionAge; println "@nativeCue",nativeCue(); println "@nativeContext",nativeWordPOS[nativeWordIndex],nativeMeanings[nativeWordIndex]; println "@nativeTyped",nativeInput; println "@nativeLayout",nativeTextCount; for n:=0;n<nativeTextCount;n++ {if nativeTextFocus[n] {println "@nativeGlyph",nativeTextX[n],nativeTextY[n],nativeTextSize[n]}}',
@@ -237,7 +263,7 @@ async function boot(run, deviceScaleFactor = 1) {
             "nativeLedgerText(badge,x-20",
             'println "@nativeLedgerBadge",i,state; nativeLedgerText(badge,x-20',
           )
-          .replace("var (", "var (\n nativeProbeFrames int")
+
           .replace(
             "nativeUiLogTime+=dt",
             "nativeProbeFrames++; nativeUiLogTime+=dt",
@@ -245,10 +271,68 @@ async function boot(run, deviceScaleFactor = 1) {
           .replace(
             "Camera.zoom,nativeTextCount,nativeGlyphLive",
             "Camera.zoom,nativeTextCount,nativeGlyphLive,nativeProbeFrames",
-          ) +
-          '\nonKey KeyF12, => {nativeWords[nativeWordIndex]="telecommunications"; nativeMeanings[nativeWordIndex]="探索探索探索探索探索探索探索探索探索探索探索探索探索探索"; nativeDistractA[nativeWordIndex]="练习练习练习练习练习练习练习练习练习练习练习练习练习练习"; nativeDistractB[nativeWordIndex]="旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程"; nativeQuestionLimit=60; nativeTextCache=""}\n' +
-          '\nonKey Key0, => {nativeWords[nativeWordIndex]="colour"; nativeAliases[nativeWordIndex]="color"; nativeMeanings[nativeWordIndex]="颜色；色彩"; nativeQuestionMode=0; nativeQuestionAge=0.3; nativeQuestionLimit=60; nativeTextCache=""}\n' +
+          ),
+      );
+      files["main.spx"] = encoder.encode(
+        decoder
+          .decode(files["main.spx"])
+          .replace("var (", "var (\n nativeProbeFrames int") +
+          '\nonKey KeyF12, => {nativeWords[nativeWordIndex]="telecommunications"; nativeMeanings[nativeWordIndex]="探索探索探索探索探索探索探索探索探索探索探索探索探索探索"; nativeDistractA[nativeWordIndex]="练习练习练习练习练习练习练习练习练习练习练习练习练习练习"; nativeDistractB[nativeWordIndex]="旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程旅程"; nativeQuestionLimit=60; nativeTextMemoKnown=false}\n' +
+          '\nonKey Key0, => {nativeWords[nativeWordIndex]="colour"; nativeAliases[nativeWordIndex]="color"; nativeMeanings[nativeWordIndex]="颜色；色彩"; nativeQuestionMode=0; nativeQuestionAge=0.3; nativeQuestionLimit=60; nativeTextMemoKnown=false}\n' +
           "\nonKey KeyF7, => {chainOwner=0; wordOwner=0; requestWord(5); beginWord()}\nonKey KeyF8, => {bindEnemy=0; requestWord(6); beginWord()}\nonKey KeyF9, => {if phase==1 {Hero.resetHero(230,0); health=6; embers=2; Hero.invulnerable=999; Hero.bowCool=0; Hero.bladeCool=0; Hero.healCool=0; Hero.ultimateCool=0}}\nonKey KeyF10, => {nativeQuestionMode=0}\nonKey KeyF11, => {nativeQuestionMode=1}\n",
+      );
+      if (files["WorldLogic.spx"]) {
+        files["main.spx"] = encoder.encode(
+          decoder
+            .decode(files["main.spx"])
+            .replace(
+              /(?<![.\w])(requestWord|beginWord)(?=\()/g,
+              "WorldLogic.$1",
+            ),
+        );
+      }
+      files["main.spx"] = encoder.encode(
+        decoder.decode(files["main.spx"]) +
+          '\nonKey KeyF5, => {println "@nativeBank word",strings.Join(nativeWords,"\\u001f"); println "@nativeBank meaning",strings.Join(nativeMeanings,"\\u001f"); println "@nativeBank pos",strings.Join(nativeWordPOS,"\\u001f"); println "@nativeBank a",strings.Join(nativeDistractA,"\\u001f"); println "@nativeBank b",strings.Join(nativeDistractB,"\\u001f"); println "@nativeBank aliases",strings.Join(nativeAliases,"\\u001f"); println "@nativeBank level",fmt.Sprint(nativeLevels); println "@nativeBank spell",fmt.Sprint(nativeSpellable)}\n',
+      );
+      // Test-only golden vector runs the actual packaged XGo implementation.
+      const logic = decoder
+        .decode(files["NativeLogic.spx"])
+        .replace("onStart => {hide}", "");
+      files["NativeLogic.spx"] = encoder.encode(
+        logic +
+          `
+func nativeStudyGoldenTest() {
+ initNativeLearning(); i:=nativeDeck[0]; nativeWordIndex=i; nativeSpellable[i]=1; wordPending=1; wordSerial=20000
+ nativeQuestionMode=0; nativeInput=""; nativeLearningAnswer(2)
+ wordSerial++; nativeQuestionMode=1; nativeLearningAnswer(1)
+ wordSerial++; nativeQuestionMode=0; nativeHint=0; nativeInput=nativeWords[i]; nativeQuestionAge=0; nativeTypedWithHint=true; nativeLearningAnswer(1)
+ nativeLearnDue[i*2]=float64(timer)-1
+ wordSerial++; nativeHint=2; nativeQuestionAge=3; nativeTypedWithHint=false; nativeLearningAnswer(1); nativeLearningAnswer(1)
+ for n:=0;n<10;n++ {wordSerial++; nativeQuestionMode=1; nativeLearningAnswer(1)}
+ println "@studyGolden",nativeCloudJSON(map[string]any{"metrics":nativeStudyValues,"unlocked":nativeStudyUnlocked,"count":nativeStudyCount,"assisted":nativeLearnAssisted[i*2]})
+ wordPending=0; nativeInput=""; phase=0; nativeSettings=false
+}
+func nativeStudyProbeTest() {println "@studyProbe",nativeCloudJSON(map[string]any{"open":nativeStudyOpen,"page":nativeStudyPage,"phase":phase,"wordPaused":wordVisualPaused,"questionAge":nativeQuestionAge,"musicPaused":nativeMusicPaused,"count":nativeStudyCount,"glyphs":nativeGlyphCount,"input":nativeInput,"cards":[]int{NativeStudyCard0.uiCostumeIndex,NativeStudyCard1.uiCostumeIndex,NativeStudyCard2.uiCostumeIndex,NativeStudyCard3.uiCostumeIndex}})}
+func nativeLearningGoldenTest() {
+ initNativeLearning(); nativeInput=""; nativeTypedWithHint=true; i:=nativeDeck[0]; nativeWordIndex=i; nativeSpellable[i]=1; wordPending=1
+ wordSerial=9001; nativeQuestionMode=0; nativeLearningAnswer(2); missing:=nativeLearningAbility(i)
+ wordSerial++; nativeQuestionMode=1; nativeLearningAnswer(1); weak:=nativeLearningAbility(i)
+ spelling:=nativeLearnWeak[i*2]; meaning:=nativeLearnWeak[i*2+1]
+ wordSerial++; nativeQuestionMode=0; nativeLearningAnswer(1); assisted:=nativeLearnWeak[i*2]; nativeLearningAnswer(1)
+ attempts:=nativeLearnAttempts[i*2]; correct:=nativeLearnCorrect[i*2]; wrong:=nativeLearnWrong[i*2]
+ nativeLearnWeak[i*2]=0; nativeLearnLast[i]=1; tie:=nativeLearningAbility(i); wordPending=5; emergency:=nativeLearningAbility(i); wordPending=0
+ println "@learningGolden",missing,weak,spelling,meaning,assisted,attempts,correct,wrong,tie,emergency,nativeLearnAssisted[i*2]
+ nativeCoreBank=true
+ for mode:=0;mode<4;mode++ {nativeScope=mode; nativeShuffleDeck(); valid:=true; for _,id:=range nativeDeck {if mode<3 && nativeLevels[id]!=mode+1 {valid=false}}; println "@learningCore",mode,len(nativeDeck),valid}
+ nativeCoreBank=false; nativeScope=0; nativeShuffleDeck(); nativeDeckUsed=true; nativeDone[0]=1
+ first:=nativeDeck[0]; nativeLearningEvent("start"); nativeStartWords(); println "@learningDeck",first,nativeDeck[0],nativeCompleted()
+}
+`,
+      );
+      files["main.spx"] = encoder.encode(
+        decoder.decode(files["main.spx"]) +
+          "\nonKey KeyF2, => {NativeLogic.nativeLearningGoldenTest()}\nonKey KeyF3, => {NativeLogic.nativeStudyProbeTest()}\nonKey KeyF6, => {NativeLogic.nativeStudyGoldenTest()}\n",
       );
       await window.initGame(
         Object.fromEntries(
@@ -323,6 +407,34 @@ async function answerMeaning(q, correct = true) {
 try {
   await boot();
   await state(0, 0);
+  await tap("F5");
+  await page.waitForFunction(() => Object.keys(window.nativeBank).length === 8);
+  const bank = await page.evaluate(() => window.nativeBank);
+  const trim = (s) => Array.from(s).slice(0, 28).join("");
+  const expected = WORDS.map((w) => ({
+    word: w.word.toLowerCase(),
+    meaning: trim(w.meaning),
+    pos: w.pos,
+    a: trim(w.distractors[0]),
+    b: trim(w.distractors[1]),
+    aliases: w.accepted.map((v) => v.toLowerCase()).join("|"),
+    level: wordDifficulty(w),
+    spell: Number(w.spellable && /^[a-z -]+$/.test(w.word.toLowerCase())),
+  }));
+  for (const key of Object.keys(bank)) {
+    const actual =
+      key === "level" || key === "spell"
+        ? bank[key].slice(1, -1).split(/\s+/).map(Number)
+        : bank[key].split("\u001f");
+    assert.deepEqual(
+      actual,
+      expected.map((row) => row[key]),
+      key + " lost alignment during packed-data decoding",
+    );
+  }
+  pass(
+    "all 3816 runtime rows preserve words, meanings, distractors, aliases, gameplay difficulty and spelling flags exactly",
+  );
   await page.waitForFunction(
     () =>
       window.nativeRender[0] === window.nativeRender[1] &&
@@ -332,20 +444,27 @@ try {
   pass(
     "all 121 world clones spawn before text; native glyphs do not consume missing enemy or platform slots",
   );
-  for (const level of ["cet4", "cet6"]) {
-    await click(800, 256);
+  await click(784, 430);
+  await state(0, 7);
+  for (const [index, mode] of WORD_MODES.entries()) {
+    // Start at normal; each click must cycle through all four actual modes.
+    if (index > 0) await click(800, 256);
     await page.waitForTimeout(200);
     const deck = await page.evaluate(() => window.decks.at(-1));
     const ids = deck
       .match(/\[([^\]]+)\]/)[1]
       .split(" ")
       .map(Number);
-    assert.ok(ids.every((i) => WORDS[i].levels.includes(level)));
+    assert.equal(new Set(ids).size, 30);
+    if (mode !== "random")
+      assert.ok(ids.every((i) => wordDifficulty(WORDS[i]) === index + 1));
+    else assert.ok(new Set(ids.map((i) => wordDifficulty(WORDS[i]))).size > 1);
+    await shot("selection-" + mode);
   }
   await click(800, 256);
   await page.waitForTimeout(200);
   pass(
-    "CET4 and CET6 scope selection draws only words belonging to the selected source level",
+    "normal, hard, challenge and random cycle on the default local bank and select 30 unique words from the correct pools",
   );
   const initial = await page.evaluate(() => window.decks.at(-1));
   assert.equal(new Set(initial.match(/\[([^\]]+)\]/)[1].split(" ")).size, 30);
@@ -394,18 +513,18 @@ try {
   await page.waitForFunction(
     () =>
       Number(window.ledgerView[2]) === 2 &&
-      Number(window.ledgerView[3]) === 8815,
+      Number(window.ledgerView[3]) === 3816,
   );
   await click(500, 205);
   for (const k of "rtbhfvm") await tap(k);
   await state(0, 6);
   await page.waitForFunction(() => window.ledgerQuery === "rtbhfvm");
   for (let n = 0; n < 7; n++) await tap("Backspace");
-  for (const k of "telecommunications") await tap(k);
+  for (const k of "biodiversity") await tap(k);
   await page.waitForFunction(() => Number(window.ledgerView[3]) === 1);
   assert.equal(
     WORDS[(await page.evaluate(() => window.ledgerRows))[0]].word,
-    "telecommunications",
+    "biodiversity",
   );
   await shot("wordbook-search");
   await page.setViewportSize({ width: 480, height: 360 });
@@ -419,7 +538,7 @@ try {
     () => Math.abs(window.nativeUI[4] / window.nativeUI[5] - 1.6) < 0.01,
   );
   await click(738, 205);
-  await page.waitForFunction(() => Number(window.ledgerView[3]) === 8815);
+  await page.waitForFunction(() => Number(window.ledgerView[3]) === 3816);
   await click(280, 205);
   await click(280, 239);
   await page.waitForFunction(
@@ -431,18 +550,22 @@ try {
     "ledger pages cover all 30 words without gaps or duplicates; weakness/full-bank filters and isolated live search work without reshuffling",
   );
   await tap("Escape");
-  await state(0, 0);
+  await state(0, 7);
   pass(
-    "8815-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
+    "3816-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
   );
-  await click(768, 438);
+  await click(800, 180);
+  await state(0, 8);
+  await click(768, 255);
   await page.waitForFunction(() => window.mix[0] === 50);
-  await click(712, 478);
+  await click(712, 313);
   await page.waitForFunction(() => window.mix[1] === 25);
   await shot("title-mix");
   pass(
     "music and action sliders independently set 50% and 25% without changing the other channel",
   );
+  await click(640, 180);
+  await state(0, 7);
   assert.equal(await page.evaluate(() => Number(window.spelling[0])), 1);
   await click(780, 384);
   await shot("hint-settings");
@@ -451,6 +574,8 @@ try {
   pass(
     "title offers full hints, 2-second first-letter challenge and 1-second independent recall; default is gradual challenge",
   );
+  await tap("Escape");
+  await state(0, 0);
   const previewDeck = await page.evaluate(() => window.decks.at(-1));
   await tap("Enter");
   await state(1, -1);
@@ -672,6 +797,8 @@ try {
   await tap("0");
   for (const c of "COLOR") await tap(c);
   await state(1, -1);
+  // Respect the existing 180 ms answer-input quarantine before menu keys.
+  await page.waitForTimeout(250);
   assert.equal(await page.evaluate(() => window.wordAnswers.at(-1)[0]), 1);
   pass(
     "long word and complete Chinese meaning fit compact card; 28-character options and 480x360 resize fit; regional alias color auto-accepts for colour",
@@ -682,9 +809,13 @@ try {
     await tap("Escape");
     await tap("m");
     await state(0, 0);
+    await click(784, 430);
+    await state(0, 7);
     await click(780, 384);
     await click(760, 266 + hint * 40);
     await page.waitForFunction((n) => Number(window.spelling[0]) === n, hint);
+    await tap("Escape");
+    await state(0, 0);
     await tap("Enter");
     await state(1, -1);
     await question("u", 1);
@@ -742,6 +873,98 @@ try {
   report.worldRender = await page.evaluate(() => window.nativeRender);
   pass(
     "native text shrinks after answers, real arrows receive clone slots, and observed combined clone count stays below 300",
+  );
+  await tap("F2");
+  await page.waitForFunction(
+    () =>
+      window.learningGolden.length === 11 && window.learningDeck.length === 3,
+  );
+  assert.deepEqual(
+    await page.evaluate(() => window.learningGolden),
+    [1, 0, 1000, 0, 800, 2, 1, 1, 1, 1, 1],
+  );
+  const preserved = await page.evaluate(() => window.learningDeck);
+  assert.equal(preserved[0], preserved[1]);
+  assert.equal(preserved[2], 0);
+  assert.deepEqual(await page.evaluate(() => window.learningCore), [
+    "0 30 true",
+    "1 30 true",
+    "2 30 true",
+    "3 30 true",
+  ]);
+  pass(
+    "native learning matches backend golden vector: separate abilities, assisted evidence, exactly-once answers, tie alternation, emergency meaning, four pool filters, and R preserves deck while clearing completion",
+  );
+  await tap("F6");
+  await page.waitForFunction(() => window.studyGolden);
+  const study = await page.evaluate(() => window.studyGolden);
+  assert.deepEqual(study.metrics, [1, 2, 11, 1, 1, 1, 1, 1, 13]);
+  assert.equal(study.count, 3);
+  assert.equal(study.assisted, 1);
+  assert.ok(study.unlocked[0] && study.unlocked[9] && study.unlocked[23]);
+  pass(
+    "English achievement counters distinguish unique words, abilities, recovered mistakes, hidden spelling, due review and peak streak; repeated callbacks do not double count",
+  );
+  async function studyProbe() {
+    await tap("F3");
+    return page.evaluate(() => window.studyProbe);
+  }
+  async function openStudy() {
+    const v = await page.evaluate(() => window.nativeUI);
+    await click(100, 300 - v[5] / 2 + 14);
+    const s = await studyProbe();
+    assert.equal(s.open, true);
+  }
+  await openStudy();
+  await shot("learning-title");
+  for (let pageIndex = 0; pageIndex < 6; pageIndex++) {
+    const current = await studyProbe();
+    assert.equal(current.page, pageIndex);
+    assert.ok(
+      current.cards.every((n) => n >= pageIndex * 3 && n < pageIndex * 3 + 3),
+      "slot-specific art stays aligned on every page",
+    );
+    if (pageIndex === 2) await shot("learning-sealed");
+    if (pageIndex < 5) await tap("ArrowRight");
+  }
+  await page.setViewportSize({ width: 480, height: 360 });
+  await page.waitForTimeout(300);
+  await shot("learning-small");
+  await page.setViewportSize({ width: 960, height: 600 });
+  await page.waitForTimeout(200);
+  await tap("Escape");
+  assert.equal((await studyProbe()).phase, 0);
+  await tap("Enter");
+  await state(1, -1);
+  await tap("F9");
+  await openStudy();
+  assert.equal((await studyProbe()).phase, 4);
+  await shot("learning-battle");
+  await tap("Escape");
+  await state(1, -1);
+  pass(
+    "native achievement catalog opens from title and battle, paginates and returns to the exact prior state",
+  );
+  const pendingQuestion = await question("u", 1);
+  await openStudy();
+  const studyFrozen = await studyProbe();
+  assert.equal(studyFrozen.wordPaused, true);
+  assert.equal(studyFrozen.musicPaused, false);
+  await page.waitForTimeout(400);
+  assert.equal((await studyProbe()).questionAge, studyFrozen.questionAge);
+  await tap("j");
+  assert.equal((await studyProbe()).input, studyFrozen.input);
+  await shot("learning-question");
+  await tap("Escape");
+  assert.equal((await studyProbe()).wordPaused, false);
+  await answerMeaning(pendingQuestion, false);
+  await tap("Escape");
+  await state(4, 3);
+  await openStudy();
+  await tap("Escape");
+  assert.equal((await studyProbe()).phase, 4);
+  pass(
+    "opening achievements freezes a live word challenge, keeps music playing, blocks stray letters and preserves an already paused game",
   );
   report.questions = await page.evaluate(() => window.wordQuestions);
   report.answers = await page.evaluate(() => window.wordAnswers);

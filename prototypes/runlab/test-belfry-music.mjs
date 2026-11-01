@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { createServer } from "node:http";
 import {
   InscriptionBook,
   STORAGE_KEY,
@@ -18,6 +19,30 @@ const manifest = JSON.parse(
     "utf8",
   ),
 );
+// Deliver the large game fixture over HTTP instead of a base64 CDP message;
+// the automation connection disconnected while fulfilling this 97 MB body.
+const fixture = JSON.parse(
+  await readFile(new URL("public/belfry.json", import.meta.url), "utf8"),
+);
+fixture["main.spx"] = fixture["main.spx"].replace(
+  "onKey KeyT",
+  `
+onKey KeyF8, => {phase=2; event("finish")}
+onKey KeyF9, => {health=0; phase=3; deaths++; event("fail")}
+onKey KeyF10, => {phase=0}
+onKey KeyT`,
+);
+const fixtureBody = JSON.stringify(fixture);
+const fixtureServer = createServer((_req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Cross-Origin-Resource-Policy": "cross-origin",
+  });
+  res.end(fixtureBody);
+});
+await new Promise((resolve) => fixtureServer.listen(0, "127.0.0.1", resolve));
+const fixtureUrl = `http://127.0.0.1:${fixtureServer.address().port}/belfry.json`;
 const browser = await chromium.launch({
   headless: true,
   channel: "chromium",
@@ -50,18 +75,9 @@ await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
   key: STORAGE_KEY,
   value: book.serialize(),
 });
-await page.route("**/belfry.json", async (route) => {
-  const data = await (await route.fetch()).json();
-  data["main.spx"] = data["main.spx"].replace(
-    "onKey KeyT",
-    `
-onKey KeyF8, => {phase=2; event("finish")}
-onKey KeyF9, => {health=0; phase=3; deaths++; event("fail")}
-onKey KeyF10, => {phase=0}
-onKey KeyT`,
-  );
-  await route.fulfill({ json: data });
-});
+await page.route("**/belfry.json", (route) =>
+  route.continue({ url: fixtureUrl }),
+);
 const wait = (fn, arg, timeout = 15000) =>
   page.waitForFunction(fn, arg, { timeout });
 const music = () => page.evaluate(() => soundDiagnostics.music);
@@ -79,6 +95,14 @@ async function playing(stage) {
     stage,
   );
   assert.equal((await music()).loop, true);
+  assert.equal(
+    (await music()).title,
+    manifest.tracks.find((t) => t.stage === stage).title,
+  );
+  assert.equal(
+    await page.locator("#scene-music").getAttribute("src"),
+    manifest.tracks.find((t) => t.stage === stage).file,
+  );
   assert.equal((await music()).activePlayers, 1);
   assert.equal(await page.locator("audio").count(), 1);
 }
@@ -147,9 +171,9 @@ try {
   assert.deepEqual(await page.evaluate(() => runtimeErrors), []);
   assert.deepEqual(await page.evaluate(() => soundDiagnostics.settings), {
     sfx: 0.85,
-    music: 0.4,
+    music: 0.75,
   });
-  pass("new players start with the action-forward 85% effects / 40% music mix");
+  pass("new players start with the action-forward 85% effects / 75% music mix");
   const migration = await page.evaluate(async () => {
     const { BelfryAudio } = await import("/belfry-audio.js");
     const key = "belfry-audio-v2",
@@ -176,7 +200,7 @@ try {
     return results;
   });
   assert.deepEqual(migration, [
-    { settings: { sfx: 0.85, music: 0.4 }, saved: { sfx: 0.85, music: 0.4 } },
+    { settings: { sfx: 0.85, music: 0.75 }, saved: { sfx: 0.85, music: 0.75 } },
     { settings: { sfx: 0.55, music: 0.2 }, saved: { sfx: 0.55, music: 0.2 } },
     { settings: { sfx: 0, music: 0.65 }, saved: { sfx: 0, music: 0.65 } },
   ]);
@@ -186,7 +210,7 @@ try {
   assert.equal((await music()).stage, "menu");
   if (await page.locator("#music-start").isVisible())
     await page.locator("#music-start").click();
-  else await page.locator("#overlay-title").click();
+  else await page.locator("#moonlit-logo").click();
   await playing("menu");
   assert.equal(await page.evaluate(() => latestState.phase), 0);
   assert.ok(
@@ -194,7 +218,7 @@ try {
       0.1,
   );
   pass(
-    "the menu plays Cleaning out the Rooms after autoplay or a title-screen gesture, without starting a run",
+    "the menu plays Melancholy Of The Boot after autoplay or a title-screen gesture, without starting a run",
   );
   await page.locator("#scene-music").evaluate((audio) => {
     audio.currentTime = audio.duration - 0.2;
@@ -213,7 +237,7 @@ try {
       0.1,
   );
   pass(
-    "starting the game switches to Melancholy Of The Boot and retains only one media element",
+    "starting the game switches to Cleaning out the Rooms (Wandering Horn) and retains only one media element",
   );
   await page.evaluate(() => window.testMusicContext.suspend());
   await page.waitForFunction(() => soundDiagnostics.context === "suspended");
@@ -242,7 +266,7 @@ try {
   });
   assert.equal(
     await page.locator("#music-track").textContent(),
-    "Sea Power · Melancholy Of The Boot · 单曲循环",
+    "Sea Power · Cleaning out the Rooms (Wandering Horn) · 单曲循环",
   );
   await page.locator("#close-settings").click();
   await playing("gameplay");
@@ -409,4 +433,6 @@ try {
     JSON.stringify(report, null, 2) + "\n",
   );
   await browser.close();
+  fixtureServer.closeAllConnections();
+  await new Promise((resolve) => fixtureServer.close(resolve));
 }

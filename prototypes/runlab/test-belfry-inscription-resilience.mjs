@@ -23,7 +23,7 @@ const pass = (name) => {
 };
 try {
   const missing = await browser.newPage();
-  await missing.route("**/cet4-words.js", (r) =>
+  await missing.route("**/common-words.js", (r) =>
     r.fulfill({ status: 404, body: "missing fixture" }),
   );
   await missing.goto(url);

@@ -3,11 +3,31 @@
 import { chromium } from "@playwright/test";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { Buffer } from "node:buffer";
-import { WORDS } from "./public/cet4-words.js";
+import { nativeLearningContent } from "./native-learning-content.mjs";
+const learningContent = await nativeLearningContent();
 import { buildNativeLexicon } from "./build-belfry-native-lexicon.mjs";
+import {
+  buildNativeCombatArt,
+  installNativeCombatHUD,
+} from "./belfry-native-combat.mjs";
+import {
+  buildNativeStudyArt,
+  installNativeStudyHUD,
+} from "./belfry-native-study.mjs";
 import { buildNativeWordStyle } from "./build-belfry-native-style.mjs";
 const root = new URL("./", import.meta.url);
 const out = new URL("projects/belfry-native/", root);
+const titleRects = {
+  1: [658, 188, 252, 46],
+  2: [658, 466, 120, 32],
+  3: [790, 466, 120, 32],
+  4: [658, 252, 120, 50],
+  5: [790, 252, 120, 50],
+  6: [860, 546, 50, 28],
+  13: [658, 324, 252, 34],
+  15: [658, 368, 252, 34],
+  34: [658, 412, 252, 34],
+};
 const rects = {
   1: [64, 392, 360, 52],
   2: [64, 462, 172, 32],
@@ -29,7 +49,7 @@ const rects = {
   18: [656, 467, 224, 22],
   19: [580, 516, 74, 30],
   20: [670, 516, 84, 30],
-  21: [34, 64, 160, 28],
+  21: [34, 92, 160, 28],
   22: [204, 190, 160, 30],
   23: [380, 190, 334, 30],
   24: [724, 190, 30, 30],
@@ -42,6 +62,13 @@ const rects = {
   31: [650, 246, 230, 40],
   32: [650, 286, 230, 40],
   33: [650, 326, 230, 40],
+  34: [850, 120, 36, 36],
+  35: [580, 510, 300, 28],
+  36: [580, 164, 140, 30],
+  37: [736, 164, 144, 30],
+  42: [580, 480, 300, 32],
+  43: [738, 376, 142, 36],
+  44: [580, 376, 142, 36],
 };
 const browser = await chromium.launch({ headless: true, channel: "chromium" });
 let art, lexicon;
@@ -99,12 +126,16 @@ try {
     }
     if (changed) vectorFiles[configPath] = JSON.stringify(config);
   }
-  lexicon = await buildNativeLexicon(page, WORDS);
+  lexicon = await buildNativeLexicon(
+    page,
+    learningContent.words,
+    learningContent,
+  );
   const background = (
     await readFile(new URL("art/belfry/clockwell.png", root))
   ).toString("base64");
   art = await page.evaluate(
-    async ({ background, rects }) => {
+    async ({ background, rects, titleRects }) => {
       const image = new Image();
       image.src = "data:image/png;base64," + background;
       await image.decode();
@@ -141,13 +172,24 @@ try {
         ctx.lineTo(xx, yy);
         ctx.stroke();
       }
+      let inTitle = false,
+        inSettings = false,
+        inSettingsSound = false;
       function button(id, label, hint = "", selected = false, primary = false) {
-        const [x, y, w, h] = rects[id];
+        const [x, y, w, h] =
+          (inTitle ? titleRects[id] : null) ||
+          (inSettingsSound && id === 35 ? [580, 362, 300, 28] : rects[id]);
         ctx.fillStyle = primary
-          ? "#c7b180"
+          ? "#d7d2aaee"
           : selected
-            ? "#c7b18020"
-            : "#08121788";
+            ? inTitle
+              ? "#b7a57340"
+              : "#c7b18020"
+            : inTitle
+              ? "#07131c66"
+              : inSettings
+                ? "#10232a12"
+                : "#08121788";
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + w - 9, y);
@@ -167,16 +209,23 @@ try {
           ctx.fillStyle = C.gold;
           ctx.fillRect(x, y + 12, 2, h - 24);
         }
+        ctx.save();
+        if (inTitle && !primary) {
+          ctx.shadowColor = "#02090fee";
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetY = 1;
+        }
         text(
           label,
           x + 14,
           y + (hint ? 20 : h / 2 + 5),
           primary ? 20 : 14,
-          primary ? "#142128" : selected ? C.ivory : C.dim,
+          primary ? "#142128" : selected || inTitle ? C.ivory : C.dim,
           primary ? serif : sans,
         );
         if (hint) text(hint, x + 14, y + 37, 10, C.dim);
         if (primary) text("↘", x + w - 35, y + h / 2 + 7, 24, "#142128");
+        ctx.restore();
       }
       function soundPanel(compact = false) {
         if (!compact) text("S O U N D", 580, 415, 10, C.gold);
@@ -230,23 +279,114 @@ try {
       }
       for (let difficulty = 0; difficulty < 2; difficulty++)
         canvas("title" + difficulty, 960, 600, () => {
-          base(true, true);
-          text("裂", 60, 202, 90, C.ivory, serif);
-          text("隙", 172, 202, 90, C.ivory, serif);
-          line(64, 240, 320, 240, "#c7b18060");
-          button(4, "旅人", "8 格生命 · 从容探索", difficulty === 0);
-          button(5, "无畏", "5 格生命 · 紧密追击", difficulty === 1);
-          button(1, "进入钟城   Enter", "", false, true);
-          button(2, "排练场   T");
-          button(3, "操作指南   H");
-          text("远征准备", 580, 181, 15, C.gold, serif);
-          button(13, "铭文");
-          button(12, "词汇范围");
-          button(14, "作答节奏");
-          // NativeLedgerEntry reuses the web preview button.
-          button(16, "换一组 ↻");
-          button(30, "拼写挑战");
-          soundPanel();
+          inTitle = true;
+          button(1, "进入钟城  ↵", "", false, true);
+          button(4, "旅人", "8 格生命", difficulty === 0);
+          button(5, "无畏", "5 格生命", difficulty === 1);
+          button(13, "铭文挑战");
+          button(15, "随行词册             30 ↗");
+          button(34, "远征设置                         ›");
+          button(2, "排练场  T");
+          button(3, "操作指南  H");
+          line(658, 525, 910, 525, "#9aafb433");
+          inTitle = false;
+        });
+      for (let tab = 0; tab < 2; tab++)
+        canvas(tab ? "settingsSound" : "settings", 960, 600, () => {
+          inSettings = true;
+          inSettingsSound = tab === 1;
+          const glass = ctx.createLinearGradient(552, 104, 908, 534);
+          glass.addColorStop(0, "#10242c99");
+          glass.addColorStop(1, "#0b1921b8");
+          ctx.fillStyle = glass;
+          ctx.beginPath();
+          ctx.moveTo(552, 104);
+          ctx.lineTo(896, 104);
+          ctx.lineTo(908, 116);
+          ctx.lineTo(908, 534);
+          ctx.lineTo(552, 534);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "#b0c6c24d";
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+          text("远征设置", 580, 145, 20, C.ivory, serif);
+          button(34, "×");
+          button(36, "铭文", "", tab === 0);
+          button(37, "声音与画面", "", tab === 1);
+          if (tab === 0) {
+            button(13, "铭文");
+            button(12, "单词选择");
+            button(14, "作答节奏");
+            button(16, "换一组 ↻");
+            button(30, "拼写挑战");
+            text("30 词 · 新远征自动抽取", 580, 430, 11, "#a6b7b5");
+            line(580, 462, 880, 462, "#b6c6ba33");
+            text("仅当前档案 · 学习 / 成就 / 进度 / 设置", 580, 473, 9, C.dim);
+            button(42, "清除本地缓存                    ↗");
+          } else {
+            text("背景音乐", 580, 258, 12, C.dim);
+            text("动作音效", 580, 316, 12, C.dim);
+            [255, 313].forEach((y) => line(656, y, 880, y, "#b6c6ba55"));
+            button(35, "减少动态");
+            text("仅水纹与披风微动", 580, 434, 11, C.dim);
+            text("音乐与音效独立调节", 580, 456, 11, C.dim);
+          }
+          inSettings = false;
+          inSettingsSound = false;
+        });
+      for (const [index, key] of [
+        "resetConfirm",
+        "resetBusy",
+        "resetError",
+        "resetDone",
+      ].entries())
+        canvas(key, 960, 600, () => {
+          ctx.fillStyle = "#102029ed";
+          ctx.fillRect(552, 248, 356, 190);
+          ctx.strokeStyle = "#c6b78a88";
+          ctx.lineWidth = 0.7;
+          ctx.strokeRect(552, 248, 356, 190);
+          line(580, 263, 624, 263, "#d2bd85");
+          text(
+            ["清除本地缓存？", "正在清除…", "未能完成清除", "本地记录已清除"][
+              index
+            ],
+            580,
+            294,
+            21,
+            C.ivory,
+            serif,
+          );
+          text(
+            [
+              "当前档案的学习、成就、进度与设置",
+              "请稍候，正在处理当前档案。",
+              "请重试；也可返回检查本机存储。",
+              "已恢复默认设置，可开始新的远征。",
+            ][index],
+            580,
+            325,
+            12,
+            C.dim,
+          );
+          text(
+            index === 0
+              ? "清除后无法恢复 · 不影响其他用户"
+              : index === 1
+                ? "完成后将恢复默认设置。"
+                : index === 2
+                  ? "未显示成功前，请勿关闭当前页面。"
+                  : "其他用户的档案保持不变。",
+            580,
+            348,
+            10,
+            "#c5b28f",
+          );
+          if (index !== 1) {
+            button(44, index === 3 ? "返回设置" : "取消");
+            if (index !== 3) button(43, index === 2 ? "重试清除" : "确认清除");
+          }
         });
       canvas("guide", 960, 600, () => {
         base();
@@ -310,14 +450,7 @@ try {
           } else {
             text(title, 62, 180, 42, C.ivory, serif);
             text(subtitle, 64, 216, 16, C.dim);
-            text(
-              name === "defeat" ? "ANOTHER WAY UP" : "THE HEART RETURNS",
-              64,
-              305,
-              13,
-              C.gold,
-            );
-            text("钩索、站位和技能，都还有新的组合。", 64, 334, 15, C.ivory);
+            text("旅程记录", 64, 275, 13, C.gold);
           }
           button(1, primary, "", false, true);
           button(7, "返回标题   M");
@@ -350,23 +483,34 @@ try {
           ctx.lineWidth = 2;
           ctx.strokeRect(1, 1, w - 2, h - 2);
         });
-      canvas("matte", 2, 2, () => {
-        ctx.fillStyle = "#070e12";
-        ctx.fillRect(0, 0, 2, 2);
-      });
+      for (const [id, [, , w, h]] of Object.entries(titleRects))
+        canvas("titlehover" + id, w, h, () => {
+          ctx.fillStyle = "#e3eef311";
+          ctx.fillRect(0, 0, w, h);
+          line(0, h - 1, w, h - 1, "#d5e2d9bb");
+        });
       canvas("hud", 960, 600, () => {
-        const top = ctx.createLinearGradient(0, 0, 0, 100);
-        top.addColorStop(0, "#071116de");
-        top.addColorStop(1, "#07111600");
-        ctx.fillStyle = top;
-        ctx.fillRect(0, 0, 960, 100);
-        const bottom = ctx.createLinearGradient(0, 510, 0, 600);
-        bottom.addColorStop(0, "#07111600");
-        bottom.addColorStop(1, "#071116d9");
-        ctx.fillStyle = bottom;
-        ctx.fillRect(0, 510, 960, 90);
         text("THE THREADBEARER", 36, 31, 10, C.gold);
       });
+      // A thin reserved edge zone: outer dark lip fades into the scenery.
+      // Wide strips cover portrait through ultrawide views with uniform size;
+      // their logical 16px height is fitted to 4% of the actual viewport.
+      for (const side of ["top", "bottom"])
+        canvas("frame-" + side, 1024, 16, () => {
+          const gradient = ctx.createLinearGradient(
+            0,
+            side === "top" ? 0 : 16,
+            0,
+            side === "top" ? 16 : 0,
+          );
+          gradient.addColorStop(0, "#03080bfa");
+          gradient.addColorStop(0.2, "#03080bf5");
+          gradient.addColorStop(0.54, "#03080b9e");
+          gradient.addColorStop(0.8, "#03080b2e");
+          gradient.addColorStop(1, "#03080b00");
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 1024, 16);
+        });
       for (const max of [8, 5])
         for (let hp = 0; hp <= 8; hp++)
           canvas(`health${max}-${hp}`, 224, 28, () => {
@@ -397,9 +541,20 @@ try {
       ];
       skills.forEach(([key, name], i) => {
         const duration = i === 3 ? 5 : 3;
-        for (let step = 0; step <= duration * 10; step++)
+        for (let step = 0; step <= duration * 10 + 8; step++)
           canvas(`skill${i}-${step}`, 76, 28, () => {
-            const cooling = step > 0;
+            const cooling = step > 0 && step <= duration * 10;
+            const state = step - (duration * 10 + 1);
+            const labels = [
+              "待刻印",
+              "蓄力",
+              "满蓄",
+              i === 2 ? "回息中" : "连斩中",
+              "生命满",
+              "缺余烬",
+              "需落地",
+              "受缚",
+            ];
             const shade = ctx.createLinearGradient(0, 0, 76, 0);
             shade.addColorStop(0, "#07121bea");
             shade.addColorStop(1, "#07121b88");
@@ -432,14 +587,24 @@ try {
             text(key, 9, 18, 11, cooling ? C.dim : C.ivory);
             text(name, 28, 12, 10, cooling ? C.dim : C.ivory);
             if (cooling) text((step / 10).toFixed(1), 28, 24, 9, "#a9cbb8");
+            else if (state >= 0)
+              text(
+                labels[state],
+                28,
+                24,
+                9,
+                state >= 4 ? "#c49b8a" : "#c7d9c8",
+              );
             else line(28, 23, 70, 23, "#c7b18080");
           });
       });
       return images;
     },
-    { background, rects },
+    { background, rects, titleRects },
   );
   Object.assign(art, await buildNativeWordStyle(browser));
+  Object.assign(art, await buildNativeCombatArt(page));
+  Object.assign(art, await buildNativeStudyArt(page));
 } finally {
   await browser.close();
 }
@@ -449,7 +614,7 @@ function sprite(
   name,
   keys,
   source,
-  { x = 480, y = -100, visible = false } = {},
+  { x = 480, y = -100, visible = false, interactive = true, pivotY = 0.5 } = {},
 ) {
   const costumes = keys.map((key) => {
     const im = art[key],
@@ -459,7 +624,7 @@ function sprite(
       name: key,
       path: key + ".png",
       x: im.w,
-      y: im.h,
+      y: im.h * 2 * pivotY,
       bitmapResolution: 2,
     };
   });
@@ -476,6 +641,28 @@ function sprite(
     costumes,
     costumeIndex: 0,
   });
+  // The archive owns the UI while open; keep the original scene and rails,
+  // but do not leave title buttons, settings or a paused question behind it.
+  if (
+    !name.startsWith("NativeStudy") &&
+    !["NativeFrameTop", "NativeFrameBottom"].includes(name)
+  )
+    source = source.replace(
+      "func syncUI() {",
+      "func syncUI() {if nativeStudyOpen {hide; return}; ",
+    );
+  if (
+    ![
+      "NativePanel",
+      "NativeHover",
+      "NativeFrameTop",
+      "NativeFrameBottom",
+    ].includes(name)
+  )
+    source = source.replace(
+      "func syncUI() {",
+      "func syncUI() {if nativeLocalResetStage>0 {hide; return}; ",
+    );
   files[name + ".spx"] =
     // spx marks costumes dirty even when the index is unchanged. Cache only
     // engine mutations; camera-relative placement and game logic stay live.
@@ -505,12 +692,25 @@ func uiFront() {if uiLayer!=nativeLayerVersion {uiLayer=nativeLayerVersion; setL
       .replaceAll("setLayer Front", "uiFront()")
       .replace(/\bshow\b/g, "uiShow()")
       .replace(/\bhide\b/g, "uiHide()") +
-    "\nonStart => {}\nonClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mouseY+300))}\n";
+    "\nonStart => {}\n" +
+    (interactive
+      ? "onClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mouseY+300))}\n"
+      : "");
   zorder.push(name);
 }
 const pin = (x, y) =>
   `setXYpos viewCenterX+${x}-480,viewCenterY+300-${y}; setLayer Front;`;
 const active = "(phase==1 || phase==5) && !nativeHelp";
+for (const [name, side, sign] of [
+  ["NativeFrameTop", "top", 1],
+  ["NativeFrameBottom", "bottom", -1],
+])
+  sprite(
+    name,
+    ["frame-" + side],
+    `func syncUI() {show; s:=max(viewHeight*0.04/16,(viewWidth+2)/1024); setSize s; setXYpos viewCenterX,viewCenterY+${sign}*viewHeight/2; setLayer Front}`,
+    { interactive: false, pivotY: side === "top" ? 0 : 1 },
+  );
 sprite(
   "NativeHUD",
   ["hud"],
@@ -521,12 +721,8 @@ sprite(
   [8, 5].flatMap((n) => Array.from({ length: 9 }, (_, i) => `health${n}-${i}`)),
   `func syncUI() {if ${active} {show; c:=int(clamp(float64(health),0,8)); if maxHealth==5 {c+=9}; setCostume c; ${pin(148, 52)}} else {hide}}`,
 );
-sprite(
-  "NativeObjective",
-  [0, 1, 2, 3].map((n) => "objective" + n),
-  `func syncUI() {if ${active} {show; c:=segment; if practice==1 {c=3}; setCostume c; ${pin(710, 558)}} else {hide}}`,
-);
-for (const [i, cool] of [
+installNativeCombatHUD(sprite, pin, active);
+for (const [i] of [
   "bowCool",
   "bladeCool",
   "healCool",
@@ -534,24 +730,49 @@ for (const [i, cool] of [
 ].entries())
   sprite(
     "NativeSkill" + i,
-    Array.from({ length: i === 3 ? 51 : 31 }, (_, n) => `skill${i}-${n}`),
-    `func syncUI() {if ${active} {show; setCostume int(clamp(Hero.${cool}*10+0.999,0,${i === 3 ? 50 : 30})); ${pin(74 + i * 84, 562)}} else {hide}}`,
+    Array.from({ length: i === 3 ? 59 : 39 }, (_, n) => `skill${i}-${n}`),
+    `func syncUI() {if ${active} {show; setCostume nativeCombat${["Bow", "Blade", "Heal", "Ultimate"][i]}; ${pin(74 + i * 84, 562)}} else {hide}}`,
   );
 sprite(
   "NativePanel",
-  ["title0", "title1", "guide", "pause", "defeat", "victory", "wordbook"],
+  [
+    "title0",
+    "title1",
+    "guide",
+    "pause",
+    "defeat",
+    "victory",
+    "wordbook",
+    "settings",
+    "settingsSound",
+    "resetConfirm",
+    "resetBusy",
+    "resetError",
+    "resetDone",
+  ],
   `func syncUI() {if nativePanel>=0 {show; setCostume nativePanel; ${pin(480, 300)}} else {hide}}`,
   { visible: true },
 );
 sprite(
   "NativeMusicButton",
   ["music0", "music1"],
-  `func syncUI() {if phase!=1 && phase!=5 && !nativePreview {show; c:=0; if nativeMusicMuted || nativeMusicVolume==0 {c=1}; setCostume c; ${pin(899, 44)}} else {hide}}`,
+  `func syncUI() {if phase!=1 && phase!=5 && !nativePreview {show; c:=0; if nativeMusicMuted || nativeMusicVolume==0 {c=1}; setCostume c; ${pin(899, 44)}; if phase==0 && !nativeHelp && !nativeSettings {${pin(885, 560)}}} else {hide}}`,
 );
 sprite(
   "NativeHover",
-  Object.keys(rects).map((id) => "hover" + id),
-  `func syncUI() {if nativeHover>0 {show; setCostume nativeHover-1; x,y,w,h:=nativeButtonRect(nativeHover); setXYpos viewCenterX+x+w/2-480,viewCenterY+300-y-h/2; setLayer Front} else {hide}}`,
+  [
+    ...Object.keys(rects).map((id) => "hover" + id),
+    ...Object.keys(titleRects).map((id) => "titlehover" + id),
+  ],
+  `func syncUI() {if nativeHover>0 && nativeHover<=44 {show; c:=nativeHover-1; if nativeHover>=42 {c=nativeHover-5}; if phase==0 && !nativeSettings && !nativeHelp && !nativePreview {${Object.keys(
+    titleRects,
+  )
+    .map(
+      (id, i) => `if nativeHover==${id} {c=${Object.keys(rects).length + i}}`,
+    )
+    .join(
+      "; ",
+    )}}; setCostume c; x,y,w,h:=nativeButtonRect(nativeHover); setXYpos viewCenterX+x+w/2-480,viewCenterY+300-y-h/2; setLayer Front} else {hide}}`,
 );
 for (const [name, volume, y] of [
   ["NativeMusicSlider", "nativeMusicVolume", 438],
@@ -560,7 +781,7 @@ for (const [name, volume, y] of [
   sprite(
     name,
     Array.from({ length: 101 }, (_, i) => "volume" + i),
-    `func syncUI() {if phase!=1 && phase!=5 && !nativeHelp && !nativePreview {show; setCostume ${volume}; ${pin(768, y)}} else {hide}}`,
+    `func syncUI() {if phase!=1 && phase!=5 && (phase!=0 || nativeSettings && nativeSettingsTab==1) && !nativeHelp && !nativePreview {show; setCostume ${volume}; ${pin(768, y)}; if phase==0 {${pin(768, y === 438 ? 255 : 313)}}} else {hide}}`,
   );
 sprite(
   "NativeQuestion",
@@ -585,7 +806,7 @@ sprite(
 sprite(
   "NativeLedgerEntry",
   ["ledger-entry"],
-  `func syncUI() {if phase==0 && !nativeHelp && !nativePreview {show; ${pin(651, 348)}} else {hide}}`,
+  `func syncUI() {if phase==0 && nativeSettings && nativeSettingsTab==0 && !nativeHelp && !nativePreview {show; ${pin(651, 348)}} else {hide}}`,
 );
 sprite(
   "NativeLedgerTools",
@@ -613,22 +834,16 @@ for (let group = 0; group < 10; group++)
     Array.from({ length: 27 }, (_, i) => "ledger-tally" + i),
     `func syncUI() {if nativePreview {show; setCostume nativeLedgerTally(${group}); ${pin(229 + group * 55, 148)}} else {hide}}`,
   );
-zorder.push("NativeGlyph", "NativeSfx");
-for (let i = 0; i < 4; i++) {
-  const offset = [
-    "0,300+span/2",
-    "0,-300-span/2",
-    "-480-span/2,0",
-    "480+span/2,0",
-  ][i].split(",");
-  sprite(
-    "NativeMatte" + i,
-    ["matte"],
-    `func syncUI() {span:=max(viewWidth,viewHeight)+2048; setSize span/2; setXYpos viewCenterX+(${offset[0]}),viewCenterY+(${offset[1]}); setLayer Front; show}`,
-  );
-}
+installNativeStudyHUD(sprite);
+zorder.push("NativeGlyph", "NativeSfx", "NativeBgm");
 files["native-layout.spx"] =
   "func nativeButtonRect(action int) (float64,float64,float64,float64) {\n" +
+  " if phase==0 && !nativeSettings && !nativeHelp && !nativePreview {\n" +
+  Object.entries(titleRects)
+    .map(([id, r]) => `if action==${id} {return ${r.join(",")}}`)
+    .join("\n") +
+  "\n }\n" +
+  " if phase==0 && nativeSettings && nativeSettingsTab==1 {if action==17 {return 656,244,224,22}; if action==18 {return 656,302,224,22}; if action==35 {return 580,362,300,28}}\n" +
   Object.entries(rects)
     .map(([id, rect]) => ` if action==${id} {return ${rect.join(",")}}`)
     .join("\n") +
@@ -641,7 +856,7 @@ for (const [p, content] of Object.entries(files)) {
 await writeFile(
   new URL("manifest.json", out),
   JSON.stringify(
-    { files: Object.keys(files), removedFiles, zorder, rects },
+    { files: Object.keys(files), removedFiles, zorder, rects, titleRects },
     null,
     2,
   ),

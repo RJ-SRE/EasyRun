@@ -1,0 +1,1297 @@
+{
+  "the": {
+    "pos": "art.",
+    "meaning": "这；该",
+    "context": "the door"
+  },
+  "be": {
+    "pos": "v.",
+    "meaning": "是；存在",
+    "context": "be ready"
+  },
+  "and": {
+    "pos": "conj.",
+    "meaning": "和；并且",
+    "context": "you and me"
+  },
+  "of": {
+    "pos": "prep.",
+    "meaning": "属于；关于",
+    "context": "a cup of tea"
+  },
+  "a": {
+    "pos": "art.",
+    "meaning": "一个；一类",
+    "context": "a book"
+  },
+  "to": {
+    "pos": "prep.",
+    "meaning": "到；向",
+    "context": "go to school"
+  },
+  "in": {
+    "pos": "prep.",
+    "meaning": "在里面",
+    "context": "in the room"
+  },
+  "have": {
+    "pos": "v.",
+    "meaning": "有；拥有",
+    "context": "have a plan"
+  },
+  "it": {
+    "pos": "pron.",
+    "meaning": "它",
+    "context": "it is here"
+  },
+  "that": {
+    "pos": "pron.",
+    "meaning": "那个",
+    "context": "that is mine"
+  },
+  "for": {
+    "pos": "prep.",
+    "meaning": "为了；给",
+    "context": "a gift for you"
+  },
+  "you": {
+    "pos": "pron.",
+    "meaning": "你；你们",
+    "context": "you are ready"
+  },
+  "he": {
+    "pos": "pron.",
+    "meaning": "他",
+    "context": "he is here"
+  },
+  "with": {
+    "pos": "prep.",
+    "meaning": "和……一起",
+    "context": "come with me"
+  },
+  "on": {
+    "pos": "prep.",
+    "meaning": "在上面",
+    "context": "on the table"
+  },
+  "do": {
+    "pos": "v.",
+    "meaning": "做；执行",
+    "context": "do the work"
+  },
+  "say": {
+    "pos": "v.",
+    "meaning": "说；表达",
+    "context": "say hello"
+  },
+  "this": {
+    "pos": "pron.",
+    "meaning": "这个",
+    "context": "this is mine"
+  },
+  "they": {
+    "pos": "pron.",
+    "meaning": "他们；它们",
+    "context": "they are here"
+  },
+  "at": {
+    "pos": "prep.",
+    "meaning": "在某处或某时",
+    "context": "at home"
+  },
+  "but": {
+    "pos": "conj.",
+    "meaning": "但是",
+    "context": "small but useful"
+  },
+  "we": {
+    "pos": "pron.",
+    "meaning": "我们",
+    "context": "we are ready"
+  },
+  "his": {
+    "pos": "pron.",
+    "meaning": "他的",
+    "context": "his book"
+  },
+  "from": {
+    "pos": "prep.",
+    "meaning": "来自；从",
+    "context": "from home"
+  },
+  "not": {
+    "pos": "adv.",
+    "meaning": "不；没有",
+    "context": "not now"
+  },
+  "by": {
+    "pos": "prep.",
+    "meaning": "在旁边；通过",
+    "context": "by the river"
+  },
+  "she": {
+    "pos": "pron.",
+    "meaning": "她",
+    "context": "she is here"
+  },
+  "or": {
+    "pos": "conj.",
+    "meaning": "或者",
+    "context": "tea or coffee"
+  },
+  "as": {
+    "pos": "prep.",
+    "meaning": "作为",
+    "context": "work as a guide"
+  },
+  "what": {
+    "pos": "pron.",
+    "meaning": "什么",
+    "context": "what is this"
+  },
+  "go": {
+    "pos": "v.",
+    "meaning": "去；前往",
+    "context": "go home"
+  },
+  "their": {
+    "pos": "pron.",
+    "meaning": "他们的",
+    "context": "their home"
+  },
+  "can": {
+    "pos": "v.",
+    "meaning": "能够；可以",
+    "context": "I can swim"
+  },
+  "who": {
+    "pos": "pron.",
+    "meaning": "谁",
+    "context": "who is there"
+  },
+  "get": {
+    "pos": "v.",
+    "meaning": "得到；取得",
+    "context": "get a ticket"
+  },
+  "if": {
+    "pos": "conj.",
+    "meaning": "如果",
+    "context": "if it rains"
+  },
+  "would": {
+    "pos": "v.",
+    "meaning": "将会；愿意",
+    "context": "would you help"
+  },
+  "her": {
+    "pos": "pron.",
+    "meaning": "她的；她",
+    "context": "her book"
+  },
+  "all": {
+    "pos": "pron.",
+    "meaning": "全部；所有",
+    "context": "all of us"
+  },
+  "my": {
+    "pos": "pron.",
+    "meaning": "我的",
+    "context": "my home"
+  },
+  "make": {
+    "pos": "v.",
+    "meaning": "制作；使成为",
+    "context": "make a model"
+  },
+  "about": {
+    "pos": "prep.",
+    "meaning": "关于",
+    "context": "a book about art"
+  },
+  "know": {
+    "pos": "v.",
+    "meaning": "知道；了解",
+    "context": "know the answer"
+  },
+  "will": {
+    "pos": "v.",
+    "meaning": "将；愿意",
+    "context": "I will go"
+  },
+  "up": {
+    "pos": "adv.",
+    "meaning": "向上",
+    "context": "look up"
+  },
+  "one": {
+    "pos": "num.",
+    "meaning": "一",
+    "context": "one book"
+  },
+  "time": {
+    "pos": "n.",
+    "meaning": "时间",
+    "context": "save time"
+  },
+  "there": {
+    "pos": "adv.",
+    "meaning": "在那里",
+    "context": "go there"
+  },
+  "year": {
+    "pos": "n.",
+    "meaning": "年；一年",
+    "context": "last year"
+  },
+  "so": {
+    "pos": "adv.",
+    "meaning": "如此；这么",
+    "context": "so beautiful"
+  },
+  "think": {
+    "pos": "v.",
+    "meaning": "思考；认为",
+    "context": "think about it"
+  },
+  "when": {
+    "pos": "adv.",
+    "meaning": "什么时候",
+    "context": "when will you go"
+  },
+  "which": {
+    "pos": "pron.",
+    "meaning": "哪一个",
+    "context": "which is yours"
+  },
+  "them": {
+    "pos": "pron.",
+    "meaning": "他们；它们",
+    "context": "help them"
+  },
+  "some": {
+    "pos": "pron.",
+    "meaning": "一些",
+    "context": "some of us"
+  },
+  "me": {
+    "pos": "pron.",
+    "meaning": "我",
+    "context": "help me"
+  },
+  "people": {
+    "pos": "n.",
+    "meaning": "人们",
+    "context": "many people"
+  },
+  "take": {
+    "pos": "v.",
+    "meaning": "拿；带走",
+    "context": "take a book"
+  },
+  "out": {
+    "pos": "adv.",
+    "meaning": "在外面；向外",
+    "context": "go out"
+  },
+  "into": {
+    "pos": "prep.",
+    "meaning": "进入……里面",
+    "context": "walk into a room"
+  },
+  "just": {
+    "pos": "adv.",
+    "meaning": "仅仅；刚刚",
+    "context": "just arrived"
+  },
+  "see": {
+    "pos": "v.",
+    "meaning": "看见；理解",
+    "context": "see a bird"
+  },
+  "him": {
+    "pos": "pron.",
+    "meaning": "他",
+    "context": "help him"
+  },
+  "your": {
+    "pos": "pron.",
+    "meaning": "你的；你们的",
+    "context": "your home"
+  },
+  "come": {
+    "pos": "v.",
+    "meaning": "来；到来",
+    "context": "come here"
+  },
+  "could": {
+    "pos": "v.",
+    "meaning": "能够；可能",
+    "context": "could you help"
+  },
+  "now": {
+    "pos": "adv.",
+    "meaning": "现在",
+    "context": "leave now"
+  },
+  "than": {
+    "pos": "conj.",
+    "meaning": "比",
+    "context": "older than me"
+  },
+  "like": {
+    "pos": "v.",
+    "meaning": "喜欢",
+    "context": "like music"
+  },
+  "other": {
+    "pos": "adj.",
+    "meaning": "其他的",
+    "context": "the other door"
+  },
+  "how": {
+    "pos": "adv.",
+    "meaning": "怎样；如何",
+    "context": "how are you"
+  },
+  "then": {
+    "pos": "adv.",
+    "meaning": "然后；那时",
+    "context": "and then go"
+  },
+  "its": {
+    "pos": "pron.",
+    "meaning": "它的",
+    "context": "its color"
+  },
+  "our": {
+    "pos": "pron.",
+    "meaning": "我们的",
+    "context": "our home"
+  },
+  "two": {
+    "pos": "num.",
+    "meaning": "二",
+    "context": "two books"
+  },
+  "more": {
+    "pos": "adj.",
+    "meaning": "更多的",
+    "context": "more water"
+  },
+  "these": {
+    "pos": "pron.",
+    "meaning": "这些",
+    "context": "these are mine"
+  },
+  "want": {
+    "pos": "v.",
+    "meaning": "想要",
+    "context": "want a book"
+  },
+  "way": {
+    "pos": "n.",
+    "meaning": "方法；道路",
+    "context": "find a way"
+  },
+  "look": {
+    "pos": "v.",
+    "meaning": "看；看起来",
+    "context": "look at the sky"
+  },
+  "first": {
+    "pos": "num.",
+    "meaning": "第一",
+    "context": "the first time"
+  },
+  "also": {
+    "pos": "adv.",
+    "meaning": "也；同样",
+    "context": "also useful"
+  },
+  "new": {
+    "pos": "adj.",
+    "meaning": "新的",
+    "context": "a new book"
+  },
+  "because": {
+    "pos": "conj.",
+    "meaning": "因为",
+    "context": "because it rains"
+  },
+  "day": {
+    "pos": "n.",
+    "meaning": "一天；白天",
+    "context": "a sunny day"
+  },
+  "use": {
+    "pos": "v.",
+    "meaning": "使用",
+    "context": "use a tool"
+  },
+  "no": {
+    "pos": "adv.",
+    "meaning": "不；没有",
+    "context": "no thanks"
+  },
+  "man": {
+    "pos": "n.",
+    "meaning": "成年男子",
+    "context": "a young man"
+  },
+  "find": {
+    "pos": "v.",
+    "meaning": "找到；发现",
+    "context": "find a way"
+  },
+  "here": {
+    "pos": "adv.",
+    "meaning": "这里",
+    "context": "come here"
+  },
+  "thing": {
+    "pos": "n.",
+    "meaning": "事物；东西",
+    "context": "a useful thing"
+  },
+  "give": {
+    "pos": "v.",
+    "meaning": "给予",
+    "context": "give a gift"
+  },
+  "many": {
+    "pos": "adj.",
+    "meaning": "许多的",
+    "context": "many books"
+  },
+  "well": {
+    "pos": "adv.",
+    "meaning": "好；顺利地",
+    "context": "sleep well"
+  },
+  "only": {
+    "pos": "adv.",
+    "meaning": "仅仅；只",
+    "context": "only one"
+  },
+  "those": {
+    "pos": "pron.",
+    "meaning": "那些",
+    "context": "those are mine"
+  },
+  "tell": {
+    "pos": "v.",
+    "meaning": "告诉；讲述",
+    "context": "tell a story"
+  },
+  "very": {
+    "pos": "adv.",
+    "meaning": "非常",
+    "context": "very useful"
+  },
+  "even": {
+    "pos": "adv.",
+    "meaning": "甚至",
+    "context": "even now"
+  },
+  "back": {
+    "pos": "adv.",
+    "meaning": "向后；回到原处",
+    "context": "come back"
+  },
+  "any": {
+    "pos": "pron.",
+    "meaning": "任何一个",
+    "context": "any of these"
+  },
+  "good": {
+    "pos": "adj.",
+    "meaning": "好的",
+    "context": "a good idea"
+  },
+  "woman": {
+    "pos": "n.",
+    "meaning": "成年女子",
+    "context": "a young woman"
+  },
+  "through": {
+    "pos": "prep.",
+    "meaning": "穿过",
+    "context": "through the door"
+  },
+  "us": {
+    "pos": "pron.",
+    "meaning": "我们",
+    "context": "help us"
+  },
+  "life": {
+    "pos": "n.",
+    "meaning": "生命；生活",
+    "context": "daily life"
+  },
+  "child": {
+    "pos": "n.",
+    "meaning": "孩子",
+    "context": "a young child"
+  },
+  "work": {
+    "pos": "v.",
+    "meaning": "工作；运转",
+    "context": "work hard"
+  },
+  "down": {
+    "pos": "adv.",
+    "meaning": "向下",
+    "context": "look down"
+  },
+  "may": {
+    "pos": "v.",
+    "meaning": "可能；可以",
+    "context": "it may rain"
+  },
+  "should": {
+    "pos": "v.",
+    "meaning": "应该",
+    "context": "you should rest"
+  },
+  "call": {
+    "pos": "v.",
+    "meaning": "呼叫；称呼",
+    "context": "call a friend"
+  },
+  "world": {
+    "pos": "n.",
+    "meaning": "世界",
+    "context": "around the world"
+  },
+  "school": {
+    "pos": "n.",
+    "meaning": "学校",
+    "context": "go to school"
+  },
+  "still": {
+    "pos": "adv.",
+    "meaning": "仍然",
+    "context": "still here"
+  },
+  "try": {
+    "pos": "v.",
+    "meaning": "尝试",
+    "context": "try again"
+  },
+  "last": {
+    "pos": "adj.",
+    "meaning": "最后的；上一个的",
+    "context": "last year"
+  },
+  "ask": {
+    "pos": "v.",
+    "meaning": "询问；请求",
+    "context": "ask a question"
+  },
+  "need": {
+    "pos": "v.",
+    "meaning": "需要",
+    "context": "need help"
+  },
+  "feel": {
+    "pos": "v.",
+    "meaning": "感觉",
+    "context": "feel better"
+  },
+  "three": {
+    "pos": "num.",
+    "meaning": "三",
+    "context": "three books"
+  },
+  "state": {
+    "pos": "n.",
+    "meaning": "状态；情况",
+    "context": "a good state"
+  },
+  "never": {
+    "pos": "adv.",
+    "meaning": "从不",
+    "context": "never give up"
+  },
+  "become": {
+    "pos": "v.",
+    "meaning": "变成；成为",
+    "context": "become stronger"
+  },
+  "between": {
+    "pos": "prep.",
+    "meaning": "在两者之间",
+    "context": "between two doors"
+  },
+  "high": {
+    "pos": "adj.",
+    "meaning": "高的",
+    "context": "a high wall"
+  },
+  "really": {
+    "pos": "adv.",
+    "meaning": "真正地；确实",
+    "context": "really useful"
+  },
+  "something": {
+    "pos": "pron.",
+    "meaning": "某事；某物",
+    "context": "something useful"
+  },
+  "most": {
+    "pos": "adj.",
+    "meaning": "最多的；大多数的",
+    "context": "most people"
+  },
+  "another": {
+    "pos": "pron.",
+    "meaning": "另一个",
+    "context": "try another"
+  },
+  "much": {
+    "pos": "adj.",
+    "meaning": "许多的",
+    "context": "much time"
+  },
+  "family": {
+    "pos": "n.",
+    "meaning": "家庭",
+    "context": "a happy family"
+  },
+  "own": {
+    "pos": "adj.",
+    "meaning": "自己的",
+    "context": "my own room"
+  },
+  "leave": {
+    "pos": "v.",
+    "meaning": "离开；留下",
+    "context": "leave home"
+  },
+  "put": {
+    "pos": "v.",
+    "meaning": "放置",
+    "context": "put it here"
+  },
+  "old": {
+    "pos": "adj.",
+    "meaning": "年老的；旧的",
+    "context": "an old book"
+  },
+  "while": {
+    "pos": "conj.",
+    "meaning": "当……的时候",
+    "context": "while you wait"
+  },
+  "mean": {
+    "pos": "v.",
+    "meaning": "意思是",
+    "context": "what does it mean"
+  },
+  "keep": {
+    "pos": "v.",
+    "meaning": "保持；保留",
+    "context": "keep calm"
+  },
+  "let": {
+    "pos": "v.",
+    "meaning": "让；允许",
+    "context": "let me help"
+  },
+  "begin": {
+    "pos": "v.",
+    "meaning": "开始",
+    "context": "begin now"
+  },
+  "seem": {
+    "pos": "v.",
+    "meaning": "似乎",
+    "context": "seem ready"
+  },
+  "help": {
+    "pos": "v.",
+    "meaning": "帮助",
+    "context": "help a friend"
+  },
+  "show": {
+    "pos": "v.",
+    "meaning": "展示；表明",
+    "context": "show a picture"
+  },
+  "hear": {
+    "pos": "v.",
+    "meaning": "听见",
+    "context": "hear a sound"
+  },
+  "play": {
+    "pos": "v.",
+    "meaning": "玩；演奏",
+    "context": "play music"
+  },
+  "run": {
+    "pos": "v.",
+    "meaning": "跑；运行",
+    "context": "run fast"
+  },
+  "move": {
+    "pos": "v.",
+    "meaning": "移动",
+    "context": "move forward"
+  },
+  "live": {
+    "pos": "v.",
+    "meaning": "生活；居住",
+    "context": "live here"
+  },
+  "believe": {
+    "pos": "v.",
+    "meaning": "相信",
+    "context": "believe in yourself"
+  },
+  "hold": {
+    "pos": "v.",
+    "meaning": "握住；持有",
+    "context": "hold a key"
+  },
+  "bring": {
+    "pos": "v.",
+    "meaning": "带来",
+    "context": "bring a book"
+  },
+  "happen": {
+    "pos": "v.",
+    "meaning": "发生",
+    "context": "what happened"
+  },
+  "write": {
+    "pos": "v.",
+    "meaning": "写",
+    "context": "write a word"
+  },
+  "provide": {
+    "pos": "v.",
+    "meaning": "提供",
+    "context": "provide help"
+  },
+  "sit": {
+    "pos": "v.",
+    "meaning": "坐",
+    "context": "sit down"
+  },
+  "stand": {
+    "pos": "v.",
+    "meaning": "站立",
+    "context": "stand up"
+  },
+  "lose": {
+    "pos": "v.",
+    "meaning": "失去；输掉",
+    "context": "lose a game"
+  },
+  "pay": {
+    "pos": "v.",
+    "meaning": "支付",
+    "context": "pay the bill"
+  },
+  "meet": {
+    "pos": "v.",
+    "meaning": "遇见；会面",
+    "context": "meet a friend"
+  },
+  "include": {
+    "pos": "v.",
+    "meaning": "包括",
+    "context": "include a name"
+  },
+  "continue": {
+    "pos": "v.",
+    "meaning": "继续",
+    "context": "continue walking"
+  },
+  "set": {
+    "pos": "v.",
+    "meaning": "设置；放置",
+    "context": "set a goal"
+  },
+  "learn": {
+    "pos": "v.",
+    "meaning": "学习",
+    "context": "learn a word"
+  },
+  "change": {
+    "pos": "v.",
+    "meaning": "改变",
+    "context": "change a plan"
+  },
+  "lead": {
+    "pos": "v.",
+    "meaning": "引导；带领",
+    "context": "lead the way"
+  },
+  "understand": {
+    "pos": "v.",
+    "meaning": "理解",
+    "context": "understand a word"
+  },
+  "watch": {
+    "pos": "v.",
+    "meaning": "观看；留意",
+    "context": "watch a film"
+  },
+  "follow": {
+    "pos": "v.",
+    "meaning": "跟随",
+    "context": "follow a path"
+  },
+  "stop": {
+    "pos": "v.",
+    "meaning": "停止",
+    "context": "stop here"
+  },
+  "create": {
+    "pos": "v.",
+    "meaning": "创造",
+    "context": "create a story"
+  },
+  "speak": {
+    "pos": "v.",
+    "meaning": "说；讲话",
+    "context": "speak clearly"
+  },
+  "read": {
+    "pos": "v.",
+    "meaning": "阅读",
+    "context": "read a book"
+  },
+  "allow": {
+    "pos": "v.",
+    "meaning": "允许",
+    "context": "allow a change"
+  },
+  "add": {
+    "pos": "v.",
+    "meaning": "添加",
+    "context": "add a word"
+  },
+  "spend": {
+    "pos": "v.",
+    "meaning": "花费；度过",
+    "context": "spend time"
+  },
+  "grow": {
+    "pos": "v.",
+    "meaning": "生长；增加",
+    "context": "grow stronger"
+  },
+  "open": {
+    "pos": "v.",
+    "meaning": "打开",
+    "context": "open the door"
+  },
+  "walk": {
+    "pos": "v.",
+    "meaning": "步行",
+    "context": "walk home"
+  },
+  "win": {
+    "pos": "v.",
+    "meaning": "获胜",
+    "context": "win a game"
+  },
+  "offer": {
+    "pos": "v.",
+    "meaning": "提供；提出",
+    "context": "offer help"
+  },
+  "remember": {
+    "pos": "v.",
+    "meaning": "记住",
+    "context": "remember a word"
+  },
+  "love": {
+    "pos": "v.",
+    "meaning": "爱；喜爱",
+    "context": "love music"
+  },
+  "consider": {
+    "pos": "v.",
+    "meaning": "考虑",
+    "context": "consider a plan"
+  },
+  "appear": {
+    "pos": "v.",
+    "meaning": "出现",
+    "context": "appear suddenly"
+  },
+  "buy": {
+    "pos": "v.",
+    "meaning": "购买",
+    "context": "buy a book"
+  },
+  "wait": {
+    "pos": "v.",
+    "meaning": "等待",
+    "context": "wait here"
+  },
+  "serve": {
+    "pos": "v.",
+    "meaning": "服务；供给",
+    "context": "serve a meal"
+  },
+  "die": {
+    "pos": "v.",
+    "meaning": "死亡",
+    "context": "never die"
+  },
+  "send": {
+    "pos": "v.",
+    "meaning": "发送",
+    "context": "send a message"
+  },
+  "expect": {
+    "pos": "v.",
+    "meaning": "期望；预计",
+    "context": "expect a result"
+  },
+  "build": {
+    "pos": "v.",
+    "meaning": "建造",
+    "context": "build a bridge"
+  },
+  "stay": {
+    "pos": "v.",
+    "meaning": "停留",
+    "context": "stay here"
+  },
+  "fall": {
+    "pos": "v.",
+    "meaning": "落下；跌倒",
+    "context": "fall down"
+  },
+  "cut": {
+    "pos": "v.",
+    "meaning": "切；砍",
+    "context": "cut a rope"
+  },
+  "reach": {
+    "pos": "v.",
+    "meaning": "到达；伸手够到",
+    "context": "reach a goal"
+  },
+  "kill": {
+    "pos": "v.",
+    "meaning": "杀死",
+    "context": "kill an enemy"
+  },
+  "remain": {
+    "pos": "v.",
+    "meaning": "保持；留下",
+    "context": "remain calm"
+  },
+  "suggest": {
+    "pos": "v.",
+    "meaning": "建议",
+    "context": "suggest a plan"
+  },
+  "raise": {
+    "pos": "v.",
+    "meaning": "举起；提高",
+    "context": "raise a hand"
+  },
+  "pass": {
+    "pos": "v.",
+    "meaning": "通过；经过",
+    "context": "pass a test"
+  },
+  "sell": {
+    "pos": "v.",
+    "meaning": "出售",
+    "context": "sell a book"
+  },
+  "require": {
+    "pos": "v.",
+    "meaning": "需要；要求",
+    "context": "require help"
+  },
+  "report": {
+    "pos": "v.",
+    "meaning": "报告",
+    "context": "report a problem"
+  },
+  "decide": {
+    "pos": "v.",
+    "meaning": "决定",
+    "context": "decide now"
+  },
+  "pull": {
+    "pos": "v.",
+    "meaning": "拉；拖",
+    "context": "pull a rope"
+  },
+  "return": {
+    "pos": "v.",
+    "meaning": "返回；归还",
+    "context": "return home"
+  },
+  "explain": {
+    "pos": "v.",
+    "meaning": "解释",
+    "context": "explain a word"
+  },
+  "hope": {
+    "pos": "v.",
+    "meaning": "希望",
+    "context": "hope for peace"
+  },
+  "develop": {
+    "pos": "v.",
+    "meaning": "发展；开发",
+    "context": "develop a game"
+  },
+  "carry": {
+    "pos": "v.",
+    "meaning": "携带；搬运",
+    "context": "carry a bag"
+  },
+  "break": {
+    "pos": "v.",
+    "meaning": "打破；折断",
+    "context": "break a chain"
+  },
+  "receive": {
+    "pos": "v.",
+    "meaning": "收到；接收",
+    "context": "receive a gift"
+  },
+  "agree": {
+    "pos": "v.",
+    "meaning": "同意",
+    "context": "agree with you"
+  },
+  "support": {
+    "pos": "v.",
+    "meaning": "支持；支撑",
+    "context": "support a friend"
+  },
+  "hit": {
+    "pos": "v.",
+    "meaning": "击中",
+    "context": "hit a target"
+  },
+  "produce": {
+    "pos": "v.",
+    "meaning": "生产；产生",
+    "context": "produce energy"
+  },
+  "eat": {
+    "pos": "v.",
+    "meaning": "吃",
+    "context": "eat an apple"
+  },
+  "cover": {
+    "pos": "v.",
+    "meaning": "覆盖",
+    "context": "cover a surface"
+  },
+  "catch": {
+    "pos": "v.",
+    "meaning": "抓住；接住",
+    "context": "catch a ball"
+  },
+  "draw": {
+    "pos": "v.",
+    "meaning": "画；拉",
+    "context": "draw a picture"
+  },
+  "choose": {
+    "pos": "v.",
+    "meaning": "选择",
+    "context": "choose a path"
+  },
+  "cause": {
+    "pos": "v.",
+    "meaning": "导致；引起",
+    "context": "cause a change"
+  },
+  "point": {
+    "pos": "n.",
+    "meaning": "点；要点",
+    "context": "the main point"
+  },
+  "right": {
+    "pos": "adj.",
+    "meaning": "正确的；右边的",
+    "context": "the right answer"
+  },
+  "left": {
+    "pos": "adj.",
+    "meaning": "左边的",
+    "context": "the left door"
+  },
+  "light": {
+    "pos": "n.",
+    "meaning": "光；光线",
+    "context": "a ray of light"
+  },
+  "sound": {
+    "pos": "n.",
+    "meaning": "声音",
+    "context": "hear a sound"
+  },
+  "close": {
+    "pos": "v.",
+    "meaning": "关闭",
+    "context": "close the door"
+  },
+  "present": {
+    "pos": "adj.",
+    "meaning": "在场的；当前的",
+    "context": "the present moment"
+  },
+  "fine": {
+    "pos": "adj.",
+    "meaning": "好的；精细的",
+    "context": "a fine day"
+  },
+  "match": {
+    "pos": "n.",
+    "meaning": "比赛；相配之物",
+    "context": "win a match"
+  },
+  "lie": {
+    "pos": "v.",
+    "meaning": "躺；平放",
+    "context": "lie down"
+  },
+  "spring": {
+    "pos": "n.",
+    "meaning": "春天",
+    "context": "in spring"
+  },
+  "bear": {
+    "pos": "n.",
+    "meaning": "熊",
+    "context": "a brown bear"
+  },
+  "minute": {
+    "pos": "n.",
+    "meaning": "分钟",
+    "context": "one minute"
+  },
+  "second": {
+    "pos": "num.",
+    "meaning": "第二",
+    "context": "the second door"
+  },
+  "record": {
+    "pos": "n.",
+    "meaning": "记录",
+    "context": "keep a record"
+  },
+  "object": {
+    "pos": "n.",
+    "meaning": "物体；物品",
+    "context": "a small object"
+  },
+  "subject": {
+    "pos": "n.",
+    "meaning": "主题；学科",
+    "context": "a school subject"
+  },
+  "sign": {
+    "pos": "n.",
+    "meaning": "标志；迹象",
+    "context": "a warning sign"
+  },
+  "form": {
+    "pos": "n.",
+    "meaning": "形式；形状",
+    "context": "a simple form"
+  },
+  "issue": {
+    "pos": "n.",
+    "meaning": "问题；议题",
+    "context": "an important issue"
+  },
+  "order": {
+    "pos": "n.",
+    "meaning": "顺序；命令",
+    "context": "in order"
+  },
+  "process": {
+    "pos": "n.",
+    "meaning": "过程",
+    "context": "a learning process"
+  },
+  "value": {
+    "pos": "n.",
+    "meaning": "价值；数值",
+    "context": "the value of time"
+  },
+  "base": {
+    "pos": "n.",
+    "meaning": "底部；基础",
+    "context": "a strong base"
+  },
+  "character": {
+    "pos": "n.",
+    "meaning": "角色；性格",
+    "context": "a game character"
+  },
+  "scale": {
+    "pos": "n.",
+    "meaning": "规模；比例",
+    "context": "a large scale"
+  },
+  "current": {
+    "pos": "adj.",
+    "meaning": "当前的",
+    "context": "the current plan"
+  },
+  "charge": {
+    "pos": "v.",
+    "meaning": "充电；收费",
+    "context": "charge a battery"
+  },
+  "attack": {
+    "pos": "v.",
+    "meaning": "攻击",
+    "context": "attack a target"
+  },
+  "skill": {
+    "pos": "n.",
+    "meaning": "技能",
+    "context": "learn a skill"
+  },
+  "word": {
+    "pos": "n.",
+    "meaning": "单词；话语",
+    "context": "spell a word"
+  },
+  "spell": {
+    "pos": "v.",
+    "meaning": "拼写",
+    "context": "spell a word"
+  },
+  "meaning": {
+    "pos": "n.",
+    "meaning": "含义",
+    "context": "the meaning of a word"
+  },
+  "memory": {
+    "pos": "n.",
+    "meaning": "记忆",
+    "context": "improve memory"
+  },
+  "practice": {
+    "pos": "n.",
+    "meaning": "练习；实践",
+    "context": "daily practice"
+  },
+  "monday": {
+    "pos": "n.",
+    "meaning": "星期一",
+    "context": "on Monday"
+  }
+}

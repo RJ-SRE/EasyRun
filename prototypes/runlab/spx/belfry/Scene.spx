@@ -32,6 +32,17 @@ func fillScene(slots []int,kind int,ys []float64) {
  }
 }
 func updateScene() {
+ // View-slot membership is broad phase only. The 700-unit view margin is
+ // wider than the 300-unit visible half-height; physics and enemy AI still
+ // run every frame. Refresh at most 50 ms apart while playing, and immediately
+ // after a teleport, restart or phase change. Idle menus need no rescan.
+ now:=float64(timer)
+ same:=sceneRefreshKnown && sceneRefreshPhase==phase && sceneRefreshAttempt==attempts && sceneRefreshPractice==practice && sceneRefreshSegment==segment
+ if same && abs(cameraY-sceneRefreshY)<96 {
+  if phase!=1 || now-sceneRefreshTime<0.05 {return}
+ }
+ sceneRefreshKnown=true; sceneRefreshTime=now; sceneRefreshY=cameraY
+ sceneRefreshPhase=phase; sceneRefreshAttempt=attempts; sceneRefreshPractice=practice; sceneRefreshSegment=segment
  sceneMissing=0
  fillScene(sceneFloors,0,floorY); fillScene(sceneAnchors,1,anchorY)
  fillScene(sceneEnemies,2,enemyY); fillScene(sceneNiches,6,enemyBaseY)

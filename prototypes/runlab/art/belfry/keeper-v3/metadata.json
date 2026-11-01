@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-01",
+  "generator": "built-in imagegen",
+  "forms": [
+    "守铠",
+    "断锋",
+    "缚心"
+  ],
+  "layout": {
+    "columns": 4,
+    "rows": 3,
+    "keyposesPerForm": 12
+  },
+  "registration": "belfry-keeper-frames.mjs: foot anchors",
+  "sourceReference": "design/boss-rework/2026-11-01/keeper-structural-evolution-concept.png",
+  "assets": [
+    {
+      "path": "form-1.png",
+      "sha256": "f7d8a258482d1d7726a96c3ce91e704f51bcbf0bb10de7423656902739091fc5"
+    },
+    {
+      "path": "form-2.png",
+      "sha256": "29aea5a10d5e0d6cd371a1f205e581684a5827aafe850a2f9f0912fa46ed68cd"
+    },
+    {
+      "path": "form-3.png",
+      "sha256": "ee93d6c779e776d5d5d2b606ba0b1e6f935ab7a3500eb8c938acc08dbe013f91"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { BelfryMusic } from "./belfry-music.js";
 
 // Action effects omit bell/drum layers. Scene music is supplied by the user.
-const defaults = { sfx: 0.85, music: 0.4 };
+const defaults = { sfx: 0.85, music: 0.75 };
 const counts = {
   bowdraw: 2,
   bowshot: 3,
@@ -125,6 +125,7 @@ export class BelfryAudio {
       enabled: this.enabled,
       hidden: document.hidden,
       focusPaused: !!this.focusPaused,
+      learningReading: !!this.learningReading || !!this.ledgerReading,
     });
   }
   buffer(path) {
@@ -469,6 +470,9 @@ export class BelfryAudio {
       keeperfollow: "tension",
       keeperform: "chaincut",
       keeperstrike: "blade",
+      keepermend: "healstart",
+      keepermendcrack: "arrowhit",
+      keepermendbreak: "chainfinish",
       huntstrike: kind === 7 ? "heavy" : kind === 8 ? "dash" : "blade",
       armor: "brass",
       wardbreak: "chaincut",

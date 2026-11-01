@@ -1,0 +1,40 @@
+// Original still artwork, local cloth/water/fog loops and cloud lightning.
+func requestMenuStart() {
+ if phase==0 && !menuBusy {startRun()}
+}
+func updateMenuLightning(dt float64) {
+ if menuEntering {menuStormActive=false; menuStormNext=2.8; menuStormCycle=0; menuStormAge=0}
+ if phase!=0 || menuReduced || menuBusy {
+  menuStormActive=false; menuStormAge=0; menuStormNext=menuClock+3.2
+  return
+ }
+ if !menuStormActive && menuClock>=menuStormNext {menuStormActive=true; menuStormAge=0; menuStormCycle++}
+ if !menuStormActive {return}
+ menuStormAge+=dt
+ if menuStormAge>=1.3 {
+  menuStormActive=false
+  menuStormNext=menuClock+5.8+float64((menuStormCycle*7)%9)*0.55
+  return
+ }
+ frame:=0; opacity:=1.0
+ if menuStormAge<0.28 {opacity=menuStormAge/0.28} else if menuStormAge<0.46 {
+  frame=1; opacity=0.75+0.25*sin((menuStormAge-0.28)/0.18*math.Pi)
+ } else {frame=2; opacity=(1.3-menuStormAge)/0.84}
+ menuStormFrame=((menuStormCycle-1)%3)*3+frame
+ menuStormGhost=float64(int((1-opacity)*20))*5
+}
+func updateMenuMotion(dt float64) {
+ menuEntering=phase==0 && !menuActive
+ if menuEntering {menuClock=0; menuFrame=0; menuWaterFrame=0; menuBusy=false}
+ if phase==0 {
+  if !menuReduced {menuClock+=dt}
+  menuFrame=0; menuWaterFrame=0
+  if !menuReduced {menuFrame=int(menuClock*6)%24; menuWaterFrame=int(menuClock*8)%32}
+  fogStep:=menuClock*16/12
+  menuFogFrame=int(fogStep)%16; menuFogNext=(menuFogFrame+1)%16
+  menuFogBlend=float64(int((fogStep-float64(int(fogStep)))*50))*2
+ }
+ updateMenuLightning(dt)
+ if phase==0 || menuActive {MenuScene.menuPaint(); MenuFogBase.menuPaint(); MenuFogBlend.menuPaint(); MenuWaterLocal.menuPaint(); MenuClothLocal.menuPaint(); MenuLightning.menuPaint()}
+ menuActive=phase==0
+}

@@ -4,23 +4,40 @@ import { readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { wordDifficulty, WORD_MODES } from "./public/word-selection.js";
+import { nativeWordData } from "./belfry-native-data.mjs";
 const root = new URL("./", import.meta.url);
-const quote = JSON.stringify;
-export async function buildNativeLexicon(page, words) {
+export async function buildNativeLexicon(
+  page,
+  words,
+  content = { core: false, version: "cet46-2026-10-26.1" },
+) {
   const trim = (s) => Array.from(s).slice(0, 28).join("");
   const rows = words.map((w) => ({
+    id: "en:" + w.id,
     word: w.word.toLowerCase(),
     meaning: trim(w.meaning),
     pos: w.pos,
+    context: w.context || "",
+    revision: w.senseRevision || "legacy",
+    legacySafe: content.legacySenseSafe?.includes(w.id) ? 1 : 0,
     a: trim(w.distractors[0]),
     b: trim(w.distractors[1]),
     aliases: w.accepted.map((x) => x.toLowerCase()).join("|"),
-    level: w.levels.length === 2 ? 3 : w.levels[0] === "cet4" ? 1 : 2,
+    level: wordDifficulty(w),
     spell: w.spellable && /^[a-z -]+$/.test(w.word.toLowerCase()) ? 1 : 0,
   }));
   const source = (
     await Promise.all(
-      ["NativeWords", "NativeLedger"].map((name) =>
+      [
+        "NativeWords",
+        "NativeLedger",
+        "NativeCombat",
+        "NativeLearning",
+        "NativeCloud",
+        "NativeLocal",
+        "NativeStudy",
+      ].map((name) =>
         readFile(new URL(`spx/belfry/${name}.spx`, root), "utf8"),
       ),
     )
@@ -31,7 +48,9 @@ export async function buildNativeLexicon(page, words) {
         "",
       ),
       ...source,
-      ...rows.map((w) => w.word + w.meaning + w.a + w.b + w.pos).join(""),
+      ...rows
+        .map((w) => w.word + w.meaning + w.a + w.b + w.pos + w.context)
+        .join(""),
     ]),
   ].filter((c) => c >= " ");
   const entries = chars.map((c) => ({ c, font: 0 }));
@@ -128,34 +147,71 @@ onMsg "nativeTextResize", => {if cloned && slot>=nativeTextCount {cloned=false; 
 onMsg "nativeText", => {if cloned {syncText()}}
 onClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mouseY+300))}
 `;
-  const arrays = [
-    ["nativeWords", "word", "string"],
-    ["nativeMeanings", "meaning", "string"],
-    ["nativeWordPOS", "pos", "string"],
-    ["nativeDistractA", "a", "string"],
-    ["nativeDistractB", "b", "string"],
-    ["nativeAliases", "aliases", "string"],
-    ["nativeLevels", "level", "int"],
-    ["nativeSpellable", "spell", "int"],
-  ];
-  files["native-word-data.spx"] =
-    "func initNativeWordData() {\n" +
-    arrays
-      .map(
-        ([name, key, type]) =>
-          `${name}=[]${type}{${rows.map((w) => (type === "string" ? quote(w[key]) : w[key])).join(",")}}`,
-      )
-      .join("\n") +
-    "\n}\nfunc initNativeGlyphData() {\n nativeGlyphs=map[rune]int{}; nativeSerifGlyphs=map[rune]int{}; nativeMonoGlyphs=map[rune]int{}; nativeErrorGlyphs=map[rune]int{}\n" +
-    entries
-      .map(
-        ({ c, font }, i) =>
-          `${["nativeGlyphs", "nativeSerifGlyphs", "nativeMonoGlyphs", "nativeErrorGlyphs"][font]}[[]rune(${quote(c)})[0]]=${i}`,
-      )
-      .join("\n") +
-    "\n nativeGlyphAdvance=[]float64{" +
-    glyphs.map((g) => g.advance.toFixed(5)).join(",") +
-    "}\n}\n";
+  files["native-word-data.spx"] = nativeWordData(
+    rows,
+    entries,
+    glyphs,
+    content.core,
+  );
+  const storageMode = process.env.LEARNING_NATIVE_STORAGE_MODE || "local";
+  if (!["local", "cloud", "session"].includes(storageMode))
+    throw Error("Invalid native storage mode");
+  const apiURL =
+    storageMode === "cloud" ? process.env.LEARNING_NATIVE_API_URL || "" : "";
+  const profileMode = process.env.LEARNING_NATIVE_PROFILE_MODE || "username";
+  if (!["username", "verified-id"].includes(profileMode))
+    throw Error("Invalid native profile mode");
+  if (
+    apiURL &&
+    (!apiURL.startsWith("https://") ||
+      new URL(apiURL).username ||
+      new URL(apiURL).password ||
+      new URL(apiURL).search ||
+      new URL(apiURL).hash)
+  )
+    throw new Error(
+      "LEARNING_NATIVE_API_URL must be a public HTTPS endpoint without credentials/query/hash",
+    );
+  files["native-word-data.spx"] = files["native-word-data.spx"].replace(
+    "func initNativeWordData() {",
+    `func initNativeWordData() {\n nativeCloudURL=${JSON.stringify(apiURL.replace(/\/$/, ""))}; nativeCloudVersion=${JSON.stringify(content.version)}; nativeNameMode=${storageMode === "cloud" && profileMode === "username"}; nativeLocalEnabled=${storageMode === "local"}`,
+  );
+  files["native-learning-manifest.json"] = JSON.stringify({
+    schemaVersion: 1,
+    learningRuleVersion: 1,
+    contentVersion: content.version,
+    wordCount: words.length,
+    core: content.core,
+    selectionRuleVersion: 1,
+    selectionModes: WORD_MODES,
+    defaultSelection: "normal",
+    difficultyBasis: content.core
+      ? content.gradingBasis || "reviewed-core-cefr"
+      : "existing-gameplay-tiers-v1",
+    difficultyCounts: Object.fromEntries(
+      WORD_MODES.slice(0, 3).map((mode, index) => [
+        mode,
+        rows.filter((row) => row.level === index + 1).length,
+      ]),
+    ),
+    storageMode,
+    localPersistence: storageMode === "local",
+    cloudEnabled: !!apiURL,
+    apiURL,
+    profileMode,
+    identityBridge:
+      storageMode === "local"
+        ? "runtime-name-local-profile"
+        : profileMode === "username"
+          ? "runtime-username-unverified"
+          : "pending-platform-authorization",
+    identityVerified: false,
+    contentReleaseReady: content.releaseReady === true,
+    contentQualityPolicy: content.core
+      ? "dictionary-validated-with-editorial-overrides"
+      : "legacy-test-content",
+    releaseReady: false,
+  });
   const cues = [
     "blade",
     "bowdraw",
@@ -232,16 +288,33 @@ onClick => {nativeActivate(nativeActionAt(mouseX-viewCenterX+480,viewCenterY-mou
   files["NativeSfx.spx"] = `var (
  muted bool
  applied int
+ audioPositionKnown bool
+ audioX float64
+ audioY float64
 )
+func pinToCamera() {
+ if !audioPositionKnown || audioX!=viewCenterX || audioY!=viewCenterY {
+  audioPositionKnown=true; audioX=viewCenterX; audioY=viewCenterY
+  setXYpos audioX,audioY
+ }
+}
 func syncChannel() {
  blocked:=nativeSfxVolume<=0 || phase==4 || phase==5 && wordVisualPaused
  if blocked && !muted {${cues.map((c) => `stopPlaying "SFX_${c}"`).join("; ")}}
  muted=blocked
  if applied!=nativeSfxVolume {applied=nativeSfxVolume; setVolume float64(applied)}
 }
-func cue(name string) {if nativeSfxVolume<=0 || phase==4 || phase==5 && wordVisualPaused {return}; setVolume float64(nativeSfxVolume); play name}
+func cue(name string) {if nativeSfxVolume<=0 || phase==4 || phase==5 && wordVisualPaused {return}; pinToCamera(); setVolume float64(nativeSfxVolume); play name}
 onStart => {hide}
 `;
+  files["assets/sprites/NativeBgm/pixel.png"] =
+    files["assets/sprites/NativeSfx/pixel.png"];
+  files["assets/sprites/NativeBgm/index.json"] =
+    files["assets/sprites/NativeSfx/index.json"];
+  files["NativeBgm.spx"] = await readFile(
+    new URL("spx/belfry/NativeBgm.spx", root),
+    "utf8",
+  );
   console.log(
     `Native wordbank: ${rows.length} entries / ${entries.length} glyph costumes / ${cues.length} action samples`,
   );

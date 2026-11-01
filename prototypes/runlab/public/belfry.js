@@ -1,3 +1,4 @@
+import { createMoonlitMenu } from "./belfry-menu.js";
 import { parseExpedition } from "./expedition-progress.js";
 import { expeditionHint, EXPEDITION } from "./belfry-expedition.js";
 import { BelfryAudio } from "./belfry-audio.js";
@@ -91,6 +92,12 @@ const fields = [
   "bossChain",
   "bossWindup",
   "keeperEpoch",
+  "bossMendAge",
+  "bossMendDuration",
+  "bossMendHits",
+  "bossMendHealed",
+  "bossMendCooldown",
+  "bossMendUsed",
 ];
 window.latestState = null;
 window.renderState = null;
@@ -112,7 +119,7 @@ const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
 });
-let inscription, achievements;
+let inscription, achievements, menu;
 try {
   const { InscriptionUI } = await import("./inscription-ui.js");
   inscription = new InscriptionUI({
@@ -193,19 +200,9 @@ try {
     },
   };
 }
-try {
-  const { AchievementUI } = await import("./belfry-achievements.js");
-  achievements = new AchievementUI({
-    send: (code, value) => key(code, value, true),
-    focus: focusGame,
-    lockInput: () => inscription.lockHeld?.(),
-  });
-} catch {
-  const notice = document.createElement("span");
-  notice.id = "achievement-load-error";
-  notice.textContent = "成就册暂不可用";
-  document.querySelector(".controls").append(notice);
-}
+// English milestones now share the learning archive; retain old combat records on disk.
+achievements = { word() {}, receive() {}, resetSession() {}, deed() {} };
+
 const city = new CityUI({
   send: (code, value) => key(code, value, true),
   focus: focusGame,
@@ -241,12 +238,17 @@ function formatTime(t) {
 function focusGame() {
   frame?.contentWindow?.document.querySelector("#game-canvas")?.focus();
 }
-function key(code, key = code, transport = false) {
+function key(code, key = code, transport = false, stealFocus = true) {
   const w = frame?.contentWindow,
     c = w?.document.querySelector("#game-canvas");
   if (!c) return;
-  focusGame();
+  if (stealFocus) focusGame();
   const keyCode = {
+    Home: 36,
+    End: 35,
+    PageUp: 33,
+    PageDown: 34,
+    F7: 118,
     Enter: 13,
     Escape: 27,
     KeyR: 82,
@@ -415,6 +417,7 @@ function receive(s) {
       ? `Sea Power · ${music.title} · 单曲循环`
       : "点击「播放音乐」启用背景音乐。";
   inscription.receive(s);
+  menu?.receive(s);
   city.receive(s);
   achievements?.receive(s);
   $("#practice-controls").hidden = !(s.practice && s.phase === 1);
@@ -526,6 +529,8 @@ function receive(s) {
           ? `${s.combo} <small>AIR CHAIN</small>`
           : "";
   $("#boss").hidden = !(s.segment === 1 && [1, 5].includes(s.phase));
+  $("#boss").dataset.form = s.bossStage;
+  $("#boss").classList.toggle("mending", s.bossState === 7);
   $("#boss-health").style.width =
     `${Math.max(0, Math.min(100, (s.bossHP / s.bossMaxHP) * 100))}%`;
   const keeper = keeperStatus(s);
@@ -694,6 +699,21 @@ async function load() {
             window.expeditionState = parseExpedition(
               expeditionMatch[1].trim().split(/\s+/).map(Number),
             );
+          const motion = text.match(/@menu\s+(.+)/);
+          if (motion) {
+            const a = motion[1].trim().split(/\s+/);
+            window.menuDiagnostics = {
+              time: +a[0],
+              pose: +a[1],
+              frame: +a[2],
+              blend: +a[3],
+              ripple: +a[4],
+              leaving: a[5] === "true",
+              busy: a[6] === "true",
+              reduced: a[7] === "true",
+              departure: +a[8],
+            };
+          }
           let m = text.match(/@state\s+(.+)/);
           if (m) {
             const a = m[1].trim().split(/\s+/).map(Number);
@@ -801,6 +821,7 @@ async function load() {
         w.addEventListener("pointerdown", unlockAudio, { capture: true });
         w.addEventListener("keydown", unlockAudio, { capture: true });
         w.addEventListener("keydown", (e) => {
+          if (menu?.handleKey(e)) return;
           if (["Enter", "KeyT"].includes(e.code)) initAudio();
           if (
             [
@@ -980,6 +1001,7 @@ for (const k of ["sfx", "music"]) {
   el.value = soundscape.settings[k];
   el.oninput = () => soundscape.set(k, Number(el.value));
 }
+menu = createMoonlitMenu({ send: key });
 best();
 load();
 

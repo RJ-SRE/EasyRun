@@ -29,9 +29,19 @@ onCloned data => {
    if kind==2 && enemyMode[i]==1 && state==3 && enemyStun[i]<=0 {costume=38; if t>0.22 && t<0.62 {costume=39}; if t>0.78 {costume=16}}
    if kind==4 && enemyMode[i]==1 && enemyStun[i]<=0 {if state==1 {costume=40}; if state==3 {costume=41; if t>0.42 {costume=40}}}
    if kind==3 {
-    pose=0; if state==0 && abs(enemyVX[i])>25 {pose=1}; if state==1 {pose=2}; if state==2 {pose=5}; if state==3 {pose=3}; if state==5 || state==3 && (bossMove==2 || bossMove==5) {pose=4}
-    if state==6 {pose=2; if t>0.40 {pose=4}; if t>0.85 {pose=5}}
-    costume=42+bossStage*6+pose; size=0.38
+    pose=0; if state==0 && abs(enemyVX[i])>25 {pose=int(enemyStride[i]/22)%2}; if state==2 {pose=5}
+    if state==1 {pose=2; if bossMove==2 || bossMove==5 || bossMove==8 && bossChain==1 {pose=4}; if bossMove==3 && bossChain==1 {pose=4}; if bossMove==7 {pose=8}}
+    if state==3 {
+     pose=3; if bossMove==1 || bossMove==4 {pose=6}; if bossMove==5 || bossMove==3 && bossChain==1 || bossMove==8 && bossChain==1 {pose=11}
+     if bossMove==2 {pose=8}; if bossMove==7 {pose=7; if t>0.30 {pose=8}}
+     if bossMove==6 || bossMove==8 && bossChain==2 {pose=3; if t>0.70 {pose=6}}
+    }
+    if state==5 {pose=7}
+    if state==6 {pose=10; if t<0.35 {pose=9}; if bossStage==1 && t>0.85 || bossStage==2 && t>1.5 {pose=0}}
+    if state==7 {pose=9}
+    costume=78+bossStage*12+pose; size=0.57
+    if state==6 && (bossStage==1 && t<0.85 || bossStage==2 && t<1.25) {costume=78+(bossStage-1)*12+pose}
+
    }
    if kind>=7 {
     pose=0; if state==0 && abs(enemyVX[i])>20 {pose=1}; if state==1 {pose=2}; if state==3 {pose=3}; if state==2 {pose=4}; if enemyStun[i]>0 {pose=5}
@@ -46,10 +56,14 @@ onCloned data => {
    }
    setHeading enemyFacing[i]*90
    breath:=0.0; if state==0 {breath=sin(visualTime*2.3+float64(i))*0.004}
-   setSize size*(1+breath); setXYpos enemyX[i],enemyY[i]-34
+   // Boss costumes contain their authored metal/blood/bone palette already.
+   // Hue-shifting the final atlas would turn the pale core green again.
+   bob:=0.0; if kind==3 {if state==7 && !menuReduced {breath=sin(bossMendAge*5)*0.018}}
+   setGraphicEffect ColorEffect,0
+   setSize size*(1+breath); setXYpos enemyX[i],enemyY[i]-34+bob
    // Stationary silhouettes mark actual past positions; they never hit or hide
    // the body. The same pool and attempt/pause lifetime rules bound the cost.
-   fast:=state==5 || (state==3 && enemyMode[i]==1 && (kind==1 || kind==2)) || (kind==3 && state==3 && (bossMove==1 || bossMove==4 || bossMove==5))
+   fast:=state==5 || (state==3 && enemyMode[i]==1 && (kind==1 || kind==2)) || (kind==3 && state==3 && (bossMove==1 || bossMove==4 || bossMove==7))
    if fast && enemyStun[i]<=0 && abs(enemyVX[i])>130 && phase==1 && elapsed-trailAt>0.065 && takeFX(70) {
     trailAt=elapsed; EnemyBlend.clone []float64{float64(i),float64(costume),enemyFacing[i]*90,size,float64(attempts),enemyX[i],enemyY[i]-34,0.18}
    }

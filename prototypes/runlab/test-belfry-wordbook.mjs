@@ -1,3 +1,4 @@
+import { WORD_MODES, wordDifficulty } from "./public/word-selection.js";
 import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import { Buffer } from "node:buffer";
@@ -30,14 +31,25 @@ const pass = (name) => {
 };
 const wait = (fn) => p.waitForFunction(fn, null, { timeout: 45000 });
 const diag = () => p.evaluate(() => window.inscriptionDiagnostics);
-await p.route("**/belfry.json", async (route) => {
-  const data = await (await route.fetch()).json();
-  data["main.spx"] = data["main.spx"].replace(
-    "onKey KeyT",
-    'onKey KeyF12, => {phase=2; event("finish")}\nonKey KeyT',
-  );
-  await route.fulfill({ json: data });
+await p.addInitScript(() => {
+  const fetch = window.fetch.bind(window);
+  window.fetch = async (...args) => {
+    const r = await fetch(...args);
+    if (String(args[0]).includes("belfry.json")) {
+      const json = r.json.bind(r);
+      r.json = async () => {
+        const data = await json();
+        data["main.spx"] = data["main.spx"].replace(
+          "onKey KeyT",
+          'onKey KeyF12, => {phase=2; event("finish")}\nonKey KeyT',
+        );
+        return data;
+      };
+    }
+    return r;
+  };
 });
+
 try {
   const start = Date.now();
   await p.goto(url);
@@ -45,9 +57,10 @@ try {
     () => window.latestState?.phase === 0 && window.inscriptionDiagnostics,
   );
   report.timings.readyMs = Date.now() - start;
-  assert.equal((await diag()).coverage.total, 8815);
-  assert.match(await p.locator("#word-coverage").textContent(), /8,815/);
-  assert.equal(await p.locator("#word-advanced").getAttribute("open"), null);
+  assert.equal((await diag()).coverage.total, 3816);
+  assert.equal(await p.locator("#word-wordMode").inputValue(), "normal");
+  await p.locator("#menu-settings").click();
+  assert.notEqual(await p.locator("#word-advanced").getAttribute("open"), null);
   for (const [width, height] of [
     [1440, 1000],
     [1280, 720],
@@ -66,15 +79,20 @@ try {
       path: fileURLToPath(new URL(`menu-${width}.png`, out)),
     });
   }
-  pass("full bank and compact collapsed menu fit three desktop sizes");
+  pass("full common bank and expedition settings fit three desktop sizes");
   await p.setViewportSize({ width: 1440, height: 1000 });
-  for (const scope of ["cet4", "cet6"]) {
-    await p.locator("#word-scope").selectOption(scope);
+  for (const [index, mode] of WORD_MODES.entries()) {
+    await p.locator("#word-wordMode").selectOption(mode);
     const d = await diag();
-    assert.ok(d.pool.every((id) => BANK.get(id).levels.includes(scope)));
+    assert.equal(new Set(d.pool).size, 30);
+    if (mode !== "random")
+      assert.ok(
+        d.pool.every((id) => wordDifficulty(BANK.get(id)) === index + 1),
+      );
   }
-  await p.locator("#word-scope").selectOption("mixed");
+  await p.locator("#word-wordMode").selectOption("random");
   const preview = (await diag()).pool;
+  await p.locator("#menu-close").click();
   await p.locator("#word-preview").click();
   assert.equal(await p.locator(".word-row").count(), 30);
   await p.locator("#word-filter").selectOption("all");
@@ -84,7 +102,7 @@ try {
   await p.locator("#word-search").fill("");
   await p.keyboard.type("cat");
   assert.equal(await p.evaluate(() => latestState.phase), 0);
-  await p.locator("#word-search").fill("acknowledgement");
+  await p.locator("#word-search").fill("biodiversity");
   assert.ok(await p.locator(".word-row").count());
   assert.deepEqual((await diag()).pool, preview);
   assert.equal((await diag()).count, 0);
@@ -99,6 +117,11 @@ try {
     mimeType: "application/json",
     buffer: Buffer.from("{}"),
   });
+  await wait(() =>
+    document
+      .querySelector("#word-import-status")
+      .textContent.includes("未导入"),
+  );
   assert.match(await p.locator("#word-import-status").textContent(), /未导入/);
   assert.equal(Object.keys((await diag()).history).length, 0);
   const incoming = new InscriptionBook(null, 3),
@@ -134,7 +157,9 @@ try {
   const exported = JSON.parse(await readFile(await file.path(), "utf8"));
   assert.deepEqual(exported.history, imported);
   await p.locator("#word-close").click();
+  await p.locator("#menu-settings").click();
   await p.locator("#word-shuffle").click();
+  await p.locator("#menu-close").click();
   assert.equal((await diag()).pool.filter((id) => imported[id]).length, 6);
   pass(
     "invalid imports preserve records, valid imports merge idempotently, weak quota and export roundtrip work",
@@ -187,7 +212,7 @@ try {
   await upload(large.data);
   await wait(
     () =>
-      Object.keys(inscriptionDiagnostics.history).length === 8815 &&
+      Object.keys(inscriptionDiagnostics.history).length === 3816 &&
       !inscriptionDiagnostics.saving,
   );
   report.timings.largeImportMs = Date.now() - importAt;
@@ -203,7 +228,7 @@ try {
   await wait(
     () =>
       window.latestState?.phase === 0 &&
-      Object.keys(inscriptionDiagnostics.history).length === 8815,
+      Object.keys(inscriptionDiagnostics.history).length === 3816,
   );
   assert.equal((await diag()).storageBlocked, false);
   await p.locator("#play").click();
@@ -213,12 +238,13 @@ try {
   const savedPool = (await diag()).pool;
   await p.locator("#word-to-menu").click();
   await wait(() => latestState.phase === 0);
+  await p.locator("#menu-settings").click();
   await p.locator("#word-continue").click();
   await wait(() => window.latestState?.phase === 1);
   assert.deepEqual((await diag()).pool, savedPool);
-  assert.equal(Object.keys((await diag()).history).length, 8815);
+  assert.equal(Object.keys((await diag()).history).length, 3816);
   pass(
-    "8,815-word history persists through IndexedDB, full reload and awaited checkpoint continuation",
+    "3,816-word history persists through IndexedDB, full reload and awaited checkpoint continuation",
   );
   await p.keyboard.press("Escape");
   await wait(() => latestState.phase === 4);
@@ -230,6 +256,7 @@ try {
       throw Error("save failure fixture");
     };
   });
+  await p.locator("#menu-settings").click();
   await p.locator("#word-continue").click();
   await wait(
     () =>
