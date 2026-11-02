@@ -66,6 +66,11 @@ const rects = {
   35: [580, 510, 300, 28],
   36: [580, 164, 140, 30],
   37: [736, 164, 144, 30],
+  // The top rail follows viewport height; nativeButtonRect adjusts its Y.
+  38: [34, 1, 186, 26],
+  39: [608, 500, 92, 36],
+  40: [712, 500, 100, 36],
+  41: [794, 80, 36, 39],
   42: [580, 480, 300, 32],
   43: [738, 376, 142, 36],
   44: [580, 376, 142, 36],
@@ -480,6 +485,12 @@ try {
         });
       for (const [id, [, , w, h]] of Object.entries(rects))
         canvas("hover" + id, w, h, () => {
+          if (+id >= 38 && +id <= 41) {
+            ctx.fillStyle = "#d5e2d914";
+            ctx.fillRect(0, 0, w, h);
+            line(0, h - 1, w, h - 1, "#c6b98cbb");
+            return;
+          }
           ctx.fillStyle = "#f3e8bf18";
           ctx.fillRect(0, 0, w, h);
           ctx.strokeStyle = "#f3e8bf";
@@ -648,7 +659,7 @@ function sprite(
   // but do not leave title buttons, settings or a paused question behind it.
   if (
     !name.startsWith("NativeStudy") &&
-    !["NativeFrameTop", "NativeFrameBottom"].includes(name)
+    !["NativeFrameTop", "NativeFrameBottom", "NativeHover"].includes(name)
   )
     source = source.replace(
       "func syncUI() {",
@@ -767,7 +778,9 @@ sprite(
     ...Object.keys(rects).map((id) => "hover" + id),
     ...Object.keys(titleRects).map((id) => "titlehover" + id),
   ],
-  `func syncUI() {if nativeHover>0 && nativeHover<=44 {show; c:=nativeHover-1; if nativeHover>=42 {c=nativeHover-5}; if phase==0 && !nativeSettings && !nativeHelp && !nativePreview {${Object.keys(
+  `func syncUI() {if nativeStudyOpen && (nativeHover<38 || nativeHover>41) {hide; return}; c:=-1; ${Object.keys(rects)
+    .map((id, i) => `if nativeHover==${id} {c=${i}}`)
+    .join("; ")}; if c>=0 {if phase==0 && !nativeSettings && !nativeHelp && !nativePreview && !nativeStudyOpen {${Object.keys(
     titleRects,
   )
     .map(
@@ -775,7 +788,7 @@ sprite(
     )
     .join(
       "; ",
-    )}}; setCostume c; x,y,w,h:=nativeButtonRect(nativeHover); setXYpos viewCenterX+x+w/2-480,viewCenterY+300-y-h/2; setLayer Front} else {hide}}`,
+    )}}; x,y,w,h:=nativeButtonRect(nativeHover); if w<=0 || h<=0 {hide; return}; setCostume c; setXYpos viewCenterX+x+w/2-480,viewCenterY+300-y-h/2; show; setLayer Front} else {hide}}`,
 );
 for (const [name, volume, y] of [
   ["NativeMusicSlider", "nativeMusicVolume", 438],
@@ -841,6 +854,7 @@ installNativeStudyHUD(sprite);
 zorder.push("NativeGlyph", "NativeSfx", "NativeBgm");
 files["native-layout.spx"] =
   "func nativeButtonRect(action int) (float64,float64,float64,float64) {\n" +
+  " if action==38 {return 34,nativeStudyTopY()-13,186,26}\n" +
   " if phase==0 && !nativeSettings && !nativeHelp && !nativePreview {\n" +
   Object.entries(titleRects)
     .map(([id, r]) => `if action==${id} {return ${r.join(",")}}`)

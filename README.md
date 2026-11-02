@@ -12,10 +12,13 @@
 
 EasyRun 是一款面向成年玩家的二维纵向动作冒险原型。玩家穿过倒悬旧城的五个区域，以钩索、连招和四种技能对抗各有弱点的猎手，击破守心者，再带着钟心逃离上涨的黑潮。英语以可选的「铭文」模式融入技能释放；关闭后可以体验完整的纯动作冒险。
 
-> **版本与获取方式**：当前 **v0.22.2-local.1** 完整代码、资源与文档已合入 [`main`](https://github.com/RJ-SRE/EasyRun/tree/main)，可按下方命令直接克隆主分支。原开发分支及提交历史保留。文档更新：2026-11-01。
+> **版本与获取方式**：当前 **v0.23.0-local.1** 源码见 [`main`](https://github.com/RJ-SRE/EasyRun/tree/main)。新增通关后的回声札记、Boss 灵活化与重影修复、原生成就高亮修复；源码更新不等于在线 XBuilder 作品已更新。文档更新：2026-11-02。
 
 当前版本的主要更新：
 
+- **回声札记**：通关后主动生成最多 3 个实际作答词的用法、搭配与例句；两端共用阅读窗口，支持左右切词和本地回看。源码只提供配置模板，默认导出不嵌入密钥。[接入与验证](docs/ECHO_JOURNAL_V230.md)。
+- **Boss 灵活化**：三形态缩小约 23%–30%，补充退步、回身斩、腾跃与连续压进，修复身体残像与邻帧碎片。[动作与测试](docs/BOSS_AGILITY_V231.md)。
+- **原生界面修复**：成就入口、翻页与关闭高亮使用正确坐标，不再出现压住标题的错位框。[修复记录](docs/NATIVE_HOVER_FIX.md)。
 - **Boss 重构**：守铠、断锋、缚心三种结构造型，九种招式与可打断的回血机制。[实现与验证](https://github.com/RJ-SRE/EasyRun/blob/main/docs/BOSS_AND_COMMON_V220.md)。
 - **词库与学习记忆**：3,816 个常用／进阶词头，普通、困难、挑战、随机四种选择；拼写与辨义分别记忆。
 - **英语成就与进度**：24 项英语成就、随行词册、本局与累计学习进度，采用与钟城一致的铭牌样式。[成就设计](https://github.com/RJ-SRE/EasyRun/blob/main/docs/ACHIEVEMENT_ARCHIVE_V221.md)。
@@ -131,7 +134,7 @@ W 跳跃没有额外等待；刚起跳接 J 可衔接挑空，按住 J 在起手
 
 ## 快速启动
 
-本轮桌面导入包为 `EasyRun-XBuilder-v0.22.2-local-reset.xbp`，本地导出副本为 `prototypes/runlab/exports/belfry-local-reset.xbp`。网页与独立包共用战斗规则；源码已合入主分支，生成的 `.xbp` 包保留在本地，不纳入 Git。
+当前生成入口为 `prototypes/runlab/package.py --game belfry`，输出 `prototypes/runlab/exports/belfry.xbp`。网页与独立包共用战斗规则；生成的 `.xbp`、本机配置及带凭据的私测包保留在本地，不纳入 Git。默认导出不嵌入 AI 密钥，私有联调配置见 [回声札记构建说明](docs/ECHO_JOURNAL_V230.md#配置与构建)。
 
 ### 首次安装
 
@@ -154,7 +157,7 @@ bash scripts/with-env.sh node prototypes/runlab/server.mjs
 
 浏览器打开 [http://127.0.0.1:4177/](http://127.0.0.1:4177/)。看到开始页后选择难度并开始；浏览器要求用户交互后才允许播放声音，可点击「播放音乐」。终端按 `Ctrl+C` 停止服务。
 
-首次安装需要网络下载工具；准备好资源后的游戏运行不依赖账号、API 密钥、在线模型或服务端数据库。大词册使用浏览器自带 IndexedDB。工具安装在项目 `.tools/`，不会要求替换系统默认 Node。已有共享依赖的协作工作树不要重复安装，直接使用 `with-env.sh` 调用现有工具。
+首次安装需要网络下载工具；准备好资源后的核心游戏运行不依赖账号、API 密钥、在线模型或服务端数据库。可选的 AI 札记生成需要单独配置模型服务，未配置不影响游戏与学习统计。大词册使用浏览器自带 IndexedDB。工具安装在项目 `.tools/`，不会要求替换系统默认 Node。已有共享依赖的协作工作树不要重复安装，直接使用 `with-env.sh` 调用现有工具。
 
 ### 后续启动与修改
 
@@ -309,6 +312,7 @@ LEARNING_NATIVE_STORAGE_MODE=local bash scripts/with-env.sh python3 prototypes/r
 | 阅读目的                     | 入口                                                                                                                                |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | 当前需求与玩法边界           | [PRD](https://github.com/RJ-SRE/EasyRun/blob/main/docs/PRD.md)、[v0.10 猎战设计](https://github.com/RJ-SRE/EasyRun/blob/main/docs/HUNT_V10.md)                                                                              |
+| v0.23 新增与修复             | [回声札记](docs/ECHO_JOURNAL_V230.md)、[Boss 灵活化](docs/BOSS_AGILITY_V231.md)、[原生成就高亮](docs/NATIVE_HOVER_FIX.md) |
 | 未来优先级与局域网合作方案   | [产品路线图](https://github.com/RJ-SRE/EasyRun/blob/main/docs/ROADMAP.md)                                                                                                       |
 | 安装、端口、构建、导出与排障 | [运行维护手册](https://github.com/RJ-SRE/EasyRun/blob/main/docs/RUNBOOK.md)                                                                                                     |
 | 当前代码与历代技术契约       | [技术设计](https://github.com/RJ-SRE/EasyRun/blob/main/docs/TECHNICAL_DESIGN.md)，旧段落结合 v0.10 说明阅读                                                                     |

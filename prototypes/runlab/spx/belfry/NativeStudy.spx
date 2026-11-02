@@ -85,11 +85,12 @@ func nativeStudyClose() {
 }
 func nativeStudyTurn(delta int) {if !nativeStudyOpen {return}; nativeStudyPage=int(clamp(float64(nativeStudyPage+delta),0,5)); nativeStudyRevision++; nativeTextMemoKnown=false}
 func nativeStudyActionAt(x,y float64) int {
- if x>=34 && x<=220 && math.Abs(y-nativeStudyTopY())<=13 {return 38}
- if !nativeStudyOpen {return 0}
- if x>=794 && x<=830 && y>=80 && y<=119 {return 41}
- if x>=608 && x<=700 && y>=500 && y<=536 {return 39}
- if x>=712 && x<=812 && y>=500 && y<=536 {return 40}
+ for action:=38;action<=41;action++ {
+  if action==38 || nativeStudyOpen {
+   bx,by,bw,bh:=nativeButtonRect(action)
+   if x>=bx && x<=bx+bw && y>=by && y<=by+bh {return action}
+  }
+ }
  return 0
 }
 // Static serif numerals share the existing glyph atlas, without QTE motion.

@@ -1,0 +1,20 @@
+{
+  "sha256": "45d1a80f6f1c3abc7907efffd9b758667b82c1393ca61854d269feb5e8d5cd94",
+  "artifact": "/Users/rj/Desktop/EasyRun-XBuilder-v0.23.0-boss-agility-ui-fix-private-test.xbp",
+  "bytes": 154412154,
+  "zipCRC": "passed",
+  "nativeHoverCases": 3,
+  "combatUnchangedFromBossAgility": true,
+  "testHooksInPackage": false,
+  "privateTestOnly": true,
+  "remotePush": false,
+  "changedPackageFiles": [
+    "assets/sprites/NativeHover/hover38.png",
+    "assets/sprites/NativeHover/hover39.png",
+    "assets/sprites/NativeHover/hover40.png",
+    "assets/sprites/NativeHover/hover41.png",
+    "assets/sprites/NativeHover/index.json",
+    "NativeHover.spx",
+    "NativeLogic.spx"
+  ]
+}

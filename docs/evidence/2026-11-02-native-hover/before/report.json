@@ -1,0 +1,30 @@
+{
+  "archiveSha256": "b50ec928bf656762aa2b6db396259136c67f6395498bc595a3db583fdb715086",
+  "cases": [
+    "Reproduced: achievement action 38 renders reset-button hover42 at zero-size fallback coordinates"
+  ],
+  "errors": [],
+  "samples": [
+    {
+      "action": 38,
+      "bx": 0,
+      "by": 0,
+      "costumeIndex": 37,
+      "cx": 479.9933776855469,
+      "cy": -80.00572204589844,
+      "h": 0,
+      "open": false,
+      "page": 0,
+      "phase": 0,
+      "settings": false,
+      "vh": 600,
+      "visible": true,
+      "vw": 960,
+      "w": 0,
+      "x": -0.006622314453125,
+      "y": 219.99427795410156,
+      "costume": "hover42"
+    }
+  ],
+  "complete": true
+}

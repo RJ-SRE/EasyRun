@@ -225,16 +225,19 @@ func updateNativeShell(dt float64) {
  // Paint the hover once in its final layer; cached Front calls cannot be
  // repeated below and above a dropdown in the same epoch.
  overlayHover:=nativeHintOpen || nativeLedgerFilterOpen && nativeHover>=27
- if !overlayHover && (full || nativeHover>0) {NativeHover.syncUI()}
+ studyHover:=nativeHover>=38 && nativeHover<=41
+ if !overlayHover && !studyHover && (full || nativeHover>0) {NativeHover.syncUI()}
  if full || phase!=1 && phase!=5 && !nativeHelp && !nativePreview {NativeMusicSlider.syncUI(); NativeSfxSlider.syncUI()}
  if full || phase==5 {NativeQuestion.syncUI(); NativeQuestionTimer.syncUI(); NativeSpellingTrack.syncUI()}
  if !nativeStudyOpen {nativePaintText()}
  if full || nativePreview && nativeLedgerFilterOpen {NativeLedgerFilter.syncUI()}
  if full || nativeHintOpen {NativeHintMenu.syncUI()}
- if overlayHover {NativeHover.syncUI()}
+ if overlayHover && !studyHover {NativeHover.syncUI()}
  if full || nativePreview {NativeLedgerTally0.syncUI(); NativeLedgerTally1.syncUI(); NativeLedgerTally2.syncUI(); NativeLedgerTally3.syncUI(); NativeLedgerTally4.syncUI(); NativeLedgerTally5.syncUI(); NativeLedgerTally6.syncUI(); NativeLedgerTally7.syncUI(); NativeLedgerTally8.syncUI(); NativeLedgerTally9.syncUI();}
  }
  updateNativeStudy(dt)
+ // Study controls are painted after their own panel/rail, never over the logo.
+ if nativeHover>=38 && nativeHover<=41 {NativeHover.syncUI()}
  nativeUiLogTime+=dt
  if nativeUiLogTime>0.25 {
   nativeUiLogTime=0
