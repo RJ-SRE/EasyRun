@@ -11,7 +11,7 @@ onCloned data => {
    for n:=0;n<2;n++ {
     nearest:=-1; best:=100000.0
     for i:=0;i<len(enemyHP);i++ {
-     radius:=29.0; if enemyType[i]==3 {radius=65}
+     radius:=29.0; if enemyType[i]==3 {radius=48}
      d:=lineDistance(enemyX[i],enemyY[i],ox,oy,x,y); along:=(enemyX[i]-ox)*dx+(enemyY[i]-oy)*dy
      if remaining>0 && seen[i]==0 && enemyHP[i]>0 && d<radius && along>=-radius && along<best && !blockedLine(ox,oy,enemyX[i],enemyY[i]) {nearest=i; best=along}
     }

@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
-import { buildKeeperFrames } from "./belfry-keeper-frames.mjs";
+import { buildKeeperFrames, keeperFrameLayout } from "./belfry-keeper-frames.mjs";
 import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
 import { buildHuntLayout } from "./belfry-hunt.mjs";
@@ -586,10 +586,7 @@ for (const name of ["warden", "hound", "weaver"])
 for (let i = 0; i < 36; i++)
   enemyImages[`keeper-structural-${i}`] = {
     binary: Buffer.from(assassinFrames.keeperStructural[i], "base64"),
-    w: 512,
-    h: 512,
-    pivotX: 256,
-    pivotY: 490,
+    ...keeperFrameLayout,
   };
 sprite(
   "EnemyBlend",

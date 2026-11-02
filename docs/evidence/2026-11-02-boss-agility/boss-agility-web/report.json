@@ -1,0 +1,29 @@
+{
+  "cases": [
+    "All three forms render at reduced scale with zero body ghosts in the web runtime",
+    "Real pause and resume still work in the Boss arena"
+  ],
+  "errors": [],
+  "samples": [
+    [
+      0,
+      0.44,
+      0,
+      0
+    ],
+    [
+      1,
+      0.4,
+      0,
+      0
+    ],
+    [
+      2,
+      0.42,
+      0,
+      0
+    ]
+  ],
+  "fixture": "Response-only arena placement and render counters; production movement and sprites.",
+  "complete": true
+}

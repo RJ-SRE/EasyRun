@@ -14,7 +14,11 @@ export function addKeeperArt(sprite, vector, source) {
       s += `<ellipse cx="${x}" cy="24" rx="8" ry="3.4" fill="none" stroke="${style === 2 ? "#887c61" : "#b7a884"}" stroke-width="2"/><path d="M${x - 3} 22h6" stroke="#ded3b3" stroke-width=".6"/>`;
     styles[style] = s;
   }
-  for (let form = 0; form < 3; form++)
+  for (let form = 0; form < 3; form++) {
+    const accent = ["#c5aa70", "#bf806f", "#b4c9c5"][form];
+    const edge = ["#fff0cd", "#f6ddd0", "#eef5e7"][form];
+    // Short local blade ribbons, never a duplicate body or full-screen flash.
+    styles[0] = `<defs><linearGradient id="cut"><stop stop-color="${accent}" stop-opacity="0"/><stop offset=".7" stop-color="${accent}" stop-opacity=".38"/><stop offset="1" stop-color="${edge}" stop-opacity=".85"/></linearGradient></defs><path d="M8 24Q96 4 192 24Q108 17 8 24" fill="url(#cut)"/><path d="M32 24Q118 15 192 24" fill="none" stroke="${edge}" stroke-width="1.6"/><path d="M76 29Q142 24 182 25" fill="none" stroke="${accent}" stroke-width=".9" opacity=".65"/>`;
     for (let style = 0; style < 6; style++)
       for (let live = 0; live < 2; live++)
         art[`${form}-${style}-${live ? "active" : "tell"}`] = vector(
@@ -22,6 +26,7 @@ export function addKeeperArt(sprite, vector, source) {
           48,
           styles[style] || styles[0],
         );
+  }
   sprite(
     "KeeperLine",
     art,

@@ -125,6 +125,7 @@ var (
  bossStroke int
  bossRecent []int
  bossAirCooldown float64
+ bossFootCooldown float64
  bossBladeX float64
  bossBladeY float64
  keeperToken []int

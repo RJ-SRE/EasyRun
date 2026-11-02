@@ -77,7 +77,9 @@ async function tap(key) {
 }
 async function probe() {
   const n = await p.evaluate(() => window.bossProbes.length);
-  await tap("F8");
+  await p.keyboard.down("F8");
+  await p.waitForTimeout(35);
+  await p.keyboard.up("F8");
   await p.waitForFunction((n) => window.bossProbes.length > n, n);
   return p.evaluate(() => window.bossProbes.at(-1));
 }
@@ -113,7 +115,10 @@ async function answer(q, correct = true) {
   return until((s) => s.phase === 1);
 }
 try {
-  await p.goto("http://127.0.0.1:4177/runtime/runner.html");
+  await p.goto(
+    (process.env.RUNLAB_URL || "http://127.0.0.1:4188") +
+      "/runtime/runner.html",
+  );
   await p.addScriptTag({ url: "/runtime/fflate.js" });
   await p.evaluate(
     async ({ packageURL }) => {
@@ -185,16 +190,47 @@ func bossTestGolden() {
 }}
  triple:=followCount==2 && enemyState[i]==2 && enemyRecover[i]>=1.2
  finiteAI:=true; for stage:=0;stage<3;stage++ {bossTestFixture(stage,false); bossRecent=nil; last:=-1; repeats:=0; for n:=0;n<40;n++ {move:=keeperChoose(); if move<stage*3 || move>=stage*3+3 {finiteAI=false}; if move==last {repeats++} else {repeats=1}; if repeats>2 {finiteAI=false}; last=move}}
- println "@bossGolden",NativeLogic.nativeCloudJSON(map[string]any{"deflect":deflect,"noTellDamage":noTellDamage,"sweepHit":sweepHit,"sweepOnce":sweepOnce,"secondTell":secondTell,"triple":triple,"finiteAI":finiteAI,"before":before,"during":during,"paused":paused,"pausedWord":pausedWord,"sameCast":one,"noHealSkill":noHealSkill,"broken":broken,"capped":capped,"finite":finite,"dead":dead,"transitioned":transitioned,"hard":hard,"warning":warning,"damaging":damaging,"once":once})
+ bossTestFixture(2,false); Hero.px=200; bossFootCooldown=999; walkX:=enemyX[i]; for n:=0;n<5;n++ {updateKeeper(0.016)}; agileWalk:=walkX-enemyX[i]>6 && abs(enemyVX[i])>150
+ bossTestFixture(1,false); bossFootCooldown=0; enemyClock[i]=0.17; startX:=enemyX[i]; startY:=enemyY[i]; updateKeeper(0.02); backstep:=enemyState[i]==5
+ for n:=0;n<14;n++ {updateKeeper(0.02)}; backstep=backstep && enemyState[i]==2 && enemyX[i]-startX>80 && enemyX[i]-startX<120 && abs(enemyY[i]-startY)<0.01 && bossFootCooldown>1.5
+ for _,life:=range keeperLife {if life>0 {backstep=false}}
+ bossTestFixture(1,false); prepareKeeperMove(4); lockKeeperAttack(); enterEnemyState(i,3); updateKeeper(0.21); counterTell:=enemyState[i]==1 && bossChain==1 && bossWindup>=0.39 && enemyFacing[i]>0
+ lockedX:=enemyX[i]; Hero.px=900; for n:=0;n<15;n++ {updateKeeper(0.02)}; counterTell=counterTell && enemyState[i]==1 && enemyX[i]==lockedX && enemyFacing[i]>0
+ for n:=0;n<20;n++ {updateKeeper(0.02)}; counterTell=counterTell && enemyState[i]==2 && enemyRecover[i]>=0.8
+ bossTestFixture(1,false); prepareKeeperMove(5); lockKeeperAttack(); enterEnemyState(i,3); startY=enemyY[i]; peakY:=startY; for n:=0;n<21;n++ {updateKeeper(0.02); peakY=math.Max(peakY,enemyY[i])}; vaultCut:=peakY-startY>40 && abs(enemyY[i]-startY)<0.01 && enemyState[i]==2
+ println "@bossGolden",NativeLogic.nativeCloudJSON(map[string]any{"agileWalk":agileWalk,"backstep":backstep,"counterTell":counterTell,"vaultCut":vaultCut,"deflect":deflect,"noTellDamage":noTellDamage,"sweepHit":sweepHit,"sweepOnce":sweepOnce,"secondTell":secondTell,"triple":triple,"finiteAI":finiteAI,"before":before,"during":during,"paused":paused,"pausedWord":pausedWord,"sameCast":one,"noHealSkill":noHealSkill,"broken":broken,"capped":capped,"finite":finite,"dead":dead,"transitioned":transitioned,"hard":hard,"warning":warning,"damaging":damaging,"once":once})
  phase=0
 }
-func bossTestProbe() {println "@bossProbe",NativeLogic.nativeCloudJSON(map[string]any{"phase":phase,"segment":segment,"stage":bossStage,"state":enemyState[keeperIndex],"hp":enemyHP[keeperIndex],"max":bossMaxHP,"age":bossMendAge,"duration":bossMendDuration,"hits":bossMendHits,"used":bossMendUsed[bossStage],"elapsed":elapsed,"x":enemyX[keeperIndex],"y":enemyY[keeperIndex],"move":bossMove,"wordPaused":wordVisualPaused,"wordPending":wordPending,"bossVisible":nativeCombatBoss,"cast":skillCastSerial,"hx":Hero.px,"hy":Hero.py,"attack":Hero.attackKind,"attackAge":Hero.attackAge,"bx":Hero.bladeX,"by":Hero.bladeY,"clock":enemyClock[keeperIndex],"projectiles":projectileCount,"backdrop":District4.renderCostumeIndex,"light":District4.renderLightValue,"reduced":menuReduced})}
+func bossTestProbe() {println "@bossProbe",NativeLogic.nativeCloudJSON(map[string]any{"blendBorn":bossTestBlendBorn,"blendLive":bossTestBlendLive,"bodySize":bossTestSize,"bodyGhost":bossTestGhost,"phase":phase,"segment":segment,"stage":bossStage,"state":enemyState[keeperIndex],"hp":enemyHP[keeperIndex],"max":bossMaxHP,"age":bossMendAge,"duration":bossMendDuration,"hits":bossMendHits,"used":bossMendUsed[bossStage],"elapsed":elapsed,"x":enemyX[keeperIndex],"y":enemyY[keeperIndex],"move":bossMove,"wordPaused":wordVisualPaused,"wordPending":wordPending,"bossVisible":nativeCombatBoss,"cast":skillCastSerial,"hx":Hero.px,"hy":Hero.py,"attack":Hero.attackKind,"attackAge":Hero.attackAge,"bx":Hero.bladeX,"by":Hero.bladeY,"clock":enemyClock[keeperIndex],"projectiles":projectileCount,"backdrop":District4.renderCostumeIndex,"light":District4.renderLightValue,"reduced":menuReduced})}
 `,
+      );
+      files["Enemy.spx"] = enc.encode(
+        dec
+          .decode(files["Enemy.spx"])
+          .replace(
+            "renderGhost ghost",
+            "if kind==3 {bossTestSize=size; bossTestGhost=ghost}; renderGhost ghost",
+          ),
+      );
+      files["EnemyBlend.spx"] = enc.encode(
+        dec
+          .decode(files["EnemyBlend.spx"])
+          .replace(
+            "i:=int(p[0]);",
+            "i:=int(p[0]); counted:=enemyType[i]==3; if counted {bossTestBlendBorn++; bossTestBlendLive++};",
+          )
+          .replace(
+            "fxCount--; die",
+            "if counted {bossTestBlendLive--}; fxCount--; die",
+          ),
       );
       files["main.spx"] = enc.encode(
         dec
           .decode(files["main.spx"])
-          .replace("var (", "var (\n bossTestMove int") +
+          .replace(
+            "var (",
+            "var (\n bossTestBlendBorn int\n bossTestBlendLive int\n bossTestSize float64\n bossTestGhost float64\n bossTestMove int",
+          ) +
           `
 onKey KeyF1, => {WorldLogic.bossTestFixture(0,true)}
 onKey KeyF2, => {WorldLogic.bossTestFixture(1,true)}
@@ -231,158 +267,192 @@ onKey KeyF12, => {enemyHP[keeperIndex]=0; bossHP=0; segment=2}
   );
   await p.locator("#game-canvas").focus();
   await until((s) => s.phase === 0);
-  await tap("F4");
-  await p.waitForFunction(() => window.bossGolden);
-  const g = await p.evaluate(() => window.bossGolden);
-  assert.ok(g.during > g.before);
-  for (const k of [
-    "deflect",
-    "noTellDamage",
-    "sweepHit",
-    "sweepOnce",
-    "secondTell",
-    "triple",
-    "finiteAI",
-    "paused",
-    "pausedWord",
-    "noHealSkill",
-    "broken",
-    "capped",
-    "finite",
-    "dead",
-    "transitioned",
-    "hard",
-    "warning",
-    "damaging",
-    "once",
-  ])
-    assert.equal(g[k], true, k);
-  assert.equal(g.sameCast, 1);
-  pass(
-    "real-time healing advances during word focus, pauses explicitly, caps at its current form, has finite charges and never resurrects",
-  );
-  pass(
-    "one ultimate cast counts once; healing skills cannot interrupt; two distinct offensive casts break the channel",
-  );
-  pass(
-    "hard mode uses its own heal timing and budget; phase thresholds cancel healing; warning capsules deal damage only once after commitment",
-  );
-  pass(
-    "physical sweep collision hits once, warnings cannot damage, planted chain blade is deflectable, follow-up strikes have independent tells and AI stays inside its form repertoire",
-  );
-  for (const [key, name] of [
-    ["F1", "gold"],
-    ["F2", "crimson"],
-    ["F3", "pale"],
-  ]) {
-    await tap(key);
-    await tap("F9");
-    await p.waitForTimeout(1500);
-    const visual = await probe();
-    assert.equal(visual.backdrop, 0);
-    await shot("form-" + name);
-  }
-  pass(
-    "three structural atlas forms render without added halos or body-wide hue filters",
-  );
-  for (const key of ["F1", "F2"]) {
-    await tap(key);
-    await tap("F9");
-    await tap("F10");
-    const evolving = await probe();
-    assert.equal(evolving.backdrop, 0);
-    await tap("Escape");
-    const paused = await probe();
-    await p.waitForTimeout(350);
-    assert.equal((await probe()).clock, paused.clock);
-    await tap("Escape");
-    await until((s) => s.state !== 6);
-    assert.equal((await probe()).backdrop, 0);
-  }
-  pass(
-    "both evolution transitions keep the original arena background and explicit pause still freezes combat",
-  );
-  await tap("F1");
-  const q = await question("u"),
-    before = await probe();
-  await p.waitForTimeout(2400);
-  const during = await probe();
-  assert.equal(during.phase, 5);
-  assert.ok(during.age > before.age + 1.8);
-  assert.ok(during.hp > before.hp);
-  assert.equal(during.elapsed, before.elapsed);
-  assert.equal(during.x, before.x);
-  assert.equal(during.y, before.y);
-  assert.equal(during.bossVisible, true);
-  await shot("spelling-healing");
-  await answer(q, true);
-  await until((s) => s.hits === 1);
-  const second = await question("l");
-  await answer(second, true);
-  const broken = await until((s) => s.state !== 7);
-  assert.equal(
-    broken.age,
-    0,
-    "two casts must break healing, rather than merely wait for channel expiry",
-  );
-  assert.equal(broken.cast, 2);
-  pass(
-    "actual U and L pass the spelling/meaning gates and interrupt healing; during the first prompt HP rises while combat positions and elapsed time stay frozen",
-  );
-  await tap("F1");
-  const wrong = await question("u");
-  await answer(wrong, false);
-  const miss = await probe();
-  assert.equal(miss.state, 7);
-  assert.equal(miss.hits, 0);
-  assert.equal(miss.cast, 0);
-  pass(
-    "a wrong word cancels the attack and gives no healing interruption credit",
-  );
-  await tap("F5");
-  await p.keyboard.down("p");
-  await p.waitForTimeout(180);
-  await p.keyboard.up("p");
-  await p.waitForTimeout(1400);
-  const ultimate = await probe();
-  assert.equal(ultimate.state, 7);
-  assert.equal(ultimate.hits, 1);
-  pass(
-    "the actual five-hit ultimate damages the Keeper but provides one interrupt stamp",
-  );
-  await tap("F1");
-  const beforeLight = await probe();
-  await p.keyboard.down("j");
-  await p.waitForTimeout(180);
-  await p.keyboard.up("j");
-  await p.waitForTimeout(350);
-  const light = await probe();
-  assert.equal(light.hits, 0);
-  assert.ok(light.hp < beforeLight.hp);
-  await tap("Escape");
-  const frozen = await probe();
-  await p.waitForTimeout(500);
-  assert.equal((await probe()).age, frozen.age);
-  await tap("Escape");
-  pass(
-    "ordinary J deals damage without breaking the ritual; a real pause freezes its clock",
-  );
-  for (let move = 0; move < 9; move++) {
-    await tap("F6");
-    await until((s) => s.move === move && s.state === 1);
-    await p.waitForTimeout(350);
-    await shot("move-" + move);
-    await until((s) => s.state === 3);
-    if (move === 7 || move === 8 || move === 9) {
-      await p.waitForTimeout(260);
-      await shot("move-active-" + move);
+  if (process.env.BOSS_GHOST_PROBE === "1") {
+    const samples = [];
+    for (let move = 0; move < 9; move++) {
+      if (move >= 3) {
+        await tap("F6");
+        for (let n = 0; n < 8; n++) {
+          samples.push(await probe());
+          await p.waitForTimeout(65);
+        }
+      }
+      await tap("F7");
     }
-    await until((s) => s.state === 2);
-    await tap("F7");
+    const peak = Math.max(...samples.map((s) => s.blendLive));
+    const born = Math.max(...samples.map((s) => s.blendBorn));
+    report.ghost = { peak, born, samples };
+    console.log("GHOST", JSON.stringify({ peak, born }));
+    if (process.env.BOSS_EXPECT_CLEAN === "1") {
+      assert.equal(born, 0);
+      assert.equal(peak, 0);
+      assert.ok(samples.every((s) => s.bodyGhost === 0 && s.bodySize <= 0.44));
+      pass(
+        "Both later forms stay opaque and never allocate body ghosts while switching and dashing",
+      );
+    }
+    await shot("ghost-probe");
+  } else {
+    await tap("F4");
+    await p.waitForFunction(() => window.bossGolden);
+    const g = await p.evaluate(() => window.bossGolden);
+    assert.ok(g.during > g.before);
+    for (const k of [
+      "agileWalk",
+      "backstep",
+      "counterTell",
+      "vaultCut",
+      "deflect",
+      "noTellDamage",
+      "sweepHit",
+      "sweepOnce",
+      "secondTell",
+      "triple",
+      "finiteAI",
+      "paused",
+      "pausedWord",
+      "noHealSkill",
+      "broken",
+      "capped",
+      "finite",
+      "dead",
+      "transitioned",
+      "hard",
+      "warning",
+      "damaging",
+      "once",
+    ])
+      assert.equal(g[k], true, k);
+    assert.equal(g.sameCast, 1);
+    pass(
+      "Agile approach, bounded non-damaging backstep, independently warned reverse slash and supported rising cut pass",
+    );
+    pass(
+      "real-time healing advances during word focus, pauses explicitly, caps at its current form, has finite charges and never resurrects",
+    );
+    pass(
+      "one ultimate cast counts once; healing skills cannot interrupt; two distinct offensive casts break the channel",
+    );
+    pass(
+      "hard mode uses its own heal timing and budget; phase thresholds cancel healing; warning capsules deal damage only once after commitment",
+    );
+    pass(
+      "physical sweep collision hits once, warnings cannot damage, planted chain blade is deflectable, follow-up strikes have independent tells and AI stays inside its form repertoire",
+    );
+    for (const [key, name] of [
+      ["F1", "gold"],
+      ["F2", "crimson"],
+      ["F3", "pale"],
+    ]) {
+      await tap(key);
+      await tap("F9");
+      await p.waitForTimeout(1500);
+      const visual = await probe();
+      assert.equal(visual.backdrop, 0);
+      await shot("form-" + name);
+    }
+    pass(
+      "three structural atlas forms render without added halos or body-wide hue filters",
+    );
+    for (const key of ["F1", "F2"]) {
+      await tap(key);
+      await tap("F9");
+      await tap("F10");
+      const evolving = await probe();
+      assert.equal(evolving.backdrop, 0);
+      await tap("Escape");
+      const paused = await probe();
+      await p.waitForTimeout(350);
+      assert.equal((await probe()).clock, paused.clock);
+      await tap("Escape");
+      await until((s) => s.state !== 6);
+      assert.equal((await probe()).backdrop, 0);
+    }
+    pass(
+      "both evolution transitions keep the original arena background and explicit pause still freezes combat",
+    );
+    await tap("F1");
+    const q = await question("u"),
+      before = await probe();
+    await p.waitForTimeout(2400);
+    const during = await probe();
+    assert.equal(during.phase, 5);
+    assert.ok(during.age > before.age + 1.8);
+    assert.ok(during.hp > before.hp);
+    assert.equal(during.elapsed, before.elapsed);
+    assert.equal(during.x, before.x);
+    assert.equal(during.y, before.y);
+    assert.equal(during.bossVisible, true);
+    await shot("spelling-healing");
+    await answer(q, true);
+    await until((s) => s.hits === 1);
+    const second = await question("l");
+    await answer(second, true);
+    const broken = await until((s) => s.state !== 7);
+    assert.equal(
+      broken.age,
+      0,
+      "two casts must break healing, rather than merely wait for channel expiry",
+    );
+    assert.equal(broken.cast, 2);
+    pass(
+      "actual U and L pass the spelling/meaning gates and interrupt healing; during the first prompt HP rises while combat positions and elapsed time stay frozen",
+    );
+    await tap("F1");
+    const wrong = await question("u");
+    await answer(wrong, false);
+    const miss = await probe();
+    assert.equal(miss.state, 7);
+    assert.equal(miss.hits, 0);
+    assert.equal(miss.cast, 0);
+    pass(
+      "a wrong word cancels the attack and gives no healing interruption credit",
+    );
+    await tap("F5");
+    await p.keyboard.down("p");
+    await p.waitForTimeout(180);
+    await p.keyboard.up("p");
+    await p.waitForTimeout(1400);
+    const ultimate = await probe();
+    assert.equal(ultimate.state, 7);
+    assert.equal(ultimate.hits, 1);
+    pass(
+      "the actual five-hit ultimate damages the Keeper but provides one interrupt stamp",
+    );
+    await tap("F1");
+    const beforeLight = await probe();
+    await p.keyboard.down("j");
+    await p.waitForTimeout(180);
+    await p.keyboard.up("j");
+    await p.waitForTimeout(350);
+    const light = await probe();
+    assert.equal(light.hits, 0);
+    assert.ok(light.hp < beforeLight.hp);
+    await tap("Escape");
+    const frozen = await probe();
+    await p.waitForTimeout(500);
+    assert.equal((await probe()).age, frozen.age);
+    await tap("Escape");
+    pass(
+      "ordinary J deals damage without breaking the ritual; a real pause freezes its clock",
+    );
+    for (let move = 0; move < 9; move++) {
+      await tap("F6");
+      await until((s) => s.move === move && s.state === 1);
+      await p.waitForTimeout(350);
+      await shot("move-" + move);
+      await until((s) => s.state === 3);
+      if (move === 7 || move === 8 || move === 9) {
+        await p.waitForTimeout(260);
+        await shot("move-active-" + move);
+      }
+      await until((s) => s.state === 2);
+      await tap("F7");
+    }
+    pass(
+      "all nine production attacks complete their committed patterns, visible tells and recovery without runtime errors",
+    );
   }
-  pass(
-    "all nine production attacks complete their committed patterns, visible tells and recovery without runtime errors",
-  );
   assert.deepEqual(await p.evaluate(() => window.bossErrors), []);
   report.probes = await p.evaluate(() => window.bossProbes);
   report.events = await p.evaluate(() => window.bossEvents);

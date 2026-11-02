@@ -170,7 +170,7 @@ func strike() {
  if kind==7 {vx+=bladeX*240; vy+=bladeY*120}
  if kind==3 {vx+=attackFacing/90*160}
  for i:=0;i<len(enemyHP);i++ {
-  dx:=enemyX[i]-px; dy:=enemyY[i]-py-28; r:=reach; if enemyType[i]==3 {r+=40}
+  dx:=enemyX[i]-px; dy:=enemyY[i]-py-28; r:=reach; if enemyType[i]==3 {r+=28}
   inArc:=dx*attackFacing> -1500 || abs(dx)<45 || kind==3
   if kind==7 {inArc=dx*bladeX+dy*bladeY> -28}
   if dist(dx,dy)<r && inArc && !blockedLine(px,py+28,enemyX[i],enemyY[i]) {
