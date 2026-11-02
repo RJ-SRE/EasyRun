@@ -1,3 +1,5 @@
+import { EchoJournal } from "./echo-journal.js";
+import { echoSnapshot } from "./echo-core.js";
 import { LearningRails } from "./learning-rails.js";
 import { expeditionSnapshot, expeditionHost } from "./expedition-progress.js";
 import {
@@ -70,6 +72,7 @@ export class InscriptionUI {
     this.quarantine = new Set();
     this.last = performance.now();
     this.lastSave = 0;
+    this.echo = new EchoJournal({ focus });
     this.create();
     this.learningRail = new LearningRails(this);
     this.motion = new InscriptionMotion();
@@ -178,6 +181,7 @@ export class InscriptionUI {
       $("#local-reset-status").textContent = "正在清除…";
       try {
         await clearLocalGameRecords();
+        this.echo.clear();
         $("#local-reset-status").textContent = "已清除，正在返回菜单…";
         location.reload();
       } catch {
@@ -528,7 +532,12 @@ export class InscriptionUI {
     w.addEventListener(
       "keydown",
       (e) => {
-        if (e.inscriptionTransport || this.learningRail?.openState) return;
+        if (
+          e.inscriptionTransport ||
+          this.echo.active ||
+          this.learningRail?.openState
+        )
+          return;
         if (
           (e.metaKey || e.ctrlKey) &&
           ["KeyR", "KeyL", "KeyW"].includes(e.code)
@@ -610,7 +619,12 @@ export class InscriptionUI {
     w.addEventListener(
       "keyup",
       (e) => {
-        if (e.inscriptionTransport || this.learningRail?.openState) return;
+        if (
+          e.inscriptionTransport ||
+          this.echo.active ||
+          this.learningRail?.openState
+        )
+          return;
         this.held.delete(e.code);
         this.entryHeld?.delete(e.code);
         if (this.quarantine.delete(e.code) || this.active) {
@@ -660,9 +674,21 @@ export class InscriptionUI {
     }
     if (s.phase === 2 && !s.practice && !this.book.run.won) {
       this.book.victory();
+      this.echo.present(
+        echoSnapshot(
+          this.book.run.echo,
+          this.book.run.pool.map((id) => BANK.get(id)),
+        ),
+      );
       this.save();
     }
     this.state = s;
+    this.echo.state(
+      s.phase,
+      !!s.practice ||
+        !$("#word-journal").hidden ||
+        !!this.learningRail?.openState,
+    );
     if (this.journalResumeRequested && s.phase === 4) {
       this.journalResumeRequested = false;
       this.send("Escape", "Escape");

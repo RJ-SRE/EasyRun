@@ -70,6 +70,7 @@ func nativeLearningAnswer(result int) {
  nativeWeak[i]=0; if nativeLearningGroup(i)==2 {nativeWeak[i]=1}
  nativeLedgerRevision++
  nativeStudyAnswer(i,nativeQuestionMode,result,wasDue)
+ nativeEchoAnswer(result)
  nativeCloudAnswer(result)
  nativeLocalMark(i)
  println "@nativeLearning",nativeLearnRun,i,nativeQuestionMode,result,nativeLearnAttempts[j],nativeLearnWeak[j],hours

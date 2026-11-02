@@ -123,6 +123,7 @@ func nativeReturnTitle() {
  }
 }
 func nativeActivate(action int) {
+ if nativeEchoBlocking() {return}
  if nativeLocalResetStage>0 {if action==43 {nativeLocalResetConfirm()}; if action==44 {nativeLocalResetCancel()}; return}
  if action==42 {nativeLocalResetAsk(); return}
  if action==38 {nativeStudyToggle(); return}; if action==39 {nativeStudyTurn(-1); return}; if action==40 {nativeStudyTurn(1); return}; if action==41 {nativeStudyClose(); return}; if nativeStudyOpen {return}

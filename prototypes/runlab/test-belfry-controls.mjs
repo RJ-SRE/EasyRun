@@ -198,8 +198,8 @@ try {
   // remain quarantined until keyup; a subsequent fresh press must work.
   url.searchParams.set("words", "on");
   for (const [word, key] of [
-    ["echo", "o"],
-    ["saw", "w"],
+    ["go", "o"],
+    ["new", "w"],
     ["help", "p"],
   ]) {
     assert.ok(BANK.has(word), word);

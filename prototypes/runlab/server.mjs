@@ -1,3 +1,4 @@
+import { createEchoHandler } from "../../services/echo/service.mjs";
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -16,9 +17,14 @@ const types = {
   ".mp3": "audio/mpeg",
   ".wasm": "application/wasm",
 };
+const echoHandler = createEchoHandler();
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, "http://127.0.0.1");
+    if (url.pathname === "/api/echo") {
+      await echoHandler(req, res);
+      return;
+    }
     const isRuntime = url.pathname.startsWith("/runtime/");
     const base = isRuntime ? runtime : path.join(root, "public");
     const relative =

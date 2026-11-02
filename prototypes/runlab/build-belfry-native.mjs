@@ -227,13 +227,16 @@ try {
         if (primary) text("↘", x + w - 35, y + h / 2 + 7, 24, "#142128");
         ctx.restore();
       }
-      function soundPanel(compact = false) {
+      function soundPanel(compact = false, offset = 0) {
+        ctx.save();
+        ctx.translate(0, offset);
         if (!compact) text("S O U N D", 580, 415, 10, C.gold);
         text("背景音乐", 580, 441, 12, C.dim);
         text("动作音效", 580, 481, 12, C.dim);
         [438, 478].forEach((y) => line(656, y, 880, y, "#65756b66"));
         if (!compact)
           text("音乐与音效独立调节 · B 静音音乐", 580, 515, 10, C.dim);
+        ctx.restore();
       }
       function base(painted = true, minimal = false) {
         if (painted) {
@@ -460,7 +463,7 @@ try {
           );
           if (name !== "pause")
             text("O 钩索   /   W 跳跃   /   J 连击", 64, 546, 13, C.dim);
-          soundPanel(name === "pause");
+          soundPanel(name === "pause", name === "victory" ? 60 : 0);
         });
       for (let mute = 0; mute < 2; mute++)
         canvas("music" + mute, 50, 28, () => {
@@ -781,7 +784,7 @@ for (const [name, volume, y] of [
   sprite(
     name,
     Array.from({ length: 101 }, (_, i) => "volume" + i),
-    `func syncUI() {if phase!=1 && phase!=5 && (phase!=0 || nativeSettings && nativeSettingsTab==1) && !nativeHelp && !nativePreview {show; setCostume ${volume}; ${pin(768, y)}; if phase==0 {${pin(768, y === 438 ? 255 : 313)}}} else {hide}}`,
+    `func syncUI() {if phase!=1 && phase!=5 && (phase!=0 || nativeSettings && nativeSettingsTab==1) && !nativeHelp && !nativePreview {show; setCostume ${volume}; ${pin(768, y)}; if phase==2 {${pin(768, y + 60)}}; if phase==0 {${pin(768, y === 438 ? 255 : 313)}}} else {hide}}`,
   );
 sprite(
   "NativeQuestion",
@@ -844,6 +847,7 @@ files["native-layout.spx"] =
     .join("\n") +
   "\n }\n" +
   " if phase==0 && nativeSettings && nativeSettingsTab==1 {if action==17 {return 656,244,224,22}; if action==18 {return 656,302,224,22}; if action==35 {return 580,362,300,28}}\n" +
+  " if phase==2 {if action==17 {return 656,487,224,22}; if action==18 {return 656,527,224,22}}\n" +
   Object.entries(rects)
     .map(([id, rect]) => ` if action==${id} {return ${rect.join(",")}}`)
     .join("\n") +

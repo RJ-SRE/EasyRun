@@ -17,6 +17,8 @@ export default tseslint.config(
   {
     files: [
       "services/learning/**/*.mjs",
+      "services/echo/**/*.mjs",
+      "prototypes/runlab/server.mjs",
       "prototypes/runlab/native-learning-content.mjs",
       "prototypes/runlab/probe-native-learning.mjs",
       "prototypes/runlab/test-belfry-native-learning.mjs",
@@ -25,6 +27,7 @@ export default tseslint.config(
       globals: Object.fromEntries(
         [
           "process",
+          "setTimeout",
           "console",
           "URL",
           "Buffer",
@@ -96,6 +99,9 @@ export default tseslint.config(
         sessionStorage: "readonly",
         Storage: "readonly",
         Event: "readonly",
+        TextEncoder: "readonly",
+        TextDecoder: "readonly",
+        setTimeout: "readonly",
       },
     },
   },
@@ -103,6 +109,7 @@ export default tseslint.config(
     files: [
       "prototypes/runlab/public/belfry*.js",
       "prototypes/runlab/public/inscription*.js",
+      "prototypes/runlab/public/echo*.js",
       "prototypes/runlab/public/learning*.js",
       "prototypes/runlab/public/cet4-words.js",
       "prototypes/runlab/public/expedition*.js",
@@ -120,6 +127,8 @@ export default tseslint.config(
         URL: "readonly",
         Blob: "readonly",
         TextEncoder: "readonly",
+        TextDecoder: "readonly",
+        AbortController: "readonly",
         fetch: "readonly",
         atob: "readonly",
         setTimeout: "readonly",

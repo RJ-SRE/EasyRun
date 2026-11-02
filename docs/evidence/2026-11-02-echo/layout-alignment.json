@@ -1,0 +1,17 @@
+{
+  "scope": "Victory journal button beside replay, equal height; native audio controls below. Modal reparenting occurs only on phase transitions.",
+  "tests": {
+    "web": {
+      "passed": 7,
+      "errors": []
+    },
+    "native": {
+      "passed": 11,
+      "errors": []
+    }
+  },
+  "artifact": "EasyRun-XBuilder-v0.23.0-echo-aligned-private-test.xbp",
+  "sha256": "75fe0aa23ce9ff4a6087deec7891e662d29bfc4df7839c7428332a0d68d108f8",
+  "privateTestOnly": true,
+  "remotePushed": false
+}

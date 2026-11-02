@@ -95,7 +95,7 @@ func nativeOpenQuestion() {
  nativeCloudQuestionStarted=float64(timer)
  nativeWordSeen=wordSerial; nativeWordIndex=nativeDeck[nativeCursor]
  nativeQuestionMode=nativeLearningAbility(nativeWordIndex)
- nativeTypedWithHint=false
+ nativeTypedWithHint=false; nativeEchoChoice=""
  nativeAnswer=nativeRand(3); nativeInput=""; nativeQuestionAge=0; nativeFeedbackTime=0
  nativeCaptureHeld()
  nativeQuestionLimit=9; if nativeQuestionMode==0 {nativeQuestionLimit=math.Max(9,float64(len(nativeWords[nativeWordIndex]))*0.65+4)}
@@ -155,6 +155,7 @@ func nativeCue() string {
 }
 func nativeChoose(option int) {
  if phase!=5 || wordVisualPaused || nativeQuestionMode!=1 || nativeQuestionAge<0.18 {return}
+ nativeEchoChoice=nativeMeanings[nativeWordIndex]; if option!=nativeAnswer {if option==(nativeAnswer+1)%3 {nativeEchoChoice=nativeDistractA[nativeWordIndex]} else {nativeEchoChoice=nativeDistractB[nativeWordIndex]}}
  if option==nativeAnswer {nativeFinishQuestion(1)} else {nativeFinishQuestion(2)}
 }
 func nativeText(s string,x,y,size float64) {
@@ -221,7 +222,7 @@ func nativeRebuildText() {
   } else if nativeSettings {motion:="关闭"; if menuReduced {motion="开启"}; nativeText(motion,815,376,13)} else {state:="开启"; if wordMode==0 {state="关闭"}; nativeText(state,854,341,13)}
  }
  if !nativeStudyOpen && phase!=1 && phase!=5 && (phase!=0 || nativeSettings && nativeSettingsTab==1) && !nativeHelp && !nativePreview {
-  if phase==0 {nativeText(nativeNumber(nativeMusicVolume)+"%",882,255,12); nativeText(nativeNumber(nativeSfxVolume)+"%",882,313,12)} else {nativeText(nativeNumber(nativeMusicVolume)+"%",882,438,12); nativeText(nativeNumber(nativeSfxVolume)+"%",882,478,12)}
+  if phase==0 {nativeText(nativeNumber(nativeMusicVolume)+"%",882,255,12); nativeText(nativeNumber(nativeSfxVolume)+"%",882,313,12)} else {offset:=0.0; if phase==2 {offset=60}; nativeText(nativeNumber(nativeMusicVolume)+"%",882,438+offset,12); nativeText(nativeNumber(nativeSfxVolume)+"%",882,478+offset,12)}
  }
  if !nativeStudyOpen && (phase==1 || phase==5) && !nativeHelp && !nativePreview {
   if wordMode==1 && practice==0 {nativeText("铭文 "+nativeNumber(nativeCompleted())+" / 30 ↗",36,106,12)}

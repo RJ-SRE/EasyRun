@@ -1,0 +1,432 @@
+#echo-root {
+  --echo-ink: #ece6d1;
+  --echo-gold: #c8b680;
+  --echo-muted: #9caaa7;
+  color: var(--echo-ink);
+  font-family: Georgia, "Songti SC", serif;
+}
+#echo-root [hidden] {
+  display: none !important;
+}
+#echo-root button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid #a6986b55;
+  color: var(--echo-ink);
+  background: #10232adb;
+  padding: 9px 16px;
+  border-radius: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+#echo-root button:hover {
+  background: #24383b;
+  border-color: var(--echo-gold);
+}
+#echo-root button:focus-visible {
+  outline: 2px solid #e2cf97;
+  outline-offset: 3px;
+}
+#echo-root button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+#echo-root .echo-launch {
+  position: fixed;
+  z-index: 900;
+  right: 5%;
+  bottom: 8%;
+  padding: 14px 22px;
+  background: linear-gradient(120deg, #15272bea, #0a1419ef);
+  border-top: 2px solid var(--echo-gold);
+  box-shadow: 0 8px 32px #0005;
+  letter-spacing: 0.12em;
+}
+#echo-root .echo-launch span {
+  color: var(--echo-gold);
+  margin-right: 8px;
+}
+#echo-root .echo-launch small {
+  margin-left: 20px;
+  font:
+    11px system-ui,
+    sans-serif;
+  color: var(--echo-muted);
+  letter-spacing: 0.04em;
+}
+#echo-root .echo-dialog {
+  box-sizing: border-box;
+  position: fixed;
+  inset: auto;
+  left: var(--echo-dialog-x, 50%);
+  top: var(--echo-dialog-y, 50%);
+  transform: translate(-50%, -50%);
+  margin: 0;
+  width: min(760px, var(--echo-dialog-width, calc(100vw - 32px)));
+  max-width: none;
+  max-height: var(--echo-dialog-height, calc(100dvh - 48px));
+  padding: 0;
+  color: var(--echo-ink);
+  border: 1px solid #b9aa7766;
+  border-top: 2px solid var(--echo-gold);
+  background: linear-gradient(135deg, #17252af5, #071117f8);
+  box-shadow: 0 24px 100px #0008;
+  overflow: hidden;
+}
+#echo-root .echo-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+#echo-root .echo-body {
+  min-height: 0;
+  padding: 0 32px 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #6e715d #122026;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+#echo-root .echo-body:focus-visible {
+  outline: 1px solid #c8b68055;
+  outline-offset: -3px;
+}
+#echo-root .echo-dialog::backdrop {
+  background: #020c1448;
+}
+#echo-root header {
+  flex-shrink: 0;
+  padding: 24px 32px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+#echo-root .echo-eyebrow {
+  font:
+    10px/1.6 system-ui,
+    sans-serif;
+  letter-spacing: 0.26em;
+  color: var(--echo-gold);
+}
+#echo-root h2 {
+  margin: 7px 0 0;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+#echo-root .echo-close {
+  padding: 0 8px;
+  font:
+    30px/1.2 system-ui,
+    sans-serif;
+  background: none;
+  border: 0;
+  color: var(--echo-muted);
+}
+#echo-root .echo-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #d0bd7c38;
+  border-bottom: 1px solid #d0bd7c38;
+  padding: 13px 0;
+  margin-bottom: 18px;
+}
+#echo-root .echo-metrics div {
+  border-right: 1px solid #d0bd7c25;
+  padding-left: 20px;
+}
+#echo-root .echo-metrics div:first-child {
+  padding-left: 0;
+}
+#echo-root .echo-metrics div:last-child {
+  border: 0;
+}
+#echo-root .echo-metrics strong {
+  color: var(--echo-gold);
+  font-size: 27px;
+  font-weight: 400;
+  margin-right: 10px;
+}
+#echo-root .echo-metrics span {
+  font:
+    11px system-ui,
+    sans-serif;
+  color: var(--echo-muted);
+}
+#echo-root .echo-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+#echo-root .echo-tabs button {
+  font-size: 14px;
+  padding: 6px 13px;
+  background: transparent;
+}
+#echo-root .selected {
+  border-color: var(--echo-gold);
+  color: var(--echo-gold);
+  background: #c8b68012;
+}
+#echo-root .echo-card {
+  padding: 20px 0 8px;
+  min-height: 195px;
+}
+#echo-root .echo-word {
+  font-size: 35px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+#echo-root .echo-meaning {
+  margin: 9px 0;
+  font-size: 14px;
+  color: var(--echo-ink);
+}
+#echo-root .echo-evidence {
+  font:
+    11px/1.7 system-ui,
+    sans-serif;
+  color: var(--echo-muted);
+  margin: 8px 0 17px;
+}
+#echo-root .echo-content p {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+#echo-root .echo-usage {
+  font:
+    14px/1.7 system-ui,
+    sans-serif;
+}
+#echo-root .echo-collocation {
+  color: var(--echo-gold);
+  font-size: 18px;
+}
+#echo-root .echo-example-tabs {
+  display: flex;
+  gap: 16px;
+  margin-top: 15px;
+}
+#echo-root .echo-example-tabs button {
+  font:
+    11px system-ui,
+    sans-serif;
+  padding: 5px 0;
+  border: 0;
+  border-bottom: 1px solid #a6986b55;
+  background: transparent;
+}
+#echo-root .echo-example-tabs .selected {
+  border-color: var(--echo-gold);
+}
+#echo-root .echo-example {
+  font-size: 20px;
+}
+#echo-root .echo-translation {
+  color: var(--echo-muted);
+  font:
+    13px/1.7 system-ui,
+    sans-serif;
+}
+#echo-root .echo-placeholder {
+  color: var(--echo-muted);
+  font-size: 14px;
+  max-width: 460px;
+}
+#echo-root .echo-status {
+  font:
+    12px/1.7 system-ui,
+    sans-serif;
+  color: var(--echo-gold);
+  margin: 0 0 10px;
+}
+#echo-root footer {
+  display: block;
+  flex-shrink: 0;
+  margin: 0;
+  border-top: 1px solid #d0bd7c38;
+  padding: 14px 32px;
+  background: #0b181ee6;
+}
+#echo-root .echo-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+#echo-root .echo-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1 1 260px;
+}
+#echo-root .echo-pager button {
+  background: transparent;
+  font-size: 14px;
+  padding: 10px 14px;
+  min-height: 40px;
+  white-space: nowrap;
+}
+#echo-root .echo-page {
+  color: var(--echo-gold);
+  font:
+    12px/1.5 system-ui,
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+#echo-root .echo-generate {
+  color: #102026;
+  background: var(--echo-gold);
+  border-color: var(--echo-gold);
+}
+@media (max-width: 560px) {
+  #echo-root header {
+    padding: 16px 18px 12px;
+  }
+  #echo-root .echo-body {
+    padding: 0 18px 10px;
+  }
+  #echo-root footer {
+    padding: 10px 18px;
+  }
+  #echo-root .echo-metrics div {
+    padding-left: 10px;
+  }
+  #echo-root .echo-metrics strong,
+  #echo-root .echo-metrics span {
+    display: block;
+  }
+  #echo-root .echo-word {
+    font-size: 29px;
+  }
+  #echo-root .echo-launch {
+    bottom: 6%;
+    right: 3%;
+  }
+}
+#echo-root .echo-dialog[data-compact="true"] header {
+  padding: 10px 16px;
+  align-items: center;
+}
+#echo-root .echo-dialog[data-compact="true"] h2 {
+  font-size: 22px;
+  margin: 0;
+}
+#echo-root .echo-dialog[data-compact="true"] .echo-eyebrow {
+  display: none;
+}
+#echo-root .echo-dialog[data-compact="true"] .echo-body {
+  padding: 0 16px 8px;
+}
+#echo-root .echo-dialog[data-compact="true"] footer {
+  padding: 8px 16px;
+}
+#echo-root .echo-dialog[data-compact="true"] .echo-actions {
+  gap: 6px;
+}
+#echo-root .echo-dialog[data-compact="true"] .echo-metrics {
+  padding: 8px 0;
+  margin-bottom: 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  #echo-root button {
+    transition: none;
+  }
+}
+
+/* Victory actions share one row; title-page recall keeps its existing position. */
+.echo-victory-actions {
+  display: contents;
+}
+.echo-victory-actions.has-echo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 19px;
+  min-height: 46px;
+}
+.echo-victory-actions.has-echo > .primary {
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.echo-victory-actions.has-echo > .primary span {
+  margin-left: 12px;
+}
+#echo-root[data-placement="row"] {
+  min-width: 0;
+}
+#echo-root[data-placement="row"] .echo-launch {
+  position: static;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: none;
+}
+#echo-root[data-placement="row"] .echo-launch span,
+#echo-root[data-placement="native-row"] .echo-launch span {
+  margin: 0;
+}
+#echo-root[data-placement="row"] .echo-launch small {
+  margin-left: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+#echo-root[data-placement="native-row"] .echo-launch {
+  left: var(--echo-anchor-x);
+  top: var(--echo-anchor-y);
+  right: auto;
+  bottom: auto;
+  width: var(--echo-anchor-width);
+  height: var(--echo-anchor-height);
+  box-sizing: border-box;
+  font-size: var(--echo-anchor-font);
+  padding: 0 var(--echo-anchor-pad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--echo-anchor-gap);
+  box-shadow: none;
+  letter-spacing: 0.1em;
+}
+#echo-root[data-placement="native-row"] .echo-launch small {
+  font-size: var(--echo-anchor-hint);
+  margin-left: var(--echo-anchor-gap);
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .echo-victory-actions.has-echo {
+    gap: 10px;
+    min-height: 42px;
+  }
+  .echo-victory-actions.has-echo > .primary {
+    padding: 10px 12px;
+    letter-spacing: 1px;
+  }
+  #echo-root[data-placement="row"] .echo-launch {
+    padding: 10px;
+    font-size: 12px;
+  }
+  #echo-root[data-placement="row"] .echo-launch small {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  #echo-root[data-placement="native-row"] .echo-launch small {
+    display: none;
+  }
+}

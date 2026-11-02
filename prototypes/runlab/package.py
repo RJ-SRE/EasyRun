@@ -1,4 +1,5 @@
 """Package SPX projects with Belfry native UI, inscriptions, audio and attribution."""
+from native_echo import echo_bundle
 import argparse
 import hashlib
 import json
@@ -105,7 +106,7 @@ def package(game):
         # Classfiles allow one field block, with all methods before event registration.
         methods = []
         main = 'import "syscall/js"\n' + main
-        for source in ["NativeMusic", "NativeShell", "NativeWords", "NativeLedger", "NativeCombat", "NativeLearning", "NativeCloud", "NativeLocal", "NativeStudy"]:
+        for source in ["NativeMusic", "NativeShell", "NativeWords", "NativeLedger", "NativeCombat", "NativeLearning", "NativeCloud", "NativeLocal", "NativeStudy", "NativeEcho"]:
             native = (ROOT / f"spx/belfry/{source}.spx").read_text()
             declarations, native = native.split("\n)\n", 1)
             fields = declarations.split("var (\n", 1)[1]
@@ -129,14 +130,21 @@ def package(game):
         for key in keys:
             hero = hero.replace(f"keyPressed({key})", f"native{key}()")
         files["Hero.spx"] = hero.encode()
+        echo_init, echo_manifest = echo_bundle(ROOT)
+        methods = [source.replace("// BUILD_ECHO_INIT", echo_init) for source in methods]
+        files["native-echo-manifest.json"] = echo_manifest
+        files["docs/ECHO_JOURNAL_V230.md"] = (ROOT.parent.parent / "docs/ECHO_JOURNAL_V230.md").read_bytes()
+        if json.loads(echo_manifest)["privateTestOnly"]:
+            files["PRIVATE-TEST-NOTICE.txt"] = "私有联调包：本工程包含构建时注入的 API 密钥，可从包中提取。请勿公开发布或转发。通关后点击「回声札记」再点击生成，才调用 AI；失败不影响结算。".encode()
+            print("Private AI test package: credential embedded; do not publish.")
         events = "onKey KeyT,"
         assert main.count(events) == 1
         main = main.replace(events, "\n".join(methods) + "\n" + (ROOT / "spx/belfry/NativeBindings.spx").read_text() + "\n" + events)
         shell_marker = "// EXPORT_NATIVE_SHELL_TICK"
         assert main.count(shell_marker) == 1, "Rebuild Belfry before packaging the menu"
-        main = main.replace(shell_marker, "updateNativeCloud(); updateNativeLocal(); syncNativeAudioPosition(); updateNativeShell(dt)")
-        main = main.replace("// HOST_CONFIGURATION", "initNativeWords(); nativeMusicVolume=75; nativeSfxVolume=85; initNativeLocal()")
-        main = main.replace('func event(name string) {', 'func event(name string) {\n nativeCloudEvent(name); nativeLearningEvent(name); nativeLocalEvent(name); nativeSoundEvent(name); nativeCombatEvent(name)')
+        main = main.replace(shell_marker, "updateNativeCloud(); updateNativeLocal(); nativeEchoTick(); syncNativeAudioPosition(); updateNativeShell(dt)")
+        main = main.replace("// HOST_CONFIGURATION", "initNativeWords(); nativeMusicVolume=75; nativeSfxVolume=85; initNativeLocal(); initNativeEcho()")
+        main = main.replace('func event(name string) {', 'func event(name string) {\n nativeCloudEvent(name); nativeLearningEvent(name); nativeLocalEvent(name); nativeEchoEvent(name); nativeSoundEvent(name); nativeCombatEvent(name)')
         main = main.replace('func startRun() {', 'func startRun() {\n if !nativeCloudBeforeStart() {return}')
         main = main.replace(' startRun(); practice=1; practiceKind=kind', ' nativeCloudPractice=true; startRun(); nativeCloudPractice=false; practice=1; practiceKind=kind')
         main = main.replace('func enemyEvent(name string,i int) {', 'func enemyEvent(name string,i int) {nativeCombatEvent(name); ')
@@ -179,6 +187,8 @@ def package(game):
                 if line.startswith(f"onKey {key},"):
                     line = line.replace("=> {", f"=> {{if nativeHeld[{i}] {{return}}; ", 1)
                     break
+            if line.startswith("onKey "):
+                line = line.replace("=> {", "=> {if nativeEchoBlocking() {return}; ", 1)
             lines.append(line)
         main = "\n".join(lines) + "\n"
         # Native text uses dynamic clones; include them in the global 300-slot budget.

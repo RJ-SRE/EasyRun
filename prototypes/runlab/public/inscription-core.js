@@ -1,3 +1,4 @@
+import { freshEcho, recordEcho, cleanEchoRun } from "./echo-core.js";
 import {
   freshLearningMilestones,
   cleanLearningMilestones,
@@ -388,6 +389,11 @@ export class InscriptionBook {
               .filter((x) => typeof x === "string")
               .slice(-300);
             r.serial = finite(r.serial);
+            r.echo = cleanEchoRun(
+              r.echo,
+              r.pool,
+              `legacy-${seed}-${this.clock()}`,
+            );
             if (
               r.reserved &&
               (!r.pool.includes(r.reserved.wordId) ||
@@ -442,6 +448,9 @@ export class InscriptionBook {
     );
     this.data.run = {
       seed: seed >>> 0,
+      echo: freshEcho(
+        `${seed}-${this.clock()}-${Math.random().toString(36).slice(2)}`,
+      ),
       wordMode: wordModeOf(this.settings),
       ...selection,
       progress: Object.create(null),
@@ -571,6 +580,7 @@ export class InscriptionBook {
     r.resolved = r.resolved.slice(-300);
     r.reserved = null;
     if (outcome === "cancel") return true;
+    recordEcho(r.echo, q.wordId, q.type, outcome, assisted, details);
     const now = this.clock(),
       p = (r.progress[q.wordId] ||= { seen: 0, correct: false, wrong: 0 });
     const first = !p.correct;

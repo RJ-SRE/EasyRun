@@ -1,0 +1,48 @@
+// Optional HTML journal, loaded once. No glyph sprites or network work during combat.
+var (
+ nativeEchoBridge js.Value
+ nativeEchoReady bool
+ nativeEchoNext float64
+ nativeEchoProfile string
+ nativeEchoChoice string
+)
+func initNativeEcho() {
+ defer func(){if recover()!=nil {nativeEchoReady=false; println "@echo unavailable"}}()
+ // BUILD_ECHO_INIT
+ nativeEchoReady=true
+}
+func nativeEchoBlocking() bool {
+ if !nativeEchoReady {return false}
+ return nativeEchoBridge.Get("blocking").Bool()
+}
+func nativeEchoTick() {
+ if !nativeEchoReady || float64(timer)<nativeEchoNext {return}; nativeEchoNext=float64(timer)+0.2
+ defer func(){if recover()!=nil {nativeEchoReady=false}}()
+ if nativeEchoProfile!=nativeLocalKey && (phase==0 || !nativeLearnRunActive) {nativeEchoProfile=nativeLocalKey; nativeEchoBridge.Call("setProfile",nativeEchoProfile)}
+ blocked:=nativeHelp || nativePreview || nativeSettings || nativeStudyOpen || nativeLocalResetStage>0 || practice!=0
+ if phase==2 && !blocked {x,y,w,h:=nativeButtonRect(1); nativeEchoBridge.Call("nativeAnchor",x,y,w,h,viewWidth,viewHeight)}
+ nativeEchoBridge.Call("state",phase,blocked)
+}
+func nativeEchoEvent(name string) {
+ if !nativeEchoReady {return}
+ defer func(){if recover()!=nil {nativeEchoReady=false}}()
+ if name=="start" {
+  nativeEchoProfile=nativeLocalKey; nativeEchoBridge.Call("setProfile",nativeEchoProfile)
+  words:=[]map[string]any{}
+  for _,i:=range nativeDeck {words=append(words,map[string]any{"id":strings.TrimPrefix(nativeWordIDs[i],"en:"),"word":nativeWords[i],"meaning":nativeMeanings[i],"pos":nativeWordPOS[i],"context":nativeWordContexts[i]})}
+  nativeEchoBridge.Call("begin",nativeCloudJSON(map[string]any{"words":words}))
+ }
+ if name=="finish" && practice==0 {nativeEchoBridge.Call("finish")}
+}
+func nativeEchoAnswer(result int) {
+ if !nativeEchoReady || practice!=0 || result<1 || result>3 {return}
+ defer func(){if recover()!=nil {nativeEchoReady=false}}()
+ mode:="spell"; if nativeQuestionMode==1 {mode="meaning"}
+ outcome:=[]string{"correct","wrong","timeout"}[result-1]
+ nativeEchoBridge.Call("answer",nativeCloudJSON(map[string]any{"id":strings.TrimPrefix(nativeWordIDs[nativeWordIndex],"en:"),"mode":mode,"outcome":outcome,"assisted":nativeQuestionMode==0 && !nativeSpellingIndependent(),"input":nativeInput,"position":len(nativeInput),"choice":nativeEchoChoice}))
+}
+func nativeEchoReset() {
+ if !nativeEchoReady {return}
+ defer func(){if recover()!=nil {nativeEchoReady=false; println "@echo cache reset failed"}}()
+ nativeEchoBridge.Call("clear")
+}

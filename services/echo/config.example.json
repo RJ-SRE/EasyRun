@@ -1,0 +1,5 @@
+{
+  "baseUrl": "https://YOUR-PROVIDER/v1",
+  "model": "YOUR-MODEL-ID",
+  "apiKey": "REPLACE-IN-LOCAL-CONFIG-ONLY"
+}

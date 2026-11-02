@@ -1,0 +1,37 @@
+{
+  "scope": "Stage-bounded journal; fixed close/paging controls; previous/next and arrow keys; removed bookmarking and redundant prose.",
+  "tests": {
+    "web": {
+      "cases": [
+        "Web title loads with no automatic model request",
+        "Real skill/QTE answer feeds the victory summary exactly once",
+        "Generation uses the proxy; model text cannot become executable markup",
+        "Word buttons and arrow keys navigate without new requests or game input; example mode persists",
+        "Desktop, narrow and short/scrolled windows keep borders and controls inside the game stage",
+        "Reload reopens the stored report without another model call",
+        "Existing confirmed local reset also clears the journal"
+      ],
+      "errors": []
+    },
+    "native": {
+      "cases": [
+        "Native bundle compiles; journal bridge mounts in actual XBuilder runtime",
+        "Title and combat never send automatic AI requests",
+        "Production native answer/victory hooks produce accurate per-run evidence",
+        "Journal input cannot restart or dismiss the underlying game",
+        "Clean journal fits the native stage, persists locally and hides paging for a single word",
+        "Title reopens the latest cached report without a second request",
+        "Native username profiles keep their journals isolated",
+        "401 preserves exact local stats and allows exit/retry",
+        "Incomplete model content is rejected instead of displayed as a report",
+        "Reset aborts generation; late response cannot resurrect cleared records",
+        "Production native profile-reset transaction also clears this journal and preserves other profiles"
+      ],
+      "errors": []
+    }
+  },
+  "artifact": "EasyRun-XBuilder-v0.23.0-echo-reading-private-test.xbp",
+  "sha256": "4ca344b2f19b9d8fd3b61c3c380ffccfcbc0615e0058ca0afb016345418177d7",
+  "privateTestOnly": true,
+  "remotePushed": false
+}

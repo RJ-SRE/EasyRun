@@ -1,0 +1,100 @@
+{
+  "version": "0.23.0-local.1",
+  "date": "2026-11-02T02:42:28.073309+00:00",
+  "branch": "codex/echo-journal",
+  "committed": false,
+  "pushed": false,
+  "results": {
+    "web": {
+      "caseCount": 7,
+      "cases": [
+        "Web title loads with no automatic model request",
+        "Real skill/QTE answer feeds the victory summary exactly once",
+        "Generation uses the proxy; model text cannot become executable markup",
+        "Life/game examples and local bookmarks work",
+        "Compact viewport keeps the journal inside the available screen",
+        "Reload reopens the stored report without another model call",
+        "Existing confirmed local reset also clears the journal"
+      ],
+      "errors": [],
+      "complete": true
+    },
+    "native": {
+      "caseCount": 11,
+      "cases": [
+        "Native bundle compiles; journal bridge mounts in actual XBuilder runtime",
+        "Title and combat never send automatic AI requests",
+        "Production native answer/victory hooks produce accurate per-run evidence",
+        "Journal input cannot restart or dismiss the underlying game",
+        "Structured AI cards render and bookmark locally",
+        "Title reopens the latest cached report without a second request",
+        "Native username profiles keep their journals isolated",
+        "401 preserves exact local stats and allows exit/retry",
+        "Incomplete model content is rejected instead of displayed as a report",
+        "Reset aborts generation; late response cannot resurrect cleared records",
+        "Production native profile-reset transaction also clears this journal and preserves other profiles"
+      ],
+      "errors": [],
+      "complete": true
+    },
+    "controls": {
+      "caseCount": 18,
+      "cases": [
+        "guide uses new controls; old Space, E and Q do not trigger gameplay",
+        "W jumps and performs a second airborne jump",
+        "O grabs an anchor and release launches the hero",
+        "P releases the ultimate and starts its five-second cooldown",
+        "S + W drops through an ordinary platform",
+        "up-arrow preserves launcher and vertical dash without the W jump conflict",
+        "double S drops through without the awkward S + W chord",
+        "holding S and widely separated taps do not accidentally drop",
+        "downward aim taps during charging never count as a platform-drop gesture",
+        "pause clears the pending double-tap gesture",
+        "W then J produces one launcher without waiting to jump",
+        "J then W produces one launcher without waiting to jump",
+        "W + K dashes upward from the left-hand movement cluster",
+        "U + W aims upward and releases with no deferred jump",
+        "L + W aims upward and releases with no deferred jump",
+        "held final O does not leak from spelling; fresh input works",
+        "held final W does not leak from spelling; fresh input works",
+        "held final P does not leak from spelling; fresh input works"
+      ],
+      "errors": [],
+      "complete": true
+    }
+  },
+  "nodeRules": {
+    "passed": 21,
+    "failed": 0
+  },
+  "pythonBuildTests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "pythonRuntimeTests": {
+    "passed": 4,
+    "failed": 0
+  },
+  "lint": "passed",
+  "sourceSecretScan": {
+    "files": 1393,
+    "matches": 0
+  },
+  "liveProvider": {
+    "syntheticThreeWordReport": "success, 3 cards, 5442 ms",
+    "nativeBrowser": "success, valid one-word report, CORS passed; see native-live.png",
+    "mostRecentLiveAttempt": "429 (rate/quota); local stats preserved, no automatic retry or paid fallback"
+  },
+  "package": {
+    "name": "EasyRun-XBuilder-v0.23.0-echo-private-test.xbp",
+    "bytes": 154159912,
+    "sha256": "88773a8458f9800682f6a49e23bac0c69cae1e1cea1ad4ad0b44fd2d50a46dd1",
+    "CRC": "passed",
+    "privateTestOnly": true
+  },
+  "limitations": [
+    "Not published or imported into the online XBuilder project.",
+    "The legacy all-game runner stopped at obsolete echo/saw vocabulary fixtures; changed those two fixtures to current go/new with the same terminal gameplay keys, then all 18 control checks passed. The remaining legacy browser suite was not rerun.",
+    "Model semantic accuracy is not guaranteed by schema validation; only latest report is retained."
+  ]
+}

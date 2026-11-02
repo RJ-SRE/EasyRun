@@ -1,0 +1,143 @@
+{
+  "snapshot": {
+    "version": 1,
+    "runId": "synthetic-validation-v1",
+    "outcome": "won",
+    "totals": {
+      "deck": 3,
+      "touched": 3,
+      "correctWords": 3,
+      "attempts": 6,
+      "correct": 3,
+      "wrong": 3,
+      "timeout": 0,
+      "independentSpell": 0
+    },
+    "words": [
+      {
+        "id": "improve",
+        "word": "improve",
+        "meaning": "改善",
+        "pos": "v.",
+        "context": "improve a skill",
+        "spell": {
+          "attempts": 1,
+          "correct": 0,
+          "wrong": 1,
+          "timeout": 0,
+          "assisted": 0,
+          "errors": [
+            {
+              "input": "imx",
+              "position": 3,
+              "choice": ""
+            }
+          ]
+        },
+        "meaningStats": {
+          "attempts": 1,
+          "correct": 1,
+          "wrong": 0,
+          "timeout": 0,
+          "assisted": 0,
+          "errors": []
+        }
+      },
+      {
+        "id": "journey",
+        "word": "journey",
+        "meaning": "旅程",
+        "pos": "n.",
+        "context": "a long journey",
+        "spell": {
+          "attempts": 1,
+          "correct": 0,
+          "wrong": 1,
+          "timeout": 0,
+          "assisted": 0,
+          "errors": [
+            {
+              "input": "jox",
+              "position": 3,
+              "choice": ""
+            }
+          ]
+        },
+        "meaningStats": {
+          "attempts": 1,
+          "correct": 1,
+          "wrong": 0,
+          "timeout": 0,
+          "assisted": 0,
+          "errors": []
+        }
+      },
+      {
+        "id": "remember",
+        "word": "remember",
+        "meaning": "记住",
+        "pos": "v.",
+        "context": "remember a word",
+        "spell": {
+          "attempts": 1,
+          "correct": 0,
+          "wrong": 1,
+          "timeout": 0,
+          "assisted": 0,
+          "errors": [
+            {
+              "input": "rex",
+              "position": 3,
+              "choice": ""
+            }
+          ]
+        },
+        "meaningStats": {
+          "attempts": 1,
+          "correct": 1,
+          "wrong": 0,
+          "timeout": 0,
+          "assisted": 0,
+          "errors": []
+        }
+      }
+    ]
+  },
+  "report": {
+    "version": 1,
+    "note": "每一次改善与记住，都是旅程里闪亮的回声。继续慢慢来，比较快。",
+    "nextStep": "今晚用 improve、journey、remember 各写一句钟城冒险日记。",
+    "cards": [
+      {
+        "id": "improve",
+        "usage": "及物动词，表示使某物变得更好，常用于技能、成绩或生活情境。",
+        "collocation": "improve a skill",
+        "example": "Reading aloud every day will help you improve your pronunciation.",
+        "translation": "每天大声朗读会帮助你改善发音。",
+        "gameExample": "With a brave heart, you can improve the ancient bridge in Bell City.",
+        "gameTranslation": "怀着勇气，你可以修复钟城那座古老的桥。",
+        "tip": "分音节慢慢拼 im-pro-ve，注意中间是 prove 不是 prov。"
+      },
+      {
+        "id": "journey",
+        "usage": "名词，指一段较长或重要的行程，也可引申为人生与学习的过程。",
+        "collocation": "a long journey",
+        "example": "The journey to the mountain village took about three hours by bus.",
+        "translation": "乘公交车前往山村大约花了三个小时。",
+        "gameExample": "Along the journey through the clock tower, you find a hidden message.",
+        "gameTranslation": "沿着钟楼里的旅程，你发现了一条隐藏的信息。",
+        "tip": "开头是 j，中间 ou 发长音，结尾是 -ney。"
+      },
+      {
+        "id": "remember",
+        "usage": "动词，表示在脑中保留信息以便回忆，后接名词或动名词。",
+        "collocation": "remember a word",
+        "example": "Please remember to bring your notebook to tomorrow's class.",
+        "translation": "请记得把笔记本带到明天的课上。",
+        "gameExample": "If you remember the old song, the gate of Bell City will open.",
+        "gameTranslation": "如果你记得那首古老的歌，钟城的门就会打开。",
+        "tip": "前缀是 re-，主体是 member，像记住一位成员。"
+      }
+    ]
+  }
+}

@@ -257,6 +257,7 @@ func nativeLocalResetTransaction(db js.Value,epoch int,key string) {
  done:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
   db.Call("close"); nativeLocalRelease(handlers); if epoch!=nativeLocalEpoch {return nil}
   nativeLocalBusy=false; nativeLocalBypass=false
+  nativeEchoReset()
   difficulty=0; nativeScope=0; nativePace=0; nativeHint=1; wordMode=1; nativeMusicVolume=75; nativeSfxVolume=85; nativeMusicMuted=false; menuReduced=false
   resetInscription(); nativeLedgerQuery=""; nativeLedgerSearch=false; nativeLedgerFilter=0; nativePreview=false
   nativeLocalLoad(key); nativeLocalResetView(4); return nil
