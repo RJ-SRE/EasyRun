@@ -1,0 +1,144 @@
+// Guest learning rules v1. Parallel primitive arrays avoid thousands of nested
+// ixgo objects. Persistent identity/cloud is deliberately not inferred from name.
+var (
+ nativeCoreBank bool
+ nativeWordIDs []string
+ nativeWordIdIndex map[string]int
+ nativeLearnCorrect []int
+ nativeLearnWrong []int
+ nativeLearnTimeout []int
+ nativeLearnAssisted []int
+ nativeLearnAttempts []int
+ nativeLearnWeak []int
+ nativeLearnOutcome []int
+ nativeLearnDue []float64
+ nativeLearnLast []int
+ nativeLearnEver []int
+ nativeLearnWon []int
+ nativeLearnPools [][]int
+ nativeLearnRun int
+ nativeLearnRunActive bool
+ nativeLearnWins int
+ nativeLearnQuestionFinal int
+ nativeLearnNew int
+ nativeLearnReview int
+ nativeLearnFragile int
+ nativeLearnFamiliar int
+ nativeLearnTouched []int
+ nativeLearnTouchedCount int
+ nativeLearnCorrectWords int
+ nativeLearnDueCount int
+ nativeLearnSummaryPhase int
+)
+func initNativeLearning() {
+ n:=len(nativeWords)
+ nativeWeak=make([]int,n); nativeLearnWins=0; nativeLearnRunActive=false
+ nativeWordIdIndex=map[string]int{}; for i,id:=range nativeWordIDs {nativeWordIdIndex[id]=i}
+ nativeLearnCorrect=make([]int,n*2); nativeLearnWrong=make([]int,n*2); nativeLearnTimeout=make([]int,n*2); nativeLearnAssisted=make([]int,n*2)
+ nativeLearnAttempts=make([]int,n*2); nativeLearnWeak=make([]int,n*2); nativeLearnOutcome=make([]int,n*2); nativeLearnDue=make([]float64,n*2)
+ nativeLearnLast=make([]int,n); nativeLearnEver=make([]int,n); nativeLearnWon=make([]int,n)
+ nativeLearnQuestionFinal=-1
+ nativeLearnTouched=make([]int,30); nativeLearnTouchedCount=0; nativeLearnCorrectWords=0; nativeLearnDueCount=0; nativeLearnSummaryPhase=-1; initNativeStudy()
+}
+func nativeLearningGroup(i int) int {
+ if nativeLearnAttempts[i*2]+nativeLearnAttempts[i*2+1]==0 {return 0}
+ for k:=0;k<2;k++ {j:=i*2+k; if nativeLearnWeak[j]>=650 || nativeLearnOutcome[j]==2 || nativeLearnOutcome[j]==3 {return 2}}
+ for k:=0;k<2;k++ {j:=i*2+k; if nativeLearnAttempts[j]>0 && nativeLearnDue[j]<=float64(timer) {return 1}}
+ return 3
+}
+func nativeLearningAbility(i int) int {
+ if nativeSpellable[i]==0 || wordPending>=5 {return 1}
+ a:=i*2; b:=a+1
+ if nativeLearnAttempts[a]+nativeLearnAttempts[b]==0 {return nativeRand(2)}
+ if nativeLearnAttempts[a]==0 {return 0}; if nativeLearnAttempts[b]==0 {return 1}
+ if nativeLearnWeak[a]>nativeLearnWeak[b] {return 0}; if nativeLearnWeak[b]>nativeLearnWeak[a] {return 1}
+ if nativeLearnLast[i]==1 {return 1}; return 0
+}
+func nativeLearningAnswer(result int) {
+ if nativeLearnQuestionFinal==wordSerial {return}; nativeLearnQuestionFinal=wordSerial
+ i:=nativeWordIndex; j:=i*2+nativeQuestionMode
+ wasDue:=nativeLearnAttempts[j]>0 && nativeLearnDue[j]<=float64(timer); nativeStudyAccumulate(i,-1)
+ if nativeLearnTouched[nativeCursor]==0 {nativeLearnTouched[nativeCursor]=1; nativeLearnTouchedCount++}
+ nativeLearnAttempts[j]++; nativeLearnOutcome[j]=result; nativeLearnLast[i]=nativeQuestionMode+1
+ hours:=6
+ if result==1 {
+  if nativeLearnEver[i]==0 {nativeLearnCorrectWords++}; nativeLearnEver[i]=1; nativeLearnCorrect[j]++
+  if nativeQuestionMode==0 {if !nativeSpellingIndependent() {nativeLearnAssisted[j]++}; nativeLearnWeak[j]=nativeLearnWeak[j]*8/10; hours=12} else {nativeLearnWeak[j]=nativeLearnWeak[j]*4/10; hours=24}
+ } else if result==2 {nativeLearnWrong[j]++; nativeLearnWeak[j]+=1000} else {nativeLearnTimeout[j]++; nativeLearnWeak[j]+=400}
+ if nativeLearnWeak[j]>6000 {nativeLearnWeak[j]=6000}
+ nativeLearnDue[j]=float64(timer)+float64(hours)*3600
+ nativeWeak[i]=0; if nativeLearningGroup(i)==2 {nativeWeak[i]=1}
+ nativeLedgerRevision++
+ nativeStudyAnswer(i,nativeQuestionMode,result,wasDue)
+ nativeCloudAnswer(result)
+ nativeLocalMark(i)
+ println "@nativeLearning",nativeLearnRun,i,nativeQuestionMode,result,nativeLearnAttempts[j],nativeLearnWeak[j],hours
+}
+func nativeLearningTake(group,count int) {
+ pool:=nativeLearnPools[group]
+ for count>0 && len(pool)>0 && len(nativeDeck)<30 {
+  index:=nativeRand(len(pool))
+  if group==2 {
+   total:=0; for _,i:=range pool {w:=nativeLearnWeak[i*2]; if nativeLearnWeak[i*2+1]>w {w=nativeLearnWeak[i*2+1]}; total+=1000+w}
+   draw:=nativeRand(total)
+   chosen:=false
+   for k,i:=range pool {if !chosen {w:=nativeLearnWeak[i*2]; if nativeLearnWeak[i*2+1]>w {w=nativeLearnWeak[i*2+1]}; draw-=1000+w; if draw<0 {index=k; chosen=true}}}
+  }
+  nativeDeck=append(nativeDeck,pool[index]); nativeDone=append(nativeDone,0)
+  pool[index]=pool[len(pool)-1]; pool=pool[:len(pool)-1]; count--
+  if group==0 {nativeLearnNew++}; if group==1 {nativeLearnReview++}; if group==2 {nativeLearnFragile++}; if group==3 {nativeLearnFamiliar++}
+ }
+ nativeLearnPools[group]=pool
+}
+func nativeLearningShuffle() {
+ nativeLearnPools=make([][]int,4)
+ for i:=0;i<len(nativeWords);i++ {if nativeLedgerScope(i) {group:=nativeLearningGroup(i); nativeLearnPools[group]=append(nativeLearnPools[group],i)}}
+ count:=0; for _,pool:=range nativeLearnPools {count+=len(pool)}
+ if count<30 {nativeFeedback="词条不足 · 保留原词册"; nativeFeedbackTime=3; return}
+ nativeLedgerWon=false; nativeDeck=[]int{}; nativeDone=[]int{}; nativeCursor=0; nativeDeckUsed=false; nativePreviewPage=0
+ nativeLearnNew=0; nativeLearnReview=0; nativeLearnFragile=0; nativeLearnFamiliar=0
+ nativeLearningTake(0,12); nativeLearningTake(1,10); nativeLearningTake(2,6); nativeLearningTake(3,2)
+ for _,group:=range []int{1,0,3,2} {nativeLearningTake(group,30-len(nativeDeck))}
+ for i:=len(nativeDeck)-1;i>0;i-- {j:=nativeRand(i+1); swap:=nativeDeck[i]; nativeDeck[i]=nativeDeck[j]; nativeDeck[j]=swap}
+ nativeLearnPools=nil
+ println "@nativeDeck",nativeScope,nativeDeck
+}
+func nativeLearningEvent(name string) {
+ if name=="start" {
+  nativeStudyStreak=0
+  nativeLearnRun++; nativeLearnRunActive=true; nativeLearnQuestionFinal=-1; nativeLedgerWon=false
+  // R keeps this deck but resets local completion. A return to title already
+  // prepared a new deck; neither path imports another account mid-run.
+  for i:=0;i<len(nativeDone);i++ {nativeDone[i]=0}; nativeCursor=0
+  nativeLearnTouched=make([]int,30); nativeLearnTouchedCount=0; nativeLearnSummaryPhase=-1
+ }
+ if name=="finish" && nativeLearnRunActive {
+  nativeLearnWins++; nativeLearnRunActive=false
+  for n,i:=range nativeDeck {if nativeDone[n]==1 {nativeLearnWon[i]=1}}
+ }
+ if name=="menu" {nativeLearnRunActive=false}
+}
+func nativeLearningBadge(i,mode int) string {
+ j:=i*2+mode
+ if mode==0 && nativeSpellable[i]==0 {return "—"}
+ if nativeLearnAttempts[j]==0 {return "·"}
+ if nativeLearnWeak[j]>=650 || nativeLearnOutcome[j]==2 || nativeLearnOutcome[j]==3 {return "!"}
+ if mode==0 {return "◇"}; return "✓"
+}
+func nativeLearningDrawSummary() {
+ if (phase!=2 && phase!=3 && phase!=4) || nativeHelp || nativePreview || nativeSettings || practice!=0 {return}
+ if nativeLearnSummaryPhase!=phase {
+  nativeLearnSummaryPhase=phase; nativeLearnDueCount=0
+  if nativeCloudAccount=="" {for i:=0;i<len(nativeWords);i++ {a:=i*2; b:=a+1; if nativeLearnAttempts[a]>0 && nativeLearnDue[a]<=float64(timer) || nativeLearnAttempts[b]>0 && nativeLearnDue[b]<=float64(timer) {nativeLearnDueCount++}}}
+ }
+ nativeText(fmt.Sprint("本局接触 ",nativeLearnTouchedCount," · 已解 ",nativeCompleted()," / 30"),580,276,12)
+ if nativeCloudAccount!="" && nativeCloudSummary!=nil {
+  nativeText(fmt.Sprint("已存累计答对 ",nativeCloudInt(nativeCloudSummary,"correct")),580,300,12)
+  nativeText(fmt.Sprint("已存本词库 ",nativeCloudInt(nativeCloudSummary,"currentCorrect")," / ",nativeCloudInt(nativeCloudSummary,"currentTotal")),580,324,12)
+  nativeText(fmt.Sprint("待复习 ",nativeCloudInt(nativeCloudSummary,"due")," · 通关 ",nativeCloudInt(nativeCloudSummary,"completedRuns")),580,348,12)
+ } else {
+  label:="本次运行答对 "; ending:=" · 游客记录不存云端"; if nativeLocalEnabled && !nativeLocalBypass {label="本机累计答对 "; ending=" · 本机学习档案"}
+  nativeText(fmt.Sprint(label,nativeLearnCorrectWords," · 待复习 ",nativeLearnDueCount),580,304,12)
+  nativeText(fmt.Sprint("通关 ",nativeLearnWins,ending),580,332,12)
+ }
+}

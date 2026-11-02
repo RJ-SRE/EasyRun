@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-30T18:44:09.066Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "initialFollow": "Anchor",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "original hero pose and anchored pixels stay fixed while cape/water cycle; camera and clone count remain stable, zero combat FX",
+    "three cloud lightning paths naturally complete dark, gold and afterglow exposures with long quiet intervals and no extra clones",
+    "fog completes all 16 frames with smooth interpolation, registered masks protect the original hero, camera and clone count remain stable",
+    "settings keep hero pose fixed without blocking the controls",
+    "reduced motion freezes environmental clock and rests the hero",
+    "reduced-motion start enters gameplay without the departure delay",
+    "start enters gameplay immediately; menu layers disappear in gameplay"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "a38223475cec051fcfdbe8f99a5aa88b3d3a0cd64152d91356dfafc59ecab89c",
+  "fixture": "Actual native archive after deployed XBuilder model roundtrip. Initial camera follows Anchor to exercise viewport ownership. Test-only unclamped frame diagnostics observe all three naturally scheduled lightning variants. F4 freezes one exposure for screenshots only; functional timing assertions use the unfrozen cycle. Settings, reduced motion and start use real clicks and keys. Per-frame logging adds overhead. No online project overwritten.",
+  "browser": "156.0.8078.4",
+  "performance": {
+    "frames": 1310,
+    "p50": 16.66666753590107,
+    "p95": 16.66666753590107,
+    "p99": 16.66666753590107,
+    "over34": 1,
+    "poses": [
+      0
+    ],
+    "note": "Unclamped SPX waitNextFrame samples in actual native archive; debug logging adds overhead. This machine only."
+  },
+  "lightning": {
+    "costumes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "cycleStarts": [
+      2.8112734627723697,
+      13.744607366323471,
+      23.586551537290216
+    ],
+    "maximumExposure": 1.2919437250494958
+  },
+  "fog": {
+    "rect": [
+      330,
+      530,
+      1120,
+      230
+    ],
+    "pixelScale": 2,
+    "frames": 16,
+    "seconds": 12,
+    "activePixels": 17252,
+    "protectedDifferences": 0,
+    "observedFrames": 16,
+    "blendLevels": 50
+  }
+}

@@ -188,7 +188,7 @@ try {
         attachedAt = s.elapsed;
       }
       if (holdingE && s.elapsed - attachedAt >= 0.12) {
-        await page.keyboard.up("e");
+        await page.keyboard.up("o");
         holdingE = false;
         releasedAt = s.elapsed;
       }
@@ -196,17 +196,17 @@ try {
       hooked = -1;
       await page.keyboard[s.expedition.trialHooks === 1 ? "down" : "up"]("s");
       if (holdingE) {
-        await page.keyboard.up("e");
+        await page.keyboard.up("o");
         holdingE = false;
         releasedAt = s.elapsed;
       } else if (s.elapsed - releasedAt > 0.18) {
-        await page.keyboard.down("e");
+        await page.keyboard.down("o");
         holdingE = true;
       }
     }
     await page.waitForTimeout(60);
   }
-  for (const k of ["a", "d", "e", "s"]) await page.keyboard.up(k);
+  for (const k of ["a", "d", "o", "s"]) await page.keyboard.up(k);
   assert(
     (await state()).expedition.trialHooks >= 3,
     "must actually attach to three distinct anchors in one flight",

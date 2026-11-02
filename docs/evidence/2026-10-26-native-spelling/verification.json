@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-26T12:55:11.149100+00:00",
+  "version": "0.14.0",
+  "scope": "Native spelling Chinese context, three hint modes, immediate success/failure validation, held-key quarantine, smaller question cards. Local only.",
+  "package": {
+    "path": "/Users/rj/Desktop/EasyRun-XBuilder-v0.14.0-spelling-challenge.xbp",
+    "sha256": "f3fa37a3f7a4179971707812768fe879ee2db470f19aa8ace7dc69f511b76d24",
+    "bytes": 103767745,
+    "files": 4696,
+    "originalSprites": 83
+  },
+  "tests": {
+    "words": {
+      "passed": 23,
+      "report": "words.json"
+    },
+    "shell": {
+      "passed": 15,
+      "report": "shell.json"
+    }
+  },
+  "totalPassed": 38,
+  "clonePeak": 244,
+  "byteIdenticalAudioHudSkillsSliders": 418,
+  "productionHasNoTestHooks": true,
+  "lint": "Targeted ESLint, Prettier and git diff --check passed.",
+  "limitations": [
+    "Deployed public XBuilder model/compiler tested locally, no account project overwritten.",
+    "Deterministic test-only question/skill fixtures; not a full-run or all-dictionary playthrough.",
+    "Native memory remains within the running session; no cross-day web persistence ported.",
+    "No remote push or remote CI."
+  ]
+}

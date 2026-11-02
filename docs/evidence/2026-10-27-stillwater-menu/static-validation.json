@@ -1,0 +1,30 @@
+{
+  "width": 1586,
+  "height": 992,
+  "preservedLeftPixels": 992000,
+  "leftDifferences": 0,
+  "cloth": {
+    "rect": [
+      288,
+      630,
+      160,
+      108
+    ],
+    "frames": 24,
+    "moving": 120354,
+    "maxDisplacement": 2.1641695608067595,
+    "anchoredDifferences": 0
+  },
+  "water": {
+    "rect": [
+      460,
+      758,
+      1124,
+      234
+    ],
+    "frames": 32,
+    "moving": 5599825,
+    "maxDisplacement": 2.099930566946045,
+    "anchoredDifferences": 0
+  }
+}

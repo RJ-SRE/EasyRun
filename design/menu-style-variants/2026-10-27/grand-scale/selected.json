@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-27",
+  "selected": "b-moonlit-sanctuary",
+  "title": "B · 静水圣庭",
+  "selectedBy": "user",
+  "asset": "b-moonlit-sanctuary.png",
+  "sha256": "9caba243f69d5520ec6b5061bd1998f37725cf746b89920b4211fa9559c4e5b4",
+  "status": "implemented locally in v0.16.0; validation recorded in docs/MENU_V160.md",
+  "motionDesign": "moonlit-motion.md",
+  "preserve": [
+    "small protagonist",
+    "monumental architecture",
+    "cool arches and water reflections",
+    "top-left small logo",
+    "right-side controls"
+  ],
+  "productionBackground": "prototypes/runlab/art/belfry/menu/background.png"
+}

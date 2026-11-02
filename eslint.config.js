@@ -14,6 +14,35 @@ export default tseslint.config(
       "test-results/**",
     ],
   },
+  {
+    files: [
+      "services/learning/**/*.mjs",
+      "prototypes/runlab/native-learning-content.mjs",
+      "prototypes/runlab/probe-native-learning.mjs",
+      "prototypes/runlab/test-belfry-native-learning.mjs",
+    ],
+    languageOptions: {
+      globals: Object.fromEntries(
+        [
+          "process",
+          "console",
+          "URL",
+          "Buffer",
+          "fetch",
+          "AbortSignal",
+          "FormData",
+          "Blob",
+          "Response",
+          "TextEncoder",
+          "TextDecoder",
+          "structuredClone",
+          "setImmediate",
+          "performance",
+          "window",
+        ].map((name) => [name, "readonly"]),
+      ),
+    },
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -25,6 +54,8 @@ export default tseslint.config(
   {
     files: [
       "prototypes/runlab/build-belfry.mjs",
+      "prototypes/runlab/build-belfry-native*.mjs",
+      "prototypes/runlab/belfry-native-study.mjs",
       "prototypes/runlab/belfry-level.mjs",
       "prototypes/runlab/belfry-hunt.mjs",
       "prototypes/runlab/hunt-init.mjs",
@@ -36,6 +67,7 @@ export default tseslint.config(
       "prototypes/runlab/expedition-init.mjs",
       "prototypes/runlab/test-expedition*.mjs",
       "prototypes/runlab/test-belfry*.mjs",
+      "prototypes/runlab/test-learning*.mjs",
     ],
     languageOptions: {
       globals: {
@@ -43,6 +75,7 @@ export default tseslint.config(
         console: "readonly",
         URL: "readonly",
         Image: "readonly",
+        Path2D: "readonly",
         document: "readonly",
         window: "readonly",
         latestState: "readonly",
@@ -70,6 +103,7 @@ export default tseslint.config(
     files: [
       "prototypes/runlab/public/belfry*.js",
       "prototypes/runlab/public/inscription*.js",
+      "prototypes/runlab/public/learning*.js",
       "prototypes/runlab/public/cet4-words.js",
       "prototypes/runlab/public/expedition*.js",
     ],

@@ -1101,3 +1101,38 @@ body.playing .skill-dock {
     font-size: 10px;
   }
 }
+
+/* Keeper forms: gold plate, crimson blades, pale heart. */
+#boss[data-form="0"] {
+  border-color: #d4b67b88;
+}
+#boss[data-form="1"] {
+  border-color: #e7738588;
+}
+#boss[data-form="2"] {
+  border-color: #c3bad288;
+}
+#boss[data-form="1"] #boss-health {
+  background: linear-gradient(90deg, #7f314b, #f7a29e);
+}
+#boss[data-form="2"] #boss-health {
+  background: linear-gradient(90deg, #666082, #e1e9dc);
+}
+#boss.mending #boss-health {
+  background: linear-gradient(90deg, #3b8a73, #dbffd3);
+}
+#boss.mending #boss-state {
+  color: #bce5b6;
+}
+body.word-focusing #boss {
+  top: 210px;
+  left: auto;
+  right: 2%;
+  width: 352px;
+  max-width: 48%;
+  transform: none;
+  opacity: 1;
+  padding: 8px 10px;
+  background: linear-gradient(110deg, #071318dc, #07131855);
+  border-left: 1px solid #bda47566;
+}

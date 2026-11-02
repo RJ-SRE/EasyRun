@@ -46,6 +46,7 @@ await page.route("**/belfry.json", async (route) => {
 onKey KeyF8, => {skillFixture()}
 onKey KeyF9, => {skillFixture(); enemyHP[0]=0; Hero.resetHero(480,500); Hero.grounded=false; Hero.vy=0; Hero.invulnerable=0}
 onKey KeyF10, => {skillFixture(); enemyHP[0]=0; Hero.invulnerable=0}
+onKey KeyF5, => {skillFixture(); enemyHP[0]=0; embers=2}
 onKey KeyF11, => {hurt(1)}
 onKey KeyF6, => {skillFixture(); Hero.resetHero(480,250); Hero.grounded=false; Hero.invulnerable=0; enemyBaseX[0]=480; enemyBaseY[0]=60; floorX[0]=80; floorW[0]=800; floorY[0]=120; floorKind[0]=0}
 // Explicitly reset all enabled foes; public mixed rehearsal no longer spawns archers.
@@ -100,7 +101,7 @@ try {
     () => runEvents.some((e) => e.name === "marked") && foes[0]?.mark > 0,
   );
   assert.ok((await page.evaluate(() => foes[0].mark)) > 0);
-  assert.equal((await state()).bowCool, 0);
+  assert.ok((await state()).bowCool > 0 && (await state()).bowCool <= 3);
   const beforeHeavy = await page.evaluate(() => foes[0].hp);
   await shot("l");
   await wait(
@@ -119,11 +120,16 @@ try {
   await page.waitForTimeout(220);
   assert.equal(
     (await events()).filter((e) => e.name === "heavy").length,
-    casts + 1,
+    casts,
   );
   assert.equal((await state()).chargeTime, 0);
-  assert.equal((await state()).bladeCool, 0);
-  await save("blade can be used again after recovery without a cooldown");
+  assert.ok((await state()).bladeCool > 0);
+  await wait(() => latestState.bladeCool === 0);
+  await shot("l", 150);
+  await wait(() => runEvents.filter((e) => e.name === "heavy").length === 2);
+  await save(
+    "blade rejects repeat inputs until its three-second cooldown expires",
+  );
   await fixture();
   await shot("u", 60);
   await page.waitForTimeout(300);
@@ -132,7 +138,7 @@ try {
   await page.waitForTimeout(120);
   assert.equal(
     (await events()).filter((e) => e.name === "bowshot").length,
-    shots + 1,
+    shots,
   );
   await tap("Escape");
   await wait(() => latestState.phase === 4);
@@ -147,10 +153,10 @@ try {
   await page.waitForTimeout(200);
   assert.equal(
     (await events()).filter((e) => e.name === "bowshot").length,
-    shots + 2,
+    shots + 1,
   );
   await save(
-    "bow fires on successive inputs without cooldown; pause still freezes combat",
+    "bow blocks repeat shots, freezes cooldown on pause and fires after recovery",
   );
   await fixture("F7");
   await shot("u");
@@ -203,16 +209,29 @@ try {
     "dash cancel retains the basic attack interval instead of resetting it",
   );
   await fixture("F9");
+  // Bound this assertion to the first airborne interval. Under load, the
+  // input loop can continue after landing, when a new launcher is legitimate.
+  await page.evaluate(() => {
+    window.whiffLandedAt = null;
+    function sample() {
+      if (latestState.y === 0) window.whiffLandedAt = latestState.elapsed;
+      else requestAnimationFrame(sample);
+    }
+    requestAnimationFrame(sample);
+  });
   for (let i = 0; i < 8; i++) {
     await tap(i % 2 === 0 ? "j" : "w+j", 20);
     await page.waitForTimeout(65);
   }
-  await wait(() => latestState.y === 0);
-  const swings = (await events()).filter((e) => e.name === "aircut");
-  assert.equal(swings.length, 2);
-  assert.ok(!(await events()).some((e) => e.name === "launcher"));
-  assert.ok((await state()).elapsed < 2.2);
-  await save("air whiffs and W+J spam allow only two cuts and fall to ground");
+  await wait(() => window.whiffLandedAt !== null);
+  const landedAt = await page.evaluate(() => window.whiffLandedAt);
+  const airborne = (await events()).filter((e) => e.time < landedAt);
+  assert.equal(airborne.filter((e) => e.name === "aircut").length, 2);
+  assert.ok(!airborne.some((e) => e.name === "launcher"));
+  assert.ok(landedAt < 2.2);
+  await save(
+    "air whiffs and W + J spam allow only two cuts and fall to ground",
+  );
   await fixture("F10");
   await tap("i");
   await page.waitForTimeout(200);
@@ -256,7 +275,7 @@ try {
   await fixture("F10");
   await tap("i");
   await page.waitForTimeout(100);
-  await tap("Space");
+  await tap("w");
   await page.waitForTimeout(850);
   assert.equal((await state()).health, 5);
   assert.ok((await events()).some((e) => e.name === "healbreak"));
@@ -274,7 +293,7 @@ try {
     "airborne healing rejected before resource or cooldown consumption",
   );
   await fixture();
-  await tap("q");
+  await tap("p");
   await page.waitForTimeout(330);
   await page.screenshot({
     path: fileURLToPath(new URL("chain-slash.png", out)),
@@ -287,27 +306,34 @@ try {
   );
   assert.equal((await state()).ultimateTime, 0);
   assert.equal((await state()).attackTime, 0);
-  assert.equal((await state()).ultimateCool, 0);
+  assert.ok(
+    (await state()).ultimateCool > 0 && (await state()).ultimateCool < 5,
+  );
   assert.equal((await state()).embers, 2);
-  await tap("q");
+  await tap("p");
   await page.waitForTimeout(120);
   assert.equal(
     (await events()).filter((e) => e.name === "chainstart").length,
-    2,
+    1,
+  );
+  await wait(() => latestState.ultimateCool === 0);
+  await tap("p");
+  await wait(
+    () => runEvents.filter((e) => e.name === "chainstart").length === 2,
   );
   await save(
-    "ultimate emits five hits, earns embers on hits and can repeat after recovery without cooldown",
+    "ultimate emits five hits and rejects repeats until its five-second cooldown expires",
   );
   await fixture();
   await page.keyboard.down("w");
-  await tap("q");
+  await tap("p");
   await page.waitForTimeout(1000);
   await page.keyboard.up("w");
   await wait(() => latestState.y > 25);
   await save("ultimate up finisher produces a bounded launch");
   await fixture("F9");
   await page.keyboard.down("s");
-  await tap("q");
+  await tap("p");
   await wait(() => latestState.ultimateTime > 0 && latestState.vy < -500);
   await page.keyboard.up("s");
   assert.equal((await state()).embers, 1);
@@ -331,6 +357,102 @@ try {
   await save(
     "restart clears all cooldowns, charge state, healing and ultimate",
   );
+  // Test durations with effective combat time, never wall-clock sleeps.
+  for (const [key, field, duration, id] of [
+    ["u", "bowCool", 3, "bow"],
+    ["l", "bladeCool", 3, "blade"],
+    ["i", "healCool", 3, "heal"],
+    ["p", "ultimateCool", 5, "ultimate"],
+  ]) {
+    await fixture("F10");
+    await tap(key, 70);
+    const started = await page.waitForFunction(
+      (f) => (latestState[f] > 0 ? { ...latestState } : false),
+      field,
+    );
+    const initial = await started.jsonValue();
+    await started.dispose();
+    assert.ok(initial[field] > duration - 0.3 && initial[field] <= duration);
+    assert.ok(
+      await page
+        .locator(`#skill-${id}`)
+        .evaluate((el) => el.classList.contains("cooling")),
+    );
+    assert.match(
+      await page.locator(`#skill-${id} .skill-time`).innerText(),
+      /^\d\.\ds$/,
+    );
+    assert.ok(
+      parseFloat(
+        await page
+          .locator(`#skill-${id}`)
+          .evaluate((el) => el.style.getPropertyValue("--cooldown")),
+      ) > 0,
+    );
+    for (const other of ["bowCool", "bladeCool", "healCool", "ultimateCool"])
+      if (other !== field) assert.equal(initial[other], 0);
+    // Capture the first ready sample inside the predicate: a later protocol
+    // round trip can observe an already-running frame well after readiness.
+    const ready = await page.waitForFunction(
+      (f) => (latestState[f] === 0 ? { ...latestState } : false),
+      field,
+      { timeout: 10000 },
+    );
+    const recovered = await ready.jsonValue();
+    await ready.dispose();
+    assert.ok(
+      Math.abs(recovered.elapsed - initial.elapsed - initial[field]) < 0.16,
+    );
+    assert.equal(
+      await page
+        .locator(`#skill-${id}`)
+        .evaluate((el) => el.classList.contains("cooling")),
+      false,
+    );
+    assert.equal(
+      await page
+        .locator(`#skill-${id}`)
+        .evaluate((el) => el.style.getPropertyValue("--cooldown")),
+      "0%",
+    );
+  }
+  await save(
+    "four independent cooldowns last 3/3/3/5 simulation seconds and HUD masks clear on readiness",
+  );
+  await fixture("F5");
+  await tap("i");
+  await wait(() => latestState.health === 6 && latestState.healCool > 0);
+  await tap("i");
+  await page.waitForTimeout(220);
+  assert.equal((await state()).healTime, 0);
+  assert.equal((await state()).embers, 1);
+  await wait(() => latestState.healCool === 0);
+  await tap("i");
+  await wait(() => latestState.health === 7);
+  assert.equal((await state()).embers, 0);
+  await save(
+    "healing cooldown blocks a second available ember without consuming it",
+  );
+  await fixture("F10");
+  await tap("u", 80);
+  await wait(() => latestState.bowCool > 0 && latestState.bowCharge === 0);
+  await tap("l", 80);
+  // Wait for the release to reach the engine before observing its recovery.
+  await wait(() => latestState.bladeCool > 0);
+  await wait(() => latestState.attackKind === 0);
+  await tap("p");
+  await wait(() => latestState.ultimateCool > 0);
+  await tap("Escape");
+  await wait(() => latestState.phase === 4);
+  await page.screenshot({
+    path: fileURLToPath(new URL("cooldown-hud.png", out)),
+  });
+  const allPaused = await state();
+  await page.waitForTimeout(450);
+  for (const field of ["bowCool", "bladeCool", "ultimateCool"])
+    assert.equal((await state())[field], allPaused[field]);
+  await tap("r");
+  await wait(() => latestState.phase === 1 && latestState.practice === 0);
   await wait(() => soundDiagnostics.cached === 82, 15000);
   assert.equal(await page.locator(".skill-slot").count(), 4);
   assert.equal(await page.locator("#dialogue,#setting-voice").count(), 0);

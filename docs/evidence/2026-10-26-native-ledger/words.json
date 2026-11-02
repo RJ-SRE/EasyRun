@@ -1,0 +1,227 @@
+{
+  "date": "2026-10-26T11:33:30.679Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "all 121 world clones spawn before text; native glyphs do not consume missing enemy or platform slots",
+    "CET4 and CET6 scope selection draws only words belonging to the selected source level",
+    "ledger pages cover all 30 words without gaps or duplicates; weakness/full-bank filters and isolated live search work without reshuffling",
+    "8815-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
+    "music and action sliders independently set 50% and 25% without changing the other channel",
+    "real charged arrow invokes spelling; typing combat/menu/mute keys is isolated; correct submission releases once and starts 3-second cooldown",
+    "gameplay ledger pauses combat, shows completed-word states and resumes; opening from pause returns to pause; an active question rejects Tab",
+    "wrong meaning cancels charged blade without consuming cooldown and increases session weakness",
+    "a wrong answer becomes a review badge and enters the weakness ledger in the same session",
+    "misspelled submission cancels ultimate; invalid typing never directly casts a skill",
+    "healing gates before recovery; correct meaning restores one life and starts cooldown",
+    "question can pause/resume without losing input; correct ultimate starts its 5-second cooldown",
+    "timeout cancels the pending skill without cooldown and resumes combat",
+    "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
+    "long-word and 28-character option fixtures fit the card; 48 typed characters scroll within the input; 480x360 resize remains intact",
+    "returning to title prepares a fresh preview deck; practice stays free of inscription questions",
+    "native text shrinks after answers, real arrows receive clone slots, and observed combined clone count stays below 300"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "b41b4ac0c0984ad9a96c6e1b60b7751332ed87552f17c8ce13459e860a4ee9a7",
+  "fixture": "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states; F12 injects bounded long-text fixtures. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
+  "browser": "156.0.8078.4",
+  "frameRateSamples": [
+    55.55246930407234,
+    34.70600013458914,
+    15.163346174668836,
+    53.680707152474845,
+    46.36884700474659,
+    57.92424335914284,
+    50.65068356255886,
+    59.65163445280454,
+    54.95109352700116,
+    43.99013694808025,
+    28.683430538673793,
+    59.41329372184084,
+    46.412213740458014,
+    57.591522524984356,
+    55.04767522129645,
+    54.504399280620994,
+    39.92553423632238,
+    45.99287110560915,
+    61.98158782109402,
+    48.49593112974283,
+    51.98663200661073,
+    56.24613308413358,
+    38.94893516147899,
+    55.98710817605091,
+    59.166929635249765,
+    61.02095688182846,
+    59.57478497384709,
+    24.042383287223835,
+    37.74687127827085,
+    58.29430853288376,
+    56.59416325809625,
+    55.4708084825796,
+    9.472252787179409,
+    29.440685850506878,
+    25.38457633157466
+  ],
+  "clonePeak": 241,
+  "worldRender": [
+    121,
+    121,
+    0,
+    26,
+    0,
+    1,
+    1,
+    0,
+    0
+  ],
+  "questions": [
+    [
+      "1",
+      "1",
+      "177",
+      "0",
+      "2",
+      "11.15",
+      "affirmative"
+    ],
+    [
+      "2",
+      "2",
+      "1843",
+      "1",
+      "2",
+      "9",
+      "cracker"
+    ],
+    [
+      "3",
+      "4",
+      "5302",
+      "0",
+      "2",
+      "9",
+      "nowhere"
+    ],
+    [
+      "4",
+      "3",
+      "2867",
+      "1",
+      "1",
+      "9",
+      "exceptional"
+    ],
+    [
+      "5",
+      "4",
+      "7819",
+      "0",
+      "1",
+      "9",
+      "tactful"
+    ],
+    [
+      "6",
+      "2",
+      "6674",
+      "0",
+      "1",
+      "9",
+      "return"
+    ],
+    [
+      "7",
+      "5",
+      "8716",
+      "1",
+      "2",
+      "9",
+      "witness"
+    ],
+    [
+      "8",
+      "6",
+      "8390",
+      "0",
+      "2",
+      "9",
+      "utmost"
+    ],
+    [
+      "9",
+      "2",
+      "8659",
+      "1",
+      "1",
+      "9",
+      "whitewash"
+    ]
+  ],
+  "answers": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      1,
+      2,
+      0
+    ],
+    [
+      1,
+      3,
+      0
+    ],
+    [
+      3,
+      3,
+      2
+    ],
+    [
+      1,
+      4,
+      0
+    ],
+    [
+      1,
+      5,
+      0
+    ],
+    [
+      1,
+      6,
+      0
+    ]
+  ],
+  "deckCount": 6,
+  "sfx": [
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healcomplete 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx heavycut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25"
+  ]
+}

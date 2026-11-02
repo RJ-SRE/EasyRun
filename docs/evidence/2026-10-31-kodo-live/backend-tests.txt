@@ -1,0 +1,32 @@
+✔ verified XBuilder id retains saved history across rename, new token and cold restart; reused name stays isolated (162.400625ms)
+✔ a username or display name cannot substitute for a missing stable user id (0.69925ms)
+✔ same-id credential refresh retains reference client deck, queue and in-flight acknowledgement (0.35675ms)
+✔ old-token 401 after same-id refresh retries the unchanged batch with the new token (0.242291ms)
+✔ Kodo startup refuses public, missing or inaccessible bucket permissions (13.868041ms)
+✔ Kodo discovers matching region HTTPS origin and never uses a CDN test domain (0.570042ms)
+✔ Kodo rejects foreign endpoint discovery and unsafe test prefixes (0.486375ms)
+✔ spelling and meaning stay independent; assisted success and timeout use exact schedules (1.72525ms)
+✔ 30 unique words, mutually exclusive quotas, weak cap, same-mode fallback, insufficient pool (1.967375ms)
+✔ wrong outcomes are capped and chronological order matters (0.225375ms)
+✔ checkpoint save, failure retry, victory and duplicate submission do not double count (154.99525ms)
+✔ reject changed duplicate, missing sequence, stale revision, unknown words and duplicate question (107.127042ms)
+✔ two users isolated, explicit takeover invalidates previous writer, survives cache loss (101.983583ms)
+✔ lost write response reconciles exact candidate; unknown write blocks takeover after restart (133.563042ms)
+✔ read errors/corrupt profiles do not initialize or erase user history (59.321875ms)
+✔ prepared views stay small with old 8815-word history, removed words remain in totals (261.608333ms)
+✔ client does not upload per answer; frozen retry excludes later answers and clears only acked entries (128.409209ms)
+✔ late callbacks cannot contaminate another account; original frozen batch can resume (126.433625ms)
+✔ HTTP boundary: no dev login, no credential leakage, unknown origin rejected, health explicit (80.090167ms)
+✔ content checks block a legacy test bank from release even with a valid hash (0.369334ms)
+✔ Kodo adapter uses signed exact user key, verifies origin bytes, treats only stat 612 as absent (4.551833ms)
+✔ platform verifier fails closed, rejects public names and never accepts a client-supplied user id (0.797416ms)
+✔ retry schedule is 2,5,15 seconds then manual; in-flight answers remain pending beyond save boundary (4.2115ms)
+✔ real local HTTP: prepare -> 100 batches -> cold restart -> restored history; no pending references (2882.771125ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2960.840083

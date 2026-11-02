@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-27",
+  "archiveSha256": "2acbe97a7e0d98fa0c8f11c4897d37b658b4933f5e555505f2593011ee3c02d3",
+  "archiveBytes": 113395479,
+  "baselineArchiveSha256": "2f0dc27104063a104460fd3338bbe805dc8501c97acbc99860132aeb6b9f180e",
+  "entries": 4728,
+  "crc": "passed",
+  "changed": [
+    "assets/sounds/BGM_Menu/sound.mp3",
+    "native-music-manifest.json"
+  ],
+  "sourceFilename": "Sea Power - Red Rock Riviera.mp3",
+  "menuSha256": "65e0b2456c0f3192595ae85ea6b87b5ada59a1a6017973abfa90935c04bba6aa",
+  "menuBytes": 16666042,
+  "menuDurationSeconds": 413.505306,
+  "menuMatchesDesktop": true,
+  "otherGameFilesUnchanged": true,
+  "tracks": [
+    {
+      "stage": "menu",
+      "artist": "Sea Power",
+      "title": "Red Rock Riviera",
+      "file": "/audio/music/red-rock-riviera.mp3",
+      "sourceFilename": "Sea Power - Red Rock Riviera.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 413.505306,
+      "bytes": 16666042,
+      "sha256": "65e0b2456c0f3192595ae85ea6b87b5ada59a1a6017973abfa90935c04bba6aa"
+    },
+    {
+      "stage": "gameplay",
+      "artist": "Sea Power",
+      "title": "Melancholy Of The Boot",
+      "file": "/audio/music/menu.mp3",
+      "sourceFilename": "Sea Power - Melancholy Of The Boot.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 262.099592,
+      "bytes": 10609826,
+      "sha256": "5322690efba8f3581b0879e3bcb65d4f3d4b4c5c85025b14191bd676ba04bddb"
+    },
+    {
+      "stage": "ending",
+      "artist": "Sea Power",
+      "title": "Strange Sports",
+      "file": "/audio/music/ending.mp3",
+      "sourceFilename": "Sea Power - Strange Sports.mp3",
+      "source": "User-provided local audio",
+      "durationSeconds": 195.40898,
+      "bytes": 7942185,
+      "sha256": "8281281fcf5bd8d8adb9c75d89b3779f2f22e21cbf3d3d1622697eaa6cdd3d5a"
+    }
+  ],
+  "checks": {
+    "web-music": 17,
+    "native-audio": 15
+  },
+  "checksPassed": 32
+}

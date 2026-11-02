@@ -1,6 +1,35 @@
 import "math"
 
 var (
+ menuActive bool
+ menuEntering bool
+ menuBusy bool
+ menuReduced bool
+ menuClock float64
+ menuFrame int
+ menuWaterFrame int
+ menuFogFrame int
+ menuFogNext int
+ menuFogBlend float64
+ menuStormActive bool
+ menuStormNext float64
+ menuStormAge float64
+ menuStormCycle int
+ menuStormFrame int
+ menuStormGhost float64
+ sceneMembership []int
+ sceneGeneration int
+ sceneRefreshKnown bool
+ sceneRefreshTime float64
+ sceneRefreshY float64
+ sceneRefreshPhase int
+ sceneRefreshAttempt int
+ sceneRefreshPractice int
+ sceneRefreshSegment int
+ viewCenterX float64
+ viewCenterY float64
+ viewWidth float64
+ viewHeight float64
  enemyTurn []float64
  enemyArmor []float64
  enemyPressure []int
@@ -93,6 +122,16 @@ var (
  heatOffset []float64
  keeperIndex int
  bossMaxHP int
+ bossStroke int
+ bossRecent []int
+ bossAirCooldown float64
+ bossBladeX float64
+ bossBladeY float64
+ keeperToken []int
+ keeperPrevAX []float64
+ keeperPrevAY []float64
+ keeperPrevBX []float64
+ keeperPrevBY []float64
  bossMove int
  bossLastMove int
  bossDecision int
@@ -102,6 +141,16 @@ var (
  bossWindup float64
  bossPoise float64
  bossOpening int
+ skillCastSerial int
+ bossMendAge float64
+ bossMendDuration float64
+ bossMendCooldown float64
+ bossMendPulse int
+ bossMendHealed int
+ bossMendHits int
+ bossMendPressure float64
+ bossMendUsed []int
+ bossMendCasts []int
  keeperAX []float64
  keeperAY []float64
  keeperBX []float64
@@ -142,20 +191,6 @@ var (
  wordSerial int
  wordOwner int
  wordSegment int
- stageHost int
- soundOn int
- hudText string
- wordType int
- wordIndex int
- wordChoice int
- wordInputLen int
- wordTimer float64
- wordLimit float64
- wordKeys int
- wordText []string
- wordMean []string
- wordMissA []string
- wordMissB []string
  hostCheckpoint int
  hostSegment int
  hostElapsed float64
@@ -310,7 +345,7 @@ func hitEnemy(i,damage int) bool {return strikeEnemy(i,damage,0)}
 func strikeEnemy(i,damage,style int) bool {
  if enemyHP[i]<=0 {return false}
  if enemyType[i]==6 {if enemyNode[i]>=0 {setExpNode(enemyNode[i]); if roomFlags[13]==7 {finishRoom(13)}}; return true}
- if enemyFlash[i]>0 {return false}
+ if enemyFlash[i]>0 && !(i==keeperIndex && enemyState[i]==7) {return false}
  if huntBlocksHit(i,damage,style) {return false}
  if i==keeperIndex && bossShield>0 {enemyFlash[i]=0.16; burst(enemyX[i],enemyY[i],5,1,110); event("sealed"); return false}
  // A visible, scheduled stance can parry ONE frontal light hit. It never
@@ -326,11 +361,11 @@ func strikeEnemy(i,damage,style int) bool {
  if huntCanStagger(i,style) {enemyStun[i]=0.16; if chainOwner==i {breakChain("chaincut")}; enemyRecoverFor(i,0.34); if style==7 {enemyRecoverFor(i,0.95)}}
  huntAfterHit(i,style); energy+=5; if energy>100 {energy=100}; enemyEvent("impact",i); shock=3; hitStop=0.035
  if i==keeperIndex {enemyStun[i]=0; keeperAfterHit(damage)}
- burst(enemyX[i],enemyY[i],12,1,250); event("hit")
+ burst(enemyX[i],enemyY[i],8,1,220); event("hit")
  if enemyHP[i]<=0 {
   enemyClock[i]=0; kills++; combo++; comboTime=4.5; if combo>bestCombo {bestCombo=combo}
   score+=120+combo*30; energy+=22; if energy>100 {energy=100}
-  ring(enemyX[i],enemyY[i],1.1,0); burst(enemyX[i],enemyY[i],12,2,230)
+  if enemyType[i]!=3 {ring(enemyX[i],enemyY[i],1.1,0)}; burst(enemyX[i],enemyY[i],12,2,230)
   Hero.dashCool=0; Hero.airJump=true; Hero.vy=math.Max(Hero.vy,510)
   hitStop=0.065; event("kill"); enemyEvent("collapse",i)
   if enemyElite[i]>0 {event("elitekill")}
@@ -407,18 +442,19 @@ func updateWorld(dt float64) {
  updateEnemies(dt)
  updateKeeperDanger(dt)
 }
-onKey Key1, => {if stageHost==1 && phase==5 {stageChoose(0)} else if practice==1 {practiceEncounter(0)} else if phase==0 {difficulty=0; event("difficulty")}}
-onKey Key2, => {if stageHost==1 && phase==5 {stageChoose(1)} else if practice==1 {practiceEncounter(1)} else if phase==0 {difficulty=1; event("difficulty")}}
-onKey Key3, => {if stageHost==1 && phase==5 {stageChoose(2)} else if practice==1 {practiceEncounter(2)}}
+onKey KeyT, => {if phase==0 && !menuBusy || phase==4 || phase==2 || phase==3 {startPractice()}}
+onKey Key1, => {if practice==1 {practiceEncounter(0)} else if phase==0 {difficulty=0; event("difficulty")}}
+onKey Key2, => {if practice==1 {practiceEncounter(1)} else if phase==0 {difficulty=1; event("difficulty")}}
+onKey Key3, => {if practice==1 {practiceEncounter(2)}}
 onKey Key4, => {if practice==1 {practiceEncounter(3)}}
 onKey Key5, => {if practice==1 {practiceEncounter(4)}}
 onKey Key6, => {if practice==1 {practiceEncounter(5)}}
 onKey Key7, => {if practice==1 {practiceEncounter(6)}}
 onKey Key8, => {if practice==1 {practiceEncounter(7)}}
 onKey Key9, => {if practice==1 {practiceEncounter(8)}}
-onKey KeyF1, => {if stageHost==0 {resolveWord(1)}}
-onKey KeyF2, => {if stageHost==0 {resolveWord(2)}}
-onKey KeyF3, => {if stageHost==0 {resolveWord(3)}}
+onKey KeyF1, => {resolveWord(1)}
+onKey KeyF2, => {resolveWord(2)}
+onKey KeyF3, => {resolveWord(3)}
 onKey KeyF4, => {if phase==0 || phase==2 || phase==3 || phase==4 {wordMode=1-wordMode; event("wordmode")}}
 onKey KeyF6, => {if phase==5 {wordVisualPaused=!wordVisualPaused}}
 onKey KeyF5, => {
@@ -430,22 +466,23 @@ onKey KeyF5, => {
   retryCheckpoint(); event("restored")
  }
 }
-onKey KeyF, => {if stageHost==0 || phase!=5 {if phase==1 && chainOwner>=0 {requestWord(5)} else {interactCity(1)}}}
-onKey KeyV, => {if stageHost==0 || phase!=5 {interactCity(2)}}
-onKey KeyC, => {if stageHost==1 && phase==0 {stageContinue()}}
-onKey KeyN, => {if stageHost==1 && (phase==0 || phase==4) {soundOn=1-soundOn; event("sound")}}
-onKey KeyT, => {if phase==0 || phase==4 || phase==2 || phase==3 {startPractice()}}
+onKey KeyF, => {if phase==1 && chainOwner>=0 {requestWord(5)} else {interactCity(1)}}
+onKey KeyV, => {interactCity(2)}
 
-onKey KeyM, => {if phase==4 {resetInscription(); Hero.cancelAttack(); phase=0; event("menu")}}
+onKey KeyM, => {if phase==4 || phase==2 || phase==3 {resetInscription(); Hero.cancelAttack(); phase=0; event("menu")}}
 
-onKey KeyR, => {if phase!=0 {if stageHost==0 || phase!=5 {startRun()}}}
-onKey KeyEnter, => {if phase==4 {phase=1} else if phase==3 {retryCheckpoint()} else if phase==0 || phase==2 {startRun()}}
+onKey KeyR, => {if phase!=0 {startRun()}}
+onKey KeyHome, => {if phase==0 {menuBusy=true}}
+onKey KeyEnd, => {if phase==0 {menuBusy=false}}
+onKey KeyF7, => {if phase==0 {menuReduced=!menuReduced}}
+onKey KeyEnter, => {if phase==4 {phase=1} else if phase==3 {retryCheckpoint()} else if phase==0 {requestMenuStart()} else if phase==2 {startRun()}}
 onKey KeyEscape, => {if phase==1 {phase=4} else if phase==4 {phase=1}}
 onStart => {
  initLevel(); resetCity(); resetExpedition(); hostRoomFlags=[]int{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; hostRoomDone=[]int{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; hostSideProgress=[]int{0,0,0,0,0}; bindEnemy=-1; chainOwner=-1; hostCheckpoint=-1
  difficulty=0; maxHealth=8; health=8; fxSeed=137; cameraX=480; cameraY=-120; riseY=worldBottom-430; attempts=0
  // HOST_CONFIGURATION
  resetEnemies(); Hero.resetHero(230,0)
+ fitViewport()
  initScene(); updateScene()
  for i:=0;i<len(sceneFloors);i++ {Ledge.clone i}
  for i:=0;i<len(sceneAnchors);i++ {Anchor.clone i}
@@ -455,17 +492,18 @@ onStart => {
  for i:=0;i<24;i++ {Rope.clone i}
  for i:=0;i<8;i++ {KeeperLine.clone i}
  for {
-  dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
+  realDt:=float64(waitNextFrame()); dt:=realDt; if dt>0.035 {dt=0.035}
+  // EXPORT_NATIVE_MUSIC_TICK
+  if phase!=1 {Hero.jumpChord=0; Hero.downTapTime=0}
   if phase==1 {
    Hero.captureAttack()
    if hitStop>0 {hitStop-=dt} else {
     updateCity(dt); Hero.update(dt); if phase==1 {updateWorld(dt)}; beginWord()
    }
   }
+  updateKeeperMending(realDt)
   if phase==0 {worldTime+=dt}
   if phase==5 && !wordVisualPaused {wordFocusAge+=dt}
-  if stageHost==1 && phase==5 {wordTimer+=dt; if wordTimer>=wordLimit {resolveWord(2)}; pollStageLetters()}
-  if stageHost==1 {updateStageHud()}
   if phase==1 || phase==5 && !wordVisualPaused {
    targetRate:=1.0; if phase==5 {targetRate=0.28}
    wordVisualRate+=(targetRate-wordVisualRate)*(1-exp(-dt/0.09))
@@ -474,12 +512,16 @@ onStart => {
   if phase==0 || phase==1 || phase==5 {visualTime+=visualDt}
   updateScene()
   if phase==0 || phase==1 || phase==5 && !wordVisualPaused {Hero.render(visualDt)}
+  fitViewport()
+  updateMenuMotion(dt)
+  // EXPORT_NATIVE_SHELL_TICK
   if float64(timer)-lastState>0.07 {
    lastState=float64(timer)
    left:=0; right:=0; if sealLeft {left=1}; if sealRight {right=1}
    emitExpedition()
+   if phase==0 {println "@menu",menuClock,0,menuFrame,0,menuWaterFrame,false,menuBusy,menuReduced,0}
    println "@render",sceneClones,sceneBorn,sceneMissing,fxCount,projectileCount,arrowMade,arrowBorn,boltMade,boltBorn
-   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[keeperIndex],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordVisualRate,visualTime,cityDistrict,cityPrompt,cityWind,cityForge,cityArchive,cityMirror,cityChoice,0.0,cityDepth,bossMove,bossMaxHP,bossLocked,bossChain,bossWindup,keeperEpoch
+   println "@state",phase,segment,difficulty,elapsed,health,maxHealth,score,combo,bestCombo,kills,energy,echoes,Hero.px,Hero.py,Hero.vx,Hero.vy,Hero.hook,Hero.target,checkpoint,bossHP,returnTime,riseY,attempts,deaths,hookCount,failReason,fxCount,cameraY,Hero.dashCool,Hero.invulnerable,enemyState[keeperIndex],bossShield,bossStage,left,right,enemyHP[2],enemyHP[6],Hero.attackKind,Hero.chainStep,Hero.chargeTime,threatCount,practice,Hero.attackTime,Hero.attackAge,bindTime,controlImmune,controlGrace,chainOwner,chainTime,attackSlots,practiceKind,Hero.basicCool,Hero.airAttacks,Hero.bowCool,Hero.bladeCool,Hero.healCool,Hero.ultimateCool,Hero.bowCharge,Hero.healTime,Hero.ultimateTime,embers,emberHits,Hero.aimX,Hero.aimY,Hero.bowTarget,wordMode,wordPending,wordSerial,Hero.bladeLink,wordVisualRate,visualTime,cityDistrict,cityPrompt,cityWind,cityForge,cityArchive,cityMirror,cityChoice,0.0,cityDepth,bossMove,bossMaxHP,bossLocked,bossChain,bossWindup,keeperEpoch,bossMendAge,bossMendDuration,bossMendHits,bossMendHealed,bossMendCooldown,bossMendUsed[bossStage]
    for i:=0;i<len(enemyHP);i++ {if enemyHP[i]>0 && abs(enemyY[i]-Hero.py)<700 {println "@hunt",i,enemyArmor[i],enemyWard[i],enemyPressure[i],enemyElite[i]; println "@foe",i,enemyType[i],enemyHP[i],enemyX[i],enemyY[i],enemyState[i],enemyMode[i],enemyHazard[i],enemyStun[i],enemyClock[i],enemyAimX[i],enemyAimY[i],enemyFacing[i],enemyStep[i],enemyMark[i]}}
    if segment==1 {for i:=0;i<len(keeperLife);i++ {println "@keeperLine",i,keeperAX[i],keeperAY[i],keeperBX[i],keeperBY[i],keeperAge[i],keeperDelay[i],keeperLife[i],keeperWidth[i],keeperStyle[i]}}
   }

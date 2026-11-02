@@ -1,0 +1,44 @@
+{
+  "boss/report.json": {
+    "cases": 11,
+    "errors": [],
+    "failure": null,
+    "complete": null
+  },
+  "words/report.json": {
+    "cases": 28,
+    "errors": [],
+    "failure": null,
+    "complete": null
+  },
+  "hud/report.json": {
+    "cases": 10,
+    "errors": [],
+    "failure": null,
+    "complete": null
+  },
+  "web/report.json": {
+    "cases": 24,
+    "errors": [],
+    "failure": null,
+    "complete": null
+  },
+  "web-wordbook/report.json": {
+    "cases": 8,
+    "errors": [],
+    "failure": null,
+    "complete": null
+  },
+  "native-local-xbuilder.json": {
+    "cases": 12,
+    "errors": [],
+    "failure": null,
+    "complete": true
+  },
+  "performance/report.json": {
+    "cases": 0,
+    "errors": [],
+    "failure": null,
+    "complete": null
+  }
+}

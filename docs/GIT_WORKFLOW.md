@@ -1,12 +1,20 @@
 # Git 工作流程
 
-仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。更新：2026-10-25。
+仓库：[RJ-SRE/EasyRun](https://github.com/RJ-SRE/EasyRun)。交接更新：2026-11-01。
 
-当前 `main` 为 v0.10 猎战重构。`feat/hunt-combat-v10` 从集成工作树的 `5575f20` 派生，完成开发与验收后按用户要求合入主分支；保留既有提交、文档与证据，使用现有 Git 身份与 SSH。当前功能与验证入口为 [猎战说明](HUNT_V10.md)。
+当前交付：2026-11-01，RJ-SRE 将 `feat/adaptive-wordbook-local` 的 `9f5cc76` 完整合入 `main`，保留主分支 `d454647` 的首页整理。采用双父提交，不压缩、不改写原作者；唯一冲突为 README，保留最新首页并把启动、文档和协作基线切换到 main。游戏源码与资源与原开发分支相同。合并复查通过 18 项规则检查、3,816 词内容校验及完整游戏 ESLint；浏览器与原生交互沿用此前证据。后续任务从 `origin/main` 建立独立分支并提交 PR；核验范围见 [合并记录](evidence/2026-11-01-main-integration/README.md)。
+
+下文 v0.10／v0.11、旧 main SHA 与旧合并结果属于此前的历史记录，不代表当前 main 或当前远程状态。
+
+本地 v0.11.2（词册、键位与组合操作优化）：从 `d4faf9e` 创建 `feat/adaptive-wordbook-local`，在独立集成工作树开发。本轮只做本地提交，遵循用户“先不用提到远程仓库”的要求，不执行 push、合并远程 main 或创建 PR；后文推送步骤是通用流程，本轮不适用。词源、运行逻辑、测试和文档按实际完成内容分组记录，未改写旧历史，也未触碰原工作目录的其他聊天改动。
+
+v0.10.1 技能冷却修订位于 `feat/skill-cooldowns`，从 `main` 的 `c2fd02a` 派生。U / L / I 各 3 秒、Q 为 5 秒；本轮 80 项浏览器检查及 2 条铭文整关路线通过，证据见 [技能冷却验收](evidence/skill-cooldowns/verification.json)。本修订独立提交和推送，不把历史主分支合并记录当作本次已合入。
+
+历史 v0.10 主分支为猎战重构。`feat/hunt-combat-v10` 从集成工作树的 `5575f20` 派生，完成开发与验收后按用户要求合入主分支；保留既有提交、文档与证据，使用现有 Git 身份与 SSH。当前功能与验证入口为 [猎战说明](HUNT_V10.md)。
 
 历史 `feat/expedition-boss-v2` 从 `6825943` 开始三形态守心者、十五房与五支线开发，其提交随本次猎战版本保留。机关、护送与设施支线已经被敌人遭遇替代，旧 [开发清单](planning/thirty-word-expedition/IMPLEMENTATION.md) 仅作历史参考。
 
-## 1. 当前分支与交付事实
+## 1. 历史 v0.10 分支与交付事实
 
 - `main` 是默认交付分支，2026-10-25 合入 `feat/hunt-combat-v10` 的最终实现。
 - 本次获取远程后确认 main 与 origin/main 均为 `6825943`；功能分支为 `bc4fbce`，完整包含 main 并领先 8 个提交，合并无冲突。
@@ -86,11 +94,11 @@ PR 描述写最终问题、行为变化、验证与未覆盖部分，链接对�
 
 [verify.yml](../.github/workflows/verify.yml) 的实际触发为：
 
-| 触发                           | 是否运行配置中的流程     |
-| ------------------------------ | ------------------------ |
-| push 到 main                   | 是                       |
-| pull_request                   | 是                       |
-| workflow_dispatch              | 可手动触发               |
+| 触发                            | 是否运行配置中的流程     |
+| ------------------------------- | ------------------------ |
+| push 到 main                    | 是                       |
+| pull_request                    | 是                       |
+| workflow_dispatch               | 可手动触发               |
 | 仅 push 到 feat/hunt-combat-v10 | 不会因这次 push 自动触发 |
 
 工作流执行锁定依赖安装、测试浏览器安装、完整 game 构建、game lint、默认回归与四个工程包导出，产物保留 14 天；未单独运行 passages 全套或 legacy 两原型。工作流配置存在不代表 CI 已通过；本次没有把本地报告说成远程结果。

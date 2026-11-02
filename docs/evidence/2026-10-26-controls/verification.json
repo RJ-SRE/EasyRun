@@ -1,0 +1,155 @@
+{
+  "version": "0.11.1",
+  "date": "2026-10-26T04:09:20.501654+00:00",
+  "localOnly": true,
+  "bindings": {
+    "grapple": "O",
+    "ultimate": "P",
+    "jump": "W",
+    "upwardAim": "ArrowUp",
+    "dropThrough": "S + W"
+  },
+  "checks": {
+    "build": "445 files / 46 sprites",
+    "targetedEslint": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "browserCaseCount": 70,
+  "suites": [
+    {
+      "script": "test-belfry-controls.mjs",
+      "cases": [
+        "guide uses new controls; old Space, E and Q do not trigger gameplay",
+        "W jumps and performs a second airborne jump",
+        "O grabs an anchor and release launches the hero",
+        "P releases the ultimate and starts its five-second cooldown",
+        "S + W drops through an ordinary platform",
+        "up-arrow preserves launcher and vertical dash without the W jump conflict",
+        "held final O does not leak from spelling; fresh input works",
+        "held final W does not leak from spelling; fresh input works",
+        "held final P does not leak from spelling; fresh input works"
+      ],
+      "errors": []
+    },
+    {
+      "script": "test-belfry-skills.mjs",
+      "cases": [
+        "full bow marks; charged blade consumes mark for five damage",
+        "blade rejects repeat inputs until its three-second cooldown expires",
+        "bow blocks repeat shots, freezes cooldown on pause and fires after recovery",
+        "charged arrow pierces two distinct targets and stops before the third",
+        "downward arrow is blocked by a closed platform before reaching the enemy",
+        "dash cancels bow anticipation without firing or spending cooldown",
+        "dash cancel retains the basic attack interval instead of resetting it",
+        "air whiffs and up-arrow + J spam allow only two cuts and fall to ground",
+        "healing channels on ground, freezes on pause and consumes a finite ember",
+        "incoming damage interrupts healing with no delayed completion or refund",
+        "jump cancels healing, keeps the resource cost and has no cooldown",
+        "airborne healing rejected before resource or cooldown consumption",
+        "ultimate emits five hits and rejects repeats until its five-second cooldown expires",
+        "ultimate up finisher produces a bounded launch",
+        "downward ultimate finisher drives the fall; empty cuts grant no ember",
+        "restart clears all cooldowns, charge state, healing and ultimate",
+        "four independent cooldowns last 3/3/3/5 simulation seconds and HUD masks clear on readiness",
+        "healing cooldown blocks a second available ember without consuming it",
+        "four skill indicators and new local sound cues work with speech still disabled"
+      ],
+      "errors": []
+    },
+    {
+      "script": "test-belfry-inscription.mjs",
+      "cases": [
+        "30-word menu, independent difficulty and no preview credit",
+        "full charge requests exactly one challenge; physics, cooldown and air budget freeze",
+        "typing isolation, escape pause, full arrow and single progress settlement",
+        "marked blade still requires its own answer before detonating the mark",
+        "one misspelled letter cancels the entire blade, with no fallback damage or cooldown",
+        "heal failure refunds once, with no healing or cooldown",
+        "correct heal completes remaining channel and restores one HP",
+        "ultimate asks before any hit, releases all five and suppresses repeat questions during cooldown",
+        "failed ultimate cancels all five hits and its release effects",
+        "even an empty ultimate requires an answer and cannot bypass the gate",
+        "optional F chain release restores movement",
+        "binder preserves hard control then guarantees bounded release with immunity",
+        "IME composition pauses timer without injecting game actions",
+        "restart cancels pending action without late release or credit",
+        "timeout cancels skill 1 with no delayed damage, heal or cooldown",
+        "timeout cancels skill 2 with no delayed damage, heal or cooldown",
+        "timeout cancels skill 3 with no delayed damage, heal or cooldown",
+        "timeout cancels skill 4 with no delayed damage, heal or cooldown",
+        "short skill 1 requires an answer; a failed cast can immediately be retried",
+        "short skill 2 requires an answer; a failed cast can immediately be retried",
+        "abandon cancels the pending skill without a fallback projectile",
+        "checkpoint death retry preserves word group",
+        "saved progress resumes after a full browser reload",
+        "victory never requires all 30 words"
+      ],
+      "errors": []
+    },
+    {
+      "script": "test-belfry-bow.mjs",
+      "cases": [
+        "unprompted aim tracks a moving elevated foe and the charged arrow hits",
+        "a foe behind the hero is acquired and hit without a direction key",
+        "upward intent switches from the nearest foe and releasing it keeps the new lock",
+        "valid locks stay stable when another foe moves closer; death reacquires a valid foe",
+        "an occluding platform excludes the otherwise nearby upper foe",
+        "auto-aim selects a plate guard but the actual frontal arrow respects its armor",
+        "out-of-range and off-screen foes leave directional free aim available",
+        "a newly obstructed lock is dropped immediately while charging",
+        "bow lock is independent of grapple selection, freezes on pause and clears on cancellation"
+      ],
+      "errors": []
+    },
+    {
+      "script": "test-belfry-inscription-motion.mjs",
+      "cases": [
+        "live focus motion and tension audio while damage, physics and cooldowns remain frozen",
+        "correct letters charge the hero effect without advancing combat",
+        "mute clears focus sources and unmute preserves the pending challenge",
+        "pause freezes presentation too; successful release immediately accepts fresh movement without leaking final O",
+        "a successful arrow does not bypass the next charged sword challenge; only its own answer releases the blade",
+        "the following full bow charge also requires its own answer and records exactly one new settlement",
+        "wrong meaning cancels the arrow, immediately restores movement and leaves passive feedback",
+        "reduced motion removes zoom and particles; restart clears motion, audio and old results",
+        "after restart, success never auto-opens a question; the next deliberate full charge asks normally"
+      ],
+      "errors": []
+    }
+  ],
+  "sourceSha256": {
+    "prototypes/runlab/spx/belfry/Hero.spx": "b98f20cc70a97c4f7f8be1149246e87343b0991a7078fa2b4738caeafc7c9a0a",
+    "prototypes/runlab/public/belfry.html": "b27ea3084615c18e4ac121126bef0b8abd61ef2b4007e098555ac23840ed63bf",
+    "prototypes/runlab/public/belfry.js": "f91c88717686d682c61b233cfaeda100c557498fa14a2d4d058340b4d79f7a77",
+    "prototypes/runlab/public/inscription-ui.js": "e6889fac1a3ef9f4611ef140e6b37ae43c867ad31ac665f88c0ccee12d277396"
+  },
+  "notes": [
+    "Real Chromium and production game mechanics. Skill/inscription/bow suites use response-only positioning fixtures; controls and motion use the real opening platform with seeded vocabulary for typing isolation.",
+    "Skill HUD test initially raced the heavy-strike start; now waits for release before recovery. Final rerun passed.",
+    "No remote push; these checks do not certify online XBuilder viewport layout or all browser/device compatibility."
+  ],
+  "route": {
+    "script": "test-belfry-route.mjs",
+    "environment": {
+      "MODE": "1",
+      "RETURN_FAILURE": "0",
+      "words": "on"
+    },
+    "result": "passed",
+    "simulationSeconds": 212.89785550609218,
+    "deaths": 0,
+    "hookCount": 80,
+    "bossHP": 0,
+    "bossStage": 2,
+    "phase": 2,
+    "wordRequests": 62,
+    "renderBudget": {
+      "samples": 2132,
+      "peakClones": 176,
+      "missingViews": 0,
+      "note": "Production birth counters and allocated transient objects; camera fixtures are not used in this route."
+    },
+    "errors": [],
+    "note": "Full route uses real keyboard input, no position/health/win mutations; automated word answering is test-only."
+  }
+}

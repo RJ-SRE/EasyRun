@@ -1,0 +1,31 @@
+onKey KeyB, => {if nativeLocalResetStage>0 {return}; if phase==5 || nativePreview {nativeType("b")} else if phase!=5 && nativeInputLock<=0 {nativeMusicMuted=!nativeMusicMuted}}
+onKey KeyH, => {if nativeLocalResetStage>0 {return}; if phase==5 || nativePreview {nativeType("h")} else if phase!=5 && nativeInputLock<=0 {nativeToggleHelp()}}
+onKey KeyBackspace, => {if nativeLocalResetStage>0 {return}; if nativePreview {nativeLedgerBackspace()} else if phase==5 && !wordVisualPaused && len(nativeInput)>0 {nativeInput=nativeInput[:len(nativeInput)-1]}}
+onKey KeyA, => {if nativeLocalResetStage>0 {return}; nativeType("a")}
+onKey KeyC, => {if nativeLocalResetStage>0 {return}; nativeType("c")}
+onKey KeyD, => {if nativeLocalResetStage>0 {return}; nativeType("d")}
+onKey KeyE, => {if nativeLocalResetStage>0 {return}; nativeType("e")}
+onKey KeyG, => {if nativeLocalResetStage>0 {return}; if phase==0 && !nativePreview {if nativeLocalEnabled {nativeLocalGuest()} else {nativeCloudGuest()}} else {nativeType("g")}}
+onKey KeyI, => {if nativeLocalResetStage>0 {return}; nativeType("i")}
+onKey KeyJ, => {if nativeLocalResetStage>0 {return}; nativeType("j")}
+onKey KeyK, => {if nativeLocalResetStage>0 {return}; nativeType("k")}
+onKey KeyL, => {if nativeLocalResetStage>0 {return}; nativeType("l")}
+onKey KeyN, => {if nativeLocalResetStage>0 {return}; if (phase==0 || phase==2 || phase==3 || phase==4) && !nativePreview && !nativeHelp {if nativeLocalEnabled {nativeLocalRetry()} else {nativeCloudRetryNow()}} else {nativeType("n")}}
+onKey KeyO, => {if nativeLocalResetStage>0 {return}; nativeType("o")}
+onKey KeyP, => {if nativeLocalResetStage>0 {return}; nativeType("p")}
+onKey KeyQ, => {if nativeLocalResetStage>0 {return}; nativeType("q")}
+onKey KeyS, => {if nativeLocalResetStage>0 {return}; nativeType("s")}
+onKey KeyU, => {if nativeLocalResetStage>0 {return}; nativeType("u")}
+onKey KeyW, => {if nativeLocalResetStage>0 {return}; nativeType("w")}
+onKey KeyX, => {if nativeLocalResetStage>0 {return}; nativeType("x")}
+onKey KeyY, => {if nativeLocalResetStage>0 {return}; nativeType("y")}
+onKey KeyZ, => {if nativeLocalResetStage>0 {return}; nativeType("z")}
+onKey KeySpace, => {if nativeLocalResetStage>0 {return}; nativeType(" ")}
+onKey KeyMinus, => {if nativeLocalResetStage>0 {return}; nativeType("-")}
+
+onKey KeyTab, => {if nativeLocalResetStage>0 {return}; if nativeStudyOpen {nativeStudyClose(); return}; if nativePreview {nativeCloseLedger()} else if phase!=5 && !nativeHelp {nativeOpenLedger()}}
+onKey KeyLeft, => {if nativeLocalResetStage>0 {return}; if nativePreview && !nativeLedgerSearch {nativeLedgerPage(-1)}}
+onKey KeyRight, => {if nativeLocalResetStage>0 {return}; if nativePreview && !nativeLedgerSearch {nativeLedgerPage(1)}}
+
+onKey KeyLeft, => {if nativeLocalResetStage>0 {return}; if nativeStudyOpen {nativeStudyTurn(-1)}}
+onKey KeyRight, => {if nativeLocalResetStage>0 {return}; if nativeStudyOpen {nativeStudyTurn(1)}}

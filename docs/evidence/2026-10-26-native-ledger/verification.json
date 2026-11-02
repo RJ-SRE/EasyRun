@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-26T11:37:46.116745+00:00",
+  "version": "0.13.2",
+  "scope": "Native wordbook entry and field ledger aligned with web UI; browsing filters, English search, per-word progress, pause/resume. No web changes or remote push.",
+  "package": {
+    "path": "/Users/rj/Desktop/EasyRun-XBuilder-v0.13.2-field-ledger.xbp",
+    "sha256": "b41b4ac0c0984ad9a96c6e1b60b7751332ed87552f17c8ce13459e860a4ee9a7",
+    "bytes": 103839549,
+    "files": 4689,
+    "originalSprites": 82
+  },
+  "tests": {
+    "words": {
+      "passed": 17,
+      "report": "words.json"
+    },
+    "shell": {
+      "passed": 15,
+      "report": "shell.json"
+    }
+  },
+  "totalPassed": 32,
+  "assetVerification": {
+    "byteIdenticalAudioSkillAndSliders": 390,
+    "titleChangesRestrictedToWordbookEntry": [
+      {
+        "name": "assets/sprites/NativePanel/title0.png",
+        "changedPixelBox": [
+          1160,
+          660,
+          1444,
+          733
+        ]
+      },
+      {
+        "name": "assets/sprites/NativePanel/title1.png",
+        "changedPixelBox": [
+          1160,
+          660,
+          1444,
+          733
+        ]
+      }
+    ],
+    "questionRasterNote": "question1.png differs in one blue channel value by 1 at pixel (455,279) from v0.13.1; no question styling code changed."
+  },
+  "lint": "ESLint, Prettier and git diff --check passed for changed builders/tests.",
+  "limitations": [
+    "Deployed public XBuilder project model/compiler tested locally, not by overwriting an account project.",
+    "Ledger uses pagination with up to 8 whole entries per page, not web scrolling.",
+    "Search accepts English only.",
+    "Memory remains within the running native session; web cross-day history and import/export were not ported.",
+    "Victory is an explicitly injected test state, not a full-run completion proof.",
+    "No remote CI or push."
+  ]
+}

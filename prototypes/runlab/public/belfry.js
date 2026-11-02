@@ -1,3 +1,4 @@
+import { createMoonlitMenu } from "./belfry-menu.js";
 import { parseExpedition } from "./expedition-progress.js";
 import { expeditionHint, EXPEDITION } from "./belfry-expedition.js";
 import { BelfryAudio } from "./belfry-audio.js";
@@ -91,6 +92,12 @@ const fields = [
   "bossChain",
   "bossWindup",
   "keeperEpoch",
+  "bossMendAge",
+  "bossMendDuration",
+  "bossMendHits",
+  "bossMendHealed",
+  "bossMendCooldown",
+  "bossMendUsed",
 ];
 window.latestState = null;
 window.renderState = null;
@@ -112,7 +119,7 @@ const soundscape = new BelfryAudio();
 Object.defineProperty(window, "soundDiagnostics", {
   get: () => soundscape.diagnostics(),
 });
-let inscription, achievements;
+let inscription, achievements, menu;
 try {
   const { InscriptionUI } = await import("./inscription-ui.js");
   inscription = new InscriptionUI({
@@ -193,19 +200,9 @@ try {
     },
   };
 }
-try {
-  const { AchievementUI } = await import("./belfry-achievements.js");
-  achievements = new AchievementUI({
-    send: (code, value) => key(code, value, true),
-    focus: focusGame,
-    lockInput: () => inscription.lockHeld?.(),
-  });
-} catch {
-  const notice = document.createElement("span");
-  notice.id = "achievement-load-error";
-  notice.textContent = "成就册暂不可用";
-  document.querySelector(".controls").append(notice);
-}
+// English milestones now share the learning archive; retain old combat records on disk.
+achievements = { word() {}, receive() {}, resetSession() {}, deed() {} };
+
 const city = new CityUI({
   send: (code, value) => key(code, value, true),
   focus: focusGame,
@@ -241,12 +238,17 @@ function formatTime(t) {
 function focusGame() {
   frame?.contentWindow?.document.querySelector("#game-canvas")?.focus();
 }
-function key(code, key = code, transport = false) {
+function key(code, key = code, transport = false, stealFocus = true) {
   const w = frame?.contentWindow,
     c = w?.document.querySelector("#game-canvas");
   if (!c) return;
-  focusGame();
+  if (stealFocus) focusGame();
   const keyCode = {
+    Home: 36,
+    End: 35,
+    PageUp: 33,
+    PageDown: 34,
+    F7: 118,
     Enter: 13,
     Escape: 27,
     KeyR: 82,
@@ -297,7 +299,7 @@ function unlockAudio(event) {
   if (
     event.isTrusted &&
     soundOn &&
-    (!soundscape.music?.unlocked || soundscape.music?.blocked)
+    (soundscape.needsGesture() || !soundscape.ready)
   )
     initAudio();
 }
@@ -317,15 +319,16 @@ function onEvent(name, t, x, y) {
     wordescape: "锁链已解 · 夺回主动",
     chaincut: "锁链已斩断 · 缚索正在收势",
     chainfree: "已脱离锁链",
-    tether: "被锁链牵引 · J 斩链 / E 抓锚点 / 冲向链手",
+    tether: "被锁链牵引 · J 斩链 / O 抓锚点 / 冲向链手",
     bind: "封脉 · 暂时无法行动",
     bindrelease: "已脱离封脉 · 抓住收招破绽",
-    launchhit: "挑空 → J 空中追击 → E 接钩索",
+    launchhit: "挑空 → J 空中追击 → O 接钩索",
     charged: "蓄力破甲 · 可将轻敌撞向其他敌人",
     collision: "借敌破敌",
-    practice: "排练场 · 1–5 刺客 / 6 组合 / 7 裂甲 / 8 猎兽 / 9 缝魂；R 开始冒险",
+    practice:
+      "排练场 · 1–5 刺客 / 6 组合 / 7 裂甲 / 8 猎兽 / 9 缝魂；R 开始冒险",
     enrage: "守心者正在变形 · 调整站位，留意新的追击轨迹",
-    hook: "牵引 · 松开 E 上甩 / 按住 S 松开 E 下甩",
+    hook: "牵引 · 松开 O 上甩 / 按住 S 松开 O 下甩",
     nohook: "锚点太远 · 靠近金铜圆环，或调整方向",
     marked: "裂印 · 满蓄断潮可引爆",
     markbreak: "裂印破碎 · 断潮追加伤害",
@@ -372,14 +375,14 @@ function hint(s) {
       : "封脉锁身 · 控制结束后恢复行动。";
   if (s.chainOwner >= 0)
     return s.wordMode
-      ? "缚索牵引中 · J 斩链 / E 抓锚 / F 铭文解链。"
-      : "缚索牵引中 · J 斩链 / E 抓锚 / 冲向链手。";
+      ? "缚索牵引中 · J 斩链 / O 抓锚 / F 铭文解链。"
+      : "缚索牵引中 · J 斩链 / O 抓锚 / 冲向链手。";
   if (s.practice)
     return [
       "悬刃 · 首刀后可能空中换位再追刀；看清第二次起手，再钩索追击。",
       "短锋 · 撤步架势可挡一次正面轻击；L 重斩破架，闪过飞踢后反击。",
       "壁弓 · 除了定点射击，还会蹬墙腾空放箭；J 可击落箭矢。",
-      "缚索 · 跳过低位横扫，再防追锁；被牵引时 J 斩链 / E 抓锚。",
+      "缚索 · 跳过低位横扫，再防追锁；被牵引时 J 斩链 / O 抓锚。",
       "封脉 · 会绕到另一侧再锁定突进方向；跳开或打断，落空后反击。",
       "组合遭遇 · 先处理缝魂师，再拆开空地夹击。",
       "裂甲卫 · 正面护架，L 重斩破架；也可跳过或绕背攻击。",
@@ -389,25 +392,24 @@ function hint(s) {
   if (s.expedition && s.segment !== 1) return expeditionHint(s);
   if (s.segment === 2) {
     if (s.y > -430) return "回到左上方的休整灯。最后一段，借锚点跃出井口。";
-    return "向上逃离 · 按住 E 牵引，松开甩出；击杀恢复空中动作。";
+    return "向上逃离 · 按住 O 牵引，松开甩出；击杀恢复空中动作。";
   }
   if (s.segment === 1) return keeperStatus(s).hint;
-  if (s.hook >= 0) return "松开 E 甩出 → 空格二段跳 → 再次抓住锚点。";
+  if (s.hook >= 0) return "松开 O 甩出 → W 二段跳 → 再次抓住锚点。";
   if (s.y > -230)
-    return "D 向右跃入井中 · 按住 E 抓住高亮锚点；松开时借力起飞。";
+    return "D 向右跃入井中 · 按住 O 抓住高亮锚点；松开时借力起飞。";
   if (s.y > -900) return "接近敌人按 J；钩住敌人也能回钩斩。S + J 向下坠星。";
   if (s.y > -1850) return "墙中弓手会先搭箭；缚索抛链后，J 可斩断连接。";
   if (s.y > -2900)
     return "U 满蓄贯夜留下裂印，L 满蓄断潮引爆；金色回声补充余烬。";
-  return "钟声来自更深处。S + 空格穿过脚下的平台。";
+  return "钟声来自更深处。双击 S 穿过脚下的平台。";
 }
 function receive(s) {
   s.expedition = window.expeditionState;
   window.latestState = s;
   soundscape.stateChanged(s);
   const music = soundscape.music?.diagnostics();
-  $("#music-start").hidden =
-    !soundOn || (!!music?.unlocked && !music.blocked && !music.failed);
+  $("#music-start").hidden = !soundOn || !soundscape.needsGesture();
   $("#music-start").textContent = music?.failed ? "重试音乐" : "播放音乐";
   $("#music-track").textContent = music?.failed
     ? "音乐暂不可用，动作音效与游戏仍可继续。"
@@ -415,6 +417,7 @@ function receive(s) {
       ? `Sea Power · ${music.title} · 单曲循环`
       : "点击「播放音乐」启用背景音乐。";
   inscription.receive(s);
+  menu?.receive(s);
   city.receive(s);
   achievements?.receive(s);
   $("#practice-controls").hidden = !(s.practice && s.phase === 1);
@@ -443,36 +446,45 @@ function receive(s) {
   $("#ember-progress").textContent =
     s.embers === 2 ? "已满" : `${s.emberHits}/4 命中`;
   $("#embers").setAttribute("aria-label", `余烬 ${s.embers} / 2`);
-  for (const [id, kind, charging, unavailable] of [
-    ["bow", 1, s.bowCharge, false],
-    ["blade", 2, s.chargeTime, false],
+  for (const [id, kind, charging, unavailable, cooldown, duration] of [
+    ["bow", 1, s.bowCharge, false, s.bowCool, 3],
+    ["blade", 2, s.chargeTime, false, s.bladeCool, 3],
     [
       "heal",
       3,
       s.healTime > 0 ? 0.8 - s.healTime : 0,
       s.embers === 0 || s.health === s.maxHealth,
+      s.healCool,
+      3,
     ],
-    ["ultimate", 4, s.ultimateTime, false],
+    ["ultimate", 4, s.ultimateTime, false, s.ultimateCool, 5],
   ]) {
     const el = $(`#skill-${id}`);
     el.classList.toggle("casting", charging > 0);
+    el.classList.toggle("cooling", cooldown > 0);
+    el.style.setProperty(
+      "--cooldown",
+      `${Math.min(100, Math.max(0, (cooldown / duration) * 100))}%`,
+    );
     el.classList.toggle("unavailable", unavailable);
     el.querySelector(".skill-time").textContent =
       s.phase === 5 && s.wordPending === kind
         ? "待刻印"
-        : charging > 0
-          ? id === "heal"
-            ? "回息中"
-            : id === "ultimate"
-              ? "连斩中"
-              : charging >= 0.55
-                ? "满蓄"
-                : "蓄力"
-          : unavailable
-            ? s.health === s.maxHealth
-              ? "生命满"
-              : "缺余烬"
-            : "就绪";
+        : cooldown > 0
+          ? `${(Math.ceil(cooldown * 10) / 10).toFixed(1)}s`
+          : charging > 0
+            ? id === "heal"
+              ? "回息中"
+              : id === "ultimate"
+                ? "连斩中"
+                : charging >= 0.55
+                  ? "满蓄"
+                  : "蓄力"
+            : unavailable
+              ? s.health === s.maxHealth
+                ? "生命满"
+                : "缺余烬"
+              : "就绪";
   }
   const bowEnemy = window.foes[s.bowTarget];
   $("#combat-focus").textContent =
@@ -517,6 +529,8 @@ function receive(s) {
           ? `${s.combo} <small>AIR CHAIN</small>`
           : "";
   $("#boss").hidden = !(s.segment === 1 && [1, 5].includes(s.phase));
+  $("#boss").dataset.form = s.bossStage;
+  $("#boss").classList.toggle("mending", s.bossState === 7);
   $("#boss-health").style.width =
     `${Math.max(0, Math.min(100, (s.bossHP / s.bossMaxHP) * 100))}%`;
   const keeper = keeperStatus(s);
@@ -672,13 +686,34 @@ async function load() {
                 keys.map((key, i) => [key, values[i]]),
               );
           }
-          const huntMatch=text.match(/@hunt\s+(.+)/);
-          if(huntMatch){const [id,armor,ward,pressure,elite]=huntMatch[1].trim().split(/\s+/).map(Number);window.huntFoes[id]={id,armor,ward,pressure,elite};}
+          const huntMatch = text.match(/@hunt\s+(.+)/);
+          if (huntMatch) {
+            const [id, armor, ward, pressure, elite] = huntMatch[1]
+              .trim()
+              .split(/\s+/)
+              .map(Number);
+            window.huntFoes[id] = { id, armor, ward, pressure, elite };
+          }
           const expeditionMatch = text.match(/@expedition\s+(.+)/);
           if (expeditionMatch)
             window.expeditionState = parseExpedition(
               expeditionMatch[1].trim().split(/\s+/).map(Number),
             );
+          const motion = text.match(/@menu\s+(.+)/);
+          if (motion) {
+            const a = motion[1].trim().split(/\s+/);
+            window.menuDiagnostics = {
+              time: +a[0],
+              pose: +a[1],
+              frame: +a[2],
+              blend: +a[3],
+              ripple: +a[4],
+              leaving: a[5] === "true",
+              busy: a[6] === "true",
+              reduced: a[7] === "true",
+              departure: +a[8],
+            };
+          }
           let m = text.match(/@state\s+(.+)/);
           if (m) {
             const a = m[1].trim().split(/\s+/).map(Number);
@@ -783,7 +818,10 @@ async function load() {
         inscription.attach(w);
         w.onGameError(fail);
         w.onEngineCrash(fail);
+        w.addEventListener("pointerdown", unlockAudio, { capture: true });
+        w.addEventListener("keydown", unlockAudio, { capture: true });
         w.addEventListener("keydown", (e) => {
+          if (menu?.handleKey(e)) return;
           if (["Enter", "KeyT"].includes(e.code)) initAudio();
           if (
             [
@@ -846,7 +884,9 @@ $("#play").onclick = () => {
     return;
   }
   initAudio();
-  key("Enter", "Enter");
+  if (window.latestState?.phase === 2 && inscription.newAdventure)
+    inscription.newAdventure();
+  else key("Enter", "Enter");
 };
 $("#pause").onclick = () => {
   key("Escape", "Escape");
@@ -904,7 +944,12 @@ $("#export").onclick = () => {
 };
 window.addEventListener("keydown", (e) => {
   if (["Enter", "KeyT"].includes(e.code)) initAudio();
-  if (loading || e.repeat || e.target.closest("button")) return;
+  if (
+    loading ||
+    e.repeat ||
+    e.target.closest("button, input, select, textarea, summary")
+  )
+    return;
   if (
     [
       "Enter",
@@ -956,6 +1001,7 @@ for (const k of ["sfx", "music"]) {
   el.value = soundscape.settings[k];
   el.oninput = () => soundscape.set(k, Number(el.value));
 }
+menu = createMoonlitMenu({ send: key });
 best();
 load();
 

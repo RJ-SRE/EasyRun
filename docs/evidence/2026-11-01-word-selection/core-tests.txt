@@ -1,0 +1,19 @@
+✔ full source coverage, curated IDs, normalized variants and distinct options (22.926291ms)
+✔ four modes select 30 unique words from their actual pools, independent of exam tags (724.729041ms)
+✔ legacy exam settings migrate to normal without losing learning history or hints (7.903417ms)
+✔ balanced category quotas, all-new fallback, weak cap and weighted selection (661.629208ms)
+✔ preview, retry, new expedition and archived continuation have distinct lifecycles (18.874625ms)
+✔ per-skill history separates wrong, timeout, cancellation, assisted and independent answers (1.916375ms)
+✔ mastery requires independent spelling and meaning across three days; due and weakness decay (2.024917ms)
+✔ old content versions preserve history/pending run; invalid run rebuilds only journey (8.253792ms)
+✔ history import is non-destructive and idempotent, rejects malformed history before merge (3.017042ms)
+✔ all 30 words appear, spaced retries avoid hammering, further casts remain available (8.510375ms)
+✔ settlement is idempotent; allowances scale and punctuation is meaning only (2.052084ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1545.97075

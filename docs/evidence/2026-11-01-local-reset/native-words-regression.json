@@ -1,0 +1,376 @@
+{
+  "date": "2026-11-01T09:14:38.576Z",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "all 3816 runtime rows preserve words, meanings, distractors, aliases, gameplay difficulty and spelling flags exactly",
+    "all 121 world clones spawn before text; native glyphs do not consume missing enemy or platform slots",
+    "normal, hard, challenge and random cycle on the default local bank and select 30 unique words from the correct pools",
+    "ledger pages cover all 30 words without gaps or duplicates; weakness/full-bank filters and isolated live search work without reshuffling",
+    "3816-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
+    "music and action sliders independently set 50% and 25% without changing the other channel",
+    "title offers full hints, 2-second first-letter challenge and 1-second independent recall; default is gradual challenge",
+    "charged arrow shows Chinese and full hint beyond 2 seconds; Backspace/partial Enter do not resolve; last correct letter automatically releases once and starts 3-second cooldown",
+    "gameplay ledger pauses combat, shows completed-word states and resumes; opening from pause returns to pause; an active question rejects Tab",
+    "wrong meaning cancels charged blade without consuming cooldown and increases session weakness",
+    "a wrong answer becomes a review badge and enters the weakness ledger in the same session",
+    "first wrong letter instantly cancels skill U, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill L, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill I, leaves cooldown untouched and quarantines held W until release",
+    "first wrong letter instantly cancels skill P, leaves cooldown untouched and quarantines held W until release",
+    "healing gates before recovery; correct meaning restores one life and starts cooldown",
+    "question can pause/resume without losing input; correct ultimate starts its 5-second cooldown",
+    "timeout cancels the pending skill without cooldown and resumes combat",
+    "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
+    "long word and complete Chinese meaning fit compact card; 28-character options and 480x360 resize fit; regional alias color auto-accepts for colour",
+    "real title hint 1: visible then hidden on schedule, Chinese remains, pause freezes reveal time, automatic finish isolates held R",
+    "real title hint 2: visible then hidden on schedule, Chinese remains, pause freezes reveal time, automatic finish isolates held R",
+    "returning to title prepares a fresh preview deck; practice stays free of inscription questions",
+    "native text shrinks after answers, real arrows receive clone slots, and observed combined clone count stays below 300",
+    "native learning matches backend golden vector: separate abilities, assisted evidence, exactly-once answers, tie alternation, emergency meaning, four pool filters, and R preserves deck while clearing completion",
+    "English achievement counters distinguish unique words, abilities, recovered mistakes, hidden spelling, due review and peak streak; repeated callbacks do not double count",
+    "native achievement catalog opens from title and battle, paginates and returns to the exact prior state",
+    "opening achievements freezes a live word challenge, keeps music playing, blocks stray letters and preserves an already paused game"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "f89e8e79ba3cc9a493aeb29b818eb5c20993846f5fdaa6605a54bbcf4b917d94",
+  "fixture": "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states; F12 injects bounded long-text fixtures. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
+  "browser": "156.0.8078.4",
+  "frameRateSamples": [
+    60.075845745585646,
+    59.3383770985345,
+    57.03252486918689,
+    31.116135794817822,
+    56.886555087435866,
+    57.12410515001742,
+    57.57715338975202,
+    58.20872355311349,
+    59.85753905021035,
+    60.28333164724391,
+    57.3844182218272,
+    52.51609974342511,
+    56.96614583554391,
+    40.878993426458074,
+    59.36009815771074,
+    57.84136041922538,
+    59.46324510899503,
+    60.05404864951176,
+    59.809804802475625,
+    60.03241750316165,
+    58.295441309454326,
+    59.629106938917246,
+    59.696234249122924,
+    60.01162725063363,
+    28.919943397830163,
+    59.756120334951504,
+    59.819345577496925,
+    59.953236462980186,
+    57.89829201637058,
+    59.70324550590365,
+    60.00720085723559,
+    59.90056507112204,
+    60.09615384041344,
+    61.216993844637116,
+    59.72162019113218,
+    59.94754590269487,
+    59.96402156418703,
+    59.966418808898325,
+    60.04202941629687,
+    30.009753170700392,
+    59.94642289097275,
+    58.739068004959606,
+    60.068478056964935,
+    59.92928345580969,
+    56.90449698068378,
+    59.88263004283171,
+    60.24459304431269,
+    60.067275341508335,
+    58.55022098004205,
+    59.839629773944225,
+    59.935269913066584,
+    59.821731239764496,
+    60.11662625838116,
+    58.59451294865975,
+    57.77452528704499,
+    59.62555154275601,
+    59.248726134532845,
+    60.3646021949548,
+    59.998800025143886,
+    48.0795534251368,
+    58.058929812929584,
+    59.907742079482894,
+    59.953236462980186,
+    57.35808653737076,
+    59.368144834133986,
+    59.28890370901961,
+    54.783263723668846,
+    48.68467439889114,
+    60.17933441771261,
+    59.90654579199237,
+    57.65239448132557,
+    58.965615232265726,
+    59.97121381622435,
+    60.00600059433682,
+    54.57876886094306,
+    59.70386880843265,
+    59.94529992132513
+  ],
+  "clonePeak": 233,
+  "worldRender": [
+    121,
+    121,
+    0,
+    19,
+    0,
+    3,
+    3,
+    0,
+    0
+  ],
+  "questions": [
+    [
+      "1",
+      "1",
+      "1619",
+      "0",
+      "0",
+      "9",
+      "hit"
+    ],
+    [
+      "2",
+      "2",
+      "2140",
+      "1",
+      "0",
+      "9",
+      "monitor"
+    ],
+    [
+      "3",
+      "1",
+      "243",
+      "0",
+      "2",
+      "9.850000000000001",
+      "associate"
+    ],
+    [
+      "4",
+      "2",
+      "1238",
+      "0",
+      "2",
+      "9",
+      "except"
+    ],
+    [
+      "5",
+      "3",
+      "886",
+      "1",
+      "1",
+      "9",
+      "deep"
+    ],
+    [
+      "6",
+      "4",
+      "1472",
+      "0",
+      "1",
+      "9",
+      "gather"
+    ],
+    [
+      "7",
+      "3",
+      "1077",
+      "1",
+      "0",
+      "9",
+      "earth"
+    ],
+    [
+      "8",
+      "4",
+      "347",
+      "1",
+      "0",
+      "9",
+      "beyond"
+    ],
+    [
+      "9",
+      "2",
+      "2695",
+      "0",
+      "2",
+      "9",
+      "put"
+    ],
+    [
+      "10",
+      "5",
+      "375",
+      "1",
+      "0",
+      "9",
+      "blood"
+    ],
+    [
+      "11",
+      "6",
+      "2590",
+      "1",
+      "0",
+      "9",
+      "press"
+    ],
+    [
+      "12",
+      "2",
+      "2387",
+      "0",
+      "0",
+      "9",
+      "paper"
+    ],
+    [
+      "13",
+      "1",
+      "1619",
+      "1",
+      "2",
+      "9",
+      "hit"
+    ],
+    [
+      "14",
+      "1",
+      "1238",
+      "1",
+      "2",
+      "9",
+      "colour"
+    ],
+    [
+      "20014",
+      "1",
+      "3714",
+      "0",
+      "1",
+      "9",
+      "way"
+    ]
+  ],
+  "answers": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      2,
+      1,
+      1
+    ],
+    [
+      2,
+      1,
+      1
+    ],
+    [
+      2,
+      1,
+      1
+    ],
+    [
+      2,
+      1,
+      1
+    ],
+    [
+      2,
+      1,
+      1
+    ],
+    [
+      1,
+      2,
+      0
+    ],
+    [
+      1,
+      3,
+      0
+    ],
+    [
+      3,
+      3,
+      1
+    ],
+    [
+      1,
+      4,
+      0
+    ],
+    [
+      1,
+      5,
+      0
+    ],
+    [
+      1,
+      6,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      2,
+      0,
+      1
+    ]
+  ],
+  "deckCount": 15,
+  "sfx": [
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healcomplete 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx heavycut 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx cloth 25"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-27T11:11:22.484Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "initialFollow": "Anchor",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "42-second natural menu cycle covers hook, look and cuff gestures with fixed camera, zero combat FX and stable clone count",
+    "settings pauses the idle story gesture without blocking the controls",
+    "reduced motion freezes environmental clock and rests the hero",
+    "reduced-motion start enters gameplay without the departure delay",
+    "start interrupts idle; a second Enter skips departure; menu layers disappear in gameplay"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "874a6d6a6141e5c9f2364b94bf3e55664ed6b577857a935f552a8ac504498ab3",
+  "fixture": "Actual native archive after deployed XBuilder model roundtrip. Initial camera follows Anchor. Test-only unclamped waitNextFrame diagnostics sample a 42-second natural idle cycle; settings, reduced motion, start and skip use real clicks and keys. Per-frame diagnostic logging adds overhead. No online project overwritten.",
+  "browser": "156.0.8078.4",
+  "performance": {
+    "frames": 2282,
+    "p50": 16.66666753590107,
+    "p95": 26.125000789761543,
+    "p99": 31.279001384973526,
+    "over34": 2,
+    "poses": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "note": "Unclamped SPX waitNextFrame samples in actual native archive; debug logging adds overhead. This machine only."
+  }
+}

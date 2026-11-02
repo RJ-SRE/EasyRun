@@ -1,7 +1,7 @@
 import { BelfryMusic } from "./belfry-music.js";
 
 // Action effects omit bell/drum layers. Scene music is supplied by the user.
-const defaults = { sfx: 0.8, music: 0.35 };
+const defaults = { sfx: 0.85, music: 0.75 };
 const counts = {
   bowdraw: 2,
   bowshot: 3,
@@ -45,6 +45,12 @@ export class BelfryAudio {
       for (const k of Object.keys(defaults))
         if (Number.isFinite(saved?.[k]))
           this.settings[k] = Math.min(1, Math.max(0, saved[k]));
+      // Upgrade the old quiet-effects preset, while respecting custom/muted
+      // preferences. Otherwise returning players never hear the new balance.
+      if (saved?.sfx === 0.3 && saved?.music === 0.65) {
+        this.settings = { ...defaults };
+        localStorage.setItem("belfry-audio-v2", JSON.stringify(this.settings));
+      }
     } catch {
       /* Storage is optional; former voice preferences are ignored. */
     }
@@ -60,7 +66,16 @@ export class BelfryAudio {
   path(cue, variant) {
     return `/audio/sfx/${cue}-${variant}.m4a`;
   }
-  async init() {
+  needsGesture() {
+    return (
+      this.enabled &&
+      (this.ctx?.state !== "running" ||
+        !this.music?.unlocked ||
+        this.music.blocked ||
+        this.music.failedStage === this.music.stage)
+    );
+  }
+  async init({ preloadEffects = true } = {}) {
     if (!this.enabled) return;
     try {
       if (!this.ctx) {
@@ -83,6 +98,8 @@ export class BelfryAudio {
           this.buses[k] = g;
         }
         this.music = new BelfryMusic(a, this.buses.music, (e) => this.error(e));
+      }
+      if (preloadEffects && !this.ready) {
         const paths = Object.entries(counts).flatMap(([k, n]) =>
           Array.from({ length: n }, (_, i) => this.path(k, i + 1)),
         );
@@ -90,10 +107,15 @@ export class BelfryAudio {
           paths.map((path) => this.buffer(path).catch((e) => this.error(e))),
         );
       }
+      // Request both context resume and media play in the same trusted gesture.
+      // A pending autoplay resume must not block a later click from retrying.
+      const resume =
+        this.enabled && !document.hidden && this.ctx.state !== "running"
+          ? this.ctx.resume()
+          : null;
       this.syncMusic();
       this.music.unlock();
-      if (this.enabled && !document.hidden && this.ctx.state !== "running")
-        await this.ctx.resume();
+      if (resume) await resume;
     } catch (e) {
       this.error(e);
     }
@@ -103,6 +125,7 @@ export class BelfryAudio {
       enabled: this.enabled,
       hidden: document.hidden,
       focusPaused: !!this.focusPaused,
+      learningReading: !!this.learningReading || !!this.ledgerReading,
     });
   }
   buffer(path) {
@@ -181,6 +204,19 @@ export class BelfryAudio {
     if (![1, 5].includes(s.phase) || (old && old.attempts !== s.attempts))
       this.endFocus();
     this.syncMusic();
+    // Try once on the title when autoplay is allowed. Otherwise keep the
+    // existing gesture entry visible; never repeatedly create/resume contexts.
+    // Short effects wait for interaction, keeping initial menu loading light.
+    if (
+      s.phase === 0 &&
+      this.enabled &&
+      !document.hidden &&
+      !this.ctx &&
+      !this.menuAutoplayAttempted
+    ) {
+      this.menuAutoplayAttempted = true;
+      void this.init({ preloadEffects: false });
+    }
   }
   beginFocus() {
     this.stopAll(0.12);
@@ -434,6 +470,9 @@ export class BelfryAudio {
       keeperfollow: "tension",
       keeperform: "chaincut",
       keeperstrike: "blade",
+      keepermend: "healstart",
+      keepermendcrack: "arrowhit",
+      keepermendbreak: "chainfinish",
       huntstrike: kind === 7 ? "heavy" : kind === 8 ? "dash" : "blade",
       armor: "brass",
       wardbreak: "chaincut",

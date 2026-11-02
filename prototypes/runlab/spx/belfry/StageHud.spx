@@ -1,7 +1,0 @@
-onStart => {
- hide
- for {
-  waitNextFrame()
-  if stageHost==0 || phase==1 || phase==5 || hudText=="" {hide} else {show; setXYpos cameraRenderX,cameraRenderY+220}
- }
-}

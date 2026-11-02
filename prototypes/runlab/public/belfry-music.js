@@ -46,7 +46,7 @@ export class BelfryMusic {
     this.failedStage = null;
     this.apply();
   }
-  sync(state, { enabled, hidden, focusPaused }) {
+  sync(state, { enabled, hidden, focusPaused, learningReading = false }) {
     const phase = state?.phase;
     const stage =
       phase === 0
@@ -60,8 +60,8 @@ export class BelfryMusic {
       !enabled ||
       hidden ||
       phase == null ||
-      phase === 4 ||
-      (phase === 5 && focusPaused);
+      (phase === 4 && !learningReading) ||
+      (phase === 5 && focusPaused && !learningReading);
     if (stage && stage !== this.target) this.select(stage);
     this.apply();
   }

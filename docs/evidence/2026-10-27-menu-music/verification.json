@@ -1,0 +1,15 @@
+{
+  "version": "0.15.3",
+  "date": "2026-10-27",
+  "scope": "web audio recovery only",
+  "testCounts": {
+    "menu-audio": 6,
+    "music": 17
+  },
+  "sourceSha256": {
+    "prototypes/runlab/public/belfry-audio.js": "bc09ebd25399b3d082c433023a530e8b3beb86206cb44dafc0c8cfad14e3e30b",
+    "prototypes/runlab/public/belfry.js": "9c5e5e5acbab2769b8c57b170325d490a04a065151944805811259ea8a17f1d2"
+  },
+  "nativeArchiveUnchanged": true,
+  "remotePushed": false
+}

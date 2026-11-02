@@ -1,0 +1,61 @@
+{
+  "method": "RGB absolute per-channel difference between a/b captures about 650 ms apart; pixel counted if any channel exceeds 4/255. No image alignment or edits. Menu input remains stationary.",
+  "observations": [
+    {
+      "run": "camera-v156-baseline",
+      "case": "cold-title",
+      "width": 960,
+      "height": 600,
+      "changedPixelsOver4Of255": 0
+    },
+    {
+      "run": "camera-v156-baseline",
+      "case": "hurt-pause-menu",
+      "width": 960,
+      "height": 600,
+      "changedPixelsOver4Of255": 108675
+    },
+    {
+      "run": "camera-v156-baseline",
+      "case": "defeat-menu",
+      "width": 960,
+      "height": 600,
+      "changedPixelsOver4Of255": 63279
+    },
+    {
+      "run": "camera-v156-baseline",
+      "case": "resized-title",
+      "width": 1440,
+      "height": 1080,
+      "changedPixelsOver4Of255": 57546
+    },
+    {
+      "run": "camera-v157",
+      "case": "cold-title",
+      "width": 960,
+      "height": 600,
+      "changedPixelsOver4Of255": 0
+    },
+    {
+      "run": "camera-v157",
+      "case": "hurt-pause-menu",
+      "width": 960,
+      "height": 600,
+      "changedPixelsOver4Of255": 0
+    },
+    {
+      "run": "camera-v157",
+      "case": "defeat-menu",
+      "width": 960,
+      "height": 600,
+      "changedPixelsOver4Of255": 0
+    },
+    {
+      "run": "camera-v157",
+      "case": "resized-title",
+      "width": 1440,
+      "height": 1080,
+      "changedPixelsOver4Of255": 0
+    }
+  ]
+}

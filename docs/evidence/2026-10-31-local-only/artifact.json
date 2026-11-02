@@ -1,0 +1,27 @@
+{
+  "version": "0.18.0-local.1",
+  "sha256": "5a46f00b261909deeecdbb830829864a13dbe3e6191b9fb2b9913a8439e3aba1",
+  "bytes": 136288971,
+  "paths": [
+    "/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/exports/belfry-learning-local-save.xbp",
+    "/Users/rj/Desktop/EasyRun-XBuilder-v0.18.0-local-save.xbp"
+  ],
+  "manifest": {
+    "schemaVersion": 1,
+    "learningRuleVersion": 1,
+    "contentVersion": "cet46-2026-10-26.1-cloud-test",
+    "wordCount": 8815,
+    "core": false,
+    "storageMode": "local",
+    "localPersistence": true,
+    "cloudEnabled": false,
+    "apiURL": "",
+    "profileMode": "username",
+    "identityBridge": "runtime-name-local-profile",
+    "identityVerified": false,
+    "releaseReady": false
+  },
+  "testHooksAbsent": true,
+  "credentialValuesAbsent": true,
+  "privateConfigAbsent": true
+}

@@ -1,0 +1,597 @@
+.learning-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: max(26px, 4%);
+  padding: 0 3.5%;
+  font:
+    11px "PingFang SC",
+    sans-serif;
+  color: #b4c2b9;
+  pointer-events: none;
+  text-shadow: 0 1px 3px #03090b;
+}
+.learning-top {
+  top: 0;
+  background: linear-gradient(#03080bf2, #03080b00);
+}
+.learning-bottom {
+  bottom: 0;
+  gap: 5%;
+  background: linear-gradient(0deg, #03080bf2, #03080b00);
+}
+.learning-rail button {
+  pointer-events: auto;
+  font: inherit;
+  padding: 2px 8px;
+  color: #d1c4a3;
+  border: 0;
+  border-bottom: 1px solid #c6ae7355;
+  background: #06171d66;
+  cursor: pointer;
+}
+.learning-rail button:focus-visible {
+  outline: 1px solid #ead5a3;
+}
+.learning-rail b {
+  font:
+    11px ui-monospace,
+    monospace;
+  color: #e0d0a7;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.learning-rail small {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #8da49f;
+}
+.learning-seal {
+  color: #c8b27d;
+  font-size: 19px;
+  margin-right: 6px;
+}
+.learning-track {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+.learning-track > span {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.learning-channel {
+  position: relative;
+  flex: 1;
+  height: 5px;
+  min-width: 30px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #82978c44 0 1px,
+      transparent 1px calc(100% / 30)
+    ),
+    #5f756244;
+  border-top: 1px solid #dae7bf18;
+  border-bottom: 1px solid #020a0d99;
+}
+.learning-channel > i {
+  position: absolute;
+  height: 2px;
+  top: 1px;
+  left: 0;
+  background: linear-gradient(90deg, #8d784a, #efdcaa);
+  box-shadow: 0 0 7px #d1b87744;
+  transition: width 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.learning-channel.bank > i {
+  background: linear-gradient(90deg, #3d7075, #bce1d1);
+}
+#learning-unlock {
+  color: #ecd49c;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+/* A cathedral archive: four mounted seals over the unchanged world. */
+#learning-ledger {
+  position: absolute;
+  inset: 28px 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  container-type: size;
+  background: transparent;
+}
+#learning-ledger[hidden] {
+  display: none;
+}
+.archive-open #overlay,
+.archive-open #word-menu,
+.archive-open #word-journal,
+.archive-open #word-focus,
+.archive-open .moonlit-controls {
+  visibility: hidden;
+}
+.learning-sheet {
+  --archive-unit: min(1.26px, calc(73cqw / 700), calc(92cqh / 468));
+  position: relative;
+  width: calc(700 * var(--archive-unit));
+  height: calc(468 * var(--archive-unit));
+  box-sizing: border-box;
+  background-color: transparent;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color: #e3dac1;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+.learning-sheet header {
+  position: absolute;
+  top: calc(22 * var(--archive-unit));
+  left: calc(24 * var(--archive-unit));
+  right: calc(24 * var(--archive-unit));
+  height: calc(52 * var(--archive-unit));
+  display: flex;
+  align-items: center;
+  gap: calc(25 * var(--archive-unit));
+}
+.learning-heading-copy {
+  flex: 1;
+}
+.learning-sheet .learning-eyebrow {
+  margin: 0 0 calc(4 * var(--archive-unit));
+  color: #ad9b73;
+  font:
+    calc(7.5 * var(--archive-unit)) Georgia,
+    serif;
+  letter-spacing: calc(2.5 * var(--archive-unit));
+}
+.learning-sheet h2 {
+  margin: 0;
+  font:
+    400 calc(25 * var(--archive-unit)) / 1.15 "Songti SC",
+    "Noto Serif SC",
+    serif;
+  letter-spacing: calc(3 * var(--archive-unit));
+  color: #f0e5c8;
+  text-shadow: 0 1px #050c0f;
+}
+.learning-tally {
+  text-align: center;
+  padding-right: calc(14 * var(--archive-unit));
+}
+#learning-total {
+  display: block;
+  color: #e5cfa1;
+  font:
+    calc(21 * var(--archive-unit)) Georgia,
+    serif;
+  letter-spacing: calc(1 * var(--archive-unit));
+  white-space: nowrap;
+}
+.learning-tally small {
+  display: block;
+  font-size: calc(8 * var(--archive-unit));
+  color: #9b9f90;
+  margin-top: calc(3 * var(--archive-unit));
+  letter-spacing: calc(3 * var(--archive-unit));
+}
+.learning-sheet button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  border: 1px solid #a48f5e66;
+  border-radius: 0;
+  background: linear-gradient(135deg, #31403945, #0d191e30);
+  color: #d2be8f;
+  font:
+    calc(11 * var(--archive-unit)) "Songti SC",
+    serif;
+  cursor: pointer;
+  transform: none;
+  transition:
+    border-color 0.18s,
+    color 0.18s,
+    background 0.18s;
+}
+.learning-sheet button:hover:not(:disabled) {
+  border-color: #d2bd88;
+  color: #f2e4c0;
+  background: #56604725;
+}
+.learning-sheet button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.learning-sheet button:focus-visible {
+  outline: 1px solid #f2dfaa;
+  outline-offset: 3px;
+}
+#learning-close {
+  width: calc(28 * var(--archive-unit));
+  height: calc(28 * var(--archive-unit));
+  align-self: flex-start;
+  border-color: transparent;
+  background: transparent;
+  color: #bdaf8a;
+}
+#learning-close svg {
+  width: calc(21 * var(--archive-unit));
+  height: calc(21 * var(--archive-unit));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+#learning-cards {
+  position: absolute;
+  top: calc(96 * var(--archive-unit));
+  left: calc(24 * var(--archive-unit));
+  right: calc(24 * var(--archive-unit));
+  height: calc(292 * var(--archive-unit));
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: calc(14 * var(--archive-unit));
+}
+.learning-card {
+  position: relative;
+  min-width: 0;
+  height: calc(292 * var(--archive-unit));
+  box-sizing: border-box;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  text-align: center;
+}
+.learning-ordinal {
+  position: absolute;
+  top: calc(12 * var(--archive-unit));
+  left: 0;
+  right: 0;
+  color: #6e7b75;
+  font:
+    calc(7 * var(--archive-unit)) Georgia,
+    serif;
+  letter-spacing: calc(2 * var(--archive-unit));
+}
+.learning-badge {
+  position: absolute;
+  top: calc(28 * var(--archive-unit));
+  left: 50%;
+  width: calc(106 * var(--archive-unit));
+  height: calc(116 * var(--archive-unit));
+  transform: translateX(-50%);
+}
+.learning-badge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.learning-card h3 {
+  position: absolute;
+  top: calc(162 * var(--archive-unit));
+  left: calc(10 * var(--archive-unit));
+  right: calc(10 * var(--archive-unit));
+  margin: 0;
+  color: #b7c1b6;
+  font:
+    400 calc(17 * var(--archive-unit)) / 1.5 "Songti SC",
+    "Noto Serif SC",
+    serif;
+  letter-spacing: calc(0.8 * var(--archive-unit));
+}
+.learning-status {
+  position: absolute;
+  top: calc(195 * var(--archive-unit));
+  left: 0;
+  right: 0;
+  color: #748880;
+  font-size: calc(8 * var(--archive-unit));
+  letter-spacing: calc(2 * var(--archive-unit));
+}
+.learning-card p {
+  position: absolute;
+  top: calc(217 * var(--archive-unit));
+  left: calc(15 * var(--archive-unit));
+  right: calc(15 * var(--archive-unit));
+  margin: 0;
+  color: #94a39a;
+  font-size: calc(10.5 * var(--archive-unit));
+  line-height: 1.5;
+}
+.learning-quantity {
+  position: absolute;
+  top: calc(251 * var(--archive-unit));
+  left: 0;
+  right: 0;
+  color: #acb9ab;
+  font:
+    400 calc(17 * var(--archive-unit)) Georgia,
+    serif;
+  font-variant-numeric: tabular-nums;
+}
+.learning-quantity span {
+  font-size: calc(11 * var(--archive-unit));
+  color: #70847d;
+}
+.learning-card .learning-channel {
+  position: absolute;
+  top: calc(279 * var(--archive-unit));
+  left: calc(18 * var(--archive-unit));
+  right: calc(18 * var(--archive-unit));
+  min-width: 0;
+  height: calc(4 * var(--archive-unit));
+  background:
+    repeating-linear-gradient(90deg, #83907a35 0 1px, transparent 1px 10%),
+    #030d1055;
+  border-top: 1px solid #b5b99b18;
+  border-bottom: 1px solid #05090b;
+}
+.learning-card .learning-channel > i {
+  top: 0;
+  height: calc(2 * var(--archive-unit));
+  box-shadow: none;
+  background: linear-gradient(90deg, #806d47, #e0c28b);
+}
+.learning-card[data-state="active"] h3 {
+  color: #d7cba9;
+}
+.learning-card[data-state="active"] .learning-status,
+.learning-card[data-state="active"] .learning-ordinal {
+  color: #b9a376;
+}
+.learning-card[data-state="active"] .learning-quantity {
+  color: #dfcca3;
+}
+.learning-card.unlocked h3 {
+  color: #f1e3bd;
+}
+.learning-card.unlocked .learning-status,
+.learning-card.unlocked .learning-quantity,
+.learning-card.unlocked .learning-ordinal {
+  color: #d0b780;
+}
+.learning-card.unlocked .learning-channel > i {
+  background: linear-gradient(90deg, #a98a51, #f0ddb0);
+}
+.learning-sheet footer {
+  position: absolute;
+  left: calc(24 * var(--archive-unit));
+  right: calc(24 * var(--archive-unit));
+  bottom: calc(8 * var(--archive-unit));
+  height: calc(36 * var(--archive-unit));
+  display: flex;
+  align-items: center;
+  gap: calc(14 * var(--archive-unit));
+}
+.learning-sheet footer > small {
+  flex: 1;
+  min-width: 0;
+  color: #82968d;
+  font-size: calc(9 * var(--archive-unit));
+  letter-spacing: calc(0.5 * var(--archive-unit));
+}
+.learning-pagination {
+  display: flex;
+  align-items: center;
+  gap: calc(18 * var(--archive-unit));
+}
+.learning-pagination button {
+  width: calc(92 * var(--archive-unit));
+  height: calc(30 * var(--archive-unit));
+}
+.learning-folio {
+  display: grid;
+  gap: calc(5 * var(--archive-unit));
+  text-align: center;
+  color: #b6b49b;
+  font:
+    calc(10 * var(--archive-unit)) Georgia,
+    serif;
+  min-width: calc(52 * var(--archive-unit));
+}
+#learning-page-dots {
+  display: flex;
+  justify-content: center;
+  gap: calc(5 * var(--archive-unit));
+}
+#learning-page-dots em {
+  width: calc(3 * var(--archive-unit));
+  height: calc(3 * var(--archive-unit));
+  background: #77847766;
+  transform: rotate(45deg);
+}
+#learning-page-dots em.current {
+  background: #dfc38c;
+}
+.learning-top #learning-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 9px 0 4px;
+  height: 25px;
+  background: linear-gradient(90deg, #0a1519b0, #111f2155);
+  border-bottom: 1px solid #c0aa705c;
+}
+.learning-entry-mark {
+  width: 17px;
+  height: 21px;
+  color: #bfa775;
+}
+.learning-entry-mark svg {
+  width: 100%;
+  height: 100%;
+}
+.learning-entry-name {
+  letter-spacing: 1px;
+  font-size: 10px;
+}
+#learning-open b {
+  margin-left: 4px;
+  padding-left: 11px;
+  border-left: 1px solid #b49e693d;
+}
+#learning-unlock {
+  padding: 3px 12px;
+  border-left: 1px solid #c6ae7380;
+  background: linear-gradient(90deg, #142425b0, transparent);
+}
+#learning-unlock:empty {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+@media (max-width: 700px) {
+  .learning-rail {
+    padding: 0 2%;
+    font-size: 10px;
+  }
+  .learning-rail small {
+    display: none;
+  }
+  .learning-track {
+    gap: 5px;
+  }
+  .learning-track > span {
+    font-size: 8px;
+  }
+  .learning-rail b {
+    font-size: 9px;
+  }
+  .learning-sheet {
+    --archive-unit: 0.85px;
+    width: 92cqw;
+    height: min(610px, 94cqh);
+    min-height: 170px;
+  }
+  .learning-sheet header {
+    left: 18px;
+    right: 14px;
+    top: 14px;
+    height: 50px;
+    gap: 12px;
+  }
+  .learning-sheet .learning-eyebrow {
+    font-size: 6.5px;
+    letter-spacing: 1.4px;
+  }
+  .learning-sheet h2 {
+    font-size: 22px;
+  }
+  #learning-total {
+    font-size: 20px;
+  }
+  .learning-tally {
+    padding-right: 0;
+  }
+  #learning-cards {
+    top: 76px;
+    left: 18px;
+    right: 18px;
+    bottom: 52px;
+    height: auto;
+    overflow-y: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: calc(292 * var(--archive-unit));
+    gap: 10px;
+    padding-right: 3px;
+    scrollbar-width: thin;
+    scrollbar-color: #8d805955 transparent;
+  }
+  .learning-sheet footer {
+    left: 18px;
+    right: 18px;
+    bottom: 8px;
+    height: 32px;
+    gap: 4px;
+  }
+  .learning-sheet footer > small {
+    font-size: 8px;
+  }
+  .learning-pagination {
+    gap: 8px;
+  }
+  .learning-pagination button {
+    width: 55px;
+    height: 26px;
+    font-size: 10px;
+  }
+  .learning-folio {
+    min-width: 34px;
+  }
+}
+@media (max-width: 700px) {
+  #learning-cards {
+    grid-auto-rows: 164px;
+  }
+  .learning-card {
+    height: 164px;
+  }
+  .learning-ordinal {
+    top: 12px;
+    left: 13px;
+    right: auto;
+  }
+  .learning-badge {
+    width: 60px;
+    height: 66px;
+    top: 31px;
+    left: 39px;
+  }
+  .learning-card h3 {
+    top: 27px;
+    left: 80px;
+    right: 10px;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    text-align: left;
+  }
+  .learning-status {
+    top: 53px;
+    left: 80px;
+    right: 10px;
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-align: left;
+  }
+  .learning-card p {
+    top: 78px;
+    left: 80px;
+    right: 10px;
+    font-size: 9.5px;
+    line-height: 1.3;
+    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .learning-quantity {
+    top: 123px;
+    left: 80px;
+    right: 10px;
+    font-size: 16px;
+    text-align: left;
+  }
+  .learning-card .learning-channel {
+    top: 150px;
+    left: 80px;
+    right: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .learning-channel > i,
+  .learning-sheet button {
+    transition: none;
+  }
+}

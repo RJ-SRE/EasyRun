@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-27T12:12:34.257Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "wordsDuringMotion": false,
+  "runtime": "deployed XBuilder compiler and resources",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "25.5.0",
+    "cpu": "Apple M1 Pro"
+  },
+  "errors": [],
+  "archiveSha256": "cb459be4fcff02eac0fe046caa8a8736ddd8564bd467f9ddda528eaeaaff2807",
+  "fixture": "Actual native archive, fixed deck indices 25–54 and spelling mode. Same title, idle, arena J-held, question and ledger setup; invulnerability prevents test interruptions. Test-only scene/UI counters, unclamped engine frame intervals, CDP task time and rAF include instrumentation. Initial camera follows Anchor to exercise reset. No online project overwritten or cross-hardware performance guarantee.",
+  "browser": "156.0.8078.4",
+  "display": {
+    "width": 960,
+    "height": 600,
+    "dpr": 1,
+    "canvasWidth": 960,
+    "canvasHeight": 600
+  },
+  "gpu": {
+    "devices": [
+      {
+        "vendorId": 4203,
+        "deviceId": 0,
+        "vendorString": "Google Inc. (Apple)",
+        "deviceString": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Version 26.5.1 (Build 25F80))",
+        "driverVendor": "Apple",
+        "driverVersion": "26.5.1"
+      }
+    ],
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Pro, Version 26.5.1 (Build 25F80))"
+  },
+  "samples": [
+    {
+      "name": "title",
+      "wallSeconds": 6.508,
+      "frames": 360,
+      "sceneChecksPerFrame": 0,
+      "sceneSlotsPerFrame": 0,
+      "uiSyncPerFrame": 0.8333333333333334,
+      "uiCostumesPerFrame": 0,
+      "uiLayersPerFrame": 0,
+      "engineFrameMean": 16.692729806527495,
+      "engineFrameMax": 25.366665795445442,
+      "rafP50": 16.665000000000873,
+      "rafP95": 16.67000000000189,
+      "rafOver34ms": 0,
+      "taskMsPerSecond": 433.391057160418,
+      "jsHeap": 25870132,
+      "sceneMissing": 0,
+      "phase": 0,
+      "heroX": 230,
+      "heroY": 0,
+      "hook": -1,
+      "hookCount": 0,
+      "glyphs": 2
+    }
+  ],
+  "cpuThrottle": 1
+}

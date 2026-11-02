@@ -1,0 +1,8 @@
+{
+  "cases": [
+    "earned, active and sealed reliefs use independent assets, with transparent surroundings and explicit progress labels",
+    "all 24 original achievements remain in order and pagination, dismissal and state restoration work",
+    "desktop, portrait and 480×360 layouts keep the footer visible and make the complete card set reachable"
+  ],
+  "errors": []
+}

@@ -1,0 +1,9 @@
+{
+  "cases": [
+    "English-only 24-card catalog opens in the title rail and keyboard closes it",
+    "achievements preserve the underlying settings panel",
+    "battle pauses and resumes exactly while the two progress tracks remain visible",
+    "responsive rails and achievement sheets stay within the viewport"
+  ],
+  "errors": []
+}

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-26T07:55:37.039Z",
+  "cases": [
+    "actual export compiles without the web host and the full menu MP3 produces nonzero engine audio",
+    "Enter switches to the full gameplay track",
+    "pause silences the engine output; continue resumes the same track",
+    "word-focus state leaves gameplay music running without restart or volume ducking",
+    "victory switches to the full ending track; mute is silent with no previous track leaking",
+    "defeat uses ending music; returning to title switches back and leaves only one active track",
+    "native loop keeps a one-second MP3 audible past three durations without JS restarts",
+    "mute persists across stage changes; unmute plays the current stage"
+  ],
+  "errors": [],
+  "archiveSha256": "34ecdb92094be36cbd370845370bf3c77818a522d312fdc72d1a299f92db5636",
+  "note": "Actual .xbp is unzipped and compiled by the pinned SPX runtime without the web host. F8/F9/F10/F11/F12 select lifecycle states only. Analyser reads the real engine output. A separate one-second MP3 fixture accelerates loop verification; full delivered tracks remain unchanged. Does not claim a live x.qiniu.com editor upload.",
+  "browser": "156.0.8078.4",
+  "fullTrackLog": [
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Gameplay",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "paused"
+    },
+    {
+      "track": "BGM_Ending",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "playing"
+    },
+    {
+      "track": "BGM_Menu",
+      "state": "paused"
+    }
+  ]
+}

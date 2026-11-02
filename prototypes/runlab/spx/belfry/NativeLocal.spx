@@ -1,0 +1,278 @@
+// IndexedDB owns local learning history. Each write atomically commits changed
+// word rows and a revisioned profile header; no network or whole-bank save loop.
+var (
+ nativeLocalResetStage int
+ nativeLocalResetStarted bool
+ nativeLocalMigrating bool
+ nativeLocalMigrated []int
+ nativeLocalPriorMeaning []string
+ nativeLocalEnabled bool
+ nativeLocalReady bool
+ nativeLocalBusy bool
+ nativeLocalFailed bool
+ nativeLocalConflict bool
+ nativeLocalBypass bool
+ nativeLocalSeen bool
+ nativeLocalSelectionMigration bool
+ nativeLocalKey string
+ nativeLocalName string
+ nativeLocalEpoch int
+ nativeLocalRevision int
+ nativeLocalChange int
+ nativeLocalMetaDirty bool
+ nativeLocalDirty []int
+ nativeLocalWordVersion []int
+ nativeLocalWordDirty []bool
+ nativeLocalStatus string
+ nativeLocalRows js.Value
+ nativeLocalLoading bool
+ nativeLocalLoadCursor int
+ nativeLocalCallbackLive int
+ nativeLocalNextPoll float64
+ nativeLocalNextWrite float64
+ nativeLocalSavedAt float64
+ nativeLocalSettings []int
+ nativeLocalSettingsAt float64
+)
+func nativeLocalNow() float64 {return js.Global().Get("Date").Call("now").Float()/1000}
+func nativeLocalArray(values ...any) js.Value {a:=js.Global().Get("Array").New(); for _,v:=range values {a.Call("push",v)}; return a}
+func nativeLocalValue(v any) js.Value {return js.Global().Get("JSON").Call("parse",nativeCloudJSON(v))}
+func nativeLocalNotice(s string) {nativeLocalStatus=s; nativeTextMemoKnown=false}
+func nativeLocalRelease(handlers []js.Func) {for _,h:=range handlers {h.Release(); nativeLocalCallbackLive--}}
+func nativeLocalFailure(s string) {nativeLocalFailed=true; nativeLocalBusy=false; nativeLocalLoading=false; nativeLocalNotice(s)}
+func nativeLocalProfile() string {
+ name:=strings.TrimSpace(js.Global().Get("String").New(username).Call("normalize","NFC").String())
+ name=js.Global().Get("String").New(name).Call("toLowerCase").String()
+ if name=="" {return nativeCloudJSON([]string{"easyrun.rupture","local-v1","guest",""})}
+ return nativeCloudJSON([]string{"easyrun.rupture","local-v1","username",name})
+}
+func nativeLocalMark(i int) {
+ if !nativeLocalEnabled || !nativeLocalReady || nativeLocalBypass {return}
+ nativeLocalChange++; nativeLocalMetaDirty=true
+ if i>=0 && i<len(nativeWords) {nativeLocalWordVersion[i]=nativeLocalChange; if !nativeLocalWordDirty[i] {nativeLocalWordDirty[i]=true; nativeLocalDirty=append(nativeLocalDirty,i)}}
+ if !nativeLocalFailed {nativeLocalNotice("本机 · 待保存")}
+}
+func nativeLocalContentCompatible(version string) bool {return version==nativeCloudVersion || version=="cet46-2026-10-26.1-cloud-test" || version=="cet46-2026-10-26.1"}
+func nativeLocalWord(i int) map[string]any {
+ row:=map[string]any{"id":nativeWordIDs[i],"senseRevision":nativeSenseRevisions[i],"legacyMeaning":nativeLocalPriorMeaning[i],"last":nativeLearnLast[i],"ever":nativeLearnEver[i],"won":nativeLearnWon[i],"recovered":nativeStudyRecovery[i],"recall":nativeStudyRecall[i],"review":nativeStudyReview[i]}
+ now:=nativeLocalNow()
+ for k,key:=range []string{"s","m"} {j:=i*2+k; due:=0.0; if nativeLearnAttempts[j]>0 {due=math.Max(0,now+nativeLearnDue[j]-float64(timer))}
+  row[key]=[]float64{float64(nativeLearnAttempts[j]),float64(nativeLearnCorrect[j]),float64(nativeLearnWrong[j]),float64(nativeLearnTimeout[j]),float64(nativeLearnAssisted[j]),float64(nativeLearnWeak[j]),float64(nativeLearnOutcome[j]),due}
+ }
+ return row
+}
+func nativeLocalHeader(revision int) string {
+ return nativeCloudJSON(map[string]any{"schema":1,"key":nativeLocalKey,"contentVersion":nativeCloudVersion,"revision":revision,"wins":nativeLearnWins,"savedAt":nativeLocalNow(),"study":nativeStudySaved(),"settings":nativeLocalCurrentSettings(),"selectionVersion":1})
+}
+func nativeLocalSelectionCompatible(m map[string]any) bool {
+ v,present:=m["selectionVersion"]; if !present {return true}; n,ok:=v.(float64); return ok && n==1
+}
+func nativeLocalCurrentSettings() []int {muted:=0; if nativeMusicMuted {muted=1}; return []int{difficulty,nativeScope,nativePace,nativeHint,wordMode,nativeMusicVolume,nativeSfxVolume,muted}}
+func nativeLocalRestoreSettings(value any) bool {
+ a,ok:=value.([]any); if !ok || len(a)!=8 {return false}; limits:=[]int{1,3,2,2,1,100,100,1}
+ for n,v:=range a {f,valid:=v.(float64); if !valid || f<0 || math.Trunc(f)!=f || f>float64(limits[n]) {return false}}
+ difficulty=int(a[0].(float64)); nativeScope=int(a[1].(float64)); nativePace=int(a[2].(float64)); nativeHint=int(a[3].(float64)); wordMode=int(a[4].(float64)); nativeMusicVolume=int(a[5].(float64)); nativeSfxVolume=int(a[6].(float64)); nativeMusicMuted=int(a[7].(float64))==1
+ nativePaintKnown=false; nativeTextMemoKnown=false; return true
+}
+func nativeLocalValidAbility(v any) bool {
+ a,ok:=v.([]any); if !ok || len(a)!=8 {return false}
+ for n,x:=range a {f,valid:=x.(float64); if !valid || f<0 || f>1e12 {return false}; if n<7 && (f>1e9 || math.Trunc(f)!=f) {return false}}
+ return a[0].(float64)==a[1].(float64)+a[2].(float64)+a[3].(float64) && a[4].(float64)<=a[1].(float64) && a[5].(float64)<=6000 && a[6].(float64)<=3
+}
+func nativeLocalApplyWord(raw string) bool {
+ row:=map[string]any{}; if json.Unmarshal([]byte(raw),&row)!=nil {return false}
+ id:=nativeCloudString(row,"id"); if !strings.HasPrefix(id,"en:") {return false}; i,known:=nativeWordIdIndex[id]; if !known {return true}
+ if !nativeLocalValidAbility(row["s"]) || !nativeLocalValidAbility(row["m"]) {return false}
+ revision:=nativeCloudString(row,"senseRevision"); nativeLocalPriorMeaning[i]=nativeCloudString(row,"legacyMeaning")
+ changed:=revision!="" && revision!=nativeSenseRevisions[i] || revision=="" && nativeLegacySenseSafe[i]==0
+ if changed {
+  nativeLocalPriorMeaning[i]=raw; row["m"]=[]any{0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0}; row["won"]=0.0
+  spell:=row["s"].([]any); row["ever"]=0.0; if spell[1].(float64)>0 {row["ever"]=1.0}
+  nativeLocalMigrated=append(nativeLocalMigrated,i)
+ }
+ for _,key:=range []string{"last","ever","won"} {v,ok:=row[key].(float64); limit:=1.0; if key=="last" {limit=2}; if !ok || math.Trunc(v)!=v || v<0 || v>limit {return false}}
+ nativeLearnLast[i]=nativeCloudInt(row,"last"); nativeLearnEver[i]=nativeCloudInt(row,"ever"); nativeLearnWon[i]=nativeCloudInt(row,"won")
+ if nativeLearnEver[i]>0 {nativeLearnCorrectWords++}
+ for k,key:=range []string{"s","m"} {a:=row[key].([]any); j:=i*2+k
+  nativeLearnAttempts[j]=int(a[0].(float64)); nativeLearnCorrect[j]=int(a[1].(float64)); nativeLearnWrong[j]=int(a[2].(float64)); nativeLearnTimeout[j]=int(a[3].(float64)); nativeLearnAssisted[j]=int(a[4].(float64)); nativeLearnWeak[j]=int(a[5].(float64)); nativeLearnOutcome[j]=int(a[6].(float64)); nativeLearnDue[j]=float64(timer)+a[7].(float64)-nativeLocalNow()
+ }
+ if !nativeStudyLoadWord(i,row) {return false}
+ if nativeLearningGroup(i)==2 {nativeWeak[i]=1}
+ return true
+}
+func nativeLocalOpen(writing bool) {
+ if nativeLocalBusy || nativeLocalBypass || nativeLocalFailed {return}
+ nativeLocalBusy=true; epoch:=nativeLocalEpoch; key:=nativeLocalKey
+ defer func(){if recover()!=nil {nativeLocalFailure("本机存储不可用 · G 临时游玩")}}()
+ storage:=js.Global().Get("Reflect").Call("get",js.Global(),"indexedDB")
+ req:=storage.Call("open","easyrun.rupture.learning.v1",1)
+ handlers:=[]js.Func{}
+ upgrade:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  db:=req.Get("result"); names:=db.Get("objectStoreNames")
+  if !names.Call("contains","profiles").Bool() {db.Call("createObjectStore","profiles")}
+  if !names.Call("contains","words").Bool() {store:=db.Call("createObjectStore","words"); store.Call("createIndex","byProfile","p")}
+  return nil
+ })
+ failed:=js.FuncOf(func(receiver js.Value,args []js.Value) any {if epoch==nativeLocalEpoch {nativeLocalFailure("本机存储打开失败 · N 重试 / G 临时")}; nativeLocalRelease(handlers); return nil})
+ success:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  db:=req.Get("result"); nativeLocalRelease(handlers)
+  if epoch!=nativeLocalEpoch {db.Call("close"); return nil}
+  nativeLocalTransaction(db,writing,epoch,key); return nil
+ })
+ handlers=[]js.Func{upgrade,failed,success}; nativeLocalCallbackLive+=len(handlers)
+ req.Set("onupgradeneeded",upgrade); req.Set("onerror",failed); req.Set("onsuccess",success)
+}
+func nativeLocalTransaction(db js.Value,writing bool,epoch int,key string) {
+ defer func(){if recover()!=nil {db.Call("close"); if epoch==nativeLocalEpoch {nativeLocalFailure("本机存储异常 · 记录仍在内存")}}}()
+ mode:="readonly"; if writing {mode="readwrite"}
+ tx:=db.Call("transaction",nativeLocalArray("profiles","words"),mode)
+ profiles:=tx.Call("objectStore","profiles"); words:=tx.Call("objectStore","words")
+ metaReq:=profiles.Call("get",key); rowsReq:=js.Undefined()
+ if !writing {rowsReq=words.Call("index","byProfile").Call("getAll",key)}
+ selected:=[]int{}; versions:=[]int{}; change:=nativeLocalChange; revision:=nativeLocalRevision; conflict:=false
+ handlers:=[]js.Func{}
+ done:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  db.Call("close"); nativeLocalRelease(handlers)
+  if epoch!=nativeLocalEpoch {return nil}; nativeLocalBusy=false
+  if writing {
+   nativeLocalRevision=revision+1; nativeLocalSavedAt=nativeLocalNow()
+   for n,i:=range selected {if nativeLocalWordVersion[i]==versions[n] {nativeLocalWordDirty[i]=false}}
+   tail:=[]int{}; for _,i:=range nativeLocalDirty {if nativeLocalWordDirty[i] {tail=append(tail,i)}}; nativeLocalDirty=tail
+   if change==nativeLocalChange {nativeLocalMetaDirty=false}
+   nativeLocalNextWrite=float64(timer)+0.12
+   if len(nativeLocalDirty)==0 && !nativeLocalMetaDirty {nativeLocalNotice("本机 · 已保存")} else {nativeLocalNotice("本机 · 待保存")}
+  } else {
+   value:=metaReq.Get("result"); missing:=value.IsUndefined() || value.IsNull()
+   if !value.IsUndefined() && !value.IsNull() {
+    m:=map[string]any{}; if json.Unmarshal([]byte(value.String()),&m)!=nil || nativeCloudInt(m,"schema")!=1 || !nativeLocalSelectionCompatible(m) || nativeCloudString(m,"key")!=key || !nativeLocalContentCompatible(nativeCloudString(m,"contentVersion")) || nativeCloudInt(m,"revision")<1 || nativeCloudInt(m,"wins")<0 {nativeLocalFailure("本机档案不兼容 · G 临时游玩"); return nil}
+    nativeLocalMigrating=nativeCloudString(m,"contentVersion")!=nativeCloudVersion
+    if !nativeStudyRestore(m["study"]) {nativeLocalFailure("本机成就档案不兼容 · G 临时游玩"); return nil}
+    if !nativeLocalRestoreSettings(m["settings"]) {nativeLocalFailure("本机设置不兼容 · G 临时游玩"); return nil}
+    if _,ok:=m["selectionVersion"]; !ok {nativeScope=0; nativeLocalSelectionMigration=true}
+    nativeLocalRevision=nativeCloudInt(m,"revision"); nativeLearnWins=nativeCloudInt(m,"wins")
+   }
+   nativeLocalRows=rowsReq.Get("result"); nativeLocalLoadCursor=0
+   if missing && nativeLocalRows.Length()>0 {nativeLocalFailure("本机档案头缺失 · G 临时游玩"); return nil}
+   if nativeLocalRows.Length()>20000 {nativeLocalFailure("本机档案过大 · G 临时游玩"); return nil}
+   nativeLocalLoading=true; nativeLocalNotice("本机 · 恢复学习记录")
+  }
+  return nil
+ })
+ aborted:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  db.Call("close"); nativeLocalRelease(handlers)
+  if epoch==nativeLocalEpoch {if conflict {nativeLocalConflict=true; nativeLocalFailure("另一窗口已更新 · 请重新运行")} else {nativeLocalFailure("本机保存失败 · 记录仍在内存")}}
+  return nil
+ })
+ handlers=[]js.Func{done,aborted}; nativeLocalCallbackLive+=len(handlers)
+ tx.Set("oncomplete",done); tx.Set("onabort",aborted)
+ if writing {
+  ready:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+   defer func(){if recover()!=nil {tx.Call("abort")}}()
+   if epoch!=nativeLocalEpoch {tx.Call("abort"); return nil}
+   value:=metaReq.Get("result"); actual:=0
+   if !value.IsUndefined() && !value.IsNull() {m:=map[string]any{}; if json.Unmarshal([]byte(value.String()),&m)!=nil || nativeCloudInt(m,"schema")!=1 || !nativeLocalSelectionCompatible(m) || nativeCloudString(m,"key")!=key || !nativeLocalContentCompatible(nativeCloudString(m,"contentVersion")) {conflict=true; tx.Call("abort"); return nil}; actual=nativeCloudInt(m,"revision")}
+   if actual!=revision {conflict=true; tx.Call("abort"); return nil}
+   for _,i:=range nativeLocalDirty {if len(selected)<50 && nativeLocalWordDirty[i] {selected=append(selected,i); versions=append(versions,nativeLocalWordVersion[i]); row:=map[string]any{"p":key,"body":nativeCloudJSON(nativeLocalWord(i))}; words.Call("put",nativeLocalValue(row),key+"\x1f"+nativeWordIDs[i])}}
+   profiles.Call("put",nativeLocalHeader(revision+1),key)
+   return nil
+  })
+  handlers=append(handlers,ready); nativeLocalCallbackLive++
+  metaReq.Set("onsuccess",ready)
+ }
+}
+func nativeLocalLoad(key string) {
+ nativeLocalEpoch++; nativeLocalMigrating=false; nativeLocalMigrated=nil; nativeLocalPriorMeaning=make([]string,len(nativeWords)); nativeLocalSelectionMigration=false; nativeLocalKey=key; nativeLocalRevision=0; nativeLocalChange=0; nativeLocalMetaDirty=false; nativeLocalDirty=nil
+ nativeLocalReady=false; nativeLocalBusy=false; nativeLocalFailed=false; nativeLocalConflict=false; nativeLocalLoading=false
+ nativeLocalWordVersion=make([]int,len(nativeWords)); nativeLocalWordDirty=make([]bool,len(nativeWords)); if nativeLocalSeen {initNativeLearning()} else {nativeLocalSeen=true}
+ nativeLocalNotice("本机 · 读取档案"); nativeLocalOpen(false)
+}
+func initNativeLocal() {if !nativeLocalEnabled {return}; nativeLocalLoad(nativeLocalProfile())}
+func updateNativeLocal() {
+ if nativeLocalResetStage==2 {if !nativeLocalResetStarted && !nativeLocalBusy {nativeLocalResetBegin()}; return}
+ if !nativeLocalEnabled || nativeLocalBypass {return}
+ if nativeLocalLoading {
+  end:=nativeLocalLoadCursor+16; if end>nativeLocalRows.Length() {end=nativeLocalRows.Length()}
+  for nativeLocalLoadCursor<end {v:=nativeLocalRows.Index(nativeLocalLoadCursor); if v.Get("p").String()!=nativeLocalKey || !nativeLocalApplyWord(v.Get("body").String()) {nativeLocalFailure("本机档案损坏 · G 临时游玩"); return}; nativeLocalLoadCursor++}
+  if nativeLocalLoadCursor==nativeLocalRows.Length() {nativeLocalRows=js.Undefined(); nativeLocalLoading=false; nativeLocalReady=true; nativeStudyRestored(); nativeLocalSettings=nativeLocalCurrentSettings(); nativeLearningShuffle(); nativeLocalNotice("本机 · 已载入"); if nativeLocalSelectionMigration || nativeLocalMigrating {nativeLocalSelectionMigration=false; nativeLocalMigrating=false; nativeLocalMark(-1)}; for _,i:=range nativeLocalMigrated {nativeLocalMark(i)}; nativeLocalMigrated=nil}
+  return
+ }
+ if nativeLocalReady && !nativeLocalBusy && !nativeLocalFailed && (len(nativeLocalDirty)>0 || nativeLocalMetaDirty) && float64(timer)>=nativeLocalNextWrite {nativeLocalNotice("本机 · 保存中"); nativeLocalOpen(true)}
+ if phase==0 && float64(timer)>=nativeLocalNextPoll {
+  nativeLocalNextPoll=float64(timer)+1; key:=nativeLocalProfile()
+  if key!=nativeLocalKey && !nativeLocalBusy && !nativeLocalFailed && len(nativeLocalDirty)==0 && !nativeLocalMetaDirty {nativeLocalLoad(key)}
+ }
+ if nativeLocalReady && !nativeLocalFailed && float64(timer)>=nativeLocalSettingsAt {nativeLocalSettingsAt=float64(timer)+0.25; current:=nativeLocalCurrentSettings(); changed:=len(current)!=len(nativeLocalSettings); if !changed {for n,v:=range current {if v!=nativeLocalSettings[n] {changed=true}}}; if changed {nativeLocalSettings=current; nativeLocalMark(-1)}}
+}
+func nativeLocalBeforeStart() bool {
+ if nativeLocalResetStage>0 {return false}
+ if !nativeLocalEnabled || nativeLocalBypass {return true}
+ if !nativeLocalReady || nativeLocalFailed || nativeLocalLoading || nativeLocalProfile()!=nativeLocalKey {nativeLocalNotice("本机档案未就绪 · N 重试 / G 临时"); return false}
+ return true
+}
+func nativeLocalEvent(name string) {
+ if !nativeLocalEnabled || !nativeLocalReady || nativeLocalBypass {return}
+ if name=="finish" {for n,i:=range nativeDeck {if nativeDone[n]==1 {nativeLocalMark(i)}}; nativeLocalMark(-1)}
+}
+func nativeLocalGuest() {if !nativeLocalEnabled || phase!=0 {return}; nativeLocalEpoch++; nativeLocalBypass=true; nativeLocalBusy=false; nativeLocalLoading=false; initNativeLearning(); nativeLearningShuffle(); nativeLocalNotice("临时游玩 · 不写入本机档案")}
+func nativeLocalRetry() {
+ if !nativeLocalEnabled || phase!=0 || nativeLocalBusy {return}
+ if nativeLocalConflict {nativeLocalNotice("另一窗口已更新 · 请重新运行或 G 临时"); return}
+ if nativeLocalBypass || !nativeLocalReady {nativeLocalBypass=false; nativeLocalLoad(nativeLocalProfile()); return}
+ nativeLocalFailed=false; nativeLocalNextWrite=0; nativeLocalNotice("本机 · 正在重试")
+}
+
+// Destructive reset is isolated to the displayed profile. Keep a monotonically
+// increasing header revision so an older tab cannot recreate cleared words.
+func nativeLocalResetView(stage int) {
+ nativeLocalResetStage=stage; nativeHintOpen=false; nativeDragging=0; nativeCaptureHeld(); nativeInputLock=0.18
+ nativePaintKnown=false; nativeHitMemoKnown=false; nativeTextMemoKnown=false; nativeLayerMemoKnown=false
+}
+func nativeLocalResetAsk() {if phase==0 && nativeSettings && nativeLocalEnabled {nativeLocalResetView(1)}}
+func nativeLocalResetConfirm() {
+ if nativeLocalResetStage!=1 && nativeLocalResetStage!=3 {return}
+ if nativeLocalProfile()!=nativeLocalKey {nativeLocalResetView(3); return}
+ nativeLocalResetStarted=false; nativeLocalResetView(2)
+}
+func nativeLocalResetCancel() {if nativeLocalResetStage!=2 {nativeLocalResetView(0)}}
+func nativeLocalResetBegin() {
+ nativeLocalResetStarted=true; nativeLocalBusy=true; nativeLocalEpoch++
+ epoch:=nativeLocalEpoch; key:=nativeLocalKey
+ defer func(){if recover()!=nil {nativeLocalBusy=false; nativeLocalResetView(3)}}()
+ req:=js.Global().Get("indexedDB").Call("open","easyrun.rupture.learning.v1",1)
+ handlers:=[]js.Func{}
+ failed:=js.FuncOf(func(receiver js.Value,args []js.Value) any {nativeLocalRelease(handlers); if epoch==nativeLocalEpoch {nativeLocalBusy=false; nativeLocalResetView(3)}; return nil})
+ success:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  db:=req.Get("result"); nativeLocalRelease(handlers)
+  if epoch!=nativeLocalEpoch {db.Call("close"); return nil}
+  nativeLocalResetTransaction(db,epoch,key); return nil
+ })
+ handlers=[]js.Func{failed,success}; nativeLocalCallbackLive+=len(handlers); req.Set("onerror",failed); req.Set("onsuccess",success)
+}
+func nativeLocalResetTransaction(db js.Value,epoch int,key string) {
+ defer func(){if recover()!=nil {db.Call("close"); nativeLocalBusy=false; nativeLocalResetView(3)}}()
+ tx:=db.Call("transaction",nativeLocalArray("profiles","words"),"readwrite")
+ profiles:=tx.Call("objectStore","profiles"); words:=tx.Call("objectStore","words")
+ meta:=profiles.Call("get",key); keys:=words.Call("index","byProfile").Call("getAllKeys",key)
+ revision:=nativeLocalRevision; handlers:=[]js.Func{}
+ done:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  db.Call("close"); nativeLocalRelease(handlers); if epoch!=nativeLocalEpoch {return nil}
+  nativeLocalBusy=false; nativeLocalBypass=false
+  difficulty=0; nativeScope=0; nativePace=0; nativeHint=1; wordMode=1; nativeMusicVolume=75; nativeSfxVolume=85; nativeMusicMuted=false; menuReduced=false
+  resetInscription(); nativeLedgerQuery=""; nativeLedgerSearch=false; nativeLedgerFilter=0; nativePreview=false
+  nativeLocalLoad(key); nativeLocalResetView(4); return nil
+ })
+ aborted:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  db.Call("close"); nativeLocalRelease(handlers); if epoch==nativeLocalEpoch {nativeLocalBusy=false; nativeLocalResetView(3)}; return nil
+ })
+ ready:=js.FuncOf(func(receiver js.Value,args []js.Value) any {
+  defer func(){if recover()!=nil {tx.Call("abort")}}()
+  if epoch!=nativeLocalEpoch {tx.Call("abort"); return nil}
+  value:=meta.Get("result"); if !value.IsUndefined() && !value.IsNull() {m:=map[string]any{}; if json.Unmarshal([]byte(value.String()),&m)==nil {revision=int(math.Max(float64(revision),float64(nativeCloudInt(m,"revision"))))}}
+  all:=keys.Get("result"); for i:=0;i<all.Length();i++ {words.Call("delete",all.Index(i))}
+  // The empty revisioned header is a reset tombstone, not deleted history.
+  header:=nativeCloudJSON(map[string]any{"schema":1,"key":key,"contentVersion":nativeCloudVersion,"revision":revision+1,"wins":0,"savedAt":nativeLocalNow(),"study":map[string]any{"schema":1,"unlocked":make([]int,24),"days":nil,"peak":0},"settings":[]int{0,0,0,1,1,75,85,0},"selectionVersion":1})
+  profiles.Call("put",header,key); return nil
+ })
+ handlers=[]js.Func{done,aborted,ready}; nativeLocalCallbackLive+=len(handlers)
+ tx.Set("oncomplete",done); tx.Set("onabort",aborted); keys.Set("onsuccess",ready)
+}

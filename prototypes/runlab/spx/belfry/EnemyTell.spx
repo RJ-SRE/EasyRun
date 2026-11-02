@@ -5,11 +5,12 @@ onCloned data => {
   i:=sceneEnemies[slot]; if i<0 {hide
    continue
   }
-  if enemyHP[i]>0 && (enemyState[i]==1 || enemyState[i]==5) {
-   show; setXYpos enemyX[i],enemyY[i]+12; setSize 0.50
-   setCostume 0; setGraphicEffect GhostEffect,0
-   if enemyType[i]==1 && enemyMode[i]==1 && enemyState[i]==1 && enemyClock[i]<0.32 && enemyStep[i]==0 {setCostume 1; setSize 0.27}
-   if enemyState[i]==5 {setSize 0.34; setGraphicEffect GhostEffect,50}
+  if enemyHP[i]>0 && enemyType[i]!=3 && (enemyState[i]==1 || enemyState[i]==5) {
+   show; setXYpos enemyX[i],enemyY[i]+12
+   costume:=0; scale:=0.50; ghost:=0.0
+   if enemyType[i]==1 && enemyMode[i]==1 && enemyState[i]==1 && enemyClock[i]<0.32 && enemyStep[i]==0 {costume=1; scale=0.27}
+   if enemyState[i]==5 {scale=0.34; ghost=50}
+   setCostume costume; setSize scale; setGraphicEffect GhostEffect,ghost
    setGraphicEffect BrightnessEffect,8+sin(visualTime*20)*5
   } else {hide}
  }

@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "tool": "image_gen.imagegen",
+  "reference": "design/menu-style-variants/2026-10-27/grand-scale/b-moonlit-sanctuary.png",
+  "files": [
+    {
+      "path": "background.png",
+      "sha256": "0906ce0e7f3b7564d0c39b3c33e877a4c8daedea82eb30f9d37ba223bb9867df",
+      "bytes": 2717480,
+      "width": 1586,
+      "height": 992
+    },
+    {
+      "path": "actor-source.png",
+      "sha256": "9835beb7845ab59558f5ca19e143bc3d6f7bbf295fd218843c55f08a1ff44e6f",
+      "bytes": 1735874,
+      "width": 1448,
+      "height": 1086
+    },
+    {
+      "path": "static-original.png",
+      "sha256": "9caba243f69d5520ec6b5061bd1998f37725cf746b89920b4211fa9559c4e5b4",
+      "bytes": 2792082,
+      "width": 1586,
+      "height": 992
+    },
+    {
+      "path": "static-clean-right.png",
+      "sha256": "442790e3c0bb99524bdc272bf1d27852c9ffbe38fce07429a05839ff268b0e35",
+      "bytes": 2691347,
+      "width": 1586,
+      "height": 992
+    }
+  ],
+  "activeVersion": "0.16.1",
+  "historicalFiles": [
+    "background.png",
+    "actor-source.png"
+  ],
+  "activePrompt": "static-clean-prompt.txt",
+  "preservation": "Original left 1000 columns are composited unchanged; imagegen clean-up only repairs baked controls on the right. Hero pose comes from static-original.png."
+}

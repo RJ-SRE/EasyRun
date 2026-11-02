@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-31T16:10:03.009Z",
+  "runtime": "XBuilder cached compiler/resources",
+  "storage": "real browser IndexedDB, no cloud",
+  "archiveSha256": "5a46f00b261909deeecdbb830829864a13dbe3e6191b9fb2b9913a8439e3aba1",
+  "cases": [
+    "storage getter denial is caught and explicit temporary play remains available"
+  ],
+  "errors": [],
+  "networkCalls": [],
+  "complete": true
+}

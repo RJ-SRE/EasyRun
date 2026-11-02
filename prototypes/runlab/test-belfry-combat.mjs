@@ -151,8 +151,11 @@ try {
   assert.ok((await events()).some((e) => e.name === "dash"));
   await save("light recovery cancels into dash");
   await practice();
-  await tap("q");
-  await page.waitForTimeout(1350);
+  await tap("p");
+  await wait(() => latestState.ultimateCool > 0);
+  await wait(
+    () => latestState.ultimateTime === 0 && latestState.attackTime === 0,
+  );
   assert.equal((await state()).ultimateTime, 0);
   assert.equal((await state()).attackTime, 0);
   await save("five-hit ultimate active window expires without another input");

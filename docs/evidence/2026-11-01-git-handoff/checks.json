@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-01",
+  "branch": "feat/adaptive-wordbook-local",
+  "productCheckpoint": "645d9f5",
+  "author": "RJ-SRE",
+  "unitTests": {
+    "passed": 18,
+    "failed": 0
+  },
+  "gameLint": {
+    "passed": true,
+    "invocation": "installed ESLint with package.json game:lint arguments; direct pinned Node entry"
+  },
+  "earlierIntegrationEvidence": {
+    "path": "docs/evidence/2026-11-01-local-reset",
+    "checks": 48,
+    "rerunDuringCommit": false
+  },
+  "credentialsFoundInCandidateScan": 0,
+  "generatedPackagesCommitted": false,
+  "dependenciesCommitted": false,
+  "privateSettingsCommitted": false,
+  "pushed": false,
+  "historyRewritten": false
+}

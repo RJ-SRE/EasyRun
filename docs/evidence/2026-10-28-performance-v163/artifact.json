@@ -1,0 +1,16 @@
+{
+  "version": "0.16.3",
+  "bytes": 132055542,
+  "sha256": "062cb82fd6df3939c6ae3c2c8e7d361f1badbcd0f503f51364ac6e3f9c8aae67",
+  "entries": 4813,
+  "unchangedAssetCounts": {
+    ".png": 4584,
+    ".mp3": 3,
+    ".wav": 16
+  },
+  "changedOrMissingAssets": [],
+  "runtime": {
+    "NativeLogic": 103,
+    "WorldLogic": 104
+  }
+}

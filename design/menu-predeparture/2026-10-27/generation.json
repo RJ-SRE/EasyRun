@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-27",
+  "tool": "built-in image_gen.imagegen",
+  "status": "concept-only; not wired into the game",
+  "image": "menu-concept.png",
+  "prompt": "prompt.txt",
+  "width": 1586,
+  "height": 992,
+  "sha256": "f1c7b19d6659cb256a56aba6e528026058a743947f730af3e90ec9a3d6d1ccf9",
+  "references": [
+    "user current menu screenshot",
+    "prototypes/runlab/art/belfry/actions-source.png",
+    "prototypes/runlab/art/belfry/cover.png"
+  ],
+  "review": [
+    "Logo is smaller and at top-left",
+    "Single protagonist keeps beaked mask, hood, brass gauntlets and red scarf",
+    "Seated equipment-check pose reads clearly against the ledge",
+    "New open gothic city background leaves a quiet right-side control area",
+    "Concept text is legible; real implementation requires native interactive controls",
+    "Static concept does not demonstrate or contain the planned animation"
+  ]
+}

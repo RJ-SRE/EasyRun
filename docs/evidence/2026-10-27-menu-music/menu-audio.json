@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-26T17:20:36.008Z",
+  "cases": [
+    "allowed autoplay produces real menu audio without starting a run or preloading all action effects",
+    "an interrupted context exposes the music entry and an ordinary menu click resumes the existing context",
+    "the explicit play-music button also resumes an interrupted output",
+    "ordinary menu clicks respect explicit mute; unmute restores the menu track",
+    "simulated autoplay denial retains a visible entry; the first trusted menu gesture resumes the pending context and starts real audio without gameplay",
+    "gesture recovery never overrides a deliberate zero music volume"
+  ],
+  "errors": [],
+  "fixture": "Real game page and actual output analyser. Allowed autoplay uses Chromium's explicit allowance. A test-only policy denies media play and leaves context resume pending until trusted input, since headless automation may grant activation itself. AudioContext.suspend also reproduces device interruption. Game state is not replaced. The user's in-app browser session is not accessible to this automation.",
+  "browser": "156.0.8078.4"
+}

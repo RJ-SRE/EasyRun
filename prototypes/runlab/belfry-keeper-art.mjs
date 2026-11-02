@@ -1,29 +1,30 @@
-// These capsules exactly match Keeper.spx. Movement guides are non-damaging;
-// the other three styles retain their authored dimensions at render time.
+// Local tracked weapons and real chain links; no full-screen geometry.
 export function addKeeperArt(sprite, vector, source) {
-  const images = {};
-  for (const [style, length, radius] of [
-    [0, 140, 22],
-    [1, 200, 22],
-    [2, 400, 3],
-    [3, 353, 13],
-  ]) {
-    const a = 220 - length / 2,
-      b = 220 + length / 2;
-    for (const active of [false, true]) {
-      const color = style === 2 ? "#c3dfdc" : "#e7a67b";
-      images[`${style}-${active ? "active" : "tell"}`] = vector(
-        440,
-        64,
-        active
-          ? `<path d="M${a} 32H${b}" stroke="${color}" stroke-opacity=".44" stroke-width="${radius * 2}" stroke-linecap="round"/><path d="M${a} 32H${b}" stroke="#fff1d1" stroke-width="3" stroke-linecap="round"/>`
-          : `<path d="M${a} 32H${b}" stroke="${color}" stroke-opacity=".15" stroke-width="${radius * 2}" stroke-linecap="round"/><path d="M${a} 32H${b}" stroke="${color}" stroke-width="2" stroke-dasharray="8 7"/><path d="M${a} ${32 - radius}v${radius * 2}M${b} ${32 - radius}v${radius * 2}" stroke="${color}" stroke-width="2"/>`,
-      );
-    }
+  const art = {};
+  const styles = [
+    '<path d="M8 24Q94 9 192 24Q100 19 8 24" fill="#c5bb9c" fill-opacity=".48"/><path d="M18 24Q100 17 192 24" fill="none" stroke="#f5e9cc" stroke-width="1.8"/>',
+    '<path d="M5 24l23-7 18 7 35-11 24 11 32-8 22 8 35-5" fill="none" stroke="#b6afa0" stroke-width="2" opacity=".55"/>',
+    "",
+    '<path d="M12 24L130 20Q162 4 194 13Q181 34 132 29L12 27Z" fill="#282a27" stroke="#bda986" stroke-width="1.8"/><path d="M133 29Q177 31 194 13" fill="none" stroke="#e6e0cb" stroke-width="2"/>',
+    "",
+  ];
+  for (const style of [2, 4]) {
+    let s = "";
+    for (let x = 8; x < 194; x += 13)
+      s += `<ellipse cx="${x}" cy="24" rx="8" ry="3.4" fill="none" stroke="${style === 2 ? "#887c61" : "#b7a884"}" stroke-width="2"/><path d="M${x - 3} 22h6" stroke="#ded3b3" stroke-width=".6"/>`;
+    styles[style] = s;
   }
+  for (let form = 0; form < 3; form++)
+    for (let style = 0; style < 6; style++)
+      for (let live = 0; live < 2; live++)
+        art[`${form}-${style}-${live ? "active" : "tell"}`] = vector(
+          200,
+          48,
+          styles[style] || styles[0],
+        );
   sprite(
     "KeeperLine",
-    images,
+    art,
     { visible: false, rotationStyle: "normal" },
     source,
   );

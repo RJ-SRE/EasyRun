@@ -176,7 +176,7 @@ try {
   await pick(3);
   await move(420);
   await wait(() => latestState.chainOwner === 6);
-  await hold(["e"]);
+  await hold(["o"]);
   await wait(() => latestState.chainOwner === -1);
   await hold([]);
   assert.ok((await events()).some((e) => e.name === "chainfree"));
@@ -186,7 +186,7 @@ try {
   await wait(() => latestState.bindTime > 0.55);
   const captured = await state();
   const captureEvent = (await events()).find((e) => e.name === "bind");
-  await hold(["d", "Space", "e", "j", "l", "k", "q"]);
+  await hold(["d", "w", "o", "j", "l", "k", "p"]);
   await p.waitForTimeout(170);
   const blocked = await state();
   assert.ok(blocked.bindTime > 0 && blocked.bindTime < captured.bindTime);
@@ -228,7 +228,7 @@ try {
 
   await pick(4);
   await wait(() => foes[4]?.state === 1 && foes[4].clock > 0.25);
-  await tap("Space");
+  await tap("w");
   await wait(() => runEvents.some((e) => e.name === "enemy_grabmiss"));
   assert.ok(!(await events()).some((e) => e.name === "bind"));
   await save("jumping the telegraph avoids the grab and exposes recovery");

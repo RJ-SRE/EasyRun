@@ -22,6 +22,20 @@ const p = await context.newPage(),
       "Response-only fixed arena and lifecycle events; production Hero, physics, QTE host, keyboard and result processing.",
   };
 p.on("pageerror", (e) => report.errors.push(e.message));
+report.engineMessages = [];
+p.on("console", (m) => {
+  const t = m.text();
+  if (
+    !t.includes("@state") &&
+    !t.includes("@enemy ") &&
+    !t.includes("@render ") &&
+    !t.includes("@native") &&
+    !t.includes("@expedition ")
+  ) {
+    report.engineMessages.push(t.slice(0, 2000));
+    if (report.engineMessages.length > 120) report.engineMessages.shift();
+  }
+});
 const seeded = new InscriptionBook(null, 2); // first request is spelling
 await p.addInitScript(
   ({ key, value }) => {
@@ -35,11 +49,18 @@ await p.addInitScript(
   },
   { key: STORAGE_KEY, value: seeded.serialize() },
 );
-await p.route("**/belfry.json", async (route) => {
-  const data = await (await route.fetch()).json();
-  data["main.spx"] = data["main.spx"].replace(
-    "onKey KeyT",
-    `
+// Patch inside the renderer; the art manifest never crosses CDP as a string.
+await p.addInitScript(() => {
+  const fetch = window.fetch.bind(window);
+  window.fetch = async (...args) => {
+    const response = await fetch(...args);
+    if (String(args[0]).includes("belfry.json")) {
+      const json = response.json.bind(response);
+      response.json = async () => {
+        const data = await json();
+        data["main.spx"] = data["main.spx"].replace(
+          "onKey KeyT",
+          `
 func wordFixture() {
  startRun(); wordMode=1; health=5; embers=1; floorX[0]=80; floorW[0]=800
  for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0; enemyBaseY[i]=-7000; clearEnemyMotion(i)}
@@ -53,9 +74,14 @@ onKey KeyF10, => {wordFixture(); enemyHP[1]=0; enemyType[6]=4; enemyBaseX[6]=600
 onKey KeyF11, => {checkpoint=2; Hero.resetHero(720,-2100); health=0; phase=3; deaths++; event("fail")}
 onKey KeyF12, => {phase=2; event("finish")}
 onKey KeyT`,
-  );
-  await route.fulfill({ json: data });
+        );
+        return data;
+      };
+    }
+    return response;
+  };
 });
+
 const state = () => p.evaluate(() => window.latestState);
 const diag = () => p.evaluate(() => window.inscriptionDiagnostics);
 const wait = (fn, arg, timeout = 10000) =>
@@ -105,8 +131,10 @@ try {
   await p.goto(process.env.RUNLAB_URL || "http://127.0.0.1:4177");
   await wait(() => latestState || runtimeErrors.length, null, 45000);
   assert.deepEqual(await p.evaluate(() => runtimeErrors), []);
-  await p.locator("#word-tier").selectOption("challenge");
+  await p.locator("#menu-settings").click();
+  await p.locator("#word-wordMode").selectOption("challenge");
   assert.equal((await diag()).pool.length, 30);
+  await p.locator("#menu-close").click();
   await p.locator("#word-preview").click();
   assert.equal(await p.locator(".word-row").count(), 30);
   assert.equal((await diag()).count, 0);
@@ -142,9 +170,15 @@ try {
   );
   const prompt = (await diag()).active;
   assert.equal(prompt.q.type, "spell");
-  await p.keyboard.type(BANK.get(prompt.q.wordId).word.slice(0, 2), {
-    delay: 30,
-  });
+  await p.keyboard.type(
+    BANK.get(prompt.q.wordId).word.slice(
+      0,
+      Math.min(2, BANK.get(prompt.q.wordId).word.length - 1),
+    ),
+    {
+      delay: 30,
+    },
+  );
   assert.equal((await state()).phase, 5);
   assert.equal(
     await p.evaluate(() =>
@@ -162,7 +196,7 @@ try {
   await answer();
   await wait(() => runEvents.some((e) => e.name === "marked"));
   assert.equal((await diag()).count, 1);
-  assert.equal((await state()).bowCool, 0);
+  assert.ok((await state()).bowCool > 0 && (await state()).bowCool <= 3);
   pass(
     "typing isolation, escape pause, full arrow and single progress settlement",
   );
@@ -170,6 +204,10 @@ try {
   await charge("l");
   await focus(2);
   assert.equal((await state()).wordSerial, serial + 1);
+  const bowDuringBladeQuestion = (await state()).bowCool;
+  assert.ok(bowDuringBladeQuestion > 0);
+  await p.waitForTimeout(450);
+  assert.equal((await state()).bowCool, bowDuringBladeQuestion);
   await answer();
   await wait(() => runEvents.some((e) => e.name === "markbreak"));
   assert.equal((await diag()).count, 2);
@@ -210,7 +248,7 @@ try {
   assert.equal((await state()).embers, 0);
   pass("correct heal completes remaining channel and restores one HP");
   await fixture();
-  await p.keyboard.press("q", { delay: 50 });
+  await p.keyboard.press("p", { delay: 50 });
   await focus(4);
   const before = await p.evaluate(
     () => runEvents.filter((e) => e.name === "chainhit").length,
@@ -225,16 +263,21 @@ try {
   await wait(() => runEvents.filter((e) => e.name === "chainhit").length === 5);
   assert.equal((await state()).wordSerial, ultSerial);
   await wait(() => latestState.ultimateTime === 0);
-  assert.equal((await state()).ultimateCool, 0);
-  await p.keyboard.press("q");
+  assert.ok((await state()).ultimateCool > 0);
+  await p.keyboard.press("p");
+  await p.waitForTimeout(250);
+  assert.equal((await state()).phase, 1);
+  assert.equal((await state()).wordSerial, ultSerial);
+  await wait(() => latestState.ultimateCool === 0);
+  await p.keyboard.press("p");
   await focus(4);
   assert.equal((await state()).wordSerial, ultSerial + 1);
   await answer(false);
   pass(
-    "ultimate asks before any hit, releases all five on success, and can be requested again without cooldown",
+    "ultimate asks before any hit, releases all five and suppresses repeat questions during cooldown",
   );
   await fixture();
-  await p.keyboard.press("q", { delay: 50 });
+  await p.keyboard.press("p", { delay: 50 });
   await focus(4);
   await answer(false);
   await p.waitForTimeout(350);
@@ -247,7 +290,7 @@ try {
   assert.equal((await state()).ultimateTime, 0);
   pass("failed ultimate cancels all five hits and its release effects");
   await fixture("F8");
-  await p.keyboard.press("q", { delay: 50 });
+  await p.keyboard.press("p", { delay: 50 });
   await focus(4);
   await answer(false);
   assert.equal(
@@ -294,7 +337,7 @@ try {
     [1, "u"],
     [2, "l"],
     [3, "i"],
-    [4, "q"],
+    [4, "p"],
   ]) {
     await fixture();
     if (kind < 3) await charge(key);
@@ -371,6 +414,7 @@ try {
   await wait(() => latestState.phase === 4);
   await p.locator("#word-to-menu").click();
   await wait(() => latestState.phase === 0);
+  await p.locator("#menu-settings").click();
   await p.locator("#word-continue").click();
   await wait(() => window.latestState?.phase === 1, null, 45000);
   assert.equal((await state()).checkpoint, 2);
@@ -387,10 +431,10 @@ try {
   assert.deepEqual(report.errors, []);
   assert.deepEqual(await p.evaluate(() => runtimeErrors), []);
 } catch (e) {
-  report.state = await state();
-  report.active = await diag();
-  report.events = await p.evaluate(() => runEvents);
-  report.foes = await p.evaluate(() => foes);
+  report.state = await state().catch(() => null);
+  report.active = await diag().catch(() => null);
+  report.events = await p.evaluate(() => runEvents).catch(() => []);
+  report.foes = await p.evaluate(() => foes).catch(() => ({}));
   report.errors.push(e.stack);
   console.error(e);
   await p.screenshot({ path: fileURLToPath(new URL("failure.png", out)) });

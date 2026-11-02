@@ -1,0 +1,28 @@
+{
+  "version": "0.22.0-local.1",
+  "archive": "/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/exports/belfry-boss-common.xbp",
+  "desktop": "/Users/rj/Desktop/EasyRun-XBuilder-v0.22.0-boss-common.xbp",
+  "bytes": 154225386,
+  "sha256": "e4450aac849d04f39247b05787ec9865c9d34cbeee3982ba19272daaddbb66a0",
+  "contentVersion": "common-ngsl-nawl-2026-11-01.1",
+  "wordCount": 3816,
+  "forms": 3,
+  "moves": 9,
+  "keyposes": 36,
+  "worldClones": 121,
+  "localOnly": true,
+  "gitCommit": false,
+  "pushed": false,
+  "onlineProjectModified": false,
+  "validation": {
+    "coreAndLearningUnitTests": 18,
+    "runtimeUnitTests": 4,
+    "bossRuntimeCases": 11,
+    "nativeWordCases": 28,
+    "nativeHUDCases": 10,
+    "nativeLocalPersistenceCases": 12,
+    "webCombatWordCases": 24,
+    "webWordbookCases": 8,
+    "performanceScenes": 8
+  }
+}

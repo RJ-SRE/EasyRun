@@ -9,3 +9,8 @@
 *.mp4 binary
 *.webm binary
 *.xbp binary
+
+# Keep downloaded word-list bytes intact for provenance SHA-256 checks.
+prototypes/runlab/data/common-sources/ngsl-1.2.csv -text whitespace=cr-at-eol
+prototypes/runlab/data/common-sources/ngsl-supplement.csv -text whitespace=cr-at-eol
+prototypes/runlab/data/common-sources/nawl-1.2.txt -text whitespace=cr-at-eol

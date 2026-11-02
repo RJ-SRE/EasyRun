@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-31",
+  "upstreamCommit": "c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2",
+  "localReferenceCommit": "e2a4c45dfa0574ac7700fad94d2d4a6da7da8083",
+  "sourceCache": "/Users/rj/Documents/ChatGPT/七牛黑客松/.cache/xbuilder-source-audit/2026-10-31",
+  "files": [
+    {
+      "path": "spx-gui/src/components/project/runner/ProjectRunner.vue",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/spx-gui/src/components/project/runner/ProjectRunner.vue"
+    },
+    {
+      "path": "tools/ispx/username.go",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/tools/ispx/username.go"
+    },
+    {
+      "path": "spx-gui/package.json",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/spx-gui/package.json"
+    },
+    {
+      "path": "tools/ispx/go.mod",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/tools/ispx/go.mod"
+    },
+    {
+      "path": "spx-gui/src/components/project/runner/ProjectRunnerSurface.vue",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/spx-gui/src/components/project/runner/ProjectRunnerSurface.vue"
+    },
+    {
+      "path": "spx-gui/src/apps/xbuilder/pages/community/project.vue",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/spx-gui/src/apps/xbuilder/pages/community/project.vue"
+    },
+    {
+      "path": "spx-gui/src/stores/user/signed-in.ts",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/spx-gui/src/stores/user/signed-in.ts"
+    },
+    {
+      "path": "tools/ispx/main.go",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/tools/ispx/main.go"
+    },
+    {
+      "path": "spx-gui/src/apps/xbuilder/env.ts",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/spx-gui/src/apps/xbuilder/env.ts"
+    },
+    {
+      "path": "spx-gui/src/apis/user.ts",
+      "url": "https://github.com/goplus/builder/blob/c94e7bdaabd2d2756eb3a7f061a0a28b59368ae2/spx-gui/src/apis/user.ts"
+    }
+  ]
+}

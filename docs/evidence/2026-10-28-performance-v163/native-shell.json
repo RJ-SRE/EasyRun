@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-28T11:15:32.968Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "initialFollow": "Anchor",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "native boot stays on the title screen; no run starts or combat time advances before an explicit start",
+    "native difficulty cards are clickable and select Veteran",
+    "title music button toggles the native player",
+    "help opens before play; gameplay shortcuts are isolated; Enter closes help without starting a run",
+    "start button enters actual gameplay with the selected health and hides the title",
+    "camera owns its authored center after boot even if imported configuration follows the hidden Anchor sprite",
+    "gameplay guide/pause/music buttons and hit regions are absent; H and B remain functional",
+    "runtime reacquires camera ownership after an external follow target is restored",
+    "deep-room camera movement and restart recover the intended world position without losing UI alignment",
+    "pause freezes play; help returns to pause; resume and return-to-title work with mouse and keys",
+    "practice can be entered from title; returning and keyboard-starting Traveler applies 8 health",
+    "defeat offers checkpoint retry; victory and return-to-title menus are visible and actionable",
+    "live resize covers small 4:3, 16:9, ultrawide, portrait and return; entire 960x600 field fits with matching aspect and correct click mapping",
+    "1125x844 window on a 2x display fits, starts and accepts real jump input with centered camera",
+    "native ledger opens after a 2x-display boot, keeps all text inside the frame, and returns to gameplay; victory ledger preserves the result screen"
+  ],
+  "sizes": [
+    {
+      "width": 480,
+      "height": 360,
+      "worldWidth": 960,
+      "worldHeight": 720,
+      "zoom": 0.3
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "worldWidth": 1066.6666259765625,
+      "worldHeight": 600,
+      "zoom": 0.7200000286102295
+    },
+    {
+      "width": 1440,
+      "height": 600,
+      "worldWidth": 1440,
+      "worldHeight": 600,
+      "zoom": 0.6
+    },
+    {
+      "width": 600,
+      "height": 900,
+      "worldWidth": 960.0000610351562,
+      "worldHeight": 1440.0001220703125,
+      "zoom": 0.375
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "worldWidth": 960,
+      "worldHeight": 600,
+      "zoom": 0.6
+    }
+  ],
+  "errors": [],
+  "archiveSha256": "062cb82fd6df3939c6ae3c2c8e7d361f1badbcd0f503f51364ac6e3f9c8aae67",
+  "fixture": "Actual native archive without the web host. F8/F9 select only win/death; F6 moves to a deep room; F7 injects a stale Anchor follow target. Initial config follows Anchor to reproduce an editor-saved follow target. Resize checks use the exported 480x360 run config, matching Builder; a second boot simulates 960x600. No online project overwritten.",
+  "browser": "156.0.8078.4",
+  "cameraAtStart": [
+    479.99993896484375,
+    -83.39810180664062,
+    960,
+    600,
+    0.6,
+    7,
+    7
+  ],
+  "roundtrip": {
+    "run": {
+      "width": 480,
+      "height": 360
+    },
+    "camera": {
+      "on": "Anchor"
+    },
+    "map": {
+      "width": 4000,
+      "height": 26380,
+      "mode": "fillRatio"
+    }
+  }
+}

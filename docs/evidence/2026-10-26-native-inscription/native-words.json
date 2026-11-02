@@ -1,0 +1,203 @@
+{
+  "date": "2026-10-26T10:49:00.820Z",
+  "modelUrl": "https://x.qiniu.com/assets/img-rendering-CIpDEpA1.js",
+  "runtime": "deployed XBuilder compiler and resources",
+  "cases": [
+    "all 121 world clones spawn before text; native glyphs do not consume missing enemy or platform slots",
+    "CET4 and CET6 scope selection draws only words belonging to the selected source level",
+    "8815-word native deck draws 30 unique words; shuffle and paginated preview work before entering combat",
+    "music and action sliders independently set 50% and 25% without changing the other channel",
+    "real charged arrow invokes spelling; typing combat/menu/mute keys is isolated; correct submission releases once and starts 3-second cooldown",
+    "wrong meaning cancels charged blade without consuming cooldown and increases session weakness",
+    "misspelled submission cancels ultimate; invalid typing never directly casts a skill",
+    "healing gates before recovery; correct meaning restores one life and starts cooldown",
+    "question can pause/resume without losing input; correct ultimate starts its 5-second cooldown",
+    "timeout cancels the pending skill without cooldown and resumes combat",
+    "chain and bind rescue use the same validated native question path (explicit trap setup fixtures)",
+    "returning to title prepares a fresh preview deck; practice stays free of inscription questions",
+    "native text shrinks after answers, real arrows receive clone slots, and observed combined clone count stays below 300"
+  ],
+  "sizes": [],
+  "errors": [],
+  "archiveSha256": "88b4602d35bbb7dc4836c78261f4289cc7fe3482f7dcf7abb99bdc7f18dd8919",
+  "fixture": "Native inscription integration. Real skill keys open questions; test-only F9 prepares safe resources, F10/F11 select question type, F7/F8 create chain/bind states. Initial camera follows Anchor to retain viewport regression coverage. No online project changed.",
+  "browser": "156.0.8078.4",
+  "frameRateSamples": [
+    59.799671101276076,
+    59.28385107645227,
+    59.09112369086231,
+    59.43536404160476,
+    61.09233087576741,
+    59.776436128310046,
+    57.767850266527745,
+    59.692781154226346,
+    59.855150531148034,
+    60.096153847588944,
+    57.132343685071234,
+    60.03189194125197,
+    16.50259281131658,
+    60.81222325935442,
+    58.293151187652086,
+    56.40498780951375,
+    60.688204238085575,
+    59.32828801710727,
+    57.286892758154316,
+    62.98948075923621,
+    60.01920614195871,
+    59.883276165477305,
+    17.61117051413289,
+    57.62976989086486,
+    58.84198964683664,
+    57.80840455445001,
+    56.19335742216114,
+    48.09833437045203,
+    45.19263360559248,
+    38.59716837072915
+  ],
+  "clonePeak": 179,
+  "worldRender": [
+    121,
+    121,
+    0,
+    33,
+    0,
+    1,
+    1,
+    0,
+    0
+  ],
+  "questions": [
+    [
+      "1",
+      "1",
+      "6230",
+      "1",
+      "1",
+      "9",
+      "pulley"
+    ],
+    [
+      "2",
+      "2",
+      "7461",
+      "1",
+      "2",
+      "9",
+      "stage"
+    ],
+    [
+      "3",
+      "4",
+      "5491",
+      "1",
+      "0",
+      "9",
+      "outbreak"
+    ],
+    [
+      "4",
+      "3",
+      "8060",
+      "0",
+      "0",
+      "9",
+      "tongue"
+    ],
+    [
+      "5",
+      "4",
+      "1705",
+      "0",
+      "2",
+      "9.850000000000001",
+      "continual"
+    ],
+    [
+      "6",
+      "2",
+      "8513",
+      "1",
+      "2",
+      "9",
+      "vocabulary"
+    ],
+    [
+      "7",
+      "5",
+      "2864",
+      "1",
+      "1",
+      "9",
+      "excellent"
+    ],
+    [
+      "8",
+      "6",
+      "3847",
+      "1",
+      "0",
+      "9",
+      "humanity"
+    ]
+  ],
+  "answers": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      1,
+      2,
+      0
+    ],
+    [
+      1,
+      3,
+      0
+    ],
+    [
+      3,
+      3,
+      2
+    ],
+    [
+      1,
+      4,
+      0
+    ],
+    [
+      1,
+      5,
+      0
+    ]
+  ],
+  "deckCount": 6,
+  "sfx": [
+    "@nativeSfx bowdraw 25",
+    "@nativeSfx bowshot 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healstart 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx healcomplete 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx cloth 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25",
+    "@nativeSfx chaincut 25"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-27",
+  "archiveBytes": 112089433,
+  "archiveSha256": "3c9b49f891f487c5585e89346c7b7005ba1cd11c18700611a8ee8463e78d9a5e",
+  "baseline": "EasyRun-XBuilder-v0.15.4-cover-C.xbp",
+  "baselineSha256": "5ab99f4146fdc5703537f5adf56741d3a8b0da135ed8b4f755bdc8b1dbd88d35",
+  "crc": "passed",
+  "entries": 4725,
+  "originalSprites": 84,
+  "added": [],
+  "removed": [],
+  "changed": [
+    "Anchor.spx",
+    "BowLock.spx",
+    "ChargeHalo.spx",
+    "Core.spx",
+    "District0.spx",
+    "District1.spx",
+    "District2.spx",
+    "District3.spx",
+    "District4.spx",
+    "Enemy.spx",
+    "EnemyTell.spx",
+    "Hazard.spx",
+    "HealingWeave.spx",
+    "KeeperLine.spx",
+    "Ledge.spx",
+    "Niche.spx",
+    "RisingVoid.spx",
+    "Rope.spx",
+    "SpiritBow.spx",
+    "Target.spx",
+    "assets/sprites/NativePanel/title0.png",
+    "assets/sprites/NativePanel/title1.png",
+    "main.spx",
+    "裂印.spx"
+  ],
+  "audioFilesUnchanged": 19,
+  "coverSha256": "449e9f57dc789d29dc5529ec04baddf387e19e5fd6080c265f7083cb6332da43",
+  "missingCostumes": [],
+  "testInstrumentationAbsent": true,
+  "rasterizationDeltas": [
+    {
+      "file": "assets/sprites/NativePanel/title0.png",
+      "size": [
+        1920,
+        1200
+      ],
+      "changedPixels": 4,
+      "maxChannelDelta": 1,
+      "note": "Canvas rasterization variance; source artwork and layout unchanged."
+    },
+    {
+      "file": "assets/sprites/NativePanel/title1.png",
+      "size": [
+        1920,
+        1200
+      ],
+      "changedPixels": 4,
+      "maxChannelDelta": 1,
+      "note": "Canvas rasterization variance; source artwork and layout unchanged."
+    }
+  ],
+  "checks": {
+    "native-words": 23,
+    "native-shell": 15,
+    "scene": 35,
+    "cover": 8
+  },
+  "checksPassed": 81,
+  "sourceSha256": {
+    "prototypes/runlab/belfry-render-cache.mjs": "4e21095e8d9673a404b3d589edbb00e0ce229dfca34847afea4d10c7f64c0f13",
+    "prototypes/runlab/build-belfry.mjs": "4f59ad157ff0ebee371fd18559c9b925948910aa9787cc0fbf1bd6d9112f4f78",
+    "prototypes/runlab/belfry-scene.mjs": "96c7880f28ee43da8eff6dcb40fc94530dae4d9964c501a9a339106c0715f239",
+    "prototypes/runlab/spx/belfry/Scene.spx": "753864e7b2b03c1aa239e4fd58cc5f1e729dd6c37e15a96fc34793d3821f64db",
+    "prototypes/runlab/spx/belfry/NativeShell.spx": "bfc32cc8a9a071b2adc190ab4e27ee8621b1e0d44c7582df9865e97044721588",
+    "prototypes/runlab/spx/belfry/NativeWords.spx": "2f91f572b075563c0a8e547a9914b9fd1104ec2d5e5c0c49a1e1189fcce39bd0",
+    "prototypes/runlab/spx/belfry/EnemyTell.spx": "0432112912a05fb65bf3aeaf98aeb6c13c8c4f97b2900c96bc10d6790f850439",
+    "prototypes/runlab/spx/belfry/main.spx": "e688e880d942bc46c00e4b40399c60586fb872a6680ea065a35e7bf2f6a61647",
+    "prototypes/runlab/package.py": "8ed4edf8dac683c770bc1221db8b48026f9361f8d0dda8721226ea49db692082",
+    "prototypes/runlab/test-belfry-performance.mjs": "527661dd813365da185dbc3524b1cd6b71ad62c5eb9488e7dad897da04ca819c",
+    "prototypes/runlab/test-belfry-native-words.mjs": "7d4b80963210808979f891a8313a5f69797030efd6112dfe05ff3efbfa07a4b7"
+  },
+  "finalPerformanceReports": [
+    "v154-retina-words.json",
+    "v155-retina-words.json"
+  ]
+}

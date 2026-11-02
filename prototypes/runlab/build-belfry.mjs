@@ -1,12 +1,15 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
+import { buildKeeperFrames } from "./belfry-keeper-frames.mjs";
 import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
 import { buildHuntLayout } from "./belfry-hunt.mjs";
 import { huntInit } from "./hunt-init.mjs";
 import { sceneInit, SCENE_SPRITES } from "./belfry-scene.mjs";
-import { WORDS as CET4_WORDS } from "./public/cet4-words.js";
+import { buildIdleCloth } from "./belfry-idle-cloth.mjs";
+import { addMenuArt } from "./belfry-menu-art.mjs";
+import { cacheRenderWrites } from "./belfry-render-cache.mjs";
 const layout = buildHuntLayout();
 const { platforms, anchors, echoes, checkpoints } = layout;
 const enemies = layout.enemies.map((e) => [e.x, e.y, e.kind, +e.returnOnly]);
@@ -24,6 +27,7 @@ const png = async (path, width) => {
   return { binary, w, h, res: w / width };
 };
 function sprite(name, images, config = {}, source = "") {
+  source = cacheRenderWrites(name, source);
   const costumes = [];
   for (const [key, im] of Object.entries(images)) {
     const ext = im.binary ? "png" : "svg",
@@ -64,32 +68,11 @@ await copyFile(
   new URL("public/art/clockwell.png", root),
 );
 // Source atlases remain untouched. Build imports alpha-isolated, registered cells.
-let actionFrames, combatFrames, skillFrames;
+const browser = await chromium.launch({ headless: true, channel: "chromium" });
+let actionFrames, combatFrames, skillFrames, idleCloth;
 const assassinFrames = {};
 const assassinKinds = ["hover", "fighter", "archer", "chain", "binder"];
-let reuseAtlas = false;
-async function launchAtlasBrowser() {
-  const chrome =
-    process.env.BELFRY_CHROME ||
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-  const attempts = [
-    { headless: true, channel: "chromium" },
-    { headless: true, channel: "chrome" },
-    { headless: true, executablePath: chrome },
-  ];
-  let lastErr;
-  for (const opts of attempts) {
-    try {
-      return await chromium.launch(opts);
-    } catch (err) {
-      lastErr = err;
-    }
-  }
-  throw lastErr;
-}
 try {
-  const browser = await launchAtlasBrowser();
-  try {
   const page = await browser.newPage();
   const actions = await readFile(
     new URL("art/belfry/actions-source.png", root),
@@ -372,7 +355,15 @@ try {
     true,
   );
   for (const name of ["warden", "hound", "weaver"])
-    assassinFrames[name] = await importAtlas(`art/belfry/hunt-${name}-source.png`,3,2,384,330,true,true);
+    assassinFrames[name] = await importAtlas(
+      `art/belfry/hunt-${name}-source.png`,
+      3,
+      2,
+      384,
+      330,
+      true,
+      true,
+    );
   assassinFrames.keeper = await importAtlas(
     "art/belfry/keeper-v2-source.png",
     6,
@@ -382,14 +373,19 @@ try {
     true,
     true,
   );
-  } finally {
-    await browser.close();
-  }
-} catch (err) {
-  reuseAtlas = true;
-  console.warn(`Reusing existing Belfry frames (${err.message})`);
+  assassinFrames.keeperStructural = await buildKeeperFrames(page, root);
+  idleCloth = await buildIdleCloth(
+    page,
+    "data:image/png;base64," +
+      (await readFile(new URL("art/rupture-v2/frames/0.png", root))).toString(
+        "base64",
+      ),
+  );
+  if (idleCloth.anchoredDifferences !== 0 || idleCloth.changedPixels < 1000)
+    throw new Error("Idle cloth must move fabric while pinning hood and soles");
+} finally {
+  await browser.close();
 }
-if (!reuseAtlas) {
 await mkdir(new URL("art/belfry/frames/", root), { recursive: true });
 for (let i = 0; i < 3; i++)
   await writeFile(
@@ -414,7 +410,6 @@ for (const [prefix, frames] of [
       new URL(`art/belfry/frames/${prefix}-${i}.png`, root),
       Buffer.from(frames[i], "base64"),
     );
-}
 await mkdir(new URL("public/art/city/", root), { recursive: true });
 for (const name of ["wind", "forge", "archive", "mirror", "heart"])
   await copyFile(
@@ -483,7 +478,7 @@ sprite(
   },
   { visible: false, rotationStyle: "normal" },
   `onCloned data => {
- slot:=data.(int); opening:=0.0; view:=-1
+ slot:=data.(int); opening:=0.0; view:=-1; previousCostume:=-1; previousSize:=-1.0
  for {
   dt:=float64(waitNextFrame()); i:=sceneFloors[slot]
   if i<0 {hide
@@ -499,10 +494,12 @@ sprite(
   }
   if !floorActive(i) && floorKind[i]>=4 {ghost=100}
   if floorKind[i]==4 {setGraphicEffect ColorEffect,18} else if floorKind[i]==5 {setGraphicEffect BrightnessEffect,18}
-  setCostume 0
-  if practice==1 {if i==0 {setSize 800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {
-   if floorKind[i]==23 || floorKind[i]==43 {setCostume 1; setSize floorW[i]/240} else {setSize floorW[i]/1983}
+  costume:=0; scale:=floorW[i]/1983
+  if practice==1 {if i==0 {scale=800.0/1983; x=480; y=0; ghost=0} else {ghost=100}} else {
+   if floorKind[i]==23 || floorKind[i]==43 {costume=1; scale=floorW[i]/240}
   }
+  if costume!=previousCostume {previousCostume=costume; setCostume costume}
+  if scale!=previousSize {previousSize=scale; setSize scale}
   setXYpos x,y; setHeading heading; setGraphicEffect GhostEffect,ghost
  }
 }`,
@@ -569,42 +566,31 @@ for (const [name, count] of [
       pivotX: 192,
       pivotY: 366,
     };
-if (reuseAtlas) {
-  for (let i = 0; i < 18; i++)
-    enemyImages[`keeper${i}`] = {
-      ...(await png(`projects/belfry/assets/sprites/Enemy/keeper${i}.png`, 384)),
-      pivotX: 192,
-      pivotY: 366,
-    };
-  for (const name of ["warden", "hound", "weaver"])
-    for (let i = 0; i < 6; i++)
-      enemyImages[`hunt-${name}-${i}`] = {
-        ...(await png(
-          `projects/belfry/assets/sprites/Enemy/hunt-${name}-${i}.png`,
-          384,
-        )),
-        pivotX: 192,
-        pivotY: 366,
-      };
-} else {
-  for (let i = 0; i < 18; i++)
-    enemyImages[`keeper${i}`] = {
-      binary: Buffer.from(assassinFrames.keeper[i], "base64"),
+for (let i = 0; i < 18; i++)
+  enemyImages[`keeper${i}`] = {
+    binary: Buffer.from(assassinFrames.keeper[i], "base64"),
+    w: 384,
+    h: 384,
+    pivotX: 192,
+    pivotY: 366,
+  };
+for (const name of ["warden", "hound", "weaver"])
+  for (let i = 0; i < 6; i++)
+    enemyImages[`hunt-${name}-${i}`] = {
+      binary: Buffer.from(assassinFrames[name][i], "base64"),
       w: 384,
       h: 384,
       pivotX: 192,
       pivotY: 366,
     };
-  for (const name of ["warden", "hound", "weaver"])
-    for (let i = 0; i < 6; i++)
-      enemyImages[`hunt-${name}-${i}`] = {
-        binary: Buffer.from(assassinFrames[name][i], "base64"),
-        w: 384,
-        h: 384,
-        pivotX: 192,
-        pivotY: 366,
-      };
-}
+for (let i = 0; i < 36; i++)
+  enemyImages[`keeper-structural-${i}`] = {
+    binary: Buffer.from(assassinFrames.keeperStructural[i], "base64"),
+    w: 512,
+    h: 512,
+    pivotX: 256,
+    pivotY: 490,
+  };
 sprite(
   "EnemyBlend",
   enemyImages,
@@ -791,6 +777,17 @@ sprite(
   { visible: false, rotationStyle: "left-right" },
   await code("PoseBlend"),
 );
+// Keep the original 40 action indices, trails and transitions unchanged.
+if (Object.keys(hero).length !== 40)
+  throw new Error("Update idle costume base after changing the action atlas");
+for (const [i, data] of idleCloth.frames.entries())
+  hero["idle-wind" + i] = {
+    binary: Buffer.from(data, "base64"),
+    w: idleCloth.width,
+    h: idleCloth.height,
+    pivotX: idleCloth.pivotX,
+    pivotY: idleCloth.pivotY,
+  };
 sprite(
   "Hero",
   hero,
@@ -819,9 +816,14 @@ sprite(
       110,
       '<path d="M14 34V14h20m42 0h20v20m0 42v20H76m-42 0H14V76" fill="none" stroke="#edb59e" stroke-width="2"/><circle cx="55" cy="55" r="35" fill="none" stroke="#ca6563" stroke-width="1" stroke-dasharray="18 10"/><path d="M55 4v14m0 74v14M4 55h14m74 0h14" stroke="#fff0d4" stroke-width="1.5"/>',
     ),
+    boss: vector(
+      70,
+      94,
+      '<path d="M8 23V9h12m30 0h12v14m0 48v14H50m-30 0H8V71" fill="none" stroke="#cbb78c" stroke-width="1.5" stroke-opacity=".8"/>',
+    ),
   },
   { visible: false, rotationStyle: "normal" },
-  "onStart => {for {waitNextFrame(); i:=Hero.bowTarget; if Hero.bowCharging && i>=0 && phase!=2 && phase!=3 {show; setXYpos enemyX[i],enemyY[i]; setSize 0.75+clamp(Hero.bowCharge,0,0.55)*0.25; if enemyType[i]==3 {setSize 1.6}; setHeading 90; setGraphicEffect GhostEffect,15} else {hide}}}",
+  "onStart => {for {waitNextFrame(); i:=Hero.bowTarget; if Hero.bowCharging && i>=0 && phase!=2 && phase!=3 {show; setCostume 0; setXYpos enemyX[i],enemyY[i]; setSize 0.75+clamp(Hero.bowCharge,0,0.55)*0.25; if enemyType[i]==3 {setCostume 1; setSize 0.70; setXYpos enemyX[i],enemyY[i]+28}; setHeading 90; setGraphicEffect GhostEffect,15} else {hide}}}",
 );
 sprite(
   "HealingWeave",
@@ -1053,18 +1055,7 @@ sprite(
   { visible: false },
   "onStart => {for {waitNextFrame(); if segment==2 {show; setXYpos 480,riseY-395} else {hide}}}",
 );
-sprite(
-  "StageHud",
-  {
-    hud: vector(
-      8,
-      8,
-      '<rect width="8" height="8" fill="none"/>',
-    ),
-  },
-  { visible: false },
-  await code("StageHud"),
-);
+await addMenuArt({ root, sprite, png, vector });
 // Device art intentionally omitted in the hunt edition.
 const floats = (a) => "[]float64{" + a.join(",") + "}",
   ints = (a) => "[]int{" + a.join(",") + "}";
@@ -1088,35 +1079,24 @@ const initialization =
  checkpointX=${floats(checkpoints.map((a) => a[0]))}; checkpointY=${floats(checkpoints.map((a) => a[1]))}
 }
 `;
-const quote = (s) => JSON.stringify(s);
-const stageWordBank =
-  "func initStageWords() {\n wordText=[]string{" +
-  CET4_WORDS.map((w) => quote(w.word)).join(",") +
-  "}\n wordMean=[]string{" +
-  CET4_WORDS.map((w) => quote(w.meaning)).join(",") +
-  "}\n wordMissA=[]string{" +
-  CET4_WORDS.map((w) => quote(w.distractors[0])).join(",") +
-  "}\n wordMissB=[]string{" +
-  CET4_WORDS.map((w) => quote(w.distractors[1])).join(",") +
-  "}\n}\n";
 files["main.spx"] = (await code("main")).replace(
   "func dist(",
   initialization +
     (await code("Assassins")) +
     (await code("Keeper")) +
-    (await code("Inscription")).replace(
-      "func initStageWords() {\n // STAGE_WORD_BANK\n}\n",
-      stageWordBank,
-    ) +
+    (await code("Inscription")) +
     (await code("HuntCombat")) +
     (await code("HuntExpedition")) +
     (await code("Scene")) +
+    (await code("Viewport")) +
+    (await code("MenuMotion")) +
     "\nfunc dist(",
 );
 files["assets/index.json"] = JSON.stringify({
   map: { width: 4000, height: Math.max(12000, layout.depth * 2 + 3000) },
   run: { width: 960, height: 600 },
   maxFPS: 60,
+  stretchMode: false,
   physics: false,
   autoSetCollisionLayer: true,
   zorder,
@@ -1140,4 +1120,7 @@ console.log(
   `Built Belfry: ${Object.keys(files).length} files / ${zorder.length} sprites`,
 );
 
-await copyFile(new URL("public/belfry.html",root),new URL("public/index.html",root));
+await copyFile(
+  new URL("public/belfry.html", root),
+  new URL("public/index.html", root),
+);

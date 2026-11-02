@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-01",
+  "tool": "image_gen.imagegen (built-in)",
+  "reference": "prototypes/runlab/art/belfry/keeper-v2-source.png",
+  "images": [
+    {
+      "file": "keeper-structural-evolution-concept.png",
+      "sha256": "6399fc19d5ac712038fdd879d12d456c155b087554e7e4679b3f0d05b0f29b18",
+      "source": "/Users/rj/.codex/generated_images/01a166c1-4849-77d2-808a-01d4a13421ab/exec-bd0e4075-44f7-4b06-bcf9-fc94b51145cc.png",
+      "prompt": "concept-prompt.txt",
+      "status": "concept-only-not-runtime"
+    },
+    {
+      "file": "keeper-attack-keyposes-concept.png",
+      "sha256": "d95edb6f90a13aa10a265b4451d17dcfabd6cb9cb2472632595d7ca6ed91f5f4",
+      "source": "/Users/rj/.codex/generated_images/01a166c1-4849-77d2-808a-01d4a13421ab/exec-95f5a572-75ce-4dd5-84fa-5bc138636feb.png",
+      "prompt": "skill-prompt.txt",
+      "status": "concept-only-not-runtime"
+    }
+  ]
+}

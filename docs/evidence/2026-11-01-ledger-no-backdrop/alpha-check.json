@@ -1,0 +1,20 @@
+{
+  "asset": "assets/sprites/NativePanel/wordbook.png",
+  "size": [
+    1920,
+    1200
+  ],
+  "panelRectPixels": [
+    360,
+    96,
+    1560,
+    1104
+  ],
+  "exteriorAlphaMax": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "panelRetained": true
+}

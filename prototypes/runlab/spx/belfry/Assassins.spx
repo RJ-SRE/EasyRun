@@ -3,7 +3,7 @@
 // 4 holding a captured player, 5 committed footwork. All damaging moves reserve
 // the same two attack slots, including preparation and repositioning.
 func enemyMaxHP(kind int) int {
- if kind==7 {return 8}; if kind==8 {return 4}; if kind==9 {return 4}; if kind==1 {return 6}; if kind==6 {return 1}; if kind==0 || kind==2 {return 3}; if kind==4 {return 5}; if kind==3 {if difficulty==0 {return 36}; return 45}; return 4
+ if kind==7 {return 8}; if kind==8 {return 4}; if kind==9 {return 4}; if kind==1 {return 6}; if kind==6 {return 1}; if kind==0 || kind==2 {return 3}; if kind==4 {return 5}; if kind==3 {if difficulty==0 {return 72}; return 90}; return 4
 }
 func enemySupport(i int) int {
  best:=-1; distance:=100000.0

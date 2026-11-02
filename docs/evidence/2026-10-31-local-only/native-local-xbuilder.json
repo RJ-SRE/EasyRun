@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-31T16:11:58.222Z",
+  "runtime": "XBuilder cached compiler/resources",
+  "storage": "real browser IndexedDB, no cloud",
+  "archiveSha256": "5a46f00b261909deeecdbb830829864a13dbe3e6191b9fb2b9913a8439e3aba1",
+  "cases": [
+    "full local-only game atomically saves independent word abilities with zero live callback retention",
+    "already-loaded game saves through IndexedDB while browser network is offline",
+    "SIGKILL of isolated browser after commit preserves history in a fresh game process",
+    "injected transaction abort changes neither header nor words; pending memory retries once without double counts",
+    "SIGKILL during a held real transaction rolls back header and word changes together",
+    "two tabs use revision fencing; a stale tab cannot replace newer word state",
+    "names and guest use isolated persistent profiles; guest history does not attach to a signed-in name",
+    "100 answers coalesce into changed-word writes and all transient JS callbacks are released",
+    "profile settings and independent audio levels persist across game restart",
+    "injected quota failure preserves last commit and pending state; retry succeeds without partial writes",
+    "stored absolute review deadlines restore as due after elapsed real time (past deadline injected)",
+    "unknown saved schema blocks replacement, with explicit temporary play preserving original records",
+    "injected browser storage denial is handled without a game crash and permits explicit temporary play"
+  ],
+  "errors": [],
+  "networkCalls": [],
+  "complete": true
+}

@@ -1,0 +1,15 @@
+onStart => {
+ for {
+  waitNextFrame()
+  if segment==1 && practice==0 && (phase==1 || phase==4 || phase==5) && enemyHP[keeperIndex]>0 {
+   show; setCostume bossStage
+   motion:=0.0; if !menuReduced {motion=sin(visualTime*0.24)*5}
+   setXYpos viewCenterX,viewCenterY+motion
+   scale:=viewWidth/1100; if viewHeight/760>scale {scale=viewHeight/760}; setSize scale*1.04
+   shade:=0.0
+   if enemyState[keeperIndex]==6 && !menuReduced {shade=sin(clamp(enemyClock[keeperIndex]/1.15,0,1)*3.141592653589793)*15}
+   setGraphicEffect BrightnessEffect,-shade
+   setGraphicEffect GhostEffect,8
+  } else {hide}
+ }
+}

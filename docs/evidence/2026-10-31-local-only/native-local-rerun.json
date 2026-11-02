@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-31T16:17:53.065Z",
+  "runtime": "XBuilder cached compiler/resources",
+  "storage": "real browser IndexedDB, no cloud",
+  "archiveSha256": "5a46f00b261909deeecdbb830829864a13dbe3e6191b9fb2b9913a8439e3aba1",
+  "cases": [
+    "same iframe stop/init/start with an in-flight write restores committed state without stale callback errors"
+  ],
+  "errors": [],
+  "networkCalls": [],
+  "complete": true
+}

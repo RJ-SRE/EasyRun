@@ -1,5 +1,20 @@
 # 美术与资产来源
 
+> v0.21.1 恢复 Boss 原图及原钟城背景，停止调用全身色阶与侵蚀层生成器，撤回程序化环身装饰。新的三形态结构概念图使用内置 imagegen，参考原 `keeper-v2-source.png`，仅为策划图，不进入运行资产；提示词与来源保存在 `design/boss-rework/2026-11-01/`。
+
+> v0.21.0 用 `belfry-keeper-palette.mjs` 在构建时对既有 Boss 18 姿态和 `city/heart.png` 做旧金、血色、骨白/冷色阶处理；原图、透明轮廓与注册点保留。新增 `belfry-keeper-atmosphere.mjs` 原创 SVG 雾层、黑色裂脉和断裂蚀环。没有新增第三方素材、配音或音乐。
+
+> v0.20.0 Boss 重做复用原 `keeper-v2-source.png` 三形态姿势，由 `belfry-keeper-art.mjs` 原创 SVG 肩甲、钟冠、赤刃、浮刃、回流刻印和危险刃线；构建时栅格化，未新增第三方美术、配音或音乐。金/赤/苍白三套颜色配合原姿势与体型变化；图形装饰不参与碰撞。
+
+> v0.15.4 使用用户选定的 C「暗金裂痕」作为作品封面，源图为 `prototypes/runlab/art/belfry/cover.png`（1448×1086）。由内置 imagegen 基于现有旅人和钟城原图生成，完整提示词见 `design/cover-candidates/2026-10-27/prompts.json` 的 `c-gold-silhouette`。本轮直接复制选定 PNG，不裁切、不改字、不重新生成；它仅用于发布封面和编辑器静态预览。
+
+> v0.15.0 待机风动由 `belfry-idle-cloth.mjs` 在构建时对既有 `art/rupture-v2/frames/0.png` 做局部形变，生成 24 张 240×418 透明帧。保留原像素比例与脚底注册点，仅移动红色披风和外侧衣摆，不改原图、不新增第三方素材。新增帧只进入 Hero，残影 / 姿势交叠不复制这套帧；运行时不计算布料物理，也不新增精灵或克隆。
+
+> v0.13.2 原生包复用钟城背景与既有音效；中文与英文字形由构建机字体栅格化为 PNG；词册与游戏内铭文底板直接复用网页 CSS 在构建端截图，追加 Georgia 词题与等宽输入字形。16 个动作样本从已有 M4A 转为 22.05kHz 单声道 WAV，转码前校验来源，原始三首背景音乐不变。没有新增第三方音源或角色语音。
+
+> v0.11 词汇资源新增：规范化四六级词元与 ECDICT 中文译文节选、原 82 条人工题面、21 条常见词目标义项修订。固定来源、MIT 许可与覆盖范围见 [词库说明](WORD_BANK.md)。不新增音频、人物或场景图。
+
+
 当前 v0.8 资产状态（2026-10-25）：五类刺客及补充图集共 42 个姿势，主角技能三帧与既有动作图集，82 个本地动作 / 材质采样与 3 首用户提供的 Sea Power 背景音乐；角色语音不运行。下文按制作时间保留历史记录，56 个采样、旧机械敌人等数字不是当前总量。
 
 断环刻印、成就册和 16 个徽记是仓库中的 CSS / SVG 路径设计，分别见 `prototypes/runlab/public/inscription*` 与 `belfry-achievements*`，没有下载其他游戏 UI。三十词远征的旧概念图属于 [后续美术提案](planning/thirty-word-expedition/ART.md)。本轮另生成五张城市运行背景并实际导入引擎，详见本文末尾及 [城市实现](CITY_V08.md)。原图与提示词继续保留，生成拆帧和导出包不重复纳管。
@@ -101,8 +116,45 @@ belfry-city-art.mjs 将五图作为引擎精灵打包，按镜头深度渐变并
 
 按用户指定从本地桌面复制三份 Sea Power MP3：Melancholy Of The Boot、Cleaning out the Rooms (Wandering Horn)、Strange Sports。运行副本位于 `prototypes/runlab/public/audio/music/`，原文件未修改、未转码。共 34,043,869 字节，各自文件名、时长、大小和 SHA-256 见 [清单](../prototypes/runlab/public/audio/music/manifest.json)。这三首是用户提供的第三方录音，不属于程序化原创采样；曲目映射与维护方法见 [场景音乐](SCENE_MUSIC.md)。
 
+## 2026-10-27 菜单配乐替换 · v0.15.8
+
+从用户桌面复制 `Sea Power - Red Rock Riviera.mp3`，作为网页版和原生版的菜单音乐。保留原始完整文件，时长 413.505306 秒、16,666,042 字节，SHA-256 为 `65e0b2456c0f3192595ae85ea6b87b5ada59a1a6017973abfa90935c04bba6aa`。当前运行三曲合计 35,218,053 字节；游戏 / 结束曲目不变。旧的 Cleaning out the Rooms 运行副本作为本地历史素材保留，当前包不再包含它。详见 [资源清单](../prototypes/runlab/public/audio/music/manifest.json) 与 [场景音乐](SCENE_MUSIC.md)。
+
+## 2026-10-27 菜单片头裁剪 · v0.15.9
+
+按用户要求将 Red Rock Riviera 的前 5 秒移除，生成 `red-rock-riviera-trim5.mp3` 供网页与原生包使用。保留桌面原件及完整本地副本；使用 44.1 kHz 双声道、320 kbps MP3 编码。派生文件的哈希、大小和精确时长见资源清单，处理参数与验收见 [裁剪记录](evidence/2026-10-27-menu-trim5/README.md)。
+
 ## 2026-10-25 猎战敌人图集
 
 通过内置 `image_gen.imagegen` 生成三张独立透明 3×2 六姿态图集，分别为裂甲卫、棘背猎兽、缝魂师。源图位于 `prototypes/runlab/art/belfry/hunt-warden-source.png`、`hunt-hound-source.png`、`hunt-weaver-source.png`；记录见同目录 `hunt-v10-prompts.json`。
 
 构建沿用图集连通区域裁切与落脚线注册，产物可重建，不将拆帧目录入库。图像生成结果用于当前原型美术，不表示来自任何商业游戏或已完成人工逐帧动画。
+
+## 2026-10-27 静水圣庭菜单 · v0.16.0
+
+用户选定 B 方向后，以原概念图和当前主角图集为参考，通过内置 imagegen 生成清洁背景及透明 4×3 十二姿态角色图集。原图、提示词、尺寸和 SHA-256 保存在 `prototypes/runlab/art/belfry/menu/`。背景移除了原先烘焙的标题、按钮与主角，控件和人物可独立运行。
+
+`belfry-menu-art.mjs` 构建时裁切并注册落脚点，生成 16 帧局部披风风动及浅色衰减倒影；薄雾、水波、细钩线为程序图形。游戏运行时只选小尺寸造型，不逐帧重绘大背景。共享源图与运动逻辑用于网页和 `.xbp`，原发布封面 C 保留。
+
+## 2026-10-27 原画微动回调 · v0.16.1
+
+恢复用户选择的 B 静水圣庭概念图，复制为 `art/belfry/menu/static-original.png`。通过内置 imagegen 仅清除右侧烘焙按钮，结果为 `static-clean-right.png`，完整提示词见同目录 `static-clean-prompt.txt`。构建时强制保留原图左 1000 列，只在右侧渐变合成清洁结果，主角没有重新生成。
+
+水面与披风是原图局部像素变形，构建时烘焙 32 / 24 帧，运行时播放；固定区域逐像素校验。旧背景、十二姿态图集保留为历史素材，不再进入运行包。来源、哈希与保留校验见菜单目录 manifest.json / static-validation.json，设计与实测见 [v0.16.1](MENU_V161.md)。
+
+## 2026-10-31 云间暗金闪电 · v0.16.8
+
+`belfry-menu-lightning.mjs` 通过手工路径、确定性细分、程序化分叉和云层亮度蒙版生成九张 420×340 透明 PNG，三条路径分别含暗裂、金闪与余辉造型。未新增第三方图片、音乐或字体，未改动菜单底图。运行时使用单个 `MenuLightning` 精灵；本地合成预览在 `art/belfry/menu/lightning-preview-*.png`，实际运行截图见 [验收记录](evidence/2026-10-31-menu-lightning-v168/README.md)。
+
+## 2026-10-31 静水圣庭雾流 · v0.16.10
+
+`belfry-menu-fog.mjs` 使用现有菜单绘景的局部雾像素，构建时执行固定遮罩、亮度/边缘约束、柔化与小幅流动采样，生成 16 张 560×115 透明帧；两个固定精灵交叉淡化。没有新增第三方素材。原图不变，主角与近处台阶为明确排除区域。来源范围、比例、帧数和保护校验写入 `art/belfry/menu/static-validation.json`；[设计与验收](evidence/2026-10-31-menu-fog-v1610/README.md)。
+
+## v0.22.0 结构 Boss 与常用词数据
+
+- 新 Boss 三张透明图集、36 个关键姿态：`prototypes/runlab/art/belfry/keeper-v3/`，内置 imagegen；提示词和 SHA-256 随目录保存。实际脚部登记及武器判定见 `belfry-keeper-frames.mjs`、`Keeper.spx`。
+- 常用词表 NGSL／NAWL CC BY-SA 4.0，ECDICT MIT；源文件与归属、修改说明、许可全文见 `prototypes/runlab/data/common-sources/`。衍生数据使用 CC BY-SA 4.0，其他程序、美术、音频各自独立许可。
+
+## v0.22.1 铭文成就陈列
+
+`prototypes/runlab/public/learning-art.js` 使用代码绘制原创建筑尖拱、金属印章和九类雕刻线稿；网页使用同一 SVG，原生构建预渲染为 PNG。没有新增图片来源、外部字体下载或图片生成调用。原生每个槽位仅包含其六页三状态的 18 张造型，四槽合计 72 张；固定 UI 精灵数量不变。

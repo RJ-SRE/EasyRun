@@ -1,5 +1,21 @@
 # 倒悬钟城技术设计
 
+> 2026-10-27 · v0.15.1：网页与原生默认混音统一为 music=40%、sfx=85%；原生 NativeSfx 取消 0.55 倍内部衰减。网页仅迁移恰好匹配旧默认的保存组合，保留手调和静音。曲目、采样、事件及单词期间保持音乐正常音量的规则不变。
+
+> 2026-10-27 · v0.15.0：Hero 保持逻辑 idle pose=0，以表现时钟选择 24 帧局部衣料动画。场景用代际标记表避免反复扫描槽位；钩索候选先做平方距离筛选；平台、敌人、钩点和原生 UI 仅在造型变化时通知引擎。原生文字 / 图层按版本和镜头变化刷新，鼠标静止时复用命中结果，按键隔离只轮询实际隔离的键。详见 [性能设计与实测](PERFORMANCE_V15.md)。
+
+> 2026-10-26 · v0.14.0：NativeWords 实时检查 canonical / alias 前缀，完整即释放、首错即取消；词性中文常显，提示隐藏由暂停敏感的题目时间控制。导出器生成逐键隔离函数，覆盖 Hero 的轮询及所有相关 onKey 事件，直到真实松键。400×138 / 400×148 顶部答题框与标题三档提示菜单使用同一布局源。
+
+> v0.13.2：NativeLedger 主机复用当前词库与进度，按字数组织双列分页；搜索输入隔离并按来源阶段恢复游戏。词册与战斗铭文样式复用网页 CSS，构建时生成透明 2x PNG；运行时独立的输入槽和比例字宽文本不依赖 DOM。开始页只改变词册入口，技能 HUD 不变。原生包使用 `NativeWords.spx` + PNG 字形池独立出题和接收键盘输入，共享 `Inscription.spx` 的技能结算。每键合并题中 / 战斗分支，防止已有快捷键吞字；答题结果后短暂输入隔离。舞台 BGM 与 NativeSfx 分开调音，原生会话不承诺跨刷新持久化。实现和边界见 [原生版说明](XBUILDER_NATIVE.md)。
+
+> 2026-10-26 · v0.11.2：W 单按即时跳跃，战斗组合键优先解释为向上输入；160ms 地面起跳窗口允许衔接挑空。`jumpCut` 仅裁剪实际跳跃，避免松开瞄准键影响垂直速度。快速双击 S（240ms）下穿，需站立且未出招；阶段切换与受控清除手势。↑ 和 S + W 仍兼容。
+
+> 2026-10-26 · v0.11.1 键位更新：钩索 O、连环剑刀 P、跳跃 W；向上瞄准 / 挑空 / 冲刺使用 ↑，S + W 下穿。正文早期版本中的 E / Q / Space / W 方向描述属历史记录，现行操作见 [README](../README.md#操作指南)。
+
+> 2026-10-26 · v0.11：自适应词册的现行模块、存储 schema 2、IndexedDB 迁移与选词契约见 [WORD_MEMORY_V11](WORD_MEMORY_V11.md)。词库内容通过离线构建生成，运行时不请求词典服务；战斗冷却保持 3/3/3/5 秒。下文为前序战斗设计记录。
+
+> 2026-10-25 · v0.10.1：按用户最新要求，U / L / I 新增 3 秒冷却，Q 新增 5 秒冷却；成功释放开始，取消不扣，暂停和题目冻结。Hero.update 在控制状态检查前更新四个计时器，HUD 展示倒计时和遮罩。下方“无冷却”描述为此前版本记录，现行契约见 [PRD](PRD.md)。
+
 > v0.10 当前构建入口使用 `belfry-hunt.mjs` / `hunt-init.mjs`，拼接 `HuntCombat.spx` 与 `HuntExpedition.spx`。旧 City/Expedition 机关文件不参与主游戏构建。地图存储 revision 3；8 种敌人、121 常驻克隆；新增护架、压力撤步、单体支援、扑击与审判者 AI。详细协议与调参见 [猎战设计](HUNT_V10.md)。下方旧版机关字段仅用于兼容读写，不代表现行玩法。
 
 v0.8.1，2026-10-25，当前交付包括五区、城市修复、供能选择、铭文与成就。铭文事务见 [实现说明](INSCRIPTION_V07.md)，成就规则见 [钟城铭录](ACHIEVEMENTS_V07.md)，可执行命令见 [运行手册](RUNBOOK.md)。基础关卡参数参见 [v0.4 技术设计](TECHNICAL_DESIGN-v0.4.md)。Node 24.22.1 / pnpm 11.9.0 / spx 3.3.0 / Playwright 1.64.1 保持锁定，无新增运行库。
@@ -83,7 +99,7 @@ bash scripts/with-env.sh pnpm game:package
 
 ## 输出边界
 
-`.xbp` 含 spx 核心、敌人、动作和美术。HTML HUD、动作音效、背景音乐、设置与存储属于配套网页；没有声称这些能力随 XBuilder 包独立运行。实际入口为本地 `/` 或 `/belfry.html`。生成图集是关键姿态图片动画，不是骨骼动画。
+`.xbp` 含 spx 核心、敌人、动作和美术。从 v0.11.3 起，打包脚本将三首 MP3 和 NativeMusic.spx 控制器加入导出包，使用 spx 的 play / pausePlaying / resumePlaying / stopPlaying 管理阶段音乐；网页构建不注入该控制器，继续使用自己的音乐总线。v0.12.0 增加 14 个原生 UI 精灵（不额外占克隆数），构建阶段将中文菜单绘成高清 PNG；点击区域与按钮图共用布局数据。原生提供标题、难度、帮助、暂停、结算和简版 HUD，完整 HTML HUD、动作音效混音、网页设置与存储仍属于配套网页。v0.12.1 在导出构建时预渲染 69 个 SVG 造型，保持中心点和比例，避免网站运行器大画布冷启动的 SVG 渲染错误。`stretchMode:false` 保留物理像素比例，`fitViewport` 先解除编辑器残留的镜头跟随，再按 `cameraRenderX/Y` 接管镜头，随后通过 `Camera.viewportRect` 与当前 zoom 计算等比容纳 960×600 的镜头缩放，原生 UI 跟随实际镜头中心；外侧遮罩限制画面在原始设计范围内。实际入口为本地 `/` 或 `/belfry.html`。生成图集是关键姿态图片动画，不是骨骼动画。
 
 ## v0.7 铭文与四技能集成
 
@@ -162,4 +178,4 @@ flowchart LR
 | `easyrun-belfry-achievements-v1` | version、progress、unlocked、words、equipped | 云账号、服务器成绩、防作弊凭据 |
 | `belfry-audio-v2`                | sfx、music                                   | 已停用的角色语音偏好           |
 
-`window.latestState`、`inscriptionDiagnostics`、`achievementDiagnostics` 和 `soundDiagnostics` 用于观察与测试，不是公开的网络 API。浏览器按 origin 隔离这些存储；单个 `.xbp` 不提供宿主 UI、这些记录或网页音频。当前实现没有账号 / 云同步、在线 AI、付费或遥测上报服务。
+`window.latestState`、`inscriptionDiagnostics`、`achievementDiagnostics` 和 `soundDiagnostics` 用于观察与测试，不是公开的网络 API。浏览器按 origin 隔离这些存储；单个 `.xbp` 提供自己的原生菜单、基础 HUD 和背景音乐；网页词册 / 成就记录与战斗音效混音仍属于网页宿主。当前实现没有账号 / 云同步、在线 AI、付费或遥测上报服务。

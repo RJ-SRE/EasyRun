@@ -94,7 +94,7 @@ try {
   });
   await page.keyboard.up("u");
   await wait(() => foes[0]?.hp === 38 && latestState.bowTarget === -1);
-  assert.equal((await state()).bowCool, 0);
+  assert.ok((await state()).bowCool > 0 && (await state()).bowCool <= 3);
   await save(
     "unprompted aim tracks a moving elevated foe and the charged arrow hits",
   );

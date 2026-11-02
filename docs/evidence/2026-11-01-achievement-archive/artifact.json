@@ -1,0 +1,28 @@
+{
+  "version": "0.22.1-local.1",
+  "desktop": "/Users/rj/Desktop/EasyRun-XBuilder-v0.22.1-inscribed-achievements.xbp",
+  "archive": "/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/exports/belfry-achievement-archive.xbp",
+  "bytes": 153885126,
+  "sha256": "ff811edbb87d31b804a26d6d29b0e498cb1aa757c20055a9b35e64e09ffda7c4",
+  "previousBytes": 154225386,
+  "bytesSaved": 340260,
+  "nativeUISprites": 59,
+  "cardCostumesPerSlot": [
+    18,
+    18,
+    18,
+    18
+  ],
+  "worldLogicByteIdentical": true,
+  "learningManifestByteIdentical": true,
+  "validation": {
+    "webVisualCases": 3,
+    "webInteractionCases": 4,
+    "nativeRegressionCases": 28,
+    "unitCases": 7
+  },
+  "gitCommit": false,
+  "pushed": false,
+  "onlineProjectModified": false,
+  "nativeSpritesIncludingGlyph": 60
+}

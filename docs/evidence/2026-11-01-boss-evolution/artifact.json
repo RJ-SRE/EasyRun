@@ -1,0 +1,12 @@
+{
+  "version": "0.21.0-local.1",
+  "date": "2026-11-01",
+  "archiveBytes": 153347667,
+  "sha256": "8075a3ef3155e3437d649d4650831ee29985e983a9b73cdf29a301385769c15a",
+  "extraFixedWorldSprites": 1,
+  "worldClones": 121,
+  "keeperLineSlots": 8,
+  "remotePushed": false,
+  "onlineImportedOrPublished": false,
+  "storageMode": "local"
+}

@@ -1,0 +1,22 @@
+{
+  "version": "0.22.2-local.1",
+  "package": "/Users/rj/.codex/worktrees/inscription-integration/七牛黑客松/prototypes/runlab/exports/belfry-local-reset.xbp",
+  "desktop": "/Users/rj/Desktop/EasyRun-XBuilder-v0.22.2-local-reset.xbp",
+  "sha256": "ad5c14debb7618f3a6792466829f27ea97cff8241001962dc0681aaed82e8b86",
+  "bytes": 154144088,
+  "files": 5640,
+  "uiSprites": 59,
+  "worldBytesUnchangedFromV221": {
+    "WorldLogic.spx": true,
+    "Hero.spx": true,
+    "KeeperLine.spx": true
+  },
+  "nativeResetCases": 5,
+  "webResetCases": 7,
+  "nativeRegressionCases": 28,
+  "webStorageRegressionCases": 8,
+  "userArchiveCleared": false,
+  "gitCommitted": false,
+  "gitPushed": false,
+  "onlineImported": false
+}

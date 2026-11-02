@@ -1,4 +1,12 @@
+import { LearningRails } from "./learning-rails.js";
 import { expeditionSnapshot, expeditionHost } from "./expedition-progress.js";
+import {
+  loadLargeBook,
+  persistBook,
+  clearLocalGameRecords,
+  RESET_KEY,
+} from "./inscription-storage.js";
+const persisted = await loadLargeBook();
 import { InscriptionMotion } from "./inscription-motion.js";
 import {
   InscriptionBook,
@@ -6,6 +14,11 @@ import {
   STORAGE_KEY,
   allowance,
   matches,
+  COVERAGE,
+  eligibleWords,
+  wordStatus,
+  weakness,
+  CATEGORY_LABELS,
 } from "./inscription-core.js";
 const $ = (s) => document.querySelector(s);
 const titles = {
@@ -31,12 +44,9 @@ export class InscriptionUI {
     this.focus = focus;
     this.toast = toast;
     this.audio = audio;
-    let saved;
-    try {
-      saved = localStorage.getItem(STORAGE_KEY);
-    } catch {
-      this.storageBlocked = true;
-    }
+    const saved = persisted.raw;
+    this.storageBlocked = !!persisted.blocked;
+    this.protectFailedLoad = !!persisted.protect;
     this.book = new InscriptionBook(saved, this.seed());
     if (new URLSearchParams(location.search).get("words") === "off")
       this.book.settings.enabled = false;
@@ -47,18 +57,33 @@ export class InscriptionUI {
     } catch {
       this.bootResume = false;
     }
+    if (this.book.migrated || this.book.notice) {
+      try {
+        if (saved) localStorage.setItem(STORAGE_KEY + "-backup", saved);
+      } catch {
+        /* Export remains available. */
+      }
+    }
+    if (!this.bootResume) this.book.prepare(this.seed());
     this.epoch = 0;
     this.held = new Set();
     this.quarantine = new Set();
     this.last = performance.now();
     this.lastSave = 0;
     this.create();
+    this.learningRail = new LearningRails(this);
     this.motion = new InscriptionMotion();
     this.capture(window);
     this.renderMenu();
     this.renderBook();
     if (this.book.notice) this.toast(this.book.notice);
     window.addEventListener("pagehide", () => this.save());
+    window.addEventListener("storage", (e) => {
+      if (e.key === RESET_KEY) {
+        this.storageStale = true;
+        this.toast("另一窗口已清除本地记录，请刷新后继续。");
+      }
+    });
     document.addEventListener("visibilitychange", () => {
       this.last = performance.now();
       if (document.hidden && this.active) this.pause("窗口已隐藏，计时已暂停");
@@ -69,12 +94,15 @@ export class InscriptionUI {
       get: () => ({
         active: this.active ? { ...this.active, input: this.input } : null,
         count: this.book.count,
+        history: JSON.parse(JSON.stringify(this.book.data.history)),
+        coverage: COVERAGE,
         pool: [...this.book.run.pool],
         pending: this.book.run.reserved,
         settings: { ...this.book.settings },
         run: JSON.parse(JSON.stringify(this.book.run)),
         paused: this.paused,
         storageBlocked: !!this.storageBlocked,
+        saving: !!this.saving,
         motion: this.motion.diagnostics(),
         lastRelease: this.lastRelease,
       }),
@@ -94,15 +122,72 @@ export class InscriptionUI {
       </header>
       <label class="word-switch"><input id="word-enabled" type="checkbox"><span>以词解放刀锋</span><small>拼写 / 辨义</small></label>
       <div class="word-settings">
-        <label>词汇范围<select id="word-tier"><option value="foundation">基础</option><option value="standard">标准</option><option value="challenge">挑战</option></select></label>
-        <label>作答节奏<select id="word-pace"><option value="relaxed">宽裕</option><option value="standard">标准</option><option value="brisk">紧凑</option></select></label>
-        <label>拼写提示<select id="word-hint"><option value="guided">完整提示</option><option value="standard">渐隐提示</option><option value="recall">回忆</option></select></label>
+        <label>单词选择<select id="word-wordMode"><option value="normal">普通</option><option value="hard">困难</option><option value="challenge">挑战</option><option value="random">随机</option></select></label>
+        <label>选词方式<select id="word-strategy"><option value="balanced">智能均衡</option><option value="explore">探索优先</option><option value="review">复习优先</option></select></label>
+        <p id="word-coverage"></p>
+        <details id="word-advanced"><summary>作答设置 <span>节奏 / 提示</span></summary>
+          <label>作答节奏<select id="word-pace"><option value="relaxed">宽裕</option><option value="standard">标准</option><option value="brisk">紧凑</option></select></label>
+          <label>拼写提示<select id="word-hint"><option value="guided">完整提示</option><option value="standard">渐隐提示</option><option value="recall">独立回忆</option></select></label>
+        </details>
       </div>
       <div class="word-actions"><button id="word-preview"><span>随行词册</span><b>30 <i>↗</i></b></button><button id="word-shuffle" aria-label="更换本次远征的 30 个单词">换一组</button></div>
-      <p class="word-note">每次技能，都以词解放。<br>答错取消 · 无技能冷却；普攻、钩索不出题。</p>
+      <div id="word-composition" aria-label="本局选词组成"></div>
+      <p class="word-note">新远征自动选词 · 重试保留本组。<br>U / L / I 冷却 3 秒 · P 冷却 5 秒。</p>
       <button id="word-continue" class="secondary" hidden>续行上次远征 ↗</button>
-      <p id="word-storage" role="status"></p>`;
+      <p id="word-storage" role="status"></p>
+      <div class="local-reset-entry"><span>当前档案 · 学习 / 成就 / 进度 / 设置</span><button id="word-reset">清除本地缓存 <span>↗</span></button></div>`;
     $("#viewport").append(menu);
+    const reset = document.createElement("dialog");
+    reset.id = "local-reset-dialog";
+    reset.setAttribute("aria-labelledby", "local-reset-title");
+    reset.innerHTML = `<span class="local-reset-rule" aria-hidden="true"></span><h2 id="local-reset-title">清除本地缓存？</h2><p id="local-reset-copy">清除当前档案的学习记录、成就、远征进度与设置。</p><small>清除后无法恢复 · 不影响 XBuilder 登录或其他作品</small><p id="local-reset-status" role="status"></p><footer><button id="local-reset-cancel">取消</button><button id="local-reset-confirm">确认清除</button></footer>`;
+    $("#viewport").append(reset);
+    $("#word-reset").onclick = () => {
+      $("#local-reset-status").textContent = "";
+      reset.showModal();
+      $("#local-reset-cancel").focus();
+    };
+    const cancelReset = () => {
+      if (!this.clearing) {
+        reset.close();
+        $("#word-reset").focus();
+      }
+    };
+    $("#local-reset-cancel").onclick = cancelReset;
+    reset.addEventListener("cancel", (e) => {
+      e.preventDefault();
+      cancelReset();
+    });
+    reset.addEventListener(
+      "keydown",
+      (e) => {
+        // Keep gameplay/underlying menu shortcuts out of the confirmation.
+        e.stopPropagation();
+        if (e.code === "Escape") {
+          e.preventDefault();
+          cancelReset();
+        }
+      },
+      true,
+    );
+    $("#local-reset-confirm").onclick = async () => {
+      if (this.clearing) return;
+      this.clearing = true;
+      $("#local-reset-confirm").disabled = $("#local-reset-cancel").disabled =
+        true;
+      $("#local-reset-status").textContent = "正在清除…";
+      try {
+        await clearLocalGameRecords();
+        $("#local-reset-status").textContent = "已清除，正在返回菜单…";
+        location.reload();
+      } catch {
+        this.clearing = false;
+        $("#local-reset-confirm").disabled = $("#local-reset-cancel").disabled =
+          false;
+        $("#local-reset-status").textContent =
+          "未能完成清除，请重试或检查浏览器存储权限。";
+      }
+    };
     const hud = document.createElement("button");
     hud.id = "word-progress";
     hud.hidden = true;
@@ -119,8 +204,10 @@ export class InscriptionUI {
       <header class="word-ledger-head"><div><span class="eyebrow">FIELD LEDGER / XXX</span><h2 id="word-ledger-title">随行铭文</h2></div><button id="word-close" aria-label="合上词册">×</button></header>
       <p id="word-summary"></p><div id="word-ledger-track" aria-hidden="true"></div>
       <div class="word-legend">○ 待遇见 <span>◐ 待复习</span> ◆ 已斩 <span>✦ 通关确认</span></div>
-      <div id="word-list"></div>
-      <footer><p class="word-note">通关只确认实际答对的词。</p><button id="word-export">导出词册 ↗</button></footer>
+      <div class="word-ledger-tools"><select id="word-filter" aria-label="词册范围"><option value="run">本局 30 词</option><option value="weak">薄弱 / 宿敌词</option><option value="all">完整词库</option></select><input id="word-search" type="search" placeholder="搜索单词或中文" aria-label="搜索词册"></div>
+      <p id="word-memory-summary"></p><div id="word-list"></div><button id="word-more" hidden>再看 60 词 ↓</button>
+      <footer><p class="word-note" id="word-book-note">通关确认与长期记忆分别记录。</p><div><button id="word-import">导入记录</button><button id="word-export">导出词册 ↗</button></div></footer>
+      <input id="word-import-file" type="file" accept=".json,application/json" hidden><p id="word-import-status" role="status"></p>
     </div>`;
     $("#viewport").append(journal);
     const panel = document.createElement("section");
@@ -163,19 +250,23 @@ export class InscriptionUI {
       this.save();
       this.renderMenu();
     };
-    for (const name of ["tier", "pace", "hint"])
+    for (const name of ["wordMode", "strategy", "pace", "hint"])
       $(`#word-${name}`).onchange = (e) => {
         this.book.settings[name] = e.target.value;
-        if (name === "tier") {
+        if (["wordMode", "strategy"].includes(name)) {
           this.book.newPool(this.seed());
-          this.toast("词汇范围已改变，已重新抽取 30 词。");
+          this.toast("选词设置已改变，已重新准备 30 词。");
         }
         this.save();
         this.renderMenu();
         this.renderBook();
       };
-    $("#word-continue").onclick = () => {
-      this.save();
+    $("#word-continue").onclick = async () => {
+      if (this.book.data.archive) this.book.resume();
+      if (!(await this.save())) {
+        this.toast("尚未保存成功，请导出词册后重试续行。");
+        return;
+      }
       try {
         sessionStorage.setItem("belfry-resume", "1");
         location.reload();
@@ -236,6 +327,51 @@ export class InscriptionUI {
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     };
+    this.bookLimit = 60;
+    $("#word-filter").onchange = () => {
+      this.bookLimit = 60;
+      this.renderBook();
+    };
+    $("#word-search").oninput = () => {
+      this.bookLimit = 60;
+      this.renderBook();
+    };
+    $("#word-more").onclick = () => {
+      this.bookLimit += 60;
+      this.renderBook();
+    };
+    $("#word-import").onclick = () => $("#word-import-file").click();
+    $("#word-import-file").onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        if (file.size > 32 * 1024 * 1024)
+          throw new Error("文件超过 32 MB，请选择词册 JSON");
+        const content = await file.text();
+        const candidate = JSON.parse(content);
+        // Validate and merge into a copy before touching live history or storage.
+        const copy = new InscriptionBook(this.book.serialize());
+        const count = copy.import(candidate);
+        try {
+          localStorage.setItem(
+            STORAGE_KEY + "-before-import",
+            this.book.serialize(),
+          );
+        } catch {
+          /* Export remains available. */
+        }
+        this.book.data.history = copy.data.history;
+        this.learningRail.refresh();
+        this.save();
+        this.renderBook();
+        $("#word-import-status").textContent =
+          `已合并记录，新增 ${count} 个词；当前旅程与设置保留。`;
+      } catch (error) {
+        $("#word-import-status").textContent =
+          `未导入：${error.message}。现有记录保留。`;
+      }
+      e.target.value = "";
+    };
     const back = document.createElement("button");
     back.id = "word-to-menu";
     back.className = "secondary";
@@ -261,18 +397,42 @@ export class InscriptionUI {
     };
   }
   save() {
+    if (this.clearing || this.storageStale) return Promise.resolve(false);
+    const status = () => {
+      $("#word-storage").textContent = this.protectFailedLoad
+        ? "完整词册暂未读到，请刷新重试；原记录保留。"
+        : this.storageBlocked
+          ? "本机保存受限，请从词册导出备份。"
+          : "记忆保存在此设备 · 支持导入导出";
+    };
+    if (this.protectFailedLoad) {
+      status();
+      return;
+    }
+    const request = (this.saveGeneration = (this.saveGeneration || 0) + 1);
     try {
-      localStorage.setItem(STORAGE_KEY, this.book.serialize());
-      this.storageBlocked = false;
+      this.saving = true;
+      return persistBook(this.book.serialize())
+        .then(() => {
+          this.storageBlocked = false;
+          if (request === this.saveGeneration) this.saving = false;
+          status();
+          return true;
+        })
+        .catch(() => {
+          this.storageBlocked = true;
+          if (request === this.saveGeneration) this.saving = false;
+          status();
+          return false;
+        });
     } catch {
       this.storageBlocked = true;
+      this.saving = false;
     }
-    $("#word-storage").textContent = this.storageBlocked
-      ? "无法保存到本机，请在词册中导出记录。"
-      : "进度保存在当前浏览器。";
+    status();
   }
   configure(data) {
-    const r = this.book.run,
+    const r = this.book.resumable || this.book.run,
       s = r.snapshot ? expeditionSnapshot(r.snapshot) : null;
     const integer = (v, max) =>
       Number.isInteger(v) && v >= 0 && v <= max ? v : 0;
@@ -344,7 +504,31 @@ export class InscriptionUI {
     w.addEventListener(
       "keydown",
       (e) => {
-        if (e.inscriptionTransport) return;
+        if (!$("#local-reset-dialog").open || e.inscriptionTransport) return;
+        if (e.code === "Escape") {
+          e.preventDefault();
+          if (!this.clearing) {
+            $("#local-reset-dialog").close();
+            $("#word-reset").focus();
+          }
+        }
+        if (!["Tab", "Enter", "Space"].includes(e.code)) e.preventDefault();
+        e.stopImmediatePropagation();
+      },
+      true,
+    );
+    w.addEventListener(
+      "keyup",
+      (e) => {
+        if ($("#local-reset-dialog").open && !e.inscriptionTransport)
+          e.stopImmediatePropagation();
+      },
+      true,
+    );
+    w.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.inscriptionTransport || this.learningRail?.openState) return;
         if (
           (e.metaKey || e.ctrlKey) &&
           ["KeyR", "KeyL", "KeyW"].includes(e.code)
@@ -367,6 +551,10 @@ export class InscriptionUI {
           return;
         }
         if (!$("#word-journal").hidden) {
+          if (e.target.matches?.("input, select") && e.code !== "Escape") {
+            e.stopImmediatePropagation();
+            return;
+          }
           if (e.code === "Escape") this.closeBook();
           else if (!e.repeat && ["Enter", "Space"].includes(e.code))
             e.target.closest?.("#word-journal button")?.click();
@@ -374,6 +562,11 @@ export class InscriptionUI {
           return;
         }
         if (!this.active) {
+          if (this.state?.phase === 2 && e.code === "Enter" && !e.repeat) {
+            block();
+            this.newAdventure();
+            return;
+          }
           this.held.add(e.code);
           return;
         }
@@ -417,7 +610,7 @@ export class InscriptionUI {
     w.addEventListener(
       "keyup",
       (e) => {
-        if (e.inscriptionTransport) return;
+        if (e.inscriptionTransport || this.learningRail?.openState) return;
         this.held.delete(e.code);
         this.entryHeld?.delete(e.code);
         if (this.quarantine.delete(e.code) || this.active) {
@@ -441,7 +634,15 @@ export class InscriptionUI {
       this.migratedExpedition = false;
     }
   }
+  newAdventure() {
+    this.book.prepare(this.seed());
+    this.save();
+    this.renderBook();
+    this.send("KeyM", "m");
+  }
   receive(s) {
+    if (s.phase === 0 && this.lastPhase !== 0 && !this.bootResume)
+      this.book.prepare(this.seed());
     if (this.bootResume && s.phase === 0) {
       this.bootResume = false;
       this.resuming = true;
@@ -462,6 +663,20 @@ export class InscriptionUI {
       this.save();
     }
     this.state = s;
+    if (this.journalResumeRequested && s.phase === 4) {
+      this.journalResumeRequested = false;
+      this.send("Escape", "Escape");
+    }
+    if (
+      this.audio.ledgerReading &&
+      !this.journalResumeRequested &&
+      $("#word-journal").hidden &&
+      s.phase !== 4
+    ) {
+      this.audio.ledgerReading = false;
+      this.audio.syncMusic();
+    }
+    this.learningRail?.receive(s);
     if ([1, 3, 4].includes(s.phase) && !s.practice && this.book.run.started)
       this.book.run.snapshot = {
         checkpoint: s.checkpoint,
@@ -498,23 +713,31 @@ export class InscriptionUI {
     $("#word-progress").title = `随行词册 · 待斩 ${30 - this.book.count}`;
     if (s.phase !== this.lastPhase) {
       this.lastPhase = s.phase;
-      this.renderMenu();
+      if (s.phase === 0) this.renderMenu();
     }
   }
   renderMenu() {
+    this.learningRail?.refresh();
     $("#word-enabled").checked = this.book.settings.enabled;
     $("#word-menu").classList.toggle(
       "word-disabled",
       !this.book.settings.enabled,
     );
-    for (const name of ["tier", "pace", "hint"])
+    for (const name of ["wordMode", "strategy", "pace", "hint"])
       $(`#word-${name}`).value = this.book.settings[name];
-    $("#word-continue").hidden = !(
-      this.book.run.started &&
-      !this.book.run.won &&
-      this.book.run.snapshot
+    $("#word-continue").hidden = !this.book.resumable;
+    const n = eligibleWords(this.book.settings).length;
+    $("#word-coverage").textContent = `${n.toLocaleString()} 词可选 · 已去重`;
+    $("#word-coverage").title =
+      `当前分组采用游戏难度，独立于战斗难度；随机从全部 ${COVERAGE.total} 词抽取。词源：${COVERAGE.source}。`;
+    $("#word-composition").replaceChildren(
+      ...Object.entries(CATEGORY_LABELS).map(([key, label]) => {
+        const span = document.createElement("span");
+        span.textContent = `${label} ${this.book.run.composition[key] || 0}`;
+        return span;
+      }),
     );
-    for (const name of ["tier", "pace", "hint"])
+    for (const name of ["wordMode", "strategy", "pace", "hint"])
       $(`#word-${name}`).disabled = !this.book.settings.enabled;
     $("#word-to-menu").hidden = this.state?.phase !== 4;
     this.save();
@@ -522,19 +745,26 @@ export class InscriptionUI {
   openBook() {
     if (this.active) return;
     this.journalPaused = this.state?.phase === 1;
+    this.audio.ledgerReading = this.journalPaused;
+    this.audio.syncMusic();
     if (this.journalPaused) this.send("Escape", "Escape");
-    this.renderBook();
     $("#word-journal").hidden = false;
+    this.renderBook();
     $("#word-close").focus();
   }
   closeBook() {
     $("#word-journal").hidden = true;
-    if (this.journalPaused && this.state?.phase === 4)
+    this.journalResumeRequested = this.journalPaused;
+    if (this.journalPaused && this.state?.phase === 4) {
       this.send("Escape", "Escape");
+      this.journalResumeRequested = false;
+    }
     this.journalPaused = false;
+    this.audio.syncMusic();
     this.focus();
   }
   renderBook() {
+    if ($("#word-journal").hidden) return;
     const r = this.book.run,
       list = $("#word-list");
     list.replaceChildren();
@@ -543,26 +773,64 @@ export class InscriptionUI {
     const track = $("#word-ledger-track");
     track.replaceChildren();
     for (const id of r.pool) {
-      const w = BANK.get(id),
+      const tick = document.createElement("i");
+      tick.dataset.state = r.progress[id]?.correct
+        ? "complete"
+        : r.progress[id]?.wrong
+          ? "review"
+          : "unseen";
+      track.append(tick);
+    }
+    const filter = $("#word-filter").value,
+      search = $("#word-search").value.trim().toLowerCase();
+    const pool =
+      filter === "run"
+        ? r.pool.map((id) => BANK.get(id))
+        : eligibleWords(this.book.settings);
+    const words = pool.filter(
+      (w) =>
+        (!search || w.word.includes(search) || w.meaning.includes(search)) &&
+        (filter !== "weak" || weakness(this.book.data.history[w.id]) >= 0.65),
+    );
+    const statuses = {
+      new: "尚未遇见",
+      weak: "待巩固",
+      due: "到期复习",
+      stable: "稳定刻印",
+      learning: "熟悉中",
+    };
+    const selected = words.slice(0, this.bookLimit || 60);
+    $("#word-memory-summary").textContent =
+      `${filter === "run" ? "本局词册" : filter === "weak" ? "薄弱词册" : "完整词库"} · ${words.length.toLocaleString()} 词${words.length > selected.length ? ` / 当前显示 ${selected.length}` : ""}`;
+    $("#word-more").hidden = words.length <= selected.length;
+    if (!selected.length) {
+      const empty = document.createElement("p");
+      empty.className = "word-empty";
+      empty.textContent = "这里暂时没有词条。你的下一次远征会留下新的刻印。";
+      list.append(empty);
+    }
+    for (const w of selected) {
+      const id = w.id,
         p = r.progress[id],
+        h = this.book.data.history[id],
+        status = wordStatus(h, Date.now(), w.spellable),
         row = document.createElement("div");
       row.className = "word-row";
       row.dataset.state = p?.correct
         ? "complete"
-        : p?.wrong
+        : status === "weak"
           ? "review"
           : "unseen";
-      const tick = document.createElement("i");
-      tick.dataset.state = row.dataset.state;
-      track.append(tick);
       const badge = document.createElement("span");
       badge.textContent = p?.correct
         ? r.won
           ? "✦"
           : "◆"
-        : p?.wrong
-          ? "◐"
-          : "○";
+        : status === "stable"
+          ? "✧"
+          : status === "weak"
+            ? "◐"
+            : "○";
       row.append(badge);
       const word = document.createElement("b");
       word.textContent = w.word;
@@ -570,14 +838,31 @@ export class InscriptionUI {
       const meaning = document.createElement("small");
       meaning.textContent = `${w.pos} ${w.meaning}`;
       row.append(meaning);
-      row.title = `${w.context}${p?.assisted ? " · 上次有提示作答" : ""}${this.book.data.history[id]?.completed ? " · 历次已通关确认" : ""}`;
+      const memory = document.createElement("small");
+      memory.className = "word-memory";
+      const nemesis = weakness(h) >= 2 ? "宿敌 · " : "";
+      const reason = CATEGORY_LABELS[r.reasons[id]];
+      memory.textContent = `${nemesis}${statuses[status]}${filter === "run" && reason ? ` · ${reason}入选` : ""}`;
+      row.append(memory);
+      const stats = ["spell", "meaning"].map(
+        (k, i) =>
+          `${i ? "辨义" : "拼写"}：${h?.[k]?.correct || 0}/${h?.[k]?.attempts || 0}，超时 ${h?.[k]?.timeouts || 0}`,
+      );
+      row.title = `${w.context}\n${stats.join("\n")}\n${w.levels.join(" / ")}${h?.completed ? " · 历次通关确认" : ""}`;
       list.append(row);
     }
+    const summary = r.summary;
+    $("#word-book-note").textContent = r.won
+      ? `首次击破 ${summary.first} · 独立完成 ${summary.independent} · 克服薄弱 ${summary.revivals}`
+      : "提示作答记熟悉度；独立回忆与辨义分别积累。";
   }
+
   onWord(attempt, serial, kind) {
     if (!this.book.settings.enabled || this.active) return;
     const actionId = `${this.sessionId}:${this.epoch}:${attempt}:${serial}`;
-    const q = this.book.question(kind, actionId),
+    const q = this.book.question(kind, actionId, {
+        health: this.state?.health,
+      }),
       w = BANK.get(q.wordId);
     this.active = {
       actionId,
@@ -591,7 +876,10 @@ export class InscriptionUI {
         kind >= 5 ? "control" : q.type,
         this.book.settings.pace,
       ),
-      hintVisible: true,
+      hintVisible: this.book.settings.hint !== "recall" || q.supported,
+      hintWasShown:
+        q.type === "spell" &&
+        (this.book.settings.hint !== "recall" || q.supported),
       result: null,
       epoch: this.epoch,
     };
@@ -619,7 +907,10 @@ export class InscriptionUI {
     $("#word-title").textContent = titles[kind][0];
     $("#word-benefit").textContent = titles[kind][1];
     $("#word-feedback").textContent = "";
-    $("#word-cue").textContent = w.word;
+    $("#word-cue").textContent =
+      q.type === "spell" && !this.active.hintVisible
+        ? "·".repeat(w.word.length)
+        : w.word;
     $("#word-context").textContent =
       q.type === "spell" ? `${w.pos} ${w.meaning}` : `${w.pos} · ${w.context}`;
     $("#word-spelling").hidden = q.type !== "spell";
@@ -659,6 +950,16 @@ export class InscriptionUI {
   }
   renderLetters(w) {
     const prefix = w.accepted.some((v) => v.startsWith(this.input));
+    const target = w.word.startsWith(this.input)
+      ? w.word
+      : w.accepted.find((v) => v.startsWith(this.input)) || w.word;
+    while (this.letterSlots.length < target.length) {
+      const slot = document.createElement("span");
+      $("#word-glyphs").append(slot);
+      this.letterSlots.push(slot);
+    }
+    while (this.letterSlots.length > target.length)
+      this.letterSlots.pop().remove();
     this.letterSlots.forEach((slot, i) => {
       slot.textContent = this.input[i] || "";
       slot.className = this.input[i]
@@ -669,13 +970,13 @@ export class InscriptionUI {
           ? "next-glyph"
           : "";
     });
-    const excess = Math.max(0, this.input.length - w.word.length);
+    const excess = Math.max(0, this.input.length - target.length);
     $("#word-letter-feedback").textContent = excess
       ? "拼写错误 · 取消释放"
       : !prefix
         ? "拼写错误 · 取消释放"
         : this.input.length
-          ? `${this.input.length} / ${w.word.length}`
+          ? `${this.input.length} / ${target.length}`
           : "键入单词";
   }
   updateInput() {
@@ -697,6 +998,7 @@ export class InscriptionUI {
     else if (matches(w, this.input)) this.finish(true, "正确");
   }
   choose(i) {
+    if (this.active) this.active.choice = this.active.q.options[i];
     if (this.active && !this.active.result)
       this.finish(
         this.active.q.options[i] === BANK.get(this.active.q.wordId).meaning,
@@ -716,7 +1018,14 @@ export class InscriptionUI {
     const a = this.active;
     if (!a || a.result) return;
     a.result = correct ? "correct" : "wrong";
-    a.assisted = a.q.type === "spell" && a.hintVisible;
+    a.assisted = a.q.type === "spell" && a.hintWasShown;
+    a.outcome = correct
+      ? "correct"
+      : reason === "放弃"
+        ? "cancel"
+        : reason === "时间到"
+          ? "timeout"
+          : "wrong";
     $("#word-focus").dataset.result = a.result;
     const w = BANK.get(a.q.wordId);
     $("#word-feedback").textContent = correct
@@ -748,16 +1057,18 @@ export class InscriptionUI {
     };
     const settled = this.book.settle(
       a.actionId,
-      result === 1 ? "correct" : result === 3 ? "cancel" : "wrong",
+      result === 1 ? "correct" : result === 3 ? "cancel" : a.outcome || "wrong",
       a.elapsed,
       a.assisted,
+      { input: this.input, choice: a.choice, position: this.input.length },
     );
+    if (settled) this.learningRail.refresh(true);
     if (settled)
       this.onSettle({
         actionId: a.actionId,
         attempt,
         wordId: a.q.wordId,
-        result,
+        result: a.outcome === "cancel" ? 3 : result,
       });
     this.audio.stateChanged({ ...this.state, phase: 1 });
     this.motion.release(result === 1);
@@ -827,7 +1138,7 @@ export class InscriptionUI {
       !this.state.practice &&
       this.book.run.started &&
       this.book.settings.enabled &&
-      (this.state.phase === 1 || (this.state.phase === 5 && !this.paused))
+      this.state.phase === 1
     )
       this.book.run.activeSeconds += dt;
     if (a && foreground && !this.paused) {
@@ -836,7 +1147,9 @@ export class InscriptionUI {
       const w = BANK.get(a.q.wordId),
         hideAt = this.book.settings.hint === "recall" ? 0.8 : 1.2;
       a.hintVisible =
-        this.book.settings.hint === "guided" || a.elapsed < hideAt;
+        a.q.supported ||
+        this.book.settings.hint === "guided" ||
+        (this.book.settings.hint === "standard" && a.elapsed < hideAt);
       if (a.q.type === "spell" && !a.result)
         $("#word-cue").textContent = a.hintVisible
           ? w.word
@@ -861,9 +1174,11 @@ export class InscriptionUI {
         this.save();
       }
     }
-    if (now - this.lastSave > 3000) {
+    if (now - this.lastSave > 15000) {
       this.lastSave = now;
-      this.save();
+      if (window.requestIdleCallback)
+        window.requestIdleCallback(() => this.save(), { timeout: 2000 });
+      else this.save();
     }
     requestAnimationFrame((t) => this.tick(t));
   }

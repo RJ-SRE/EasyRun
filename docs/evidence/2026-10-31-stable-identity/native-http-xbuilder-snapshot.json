@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-31T09:28:44.027Z",
+  "runtime": "XBuilder cached 2026-10-26 compiler/resources, model roundtrip, real native HTTP, local files",
+  "cases": [
+    "guest mid-run login and R keep guest ownership; no profile writes",
+    "same stable id with refreshed credential keeps prepared deck and does not reload or request another profile",
+    "native HTTP prepares 30 unique words only after returning to title",
+    "checkpoint async save retries the identical batch after lost ACK; no double counts, later answer retained",
+    "failure saves pending timeout with separate ability evidence",
+    "R preserves current account/deck; pending second account activates at title without importing guest/other history",
+    "switching back drains archived unconfirmed account events and restores server history",
+    "winning counts once and persists solved-word completion",
+    "same-id updates during native save preserve frozen evidence and the in-flight request",
+    "late previous-account receipt is ignored; restored frozen batch replays safely",
+    "fresh native runtime requires explicit writer takeover and recovers persisted learning state",
+    "native 2000-event bound retains evidence, marks excess local-only, drains in <=32 KiB batches"
+  ],
+  "errors": [],
+  "archiveSha256": "a5171ebc3db854cf00bb99593f611f0f0c2567b5fac9f8d6cc60cc4130baf62d",
+  "complete": true
+}
