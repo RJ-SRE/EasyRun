@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import {
+  generateEchoReport,
+  echoEvidence,
   freshEcho,
   recordEcho,
   echoSnapshot,
@@ -60,7 +62,11 @@ test("actual run distinguishes wrong/timeout/assisted/cancel and untouched words
     timeout: 1,
     independentSpell: 1,
   });
-  assert.equal(s.words[0].id, "improve");
+  assert.deepEqual(
+    s.words.map((w) => w.id),
+    ["improve"],
+  );
+  assert.match(echoEvidence(s.words[0]), /拼写错误 1 次/);
   assert.ok(!s.words.some((w) => w.id === "water"));
   const r = freshEcho("x");
   recordEcho(r, "water", "spell", "cancel");
@@ -129,7 +135,7 @@ test("server replaces client definitions and rejects fake IDs/oversized sets/non
 test("model card correspondence is mandatory and unknown fields are discarded", () => {
   const s = fixture(),
     r = example(s);
-  assert.equal(validateEchoReport(JSON.stringify(r), s).cards.length, 3);
+  assert.equal(validateEchoReport(JSON.stringify(r), s).cards.length, 1);
   assert.throws(() => validateEchoReport({ ...r, cards: r.cards.slice(1) }, s));
   assert.throws(() =>
     validateEchoReport(
@@ -164,7 +170,7 @@ test("provider handles valid and incomplete JSON with bounded response", async (
     Response.json({
       choices: [{ message: { content: JSON.stringify(example(s)) } }],
     });
-  assert.equal((await requestEcho(s, c, { fetchImpl })).cards.length, 3);
+  assert.equal((await requestEcho(s, c, { fetchImpl })).cards.length, 1);
   await assert.rejects(
     requestEcho(s, c, {
       fetchImpl: async () => new Response("x".repeat(100001)),
@@ -282,4 +288,140 @@ test("upstream deadline aborts a stalled HTTP response", async () => {
     server.closeAllConnections();
     await new Promise((r) => server.close(r));
   }
+});
+
+function fullFixture() {
+  const words = [...BANK.values()].slice(0, 30);
+  const run = freshEcho("all-errors");
+  for (const [i, w] of words.entries()) {
+    recordEcho(run, w.id, i % 2 ? "meaning" : "spell", "wrong");
+    recordEcho(run, w.id, "spell", "correct");
+  }
+  recordEcho(run, words[29].id, "spell", "wrong");
+  return echoSnapshot(run, words);
+}
+test("all 30 wrong words survive deduplication, later success and cross-mode sorting", () => {
+  const s = fullFixture();
+  assert.equal(s.words.length, 30);
+  assert.equal(new Set(s.words.map((w) => w.id)).size, 30);
+  assert.equal(s.totals.wrong, 31);
+  assert.equal(s.words[0].spell.wrong + s.words[0].meaningStats.wrong, 2);
+  assert.equal(sanitizeEchoSnapshot(s).words.length, 30);
+  assert.throws(() => canonicalSnapshot(s)); // Proxy accepts a small batch, never a truncated full ledger.
+});
+test("success, assisted success and timeout alone do not invent wrong-word cards", () => {
+  const run = freshEcho("no-errors");
+  recordEcho(run, words[0].id, "spell", "correct", true);
+  recordEcho(run, words[1].id, "meaning", "timeout");
+  const s = echoSnapshot(run, words);
+  assert.deepEqual(s.words, []);
+  assert.equal(s.totals.touched, 2);
+  assert.equal(s.totals.timeout, 1);
+  assert.deepEqual(sanitizeEchoSnapshot(s), s);
+});
+test("v1 reports remain readable as historical selections; v2 accepts only actual errors", () => {
+  const s = fixture();
+  s.words[0].spell.wrong = 0;
+  assert.throws(() => sanitizeEchoSnapshot(s));
+  assert.equal(sanitizeEchoSnapshot({ ...s, version: 1 }).words.length, 1);
+});
+test("30 cards generate in sequential bounded batches with exact IDs and progress", async () => {
+  const s = fullFixture(),
+    sizes = [],
+    progress = [];
+  let active = 0;
+  const r = await generateEchoReport(
+    s,
+    async (batch) => {
+      assert.equal(++active, 1);
+      sizes.push(batch.words.length);
+      canonicalSnapshot(batch);
+      await Promise.resolve();
+      active--;
+      return example(batch);
+    },
+    { interval: 0, onProgress: (cards) => progress.push(cards.length) },
+  );
+  assert.deepEqual(sizes, Array(10).fill(3));
+  assert.deepEqual(progress, [3, 6, 9, 12, 15, 18, 21, 24, 27, 30]);
+  assert.deepEqual(
+    r.cards.map((c) => c.id),
+    s.words.map((w) => w.id),
+  );
+  assert.equal(validateEchoReport(JSON.stringify(r), s).cards.length, 30);
+});
+test("failed batch keeps only validated cards; retry requests every remaining word once", async () => {
+  const s = fullFixture();
+  let draft = [],
+    calls = 0;
+  await assert.rejects(
+    generateEchoReport(
+      s,
+      async (batch) => {
+        if (++calls === 2) return { cards: [] };
+        return example(batch);
+      },
+      {
+        interval: 0,
+        onProgress: (cards) => {
+          draft = cards;
+        },
+      },
+    ),
+    /invalid-response/,
+  );
+  assert.equal(draft.length, 3);
+  const ids = [];
+  const r = await generateEchoReport(
+    s,
+    async (batch) => {
+      ids.push(...batch.words.map((w) => w.id));
+      return example(batch);
+    },
+    { interval: 0, existing: draft },
+  );
+  assert.deepEqual(
+    ids,
+    s.words.slice(3).map((w) => w.id),
+  );
+  assert.equal(r.cards.length, 30);
+});
+test("abort after a pending response cannot add draft cards or start another batch", async () => {
+  const controller = new globalThis.AbortController();
+  let progress = 0,
+    calls = 0;
+  await assert.rejects(
+    generateEchoReport(
+      fullFixture(),
+      async (batch) => {
+        calls++;
+        controller.abort();
+        return example(batch);
+      },
+      { signal: controller.signal, interval: 0, onProgress: () => progress++ },
+    ),
+    (e) => e.name === "AbortError",
+  );
+  assert.equal(progress, 0);
+  assert.equal(calls, 1);
+});
+test("abort interrupts the inter-batch wait without a new request", async () => {
+  const controller = new globalThis.AbortController();
+  let calls = 0;
+  await assert.rejects(
+    generateEchoReport(
+      fullFixture(),
+      async (batch) => {
+        calls++;
+        return example(batch);
+      },
+      {
+        signal: controller.signal,
+        interval: 10000,
+        onProgress: () => setTimeout(() => controller.abort(), 5),
+      },
+    ),
+    (e) => e.name === "AbortError",
+  );
+  assert.equal(calls, 1);
 });

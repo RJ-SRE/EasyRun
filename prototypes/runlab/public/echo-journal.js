@@ -1,4 +1,5 @@
 import {
+  generateEchoReport,
   freshEcho,
   recordEcho,
   echoSnapshot,
@@ -27,7 +28,7 @@ export class EchoJournal {
       <dialog class="echo-dialog" aria-labelledby="echo-title">
         <header><div><span class="echo-eyebrow">ECHOES / FIELD NOTES</span><h2 id="echo-title">回声札记</h2></div><button class="echo-close" aria-label="关闭札记">×</button></header>
         <div class="echo-body" tabindex="0" role="region" aria-label="单词用法与例句">
-        <div class="echo-metrics"></div><nav class="echo-tabs" aria-label="重点单词"></nav>
+        <div class="echo-metrics"></div><nav class="echo-tabs" aria-label="本局错词"></nav>
         <section class="echo-card"><div class="echo-word"></div><p class="echo-meaning"></p><p class="echo-evidence"></p><div class="echo-content"></div></section>
         </div>
         <footer>
@@ -131,6 +132,7 @@ export class EchoJournal {
         this.cache = null;
         this.snapshot = null;
         this.report = null;
+        this.draft = [];
         this.close();
         this.state(this.phase);
       }
@@ -153,12 +155,13 @@ export class EchoJournal {
     this.cache = null;
     this.snapshot = null;
     this.report = null;
+    this.draft = [];
     try {
       this.epoch = localStorage.getItem(this.epochKey);
       const raw = localStorage.getItem(key);
-      if (raw && raw.length < 70000) {
+      if (raw && raw.length < 250000) {
         const c = JSON.parse(raw);
-        if (c?.snapshot?.version === 1) {
+        if ([1, 2].includes(c?.snapshot?.version)) {
           c.snapshot = sanitizeEchoSnapshot(c.snapshot);
           c.report = validateEchoReport(c.report, c.snapshot);
           this.cache = c;
@@ -181,6 +184,7 @@ export class EchoJournal {
     this.words = data.words || [];
     this.snapshot = null;
     this.report = null;
+    this.draft = [];
     this.index = 0;
   }
   answer(raw) {
@@ -195,6 +199,7 @@ export class EchoJournal {
     this.invalidate();
     this.snapshot = sanitizeEchoSnapshot(snapshot);
     this.report = null;
+    this.draft = [];
     this.index = 0;
     this.error = "";
     this.savedNotice = "";
@@ -291,6 +296,16 @@ export class EchoJournal {
     for (const [key, value] of Object.entries(values))
       this.root.style.setProperty("--echo-dialog-" + key, value + "px");
     this.dialog.dataset.compact = String(h < 420);
+    this.centerWordTab();
+  }
+  centerWordTab() {
+    const tabs = this.$(".echo-tabs"),
+      selected = tabs.querySelector(".selected");
+    if (selected)
+      tabs.scrollLeft =
+        selected.offsetLeft -
+        tabs.offsetLeft -
+        (tabs.clientWidth - selected.clientWidth) / 2;
   }
   open() {
     if (![0, 2].includes(this.phase)) return;
@@ -336,7 +351,7 @@ export class EchoJournal {
     this.$(".echo-metrics").replaceChildren(
       ...[
         [t.touched, "实际作答 · 词"],
-        [t.correctWords, "至少答对一次 · 词"],
+        [s.words.length, s.version === 1 ? "历史选词 · 词" : "本局错词 · 词"],
         [t.independentSpell, "独立拼对 · 次"],
       ].map(([n, label]) => {
         const el = document.createElement("div");
@@ -358,17 +373,23 @@ export class EchoJournal {
         return b;
       }),
     );
+    this.centerWordTab();
     const w = s.words[this.index];
     const content = this.$(".echo-content");
     content.replaceChildren();
-    this.$(".echo-word").textContent = w?.word || "此行，尚无铭文记录";
+    this.$(".echo-word").textContent =
+      w?.word || (t.touched ? "本局没有答错词" : "此行，尚无铭文记录");
     this.$(".echo-meaning").textContent = w
       ? `${w.pos} ${w.meaning}`
-      : "开启铭文并实际作答后，才会生成学习回顾。";
+      : t.touched
+        ? "本局无需生成错词札记。"
+        : "开启铭文并实际作答后，才会生成学习回顾。";
     this.$(".echo-evidence").textContent = w
       ? echoEvidence(w)
-      : "未遇到的单词不会计作已完成。";
-    const card = this.report?.cards.find((c) => c.id === w?.id);
+      : t.timeout
+        ? `超时 ${t.timeout} 次，单独记录，不计为答错。`
+        : "";
+    const card = (this.report?.cards || this.draft).find((c) => c.id === w?.id);
     const paragraph = (cls, value) => {
       const el = document.createElement("p");
       el.className = cls;
@@ -406,7 +427,12 @@ export class EchoJournal {
         this.mode === "life" ? card.translation : card.gameTranslation,
       );
     } else if (w) {
-      paragraph("echo-placeholder", "生成此词的用法、搭配与例句。");
+      paragraph(
+        "echo-placeholder",
+        this.busy
+          ? "此词的札记正在准备中。"
+          : "回顾本局全部错词的用法、搭配与例句。",
+      );
     }
     this.$(".echo-generate").disabled = this.busy || !w || !!this.report;
     this.$(".echo-generate").hidden = !!this.report || !w;
@@ -415,7 +441,7 @@ export class EchoJournal {
       : this.report
         ? "札记已生成"
         : this.error
-          ? "重新生成"
+          ? "继续生成"
           : "生成札记 · AI";
     this.$(".echo-pager").hidden = s.words.length < 2;
     this.$(".echo-prev").disabled = this.index === 0;
@@ -423,8 +449,10 @@ export class EchoJournal {
     this.$(".echo-page").textContent =
       `${String(this.index + 1).padStart(2, "0")} / ${String(s.words.length).padStart(2, "0")}`;
     this.$(".echo-status").textContent = this.busy
-      ? "正在生成…"
-      : this.error || this.savedNotice || "";
+      ? `已生成 ${this.draft.length} / ${s.words.length} 词`
+      : this.error
+        ? `${this.draft.length ? `已生成 ${this.draft.length} / ${s.words.length} 词 · ` : ""}${this.error}`
+        : this.savedNotice || "";
     this.$(".echo-status").hidden = !this.$(".echo-status").textContent;
     this.$("footer").hidden =
       this.$(".echo-generate").hidden &&
@@ -442,67 +470,21 @@ export class EchoJournal {
     this.error = "";
     this.savedNotice = "";
     this.render();
-    const timer = setTimeout(() => controller.abort(), 65000);
     try {
-      let report;
-      if (this.config.mode === "embedded-test") {
-        const r = await fetch(
-          this.config.baseUrl.replace(/\/$/, "") + "/chat/completions",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + this.config.apiKey,
-            },
-            body: JSON.stringify({
-              model: this.config.model,
-              messages: echoMessages(snapshot),
-              stream: false,
-              max_tokens: 6000,
-              enable_thinking: false,
-            }),
-            signal: controller.signal,
-            credentials: "omit",
-            redirect: "error",
-          },
-        );
-        if (!r.ok) throw new Error(String(r.status));
-        const body = await this.readResponse(r);
-        const value = JSON.parse(body);
-        report = validateEchoReport(
-          value.choices?.[0]?.message?.content,
-          snapshot,
-        );
-      } else {
-        if (this.config.mode === "disabled") throw new Error("not-configured");
-        const r = await fetch(this.config.endpoint || "/api/echo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(snapshot),
+      const report = await generateEchoReport(
+        snapshot,
+        (batch, signal) => this.requestBatch(batch, signal),
+        {
           signal: controller.signal,
-          credentials: "omit",
-          redirect: "error",
-        });
-        if (!r.ok) {
-          let code = r.status === 503 ? "not-configured" : String(r.status);
-          if (r.status === 502) {
-            try {
-              if (
-                JSON.parse(await this.readResponse(r)).error ===
-                "invalid-response"
-              )
-                code = "invalid-response";
-            } catch {
-              /* Keep the safe status error. */
-            }
-          }
-          throw new Error(code);
-        }
-        report = validateEchoReport(
-          JSON.parse(await this.readResponse(r)),
-          snapshot,
-        );
-      }
+          existing: this.draft,
+          onProgress: (cards) => {
+            if (revision !== this.revision || snapshot !== this.snapshot)
+              return;
+            this.draft = cards;
+            this.render();
+          },
+        },
+      );
       if (revision !== this.revision || snapshot !== this.snapshot) return;
       this.report = report;
       this.cache = { snapshot, report, createdAt: Date.now() };
@@ -510,13 +492,79 @@ export class EchoJournal {
     } catch (e) {
       if (revision === this.revision) this.error = echoError(e);
     } finally {
-      clearTimeout(timer);
       if (revision === this.revision) {
         this.busy = false;
         this.abort = null;
         this.render();
       }
     }
+  }
+  async requestBatch(snapshot, signal) {
+    // A deadline per batch, rather than timing out an entire 30-word review.
+    signal = globalThis.AbortSignal.any([
+      signal,
+      globalThis.AbortSignal.timeout(65000),
+    ]);
+    let report;
+    if (this.config.mode === "embedded-test") {
+      const r = await fetch(
+        this.config.baseUrl.replace(/\/$/, "") + "/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.config.apiKey,
+          },
+          body: JSON.stringify({
+            model: this.config.model,
+            messages: echoMessages(snapshot),
+            stream: false,
+            max_tokens: 6000,
+            enable_thinking: false,
+          }),
+          signal: signal,
+          credentials: "omit",
+          redirect: "error",
+        },
+      );
+      if (!r.ok) throw new Error(String(r.status));
+      const body = await this.readResponse(r);
+      const value = JSON.parse(body);
+      report = validateEchoReport(
+        value.choices?.[0]?.message?.content,
+        snapshot,
+      );
+    } else {
+      if (this.config.mode === "disabled") throw new Error("not-configured");
+      const r = await fetch(this.config.endpoint || "/api/echo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(snapshot),
+        signal: signal,
+        credentials: "omit",
+        redirect: "error",
+      });
+      if (!r.ok) {
+        let code = r.status === 503 ? "not-configured" : String(r.status);
+        if (r.status === 502) {
+          try {
+            if (
+              JSON.parse(await this.readResponse(r)).error ===
+              "invalid-response"
+            )
+              code = "invalid-response";
+          } catch {
+            /* Keep the safe status error. */
+          }
+        }
+        throw new Error(code);
+      }
+      report = validateEchoReport(
+        JSON.parse(await this.readResponse(r)),
+        snapshot,
+      );
+    }
+    return report;
   }
   async readResponse(response) {
     const reader = response.body.getReader();
@@ -558,6 +606,7 @@ export class EchoJournal {
     this.cache = null;
     this.snapshot = null;
     this.report = null;
+    this.draft = [];
     this.close();
     this.state(this.phase);
   }

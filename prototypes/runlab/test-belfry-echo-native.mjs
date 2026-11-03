@@ -121,7 +121,7 @@ try {
       const enc = new TextEncoder(),
         dec = new TextDecoder();
       let main = dec.decode(files["main.spx"]);
-      main += `\nonKey KeyF10, => {WorldLogic.startRun(); Hero.invulnerable=999; for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0}}\nonKey KeyF11, => {nativeWordIndex=nativeDeck[0]; nativeQuestionMode=0; nativeInput="xx"; wordSerial++; NativeLogic.nativeLearningAnswer(2); nativeQuestionMode=1; wordSerial++; NativeLogic.nativeLearningAnswer(1)}\nonKey KeyF12, => {phase=2; WorldLogic.event("finish")}\nonKey KeyF9, => {NativeLogic.nativeEchoReset()}\nonKey KeyF8, => {NativeLogic.nativeSetSettings(true); NativeLogic.nativeLocalResetAsk(); NativeLogic.nativeLocalResetConfirm()}\n`;
+      main += `\nonKey KeyF10, => {WorldLogic.startRun(); Hero.invulnerable=999; for i:=0;i<len(enemyHP);i++ {enemyHP[i]=0}}\nonKey KeyF11, => {nativeWordIndex=nativeDeck[0]; nativeQuestionMode=0; nativeInput="xx"; wordSerial++; NativeLogic.nativeLearningAnswer(2); nativeQuestionMode=1; wordSerial++; NativeLogic.nativeLearningAnswer(1)}\nonKey KeyF12, => {phase=2; WorldLogic.event("finish")}\nonKey KeyF6, => {for i:=0;i<len(nativeDeck);i++ {nativeWordIndex=nativeDeck[i]; nativeQuestionMode=i%2; nativeInput="xx"; wordSerial++; NativeLogic.nativeLearningAnswer(2)}}\nonKey KeyF9, => {NativeLogic.nativeEchoReset()}\nonKey KeyF8, => {NativeLogic.nativeSetSettings(true); NativeLogic.nativeLocalResetAsk(); NativeLogic.nativeLocalResetConfirm()}\n`;
       files["main.spx"] = enc.encode(main);
       await window.initGame(
         Object.fromEntries(
@@ -323,6 +323,46 @@ try {
   await page.locator("#game-canvas").focus();
   await page.keyboard.press("m");
   await page.waitForFunction(() => window.easyRunEcho.phase === 0);
+  replyMode = "good";
+  await page.keyboard.press("F10");
+  await page.waitForFunction(() => window.easyRunEcho.phase === 1);
+  await page.keyboard.press("F6");
+  await page.keyboard.press("F12");
+  await page.waitForFunction(
+    () =>
+      window.easyRunEcho.snapshot?.words.length === 30 &&
+      window.easyRunEcho.phase === 2,
+  );
+  assert.equal(
+    await page.evaluate(() => window.easyRunEcho.snapshot.totals.wrong),
+    30,
+  );
+  await page.locator(".echo-launch").click();
+  const beforeAll = calls;
+  await page.locator(".echo-generate").click();
+  await page.waitForFunction(
+    () => window.easyRunEcho.report?.cards.length === 30,
+    null,
+    { timeout: 60000 },
+  );
+  assert.equal(calls - beforeAll, 10);
+  for (let i = 0; i < 29; i++) await page.keyboard.press("ArrowRight");
+  assert.equal(await page.locator(".echo-page").innerText(), "30 / 30");
+  await page.screenshot({
+    path: fileURLToPath(new URL("native-all-errors.png", out)),
+  });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(220);
+  await page.keyboard.press("m");
+  await page.waitForFunction(() => window.easyRunEcho.phase === 0);
+  await page.locator(".echo-launch").click();
+  assert.equal(await page.locator(".echo-tabs button").count(), 30);
+  assert.equal(calls - beforeAll, 10);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(220);
+  pass(
+    "Native production hooks retain all 30 spelling/meaning errors and generate/cache ten sequential batches",
+  );
   await page.evaluate(() =>
     localStorage.setItem("easyrun.echo.v1:unrelated", "keep"),
   );

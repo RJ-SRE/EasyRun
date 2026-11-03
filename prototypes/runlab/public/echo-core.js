@@ -1,5 +1,6 @@
 // Shared by the web host, private native bundle and server. No credentials here.
-export const ECHO_VERSION = 1;
+export const ECHO_VERSION = 2;
+export const ECHO_BATCH_SIZE = 3;
 const text = (value, max = 180) =>
   String(value || "")
     // eslint-disable-next-line no-control-regex -- strip nonprinting provider/data characters.
@@ -105,15 +106,10 @@ export function echoSnapshot(run, words, outcome = "won") {
     for (const k of ["attempts", "correct", "wrong", "timeout"])
       totals[k] += w.spell[k] + w.meaningStats[k];
   }
-  const priority = (w) =>
-    8 * (w.spell.wrong + w.meaningStats.wrong) +
-    3 * w.spell.assisted +
-    2 * (w.spell.timeout + w.meaningStats.timeout) +
-    (w.spell.correct + w.meaningStats.correct > 0 ? 1 : 0);
+  const mistakes = (w) => w.spell.wrong + w.meaningStats.wrong;
   const selected = rows
-    .filter((w) => w.spell.attempts + w.meaningStats.attempts > 0)
-    .sort((a, b) => priority(b) - priority(a) || a.id.localeCompare(b.id))
-    .slice(0, 3);
+    .filter((w) => mistakes(w) > 0)
+    .sort((a, b) => mistakes(b) - mistakes(a) || a.id.localeCompare(b.id));
   return {
     version: ECHO_VERSION,
     runId: text(run?.id, 100),
@@ -126,11 +122,13 @@ export function echoEvidence(w) {
   const s = w.spell,
     m = w.meaningStats,
     parts = [];
-  if (s.attempts)
+  if (s.wrong) parts.push(`拼写错误 ${s.wrong} 次`);
+  if (m.wrong) parts.push(`辨义错误 ${m.wrong} 次`);
+  if (s.correct)
     parts.push(
-      `拼写 ${s.correct}/${s.attempts} 正确${s.assisted ? ` · ${s.assisted} 次有提示` : ""}`,
+      `拼对 ${s.correct} 次${s.assisted ? `（${s.assisted} 次有提示）` : ""}`,
     );
-  if (m.attempts) parts.push(`辨义 ${m.correct}/${m.attempts} 正确`);
+  if (m.correct) parts.push(`辨义答对 ${m.correct} 次`);
   if (s.timeout + m.timeout) parts.push(`超时 ${s.timeout + m.timeout} 次`);
   return parts.join("；");
 }
@@ -153,7 +151,7 @@ export function echoMessages(snapshot) {
 export function validateEchoReport(raw, snapshot) {
   let value = raw;
   if (typeof value === "string") {
-    if (value.length > 20000) throw new Error("invalid-response");
+    if (value.length > 80000) throw new Error("invalid-response");
     value = JSON.parse(
       value
         .trim()
@@ -230,13 +228,13 @@ export function cleanEchoRun(raw, ids, fallbackId) {
 export function sanitizeEchoSnapshot(raw) {
   if (
     !raw ||
-    raw.version !== 1 ||
+    ![1, ECHO_VERSION].includes(raw.version) ||
     raw.outcome !== "won" ||
     typeof raw.runId !== "string" ||
     !raw.runId ||
     raw.runId.length > 100 ||
     !Array.isArray(raw.words) ||
-    raw.words.length > 3 ||
+    raw.words.length > 30 ||
     !raw.totals
   )
     throw new Error("invalid-request");
@@ -274,7 +272,10 @@ export function sanitizeEchoSnapshot(raw) {
     seen.add(w.id);
     const spell = skill(w.spell),
       meaningStats = skill(w.meaningStats);
-    if (!spell.attempts && !meaningStats.attempts)
+    if (
+      (!spell.attempts && !meaningStats.attempts) ||
+      (raw.version === ECHO_VERSION && !spell.wrong && !meaningStats.wrong)
+    )
       throw new Error("invalid-request");
     return {
       id: w.id,
@@ -286,5 +287,64 @@ export function sanitizeEchoSnapshot(raw) {
       meaningStats,
     };
   });
-  return { version: 1, runId: raw.runId, outcome: "won", totals, words };
+  return {
+    version: raw.version,
+    runId: raw.runId,
+    outcome: "won",
+    totals,
+    words,
+  };
+}
+
+// Small sequential requests keep model output bounded without truncating the ledger.
+// Only validated batches enter the draft; retry reuses them, preserving deck order.
+export async function generateEchoReport(
+  snapshot,
+  request,
+  { signal, existing = [], onProgress = () => {}, interval = 3100 } = {},
+) {
+  const expected = new Set(snapshot.words.map((w) => w.id));
+  if (!expected.size) throw new Error("invalid-request");
+  const cards = new Map();
+  for (const card of existing) {
+    if (!expected.has(card.id) || cards.has(card.id))
+      throw new Error("invalid-response");
+    const word = snapshot.words.find((w) => w.id === card.id);
+    const valid = validateEchoReport(
+      { cards: [card] },
+      { ...snapshot, words: [word] },
+    );
+    cards.set(card.id, valid.cards[0]);
+  }
+  const ordered = () =>
+    snapshot.words.flatMap((w) => (cards.has(w.id) ? [cards.get(w.id)] : []));
+  const remaining = snapshot.words.filter((w) => !cards.has(w.id));
+  let lastStart = 0;
+  for (let offset = 0; offset < remaining.length; offset += ECHO_BATCH_SIZE) {
+    signal?.throwIfAborted();
+    const delay = Math.max(0, lastStart + interval - Date.now());
+    if (delay)
+      await new Promise((resolve, reject) => {
+        const cancel = () => {
+          clearTimeout(timer);
+          reject(signal.reason);
+        };
+        const timer = setTimeout(() => {
+          signal?.removeEventListener("abort", cancel);
+          resolve();
+        }, delay);
+        signal?.addEventListener("abort", cancel, { once: true });
+      });
+    signal?.throwIfAborted();
+    const batch = {
+      ...snapshot,
+      words: remaining.slice(offset, offset + ECHO_BATCH_SIZE),
+    };
+    lastStart = Date.now();
+    const report = validateEchoReport(await request(batch, signal), batch);
+    signal?.throwIfAborted();
+    for (const card of report.cards) cards.set(card.id, card);
+    onProgress(ordered());
+  }
+  return validateEchoReport({ cards: ordered() }, snapshot);
 }
