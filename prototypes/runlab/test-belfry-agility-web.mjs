@@ -107,7 +107,7 @@ try {
   );
   assert.deepEqual(
     report.samples.slice(-3).map((s) => s[1]),
-    [0.44, 0.4, 0.42],
+    [0.37, 0.34, 0.35],
   );
   assert.ok(report.samples.every((s) => s[2] === 0 && s[3] === 0));
   assert.deepEqual(await page.evaluate(() => window.runtimeErrors), []);

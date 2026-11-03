@@ -11,14 +11,14 @@ func resetKeeper() {
  keeperAX=make([]float64,8); keeperAY=make([]float64,8); keeperBX=make([]float64,8); keeperBY=make([]float64,8)
  keeperPrevAX=make([]float64,8); keeperPrevAY=make([]float64,8); keeperPrevBX=make([]float64,8); keeperPrevBY=make([]float64,8)
  keeperAge=make([]float64,8); keeperDelay=make([]float64,8); keeperLife=make([]float64,8); keeperWidth=make([]float64,8)
- keeperStyle=make([]int,8); keeperSpent=make([]int,8); keeperToken=make([]int,8); clearKeeperDanger()
+ keeperTrail=make([]float64,8); keeperStyle=make([]int,8); keeperSpent=make([]int,8); keeperToken=make([]int,8); clearKeeperDanger()
 }
 // Kept for shared diagnostics. Normal attacks exclusively use tracked weapons.
 func keeperLine(ax,ay,bx,by,delay,life,width float64,style int) {
  for j:=0;j<len(keeperLife);j++ {if keeperLife[j]<=0 {
   keeperAX[j]=ax; keeperAY[j]=ay; keeperBX[j]=bx; keeperBY[j]=by
   keeperPrevAX[j]=ax; keeperPrevAY[j]=ay; keeperPrevBX[j]=bx; keeperPrevBY[j]=by
-  keeperAge[j]=0; keeperDelay[j]=delay; keeperLife[j]=life; keeperWidth[j]=width; keeperStyle[j]=style; keeperSpent[j]=0; keeperToken[j]=-1; return
+  keeperAge[j]=0; keeperDelay[j]=delay; keeperLife[j]=life; keeperWidth[j]=width; keeperStyle[j]=style; keeperSpent[j]=0; keeperToken[j]=-1; keeperTrail[j]=58; return
  }}
 }
 func keeperTrack(j int,ax,ay,bx,by,width float64,style int) {
@@ -63,7 +63,8 @@ func keeperAim() {
  enemyFacing[i]=1; if enemyAimX[i]<enemyX[i] {enemyFacing[i]=-1}
 }
 func keeperWindup(move int) float64 {
- durations:=[]float64{0.70,0.78,0.90,0.62,0.70,0.72,0.82,0.78,0.92}; duration:=durations[move]
+ // No per-decision slice allocation in the interpreter.
+ duration:=0.70; if move==1 || move==7 {duration=0.78}; if move==2 {duration=0.90}; if move==3 {duration=0.62}; if move==5 {duration=0.72}; if move==6 {duration=0.82}; if move==8 {duration=0.92}
  if difficulty==1 {duration*=0.88}; return duration
 }
 func keeperChoose() int {
@@ -93,12 +94,22 @@ func lockKeeperAttack() {
  bossBladeX=clamp(enemyX[i]+enemyFacing[i]*235,130,830); bossBladeY=enemyY[i]-12
  enemyEvent("keeperlock",i)
 }
-func keeperStrokeEvent() {bossStroke++; enemySpent[keeperIndex]=0; enemyEvent("keeperstrike",keeperIndex)}
+func keeperDust(x,y float64,count int,force float64) {
+ if menuReduced {return}
+ for n:=0;n<count;n++ {particle(x+(noise()-0.5)*14,y+2,(noise()-0.5)*force,force*(0.25+noise()*0.45),0.18+noise()*0.16,0.20+noise()*0.20,2)}
+}
+func keeperStrokeEvent() {
+ bossStroke++; enemySpent[keeperIndex]=0; enemyEvent("keeperstrike",keeperIndex)
+ i:=keeperIndex; keeperDust(enemyX[i]-enemyFacing[i]*12,enemyY[i]-32,3,65)
+}
 func keeperCut(j int,t,start,duration,a,b,length,height float64) {
  if t<start || t>start+duration {return}
- u:=clamp((t-start)/duration,0,1); theta:=(a+(b-a)*u)*math.Pi/180; i:=keeperIndex; f:=enemyFacing[i]
+ // Slow entry, sharp middle, decelerating finish. VFX uses this same blade.
+ u:=keeperEase((t-start)/duration); theta:=(a+(b-a)*u)*math.Pi/180; i:=keeperIndex; f:=enemyFacing[i]
  ax:=enemyX[i]+f*12; ay:=enemyY[i]+height
- keeperTrack(j,ax,ay,ax+f*math.Cos(theta)*length,ay+math.Sin(theta)*length,9,0)
+ style:=0; if (b-a)*f>0 {style=6}
+ keeperTrack(j,ax,ay,ax+f*math.Cos(theta)*length*0.65,ay+math.Sin(theta)*length*0.65,8,style)
+ keeperTrail[j]=math.Min(58,abs(b-a)*u)
 }
 func keeperFollow(windup float64) {
  i:=keeperIndex; bossChain++; bossLocked=1; bossPoise=0; bossWindup=windup; if bossMove==8 && bossChain==2 {bossBladeX=clamp(enemyX[i]+enemyFacing[i]*235,130,830); bossBladeY=enemyY[i]-12}; clearKeeperDanger(); enemyFromX[i]=enemyX[i]; enemyFromY[i]=enemyY[i]; if difficulty==1 {bossWindup*=0.88}; enemyVX[i]=0; enemyVY[i]=0; enterEnemyState(i,1); enemyEvent("keeperfollow",i)
@@ -106,7 +117,7 @@ func keeperFollow(windup float64) {
 // Footwork follows a fixed endpoint. Neither movement nor a committed blade
 // reads player input or retargets mid-flight.
 func keeperShift(t,duration,reach,dt float64) {
- i:=keeperIndex; u:=clamp(t/duration,0,1); ease:=1-(1-u)*(1-u)
+ i:=keeperIndex; u:=clamp(t/duration,0,1); ease:=keeperEase(u)
  x:=enemyGroundLimit(i,enemyFromX[i]+enemyFacing[i]*reach*ease)
  keeperSetPosition(i,x,enemyFromY[i],dt)
 }
@@ -118,10 +129,10 @@ func keeperFootwork(x,y,duration,arc float64,floor int) {
 func keeperChain(t,start float64) {
  i:=keeperIndex; u:=t-start; if u<0 || u>1.0 {return}
  handX:=enemyX[i]+enemyFacing[i]*23; handY:=enemyY[i]+24; bx:=bossBladeX; by:=bossBladeY
- if u<0.2 {f:=u/0.2; bx=handX+(bx-handX)*f; by=handY+(by-handY)*f} else if u>0.7 {f:=(u-0.7)/0.3; bx=bx+(handX-bx)*f; by=by+(handY-by)*f}
+ if u<0.2 {f:=1-(1-u/0.2)*(1-u/0.2); bx=handX+(bx-handX)*f; by=handY+(by-handY)*f+sin(f*math.Pi)*20} else if u>0.7 {f:=keeperEase((u-0.7)/0.3); bx=bx+(handX-bx)*f; by=by+(handY-by)*f+sin(f*math.Pi)*12}
  // Slack chain never damages; only the taut retrieval does. The actual blade
  // remains attached to the forearm. Four short links form a catenary-like sag.
- sag:=24.0; style:=2; if u>0.7 {sag=0; style=4}
+ sag:=24.0; style:=2; if u>0.7 {sag=24*(1-keeperEase((u-0.7)/0.08)); if u>=0.78 {style=4}}
  for j:=0;j<4;j++ {a:=float64(j)/4; b:=float64(j+1)/4; keeperTrack(j+1,handX+(bx-handX)*a,handY+(by-handY)*a-sin(a*math.Pi)*sag,handX+(bx-handX)*b,handY+(by-handY)*b-sin(b*math.Pi)*sag,5,style)}
  keeperTrack(0,bx-enemyFacing[i]*15,by-3,bx+enemyFacing[i]*33,by+7,10,3)
 }
@@ -152,7 +163,7 @@ func updateKeeper(dt float64) {
  if state==6 {duration:=1.6; if bossStage==2 {duration=1.9}; if t>=duration {keeperRest(0.55)}; return}
  if state==0 {
   dx:=Hero.px-enemyX[i]; dy:=Hero.py+28-enemyY[i]; if abs(dx)>10 {enemyFacing[i]=1; if dx<0 {enemyFacing[i]=-1}}
-  target:=0.0; speed:=170.0+float64(bossStage)*55; if abs(dx)>150 && abs(dy)<90 {target=enemyFacing[i]*speed}; if abs(dx)<70 {target=-enemyFacing[i]*speed*0.55}
+  target:=0.0; speed:=170.0+float64(bossStage)*55; if abs(dx)>112 && abs(dy)<90 {target=enemyFacing[i]*speed}; if abs(dx)<70 {target=-enemyFacing[i]*speed*0.55}
   v:=enemyVX[i]+(target-enemyVX[i])*math.Min(1,dt*12); keeperSetPosition(i,enemyGroundLimit(i,enemyX[i]+v*dt),enemyY[i],dt)
   if keeperCanMend() {beginKeeperMend(); return}
   // A non-damaging, committed jump changes footing when the player camps on
@@ -173,16 +184,16 @@ func updateKeeper(dt float64) {
   if bossLocked==0 {keeperAim(); if t>=bossWindup-0.28 {lockKeeperAttack()}}
   if t>=bossWindup {enterEnemyState(i,3); enemyStep[i]=0; keeperStrokeEvent()}
  } else if state==3 {
-  if bossMove==0 {keeperShift(t,0.16,28,dt); keeperCut(0,t,0,0.16,38,-12,135,-3); if t>0.20 {keeperRest(0.70)}}
+  if bossMove==0 {keeperShift(t,0.16,28,dt); keeperCut(0,t,0,0.16,18,-18,135,6); if t>0.20 {keeperRest(0.70)}}
   if bossMove==1 || bossMove==4 && bossChain==0 {
    duration:=0.24; if bossMove==4 {duration=0.20}; u:=clamp(t/duration,0,1); ease:=u*u*(3-2*u)
    keeperSetPosition(i,enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease,enemyFromY[i],dt)
-   if t<=duration {keeperTrack(0,enemyX[i]+enemyFacing[i]*20,enemyY[i]-2,enemyX[i]+enemyFacing[i]*85,enemyY[i]-2,9,0)}
+   if t<=duration {keeperTrack(0,enemyX[i]+enemyFacing[i]*20,enemyY[i]-2,enemyX[i]+enemyFacing[i]*73,enemyY[i]-2,8,5)}
    if t>=duration {if bossMove==4 {keeperAim(); keeperFollow(0.40); return} else {keeperRest(0.75)}}
   }
-  if bossMove==4 && bossChain==1 {keeperCut(0,t,0,0.17,35,-30,115,4); if t>0.21 {keeperRest(0.85)}}
-  if bossMove==2 {keeperCut(0,t,0,0.20,100,-65,130,15); if t>=0.20 && enemyStep[i]==0 {enemyStep[i]=1; burst(enemyX[i]+enemyFacing[i]*65,enemyY[i]-30,7,2,90); enemyEvent("land",i)}; if t>0.26 {keeperRest(0.95)}}
-  if bossMove==3 {keeperShift(t,0.17,30,dt); if bossChain==0 {keeperCut(0,t,0,0.17,35,-22,120,-2)} else {keeperCut(0,t,0,0.18,-35,45,115,18)}; if t>=0.21 {if bossChain==0 {keeperFollow(0.40)} else {keeperRest(0.90)}}}
+  if bossMove==4 && bossChain==1 {keeperCut(0,t,0,0.17,18,-18,115,6); if t>0.21 {keeperRest(0.85)}}
+  if bossMove==2 {keeperCut(0,t,0,0.20,65,-25,112,15); if t>=0.20 && enemyStep[i]==0 {enemyStep[i]=1; keeperDust(enemyX[i]+enemyFacing[i]*65,enemyY[i]-30,7,90); enemyEvent("land",i)}; if t>0.26 {keeperRest(0.95)}}
+  if bossMove==3 {keeperShift(t,0.17,30,dt); if bossChain==0 {keeperCut(0,t,0,0.17,18,-18,120,6)} else {keeperCut(0,t,0,0.18,-35,45,115,18)}; if t>=0.21 {if bossChain==0 {keeperFollow(0.40)} else {keeperRest(0.90)}}}
   if bossMove==5 {
    u:=clamp(t/0.40,0,1); ease:=u*u*(3-2*u); keeperSetPosition(i,enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease,enemyFromY[i]+sin(u*math.Pi)*60,dt)
    keeperCut(0,t,0.03,0.20,-60,95,110,12); if t>=0.40 {keeperRest(0.80)}
@@ -190,11 +201,11 @@ func updateKeeper(dt float64) {
   if bossMove==6 {keeperChain(t,0); if t>1.04 {keeperRest(0.95)}}
   if bossMove==7 {
    u:=clamp(t/0.30,0,1); ease:=u*u*(3-2*u); keeperSetPosition(i,enemyFromX[i]+(enemyMoveX[i]-enemyFromX[i])*ease,enemyFromY[i]+(enemyMoveY[i]-enemyFromY[i])*ease+sin(u*math.Pi)*90,dt)
-   if t>=0.30 && enemyStep[i]==0 {enemyStep[i]=1; enemyFloor[i]=keeperFloor(enemyX[i],enemyY[i]-34); keeperTrack(0,enemyX[i]-45,enemyY[i]-22,enemyX[i]+45,enemyY[i]-22,15,1); burst(enemyX[i],enemyY[i]-30,8,2,110); enemyEvent("land",i)}
+   if t>=0.30 && enemyStep[i]==0 {enemyStep[i]=1; enemyFloor[i]=keeperFloor(enemyX[i],enemyY[i]-34); keeperTrack(0,enemyX[i]-45,enemyY[i]-22,enemyX[i]+45,enemyY[i]-22,15,1); keeperDust(enemyX[i],enemyY[i]-30,8,110); enemyEvent("land",i)}
    if t>0.38 {keeperRest(0.90)}
   }
   if bossMove==8 {
-   if bossChain==0 {keeperShift(t,0.18,48,dt); keeperCut(0,t,0,0.18,25,-18,130,-6); if t>=0.22 {keeperFollow(0.35); return}}
+   if bossChain==0 {keeperShift(t,0.18,48,dt); keeperCut(0,t,0,0.18,18,-18,130,6); if t>=0.22 {keeperFollow(0.35); return}}
    if bossChain==1 {keeperShift(t,0.20,30,dt); keeperCut(0,t,0,0.20,-30,75,125,12); if t>=0.24 {keeperFollow(0.45); return}}
    if bossChain==2 {keeperChain(t,0); if t>1.04 {keeperRest(1.25)}}
   }

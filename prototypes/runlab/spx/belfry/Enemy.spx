@@ -1,11 +1,11 @@
 onCloned data => {
- slot:=data.(int); previous:=-1; blend:=0.0; lastAttempt:=-1; trailAt:=0.0; view:=-1
+ slot:=data.(int); previous:=-1; blend:=0.0; lastAttempt:=-1; trailAt:=0.0; view:=-1; lean:=0.0
  for {
   dt:=float64(waitNextFrame()); if dt>0.035 {dt=0.035}
   i:=sceneEnemies[slot]; if i<0 {hide
    continue
   }
-  if view!=i {view=i; previous=-1; blend=0; lastAttempt=-1; trailAt=0}
+  if view!=i {view=i; previous=-1; blend=0; lastAttempt=-1; trailAt=0; lean=0; if enemyType[i]==3 {setRotationStyle Normal} else {setRotationStyle LeftRight}}
   if enemyHP[i]>0 && enemyType[i]!=6 && abs(enemyY[i]-cameraY)<700 {
    show; kind:=enemyType[i]; atlas:=kind; if kind==3 {atlas=1}; if kind>3 {atlas=kind-1}
    pose:=0; state:=enemyState[i]; t:=enemyClock[i]
@@ -29,19 +29,10 @@ onCloned data => {
    if kind==2 && enemyMode[i]==1 && state==3 && enemyStun[i]<=0 {costume=38; if t>0.22 && t<0.62 {costume=39}; if t>0.78 {costume=16}}
    if kind==4 && enemyMode[i]==1 && enemyStun[i]<=0 {if state==1 {costume=40}; if state==3 {costume=41; if t>0.42 {costume=40}}}
    if kind==3 {
-    pose=0; if state==0 && abs(enemyVX[i])>25 {pose=int(enemyStride[i]/22)%2}; if state==2 {pose=5}
-    if state==1 {pose=2; if bossMove==2 || bossMove==5 || bossMove==8 && bossChain==1 {pose=4}; if bossMove==3 && bossChain==1 {pose=4}; if bossMove==7 {pose=8}}
-    if state==3 {
-     pose=3; if bossMove==1 || bossMove==4 && bossChain==0 {pose=6}; if bossMove==4 && bossChain==1 {pose=3}; if bossMove==5 || bossMove==3 && bossChain==1 || bossMove==8 && bossChain==1 {pose=11}
-     if bossMove==2 {pose=8}; if bossMove==7 {pose=7; if t>0.30 {pose=8}}
-     if bossMove==6 || bossMove==8 && bossChain==2 {pose=3; if t>0.70 {pose=6}}
-    }
-    if state==5 {pose=7}
-    if state==6 {pose=10; if t<0.35 {pose=9}; if bossStage==1 && t>0.85 || bossStage==2 && t>1.5 {pose=0}}
-    if state==7 {pose=9}
-    costume=78+bossStage*12+pose; size=0.44; if bossStage==1 {size=0.40}; if bossStage==2 {size=0.42}
+    pose=keeperBodyPose(state,t)
+    costume=78+bossStage*12+pose; size=keeperBodyScale(bossStage)
     if state==6 && (bossStage==1 && t<0.85 || bossStage==2 && t<1.25) {costume=78+(bossStage-1)*12+pose}
-
+    if enemyFacing[i]<0 {costume+=36}
    }
    if kind>=7 {
     pose=0; if state==0 && abs(enemyVX[i])>20 {pose=1}; if state==1 {pose=2}; if state==3 {pose=3}; if state==2 {pose=4}; if enemyStun[i]>0 {pose=5}
@@ -49,18 +40,24 @@ onCloned data => {
     if enemyElite[i]>0 {size*=1.18}
    }
    if kind<7 && kind!=3 && enemyElite[i]>0 {size*=1.16}
-   if lastAttempt!=attempts {previous=-1; lastAttempt=attempts; blend=0; trailAt=0}
+   if lastAttempt!=attempts {previous=-1; lastAttempt=attempts; blend=0; trailAt=0; lean=0}
    if costume!=previous {
     if kind!=3 && previous>=0 && takeFX(80) { EnemyBlend.clone []float64{float64(i),float64(previous),enemyFacing[i]*90,size,float64(attempts)}}
     previous=costume; blend=0; if kind!=3 {blend=0.065}; setCostume costume
    }
-   setHeading enemyFacing[i]*90
+   heading:=enemyFacing[i]*90
+   if kind==3 {
+    leanDt:=0.0; if phase==1 && hitStop<=0 || phase==5 && state==7 && !wordVisualPaused {leanDt=dt}
+    lean+=(keeperBodyLean(state,t)-lean)*clamp(leanDt*35,0,1)
+    heading=90+enemyFacing[i]*lean
+   }
+   setHeading heading
    breath:=0.0; if state==0 {breath=sin(visualTime*2.3+float64(i))*0.004}
    // Boss stays a single opaque body. Pose crossfades and movement ghosts
    // attached stale silhouettes to later forms; weapon strokes carry motion instead.
    // Boss costumes contain their authored metal/blood/bone palette already.
    // Hue-shifting the final atlas would turn the pale core green again.
-   bob:=0.0; if kind==3 {if state==7 && !menuReduced {breath=sin(bossMendAge*5)*0.018}}
+   bob:=0.0; if kind==3 {breath=0; if state==0 && !menuReduced {breath=sin(visualTime*2.3)*0.002}; if state==7 && !menuReduced {breath=sin(bossMendAge*2.2)*0.004}}
    setGraphicEffect ColorEffect,0
    setSize size*(1+breath); setXYpos enemyX[i],enemyY[i]-34+bob
    // Stationary silhouettes mark actual past positions; they never hit or hide

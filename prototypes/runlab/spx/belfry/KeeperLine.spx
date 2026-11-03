@@ -3,16 +3,20 @@ onCloned data => {
  for {
   waitNextFrame()
   if len(keeperLife)>i && keeperLife[i]>0 && segment==1 && enemyHP[keeperIndex]>0 {
-   age:=keeperAge[i]; delay:=keeperDelay[i]; live:=age>=delay && age<=delay+keeperLife[i]
+   age:=keeperAge[i]; delay:=keeperDelay[i]; style:=keeperStyle[i]
    dx:=keeperBX[i]-keeperAX[i]; dy:=keeperBY[i]-keeperAY[i]
-   show; setXYpos (keeperAX[i]+keeperBX[i])/2,(keeperAY[i]+keeperBY[i])/2; setHeading angle(dx,dy)
-   setCostume bossStage*12+keeperStyle[i]*2; setGraphicEffect GhostEffect,35
-   if live {setCostume bossStage*12+keeperStyle[i]*2+1; setGraphicEffect GhostEffect,0}
-   if keeperStyle[i]==2 && live {setGraphicEffect GhostEffect,75}
-   if age>delay+keeperLife[i] {setGraphicEffect GhostEffect,clamp((age-delay-keeperLife[i])/0.16*100,0,100)}
-   setSize dist(dx,dy)/184
-   if keeperStyle[i]==2 {setGraphicEffect GhostEffect,18}
-
+   show; setHeading angle(dx,dy)
+   if style==0 || style==6 {
+    // Radial cut artwork pivots at the same hand as the collision segment.
+    setXYpos keeperAX[i],keeperAY[i]; setSize dist(dx,dy)/176
+   } else {setXYpos (keeperAX[i]+keeperBX[i])/2,(keeperAY[i]+keeperBY[i])/2; setSize dist(dx,dy)/184}
+   costume:=bossStage*14+style*2; ghost:=25.0
+   if age>=delay {costume++; ghost=0
+    if style==0 || style==6 {frame:=3; if keeperTrail[i]<55 {frame=2}; if keeperTrail[i]<28 {frame=1}; if keeperTrail[i]<14 {frame=0}; if frame<3 {direction:=0; if style==6 {direction=1}; costume=42+bossStage*6+direction*3+frame}}
+   }; if style==2 {ghost=24}
+   if menuReduced && (style==0 || style==6 || style==5) {ghost=35}
+   if age>delay+keeperLife[i] {ghost=clamp(ghost+(age-delay-keeperLife[i])/0.07*100,0,100)}
+   setCostume costume; setGraphicEffect GhostEffect,ghost
   } else {hide}
  }
 }

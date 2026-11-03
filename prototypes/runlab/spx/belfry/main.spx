@@ -159,6 +159,7 @@ var (
  keeperAge []float64
  keeperDelay []float64
  keeperLife []float64
+ keeperTrail []float64
  keeperWidth []float64
  keeperStyle []int
  keeperSpent []int
