@@ -1,0 +1,57 @@
+// One opaque body, foot-pivoted rotation, and authored key-pose choreography.
+// Presentation reads simulation clocks: pause, word focus and hit stop agree.
+func keeperEase(u float64) float64 {u=clamp(u,0,1); return u*u*(3-2*u)}
+func keeperBodyScale(stage int) float64 {
+ if stage==1 {return 0.34}; if stage==2 {return 0.35}; return 0.37
+}
+func keeperBodyPose(state int,t float64) int {
+ i:=keeperIndex
+ if state==0 {
+  if abs(enemyVX[i])>25 {step:=int(enemyStride[i]/11)%4; if step==1 || step==2 {return 1}}
+  return 0
+ }
+ if state==1 {
+  u:=t/math.Max(bossWindup,0.01)
+  // Preserve the previous cut for a brief follow-through before re-cocking.
+  if bossChain>0 && u<0.24 {if bossChain==2 {return 11}; return 3}
+  if u<0.22 {return 1}
+  if bossMove==1 || bossMove==4 && bossChain==0 {if u<0.64 {return 0}; return 8}
+  if bossMove==5 || bossMove==7 {if u<0.64 {return 0}; return 8}
+  if bossMove==6 || bossMove==8 && bossChain==2 {if u<0.62 {return 4}; return 10}
+  if bossMove==2 || bossMove==3 && bossChain==1 || bossMove==8 && bossChain==1 {if u<0.63 {return 2}; return 4}
+  if u<0.60 {return 4}; return 2
+ }
+ if state==3 {
+  if bossMove==1 || bossMove==4 && bossChain==0 {if t<0.035 {return 8}; return 6}
+  if bossMove==5 {if t<0.07 {return 7}; if t<0.20 {return 11}; if t<0.32 {return 3}; return 8}
+  if bossMove==7 {if t<0.055 {return 8}; if t<0.22 {return 7}; return 8}
+  if bossMove==6 || bossMove==8 && bossChain==2 {if t<0.07 {return 10}; if t<0.23 {return 3}; if t<0.70 {return 0}; if t<0.87 {return 6}; return 10}
+  if bossMove==2 {if t<0.09 {return 4}; if t<0.16 {return 3}; return 8}
+  if bossMove==3 && bossChain==1 || bossMove==8 && bossChain==1 {if t<0.035 {return 4}; if t<0.11 {return 3}; return 11}
+  if t<0.05 {return 2}; return 3
+ }
+ if state==2 {
+  // Settle from the actual finishing pose; do not pop directly to standing.
+  if t<0.09 {if bossMove==2 || bossMove==5 || bossMove==7 {return 8}; if bossMove==6 || bossMove==8 && bossChain==2 {return 10}; if bossMove==3 {return 11}; if bossMove==1 {return 6}; return 3}
+  if t<0.22 {return 5}; if t<0.36 {return 1}; return 0
+ }
+ if state==5 {u:=t/math.Max(0.2,enemyMoveTime[i]); if u<0.16 || u>0.82 {return 8}; return 7}
+ if state==6 {if t<0.35 {return 9}; if bossStage==1 && t>0.85 || bossStage==2 && t>1.5 {return 0}; return 10}
+ if state==7 {return 9}
+ return 0
+}
+func keeperBodyLean(state int,t float64) float64 {
+ i:=keeperIndex
+ if menuReduced {return 0}
+ if state==0 {return clamp(enemyVX[i]*enemyFacing[i]/70,-2.5,3.5)}
+ if state==1 {return -3.5*keeperEase(t/math.Max(bossWindup,0.01))}
+ if state==3 {
+  if bossMove==5 || bossMove==7 {return 5*sin(t/0.4*math.Pi)}
+  if bossMove==6 || bossMove==8 && bossChain==2 {if t<0.23 {return -3.5+9*keeperEase(t/0.23)}; if t<0.70 {return 2}; return 2-5*keeperEase((t-0.7)/0.3)}
+  return -3.5+9*keeperEase(t/0.12)
+ }
+ if state==2 {return 5.5*(1-keeperEase(t/0.30))}
+ if state==5 {return clamp(enemyVX[i]*enemyFacing[i]/100,-5,5)}
+ if state==7 {return sin(bossMendAge*2.2)*0.7}
+ return 0
+}

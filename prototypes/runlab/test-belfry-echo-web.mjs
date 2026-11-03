@@ -26,7 +26,9 @@ const pass = (s) => {
   report.cases.push(s);
   console.log("PASS", s);
 };
-let calls = 0;
+let calls = 0,
+  failAt = -1;
+const requested = [];
 page.on("pageerror", (e) => report.errors.push(e.message));
 await page.addInitScript(
   ({ key, saved }) => {
@@ -53,6 +55,15 @@ await page.addInitScript(
 await page.route("**/api/echo", async (route) => {
   calls++;
   const s = route.request().postDataJSON();
+  requested.push(s.words.map((w) => w.id));
+  if (calls === failAt) {
+    await route.fulfill({
+      status: 502,
+      contentType: "application/json",
+      body: '{"error":"invalid-response"}',
+    });
+    return;
+  }
   const cards = s.words.map((w) => ({
     id: w.id,
     usage:
@@ -149,6 +160,16 @@ try {
   await page.screenshot({
     path: fileURLToPath(new URL("victory-actions.png", out)),
   });
+  await page.locator(".echo-launch").click();
+  assert.match(await page.locator(".echo-word").innerText(), /没有答错词/);
+  assert.equal(await page.locator(".echo-generate").isVisible(), false);
+  await page.evaluate(() => window.easyRunEcho.generate());
+  assert.equal(calls, 0);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(220);
+  pass(
+    "A real correct-only run shows a summary without invented review words or AI calls",
+  );
   // Three-word reading fixture, after verifying the real single-answer chain.
   await page.evaluate(async () => {
     const { BANK } = await import("/inscription-core.js");
@@ -156,7 +177,7 @@ try {
       await import("/echo-core.js");
     const words = ["go", "new", "good"].map((id) => BANK.get(id));
     const run = freshEcho("reading-navigation-fixture");
-    for (const w of words) recordEcho(run, w.id, "spell", "correct");
+    for (const w of words) recordEcho(run, w.id, "spell", "wrong");
     window.easyRunEcho.present(echoSnapshot(run, words));
   });
   await page.locator(".echo-launch").click();
@@ -228,6 +249,71 @@ try {
   assert.equal(calls, 1);
   assert.equal(await page.locator(".echo-tabs button").count(), 3);
   pass("Reload reopens the stored report without another model call");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(220);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await focusCanvas();
+  await page.keyboard.press("F7");
+  await wait(() => window.latestState.phase === 1);
+  await page.keyboard.press("F12");
+  await wait(() => window.easyRunEcho.phase === 2);
+  await page.evaluate(async () => {
+    const { BANK } = await import("/inscription-core.js");
+    const { freshEcho, recordEcho, echoSnapshot } =
+      await import("/echo-core.js");
+    const words = [...BANK.values()].slice(0, 30),
+      run = freshEcho("full-30-errors");
+    for (const w of words) recordEcho(run, w.id, "spell", "wrong");
+    window.easyRunEcho.present(echoSnapshot(run, words));
+    window.easyRunEcho.state(2);
+    window.easyRunEcho.open();
+  });
+  failAt = calls + 2;
+  await page.locator(".echo-generate").click();
+  await wait(() => window.easyRunEcho.error?.includes("不完整"));
+  assert.equal(await page.evaluate(() => window.easyRunEcho.draft.length), 3);
+  assert.notEqual(
+    await page.evaluate(() => window.easyRunEcho.cache.snapshot.runId),
+    "full-30-errors",
+  );
+  assert.equal(await page.locator(".echo-usage").count(), 1);
+  await page.screenshot({
+    path: fileURLToPath(new URL("web-partial-errors.png", out)),
+  });
+  const retryStart = requested.length;
+  failAt = -1;
+  await page.locator(".echo-generate").click();
+  await wait(() => window.easyRunEcho.report?.cards.length === 30);
+  assert.equal(requested.slice(retryStart).flat().length, 27);
+  assert.equal(new Set(requested.slice(retryStart).flat()).size, 27);
+  assert.equal(await page.locator(".echo-tabs button").count(), 30);
+  for (let i = 0; i < 29; i++) await page.keyboard.press("ArrowRight");
+  assert.equal(await page.locator(".echo-page").innerText(), "30 / 30");
+  assert.equal(await page.locator(".echo-next").isDisabled(), true);
+  assert.ok(
+    await page
+      .locator(".echo-tabs")
+      .evaluate((el) => el.scrollLeft > 0 && el.clientHeight < 60),
+  );
+  await assertStageBounds();
+  await page.screenshot({
+    path: fileURLToPath(new URL("web-all-errors.png", out)),
+  });
+  await page.setViewportSize({ width: 460, height: 780 });
+  await page.waitForTimeout(150);
+  await assertStageBounds();
+  await page.screenshot({
+    path: fileURLToPath(new URL("web-all-errors-narrow.png", out)),
+  });
+  const afterAll = calls;
+  await page.reload();
+  await wait(() => window.easyRunEcho?.cache?.report.cards.length === 30);
+  await page.locator(".echo-launch").click();
+  assert.equal(await page.locator(".echo-tabs button").count(), 30);
+  assert.equal(calls, afterAll);
+  pass(
+    "All 30 errors render and persist; failed batches resume the remaining 27 without replacing the good cache early",
+  );
   await page.keyboard.press("Escape");
   await page.waitForTimeout(220);
   await page.setViewportSize({ width: 1440, height: 1000 });

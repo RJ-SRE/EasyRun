@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-02",
+  "feature": "all wrong words in current-run Echo Journal",
+  "branch": "codex/echo-journal",
+  "remotePush": false,
+  "wordCoverage": 30,
+  "batchSize": 3,
+  "nodeTests": 28,
+  "pythonTests": 3,
+  "eslint": "passed",
+  "gitDiffCheck": "passed",
+  "browserTests": {
+    "web": {
+      "passed": 9,
+      "cases": [
+        "Web title loads with no automatic model request",
+        "Real skill/QTE answer feeds the victory summary exactly once",
+        "A real correct-only run shows a summary without invented review words or AI calls",
+        "Generation uses the proxy; model text cannot become executable markup",
+        "Word buttons and arrow keys navigate without new requests or game input; example mode persists",
+        "Desktop, narrow and short/scrolled windows keep borders and controls inside the game stage",
+        "Reload reopens the stored report without another model call",
+        "All 30 errors render and persist; failed batches resume the remaining 27 without replacing the good cache early",
+        "Existing confirmed local reset also clears the journal"
+      ],
+      "errors": []
+    },
+    "native": {
+      "passed": 12,
+      "cases": [
+        "Native bundle compiles; journal bridge mounts in actual XBuilder runtime",
+        "Title and combat never send automatic AI requests",
+        "Production native answer/victory hooks produce accurate per-run evidence",
+        "Journal input cannot restart or dismiss the underlying game",
+        "Clean journal fits the native stage, persists locally and hides paging for a single word",
+        "Title reopens the latest cached report without a second request",
+        "Native username profiles keep their journals isolated",
+        "401 preserves exact local stats and allows exit/retry",
+        "Incomplete model content is rejected instead of displayed as a report",
+        "Reset aborts generation; late response cannot resurrect cleared records",
+        "Native production hooks retain all 30 spelling/meaning errors and generate/cache ten sequential batches",
+        "Production native profile-reset transaction also clears this journal and preserves other profiles"
+      ],
+      "errors": []
+    }
+  },
+  "packages": [
+    {
+      "package": "EasyRun-XBuilder-v0.23.0-all-errors-public.xbp",
+      "bytes": 154413288,
+      "sha256": "2ba180db2396bbe0bcbed92e21bc05ee4baa381ce810cdac31ebb68d9c63fd3d",
+      "mode": "disabled",
+      "credentialInPackage": false
+    },
+    {
+      "package": "EasyRun-XBuilder-v0.23.0-all-errors-private-test.xbp",
+      "bytes": 154413688,
+      "sha256": "5b47d6417a2d439a2d34e55ae76dfb82f9321f43ca6680500be2499db7410187",
+      "mode": "embedded-test",
+      "credentialInPackage": true
+    }
+  ],
+  "limitations": [
+    "Model responses are synthetic in this regression; no live 30-word MaaS call or online project publication.",
+    "Partial cards persist only during the current runtime; only the latest complete successful report is stored across reloads.",
+    "Previously saved v1 reports remain historical selections; no missing historical evidence is invented."
+  ]
+}

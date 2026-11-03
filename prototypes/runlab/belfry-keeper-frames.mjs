@@ -205,5 +205,31 @@ export async function buildKeeperFrames(page, root) {
       )),
     );
   }
-  return frames;
+  // Bake the other facing once. The runtime can then rotate a single opaque
+  // body around its planted foot, rather than mirroring with an upside-down
+  // heading or allocating overlapping silhouettes. Source art stays intact.
+  const mirrored = await page.evaluate(
+    async ({ frames, layout }) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = layout.w;
+      canvas.height = layout.h;
+      const ctx = canvas.getContext("2d");
+      const output = [];
+      for (const frame of frames) {
+        const im = new Image();
+        im.src = "data:image/png;base64," + frame;
+        await im.decode();
+        ctx.clearRect(0, 0, layout.w, layout.h);
+        ctx.save();
+        ctx.translate(layout.pivotX * 2, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(im, 0, 0);
+        ctx.restore();
+        output.push(canvas.toDataURL("image/png").split(",")[1]);
+      }
+      return output;
+    },
+    { frames, layout: keeperFrameLayout },
+  );
+  return frames.concat(mirrored);
 }

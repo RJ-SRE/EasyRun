@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { WORDS } from "../../prototypes/runlab/public/common-words.js";
 import {
+  ECHO_BATCH_SIZE,
   echoMessages,
   validateEchoReport,
   sanitizeEchoSnapshot,
@@ -34,7 +35,11 @@ export function canonicalSnapshot(input) {
       context: known.context,
     };
   });
-  if (!snapshot.words.length || snapshot.outcome !== "won")
+  if (
+    !snapshot.words.length ||
+    snapshot.words.length > ECHO_BATCH_SIZE ||
+    snapshot.outcome !== "won"
+  )
     throw new Error("invalid-request");
   return snapshot;
 }

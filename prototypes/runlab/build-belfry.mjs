@@ -1,7 +1,10 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { Buffer } from "node:buffer";
 import { addCityArt } from "./belfry-city-art.mjs";
-import { buildKeeperFrames, keeperFrameLayout } from "./belfry-keeper-frames.mjs";
+import {
+  buildKeeperFrames,
+  keeperFrameLayout,
+} from "./belfry-keeper-frames.mjs";
 import { addKeeperArt } from "./belfry-keeper-art.mjs";
 import { chromium } from "@playwright/test";
 import { buildHuntLayout } from "./belfry-hunt.mjs";
@@ -583,14 +586,19 @@ for (const name of ["warden", "hound", "weaver"])
       pivotX: 192,
       pivotY: 366,
     };
-for (let i = 0; i < 36; i++)
+for (let i = 0; i < assassinFrames.keeperStructural.length; i++)
   enemyImages[`keeper-structural-${i}`] = {
     binary: Buffer.from(assassinFrames.keeperStructural[i], "base64"),
     ...keeperFrameLayout,
   };
 sprite(
   "EnemyBlend",
-  enemyImages,
+  // Boss never uses body clones. Do not decode its two facing atlases here.
+  Object.fromEntries(
+    Object.entries(enemyImages).filter(
+      ([name]) => !name.startsWith("keeper-structural-"),
+    ),
+  ),
   { visible: false, rotationStyle: "left-right" },
   await code("EnemyBlend"),
 );
@@ -1081,6 +1089,7 @@ files["main.spx"] = (await code("main")).replace(
   initialization +
     (await code("Assassins")) +
     (await code("Keeper")) +
+    (await code("KeeperMotion")) +
     (await code("Inscription")) +
     (await code("HuntCombat")) +
     (await code("HuntExpedition")) +

@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
@@ -31,7 +32,12 @@ const server = createServer((req, res) => {
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const packageURL = `http://127.0.0.1:${server.address().port}/package.xbp`;
 const b = await chromium.launch({ headless: true, channel: "chromium" }),
-  p = await b.newPage({ viewport: { width: 960, height: 600 } }),
+  p = await b.newPage({
+    viewport:
+      process.env.BOSS_MOTION_CAPTURE === "1"
+        ? { width: 1280, height: 800 }
+        : { width: 960, height: 600 },
+  }),
   report = {
     cases: [],
     errors: [],
@@ -102,7 +108,7 @@ async function question(key) {
   await p.waitForTimeout(650);
   await p.keyboard.up(key);
   await p.waitForFunction((n) => window.bossQuestions.length > n, before);
-  await p.waitForTimeout(220);
+  await until((s) => s.phase === 5 && s.questionAge >= 0.22);
   return p.evaluate(() => window.bossQuestions.at(-1));
 }
 async function answer(q, correct = true) {
@@ -150,6 +156,20 @@ try {
       );
       if (background.costumes.length !== 1)
         throw Error("Arena must keep one original background");
+      const bodyArt = JSON.parse(
+        dec.decode(files["assets/sprites/Enemy/index.json"]),
+      );
+      const ghostArt = JSON.parse(
+        dec.decode(files["assets/sprites/EnemyBlend/index.json"]),
+      );
+      if (
+        bodyArt.costumes.filter((c) => c.name.startsWith("keeper-structural-"))
+          .length !== 72 ||
+        ghostArt.costumes.some((c) => c.name.startsWith("keeper-structural-"))
+      )
+        throw Error(
+          "Boss needs two facings on one body and no unused Boss ghost atlas",
+        );
       files["WorldLogic.spx"] = enc.encode(
         dec
           .decode(files["WorldLogic.spx"])
@@ -164,6 +184,14 @@ func bossTestFixture(stage int,mend bool) {
  clearKeeperDanger(); if mend {beginKeeperMend()}
 }
 func bossTestGolden() {
+ motionOK:=true
+ for move:=0;move<9;move++ {
+  bossTestFixture(move/3,false); bossMove=move; bossChain=0; bossWindup=keeperWindup(move)
+  last:=-1; changes:=0; for n:=0;n<=20;n++ {t:=bossWindup*float64(n)/20; pose:=keeperBodyPose(1,t); if pose!=last {changes++; last=pose}; if pose<0 || pose>11 || abs(keeperBodyLean(1,t))>6 {motionOK=false}}
+  if changes<3 {motionOK=false}
+  last=-1; changes=0; for n:=0;n<=20;n++ {t:=float64(n)*0.01; pose:=keeperBodyPose(3,t); if pose!=last {changes++; last=pose}; if pose<0 || pose>11 || abs(keeperBodyLean(3,t))>6 {motionOK=false}}
+  if changes<2 {motionOK=false}
+ }
  bossTestFixture(0,true); i:=keeperIndex; wordVisualPaused=false; phase=5; before:=enemyHP[i]
  for n:=0;n<30;n++ {updateKeeperMending(0.1)}; during:=enemyHP[i]; age:=bossMendAge
  phase=4; for n:=0;n<20;n++ {updateKeeperMending(0.1)}; paused:=bossMendAge==age
@@ -198,10 +226,10 @@ func bossTestGolden() {
  lockedX:=enemyX[i]; Hero.px=900; for n:=0;n<15;n++ {updateKeeper(0.02)}; counterTell=counterTell && enemyState[i]==1 && enemyX[i]==lockedX && enemyFacing[i]>0
  for n:=0;n<20;n++ {updateKeeper(0.02)}; counterTell=counterTell && enemyState[i]==2 && enemyRecover[i]>=0.8
  bossTestFixture(1,false); prepareKeeperMove(5); lockKeeperAttack(); enterEnemyState(i,3); startY=enemyY[i]; peakY:=startY; for n:=0;n<21;n++ {updateKeeper(0.02); peakY=math.Max(peakY,enemyY[i])}; vaultCut:=peakY-startY>40 && abs(enemyY[i]-startY)<0.01 && enemyState[i]==2
- println "@bossGolden",NativeLogic.nativeCloudJSON(map[string]any{"agileWalk":agileWalk,"backstep":backstep,"counterTell":counterTell,"vaultCut":vaultCut,"deflect":deflect,"noTellDamage":noTellDamage,"sweepHit":sweepHit,"sweepOnce":sweepOnce,"secondTell":secondTell,"triple":triple,"finiteAI":finiteAI,"before":before,"during":during,"paused":paused,"pausedWord":pausedWord,"sameCast":one,"noHealSkill":noHealSkill,"broken":broken,"capped":capped,"finite":finite,"dead":dead,"transitioned":transitioned,"hard":hard,"warning":warning,"damaging":damaging,"once":once})
+ println "@bossGolden",NativeLogic.nativeCloudJSON(map[string]any{"motionOK":motionOK,"agileWalk":agileWalk,"backstep":backstep,"counterTell":counterTell,"vaultCut":vaultCut,"deflect":deflect,"noTellDamage":noTellDamage,"sweepHit":sweepHit,"sweepOnce":sweepOnce,"secondTell":secondTell,"triple":triple,"finiteAI":finiteAI,"before":before,"during":during,"paused":paused,"pausedWord":pausedWord,"sameCast":one,"noHealSkill":noHealSkill,"broken":broken,"capped":capped,"finite":finite,"dead":dead,"transitioned":transitioned,"hard":hard,"warning":warning,"damaging":damaging,"once":once})
  phase=0
 }
-func bossTestProbe() {println "@bossProbe",NativeLogic.nativeCloudJSON(map[string]any{"blendBorn":bossTestBlendBorn,"blendLive":bossTestBlendLive,"bodySize":bossTestSize,"bodyGhost":bossTestGhost,"phase":phase,"segment":segment,"stage":bossStage,"state":enemyState[keeperIndex],"hp":enemyHP[keeperIndex],"max":bossMaxHP,"age":bossMendAge,"duration":bossMendDuration,"hits":bossMendHits,"used":bossMendUsed[bossStage],"elapsed":elapsed,"x":enemyX[keeperIndex],"y":enemyY[keeperIndex],"move":bossMove,"wordPaused":wordVisualPaused,"wordPending":wordPending,"bossVisible":nativeCombatBoss,"cast":skillCastSerial,"hx":Hero.px,"hy":Hero.py,"attack":Hero.attackKind,"attackAge":Hero.attackAge,"bx":Hero.bladeX,"by":Hero.bladeY,"clock":enemyClock[keeperIndex],"projectiles":projectileCount,"backdrop":District4.renderCostumeIndex,"light":District4.renderLightValue,"reduced":menuReduced})}
+func bossTestProbe() {println "@bossProbe",NativeLogic.nativeCloudJSON(map[string]any{"questionAge":nativeQuestionAge,"blendBorn":bossTestBlendBorn,"blendLive":bossTestBlendLive,"bodySize":bossTestSize,"bodyGhost":bossTestGhost,"phase":phase,"segment":segment,"stage":bossStage,"state":enemyState[keeperIndex],"hp":enemyHP[keeperIndex],"max":bossMaxHP,"age":bossMendAge,"duration":bossMendDuration,"hits":bossMendHits,"used":bossMendUsed[bossStage],"elapsed":elapsed,"x":enemyX[keeperIndex],"y":enemyY[keeperIndex],"move":bossMove,"wordPaused":wordVisualPaused,"wordPending":wordPending,"bossVisible":nativeCombatBoss,"cast":skillCastSerial,"hx":Hero.px,"hy":Hero.py,"attack":Hero.attackKind,"attackAge":Hero.attackAge,"bx":Hero.bladeX,"by":Hero.bladeY,"clock":enemyClock[keeperIndex],"projectiles":projectileCount,"backdrop":District4.renderCostumeIndex,"light":District4.renderLightValue,"reduced":menuReduced})}
 `,
       );
       files["Enemy.spx"] = enc.encode(
@@ -267,7 +295,78 @@ onKey KeyF12, => {enemyHP[keeperIndex]=0; bossHP=0; segment=2}
   );
   await p.locator("#game-canvas").focus();
   await until((s) => s.phase === 0);
-  if (process.env.BOSS_GHOST_PROBE === "1") {
+  if (process.env.BOSS_MOTION_CAPTURE === "1") {
+    await tap("F6");
+    await until((s) => s.state === 2);
+    await p.waitForTimeout(300);
+    await p.evaluate(() => {
+      window.motionChunks = [];
+      window.motionFrames = [];
+      let last = window.performance.now();
+      window.motionMeasuring = true;
+      const frame = (now) => {
+        if (!window.motionMeasuring) return;
+        window.motionFrames.push(now - last);
+        last = now;
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+      const canvas = document.querySelector("#game-canvas");
+      window.motionRecorder = new window.MediaRecorder(
+        canvas.captureStream(60),
+        {
+          mimeType: "video/webm;codecs=vp9",
+          videoBitsPerSecond: 7000000,
+        },
+      );
+      window.motionRecorder.ondataavailable = (e) => {
+        if (e.data.size) window.motionChunks.push(e.data);
+      };
+      window.motionRecorder.start(250);
+    });
+    for (let move = 0; move < 9; move++) {
+      await tap("F6");
+      await until((s) => s.move === move && s.state === 1);
+      await until((s) => s.move === move && s.state === 3);
+      await shot("motion-active-" + move);
+      await until((s) => s.state === 2);
+      const sample = await probe();
+      assert.equal(sample.bodyGhost, 0);
+      assert.equal(sample.blendBorn, 0);
+      assert.equal(sample.bodySize, [0.37, 0.34, 0.35][Math.floor(move / 3)]);
+      await p.waitForTimeout(220);
+      await tap("F7");
+    }
+    const capture = await p.evaluate(async () => {
+      window.motionMeasuring = false;
+      await new Promise((resolve) => {
+        window.motionRecorder.onstop = resolve;
+        window.motionRecorder.stop();
+      });
+      const blob = new window.Blob(window.motionChunks, { type: "video/webm" });
+      const data = await new Promise((resolve) => {
+        const reader = new window.FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.readAsDataURL(blob);
+      });
+      return { data, frames: window.motionFrames };
+    });
+    await writeFile(
+      new URL("boss-nine-moves.webm", out),
+      Buffer.from(capture.data, "base64"),
+    );
+    const frames = capture.frames.slice(5).sort((a, b) => a - b);
+    report.motionCapture = {
+      frames: frames.length,
+      median: frames[Math.floor(frames.length * 0.5)],
+      p95: frames[Math.floor(frames.length * 0.95)],
+      over50ms: frames.filter((n) => n > 50).length,
+      note: "Headless capture and screenshots add overhead; this is not a device FPS guarantee.",
+    };
+    pass(
+      "Nine attacks captured continuously; all three smaller bodies stay opaque with zero body clones",
+    );
+  } else if (process.env.BOSS_GHOST_PROBE === "1") {
     const samples = [];
     for (let move = 0; move < 9; move++) {
       if (move >= 3) {
@@ -286,7 +385,7 @@ onKey KeyF12, => {enemyHP[keeperIndex]=0; bossHP=0; segment=2}
     if (process.env.BOSS_EXPECT_CLEAN === "1") {
       assert.equal(born, 0);
       assert.equal(peak, 0);
-      assert.ok(samples.every((s) => s.bodyGhost === 0 && s.bodySize <= 0.44));
+      assert.ok(samples.every((s) => s.bodyGhost === 0 && s.bodySize <= 0.37));
       pass(
         "Both later forms stay opaque and never allocate body ghosts while switching and dashing",
       );
@@ -298,6 +397,7 @@ onKey KeyF12, => {enemyHP[keeperIndex]=0; bossHP=0; segment=2}
     const g = await p.evaluate(() => window.bossGolden);
     assert.ok(g.during > g.before);
     for (const k of [
+      "motionOK",
       "agileWalk",
       "backstep",
       "counterTell",

@@ -156,9 +156,16 @@
 #echo-root .echo-tabs {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #6e715d transparent;
+  padding: 3px 3px 8px;
+  position: relative;
 }
 #echo-root .echo-tabs button {
+  flex: 0 0 auto;
+  white-space: nowrap;
   font-size: 14px;
   padding: 6px 13px;
   background: transparent;
@@ -328,8 +335,10 @@
   gap: 6px;
 }
 #echo-root .echo-dialog[data-compact="true"] .echo-metrics {
-  padding: 8px 0;
-  margin-bottom: 10px;
+  display: none;
+}
+#echo-root .echo-dialog[data-compact="true"] .echo-card {
+  padding-top: 12px;
 }
 @media (prefers-reduced-motion: reduce) {
   #echo-root button {

@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-03",
+  "archive": "EasyRun-XBuilder-v0.23.2-boss-motion-private-test.xbp",
+  "bytes": 154594176,
+  "sha256": "36bbf2073b92d79fd8c95821d3f84a3b07e6de4786fd2117b394010712dbaf94",
+  "bodyScales": [
+    0.37,
+    0.34,
+    0.35
+  ],
+  "nativeCases": 12,
+  "webCases": 2,
+  "sourceForms": "Unchanged keeper-v3/form-1.png, form-2.png, form-3.png",
+  "delivery": "local private test; not uploaded"
+}
